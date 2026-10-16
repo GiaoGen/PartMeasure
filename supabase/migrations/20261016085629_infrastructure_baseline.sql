@@ -1,0 +1,2 @@
+-- P0-0 infrastructure history marker, generated using pinned Supabase CLI.
+-- Intentionally no schema/data changes. Business SQL is unapproved in ../drafts/.

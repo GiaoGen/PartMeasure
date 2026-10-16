@@ -1,0 +1,177 @@
+{
+  "checkedAt": "2026-10-16T08:53:32.116Z",
+  "sources": [
+    {
+      "id": "next-install",
+      "url": "https://nextjs.org/docs/app/getting-started/installation",
+      "resolvedUrl": "https://nextjs.org/docs/app/getting-started/installation",
+      "status": 200,
+      "bytes": 797223
+    },
+    {
+      "id": "next-vitest",
+      "url": "https://nextjs.org/docs/app/guides/testing/vitest",
+      "resolvedUrl": "https://nextjs.org/docs/app/guides/testing/vitest",
+      "status": 200,
+      "bytes": 596482
+    },
+    {
+      "id": "next-handlers",
+      "url": "https://nextjs.org/docs/app/getting-started/route-handlers",
+      "resolvedUrl": "https://nextjs.org/docs/app/getting-started/route-handlers",
+      "status": 200,
+      "bytes": 618443
+    },
+    {
+      "id": "typescript",
+      "url": "https://www.typescriptlang.org/tsconfig/strict.html",
+      "resolvedUrl": "https://www.typescriptlang.org/tsconfig/strict.html",
+      "status": 200,
+      "bytes": 161680
+    },
+    {
+      "id": "react",
+      "url": "https://react.dev/versions",
+      "resolvedUrl": "https://react.dev/versions",
+      "status": 200,
+      "bytes": 234292
+    },
+    {
+      "id": "vitest",
+      "url": "https://vitest.dev/guide/",
+      "resolvedUrl": "https://vitest.dev/guide/",
+      "status": 200,
+      "bytes": 75559
+    },
+    {
+      "id": "playwright",
+      "url": "https://playwright.dev/docs/intro",
+      "resolvedUrl": "https://playwright.dev/docs/intro",
+      "status": 200,
+      "bytes": 55911
+    },
+    {
+      "id": "tailwind",
+      "url": "https://tailwindcss.com/docs/installation/using-postcss",
+      "resolvedUrl": "https://tailwindcss.com/docs/installation/using-postcss",
+      "status": 200,
+      "bytes": 320819
+    },
+    {
+      "id": "tailwind-browsers",
+      "url": "https://tailwindcss.com/docs/compatibility",
+      "resolvedUrl": "https://tailwindcss.com/docs/compatibility",
+      "status": 200,
+      "bytes": 356532
+    },
+    {
+      "id": "zod",
+      "url": "https://zod.dev/",
+      "resolvedUrl": "https://zod.dev/",
+      "status": 200,
+      "bytes": 166267
+    },
+    {
+      "id": "biome",
+      "url": "https://biomejs.dev/guides/getting-started/",
+      "resolvedUrl": "https://biomejs.dev/installation/quick-start/",
+      "status": 200,
+      "bytes": 149812
+    },
+    {
+      "id": "konva",
+      "url": "https://konvajs.org/docs/react/index.html",
+      "resolvedUrl": "https://konvajs.org/docs/react/index.html",
+      "status": 200,
+      "bytes": 61084
+    },
+    {
+      "id": "konva-readme",
+      "url": "https://raw.githubusercontent.com/konvajs/react-konva/master/README.md",
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "id": "supabase-tls-change",
+      "url": "https://supabase.com/changelog/cbc-tls-ciphers-deprecated",
+      "resolvedUrl": "https://supabase.com/changelog/cbc-tls-ciphers-deprecated",
+      "status": 200,
+      "bytes": 87724
+    },
+    {
+      "id": "supabase-api-change",
+      "url": "https://supabase.com/changelog/45329-breaking-change-tables-not-exposed-to-data-and-graphql-api-automatically",
+      "resolvedUrl": "https://supabase.com/changelog/45329-breaking-change-tables-not-exposed-to-data-and-graphql-api-automatically",
+      "status": 200,
+      "bytes": 163426
+    },
+    {
+      "id": "supabase-smtp-change",
+      "url": "https://supabase.com/changelog/46599-changes-to-email-template-customisation-on-free-tier",
+      "resolvedUrl": "https://supabase.com/changelog/46599-changes-to-email-template-customisation-on-free-tier",
+      "status": 200,
+      "bytes": 79015
+    },
+    {
+      "id": "supabase-changelog",
+      "url": "https://supabase.com/changelog.md",
+      "resolvedUrl": "https://supabase.com/changelog.md",
+      "status": 200,
+      "bytes": 101614
+    },
+    {
+      "id": "supabase-ssr",
+      "url": "https://supabase.com/docs/guides/auth/server-side/creating-a-client.md",
+      "resolvedUrl": "https://supabase.com/docs/guides/auth/server-side/creating-a-client.md",
+      "status": 200,
+      "bytes": 30482
+    },
+    {
+      "id": "supabase-rls",
+      "url": "https://supabase.com/docs/guides/database/postgres/row-level-security.md",
+      "resolvedUrl": "https://supabase.com/docs/guides/database/postgres/row-level-security.md",
+      "status": 200,
+      "bytes": 30344
+    },
+    {
+      "id": "supabase-storage",
+      "url": "https://supabase.com/docs/guides/storage/security/access-control.md",
+      "resolvedUrl": "https://supabase.com/docs/guides/storage/security/access-control.md",
+      "status": 200,
+      "bytes": 4174
+    },
+    {
+      "id": "supabase-private",
+      "url": "https://supabase.com/docs/guides/storage/buckets/fundamentals.md",
+      "resolvedUrl": "https://supabase.com/docs/guides/storage/buckets/fundamentals.md",
+      "status": 200,
+      "bytes": 2004
+    },
+    {
+      "id": "supabase-tus",
+      "url": "https://supabase.com/docs/guides/storage/uploads/resumable-uploads.md",
+      "resolvedUrl": "https://supabase.com/docs/guides/storage/uploads/resumable-uploads.md",
+      "status": 200,
+      "bytes": 13590
+    },
+    {
+      "id": "supabase-signed-upload",
+      "url": "https://supabase.com/docs/reference/javascript/storage-from-createsigneduploadurl",
+      "resolvedUrl": "https://supabase.com/docs/reference/javascript/storage-from-createsigneduploadurl",
+      "status": 200,
+      "bytes": 27105
+    },
+    {
+      "id": "supabase-migrations",
+      "url": "https://supabase.com/docs/guides/deployment/database-migrations.md",
+      "resolvedUrl": "https://supabase.com/docs/guides/deployment/database-migrations.md",
+      "status": 200,
+      "bytes": 12361
+    },
+    {
+      "id": "konva-installed-official-readme",
+      "source": "npm package react-konva@19.3.2/README.md",
+      "sha256": "d68e0efcca393b46e93a75b673d3a91e880b17f9de8760ba29fb65be93fbae7b",
+      "note": "Official installed package README read; Konva10 client and strict mode compatibility checked."
+    }
+  ]
+}

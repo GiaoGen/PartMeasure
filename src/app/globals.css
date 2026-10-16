@@ -1,0 +1,4 @@
+@import 'tailwindcss';
+
+/* Infrastructure marker only; no product visual design has been implemented. */
+body { margin: 2rem; color: #202833; background: #fff; font-family: system-ui, sans-serif; }

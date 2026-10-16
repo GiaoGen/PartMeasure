@@ -1,0 +1,262 @@
+{
+  "checkedAt": "2026-10-16T08:53:33.448Z",
+  "packages": [
+    {
+      "name": "next",
+      "version": "16.4.2",
+      "license": "MIT",
+      "engines": {
+        "node": ">=20.9.0"
+      },
+      "peerDependencies": {
+        "sass": "^1.3.0",
+        "react": "^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0",
+        "react-dom": "^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0",
+        "@playwright/test": "^1.51.1",
+        "@opentelemetry/api": "^1.1.0",
+        "babel-plugin-react-compiler": "*"
+      },
+      "repository": {
+        "url": "git+https://github.com/vercel/next.js.git",
+        "type": "git"
+      },
+      "source": "https://registry.npmjs.org/next/latest"
+    },
+    {
+      "name": "react",
+      "version": "19.3.1",
+      "license": "MIT",
+      "engines": {
+        "node": ">=0.10.0"
+      },
+      "repository": {
+        "url": "git+https://github.com/react/react.git",
+        "type": "git",
+        "directory": "packages/react"
+      },
+      "source": "https://registry.npmjs.org/react/latest"
+    },
+    {
+      "name": "react-dom",
+      "version": "19.3.1",
+      "license": "MIT",
+      "peerDependencies": {
+        "react": "^19.3.1"
+      },
+      "repository": {
+        "url": "git+https://github.com/react/react.git",
+        "type": "git",
+        "directory": "packages/react-dom"
+      },
+      "source": "https://registry.npmjs.org/react-dom/latest"
+    },
+    {
+      "name": "typescript",
+      "version": "7.0.2",
+      "license": "Apache-2.0",
+      "engines": {
+        "node": ">=16.20.0"
+      },
+      "repository": {
+        "url": "git+https://github.com/microsoft/TypeScript.git",
+        "type": "git"
+      },
+      "source": "https://registry.npmjs.org/typescript/latest"
+    },
+    {
+      "name": "@types/node",
+      "version": "26.6.5",
+      "license": "MIT",
+      "peerDependencies": {},
+      "repository": {
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "type": "git",
+        "directory": "types/node"
+      },
+      "source": "https://registry.npmjs.org/%40types%2Fnode/latest"
+    },
+    {
+      "name": "@types/react",
+      "version": "19.3.0",
+      "license": "MIT",
+      "peerDependencies": {},
+      "repository": {
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "type": "git",
+        "directory": "types/react"
+      },
+      "source": "https://registry.npmjs.org/%40types%2Freact/latest"
+    },
+    {
+      "name": "@types/react-dom",
+      "version": "19.3.0",
+      "license": "MIT",
+      "peerDependencies": {
+        "@types/react": "^19.3.0"
+      },
+      "repository": {
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "type": "git",
+        "directory": "types/react-dom"
+      },
+      "source": "https://registry.npmjs.org/%40types%2Freact-dom/latest"
+    },
+    {
+      "name": "vitest",
+      "version": "5.0.5",
+      "license": "MIT",
+      "engines": {
+        "node": "^22.12.0 || ^24.0.0 || >=26.0.0"
+      },
+      "peerDependencies": {
+        "vite": "^6.4.0 || ^7.0.0 || ^8.0.0",
+        "jsdom": "*",
+        "happy-dom": "*",
+        "@vitest/ui": "5.0.5",
+        "@types/node": "^22.0.0 || >=24.0.0",
+        "@edge-runtime/vm": "*",
+        "@opentelemetry/api": "^1.9.0",
+        "@vitest/coverage-v8": "5.0.5",
+        "@vitest/browser-preview": "5.0.5",
+        "@vitest/coverage-istanbul": "5.0.5",
+        "@vitest/browser-playwright": "5.0.5",
+        "@vitest/browser-webdriverio": "^5.0.0-beta.5 || >=5.0.0"
+      },
+      "repository": {
+        "url": "git+https://github.com/vitest-dev/vitest.git",
+        "type": "git",
+        "directory": "packages/vitest"
+      },
+      "source": "https://registry.npmjs.org/vitest/latest"
+    },
+    {
+      "name": "@playwright/test",
+      "version": "1.64.1",
+      "license": "Apache-2.0",
+      "engines": {
+        "node": ">=20"
+      },
+      "repository": {
+        "url": "git+https://github.com/microsoft/playwright.git",
+        "type": "git"
+      },
+      "source": "https://registry.npmjs.org/%40playwright%2Ftest/latest"
+    },
+    {
+      "name": "react-konva",
+      "version": "19.3.2",
+      "license": "MIT",
+      "peerDependencies": {
+        "konva": "^8.0.1 || ^7.2.5 || ^9.0.0 || ^10.0.0",
+        "react": "^19.3.0",
+        "react-dom": "^19.3.0"
+      },
+      "repository": {
+        "url": "git+ssh://git@github.com/konvajs/react-konva.git",
+        "type": "git"
+      },
+      "source": "https://registry.npmjs.org/react-konva/latest"
+    },
+    {
+      "name": "konva",
+      "version": "10.9.0",
+      "license": "MIT",
+      "peerDependencies": {
+        "canvas": "^3.0.0",
+        "skia-canvas": "^3.0.0"
+      },
+      "repository": {
+        "url": "git://github.com/konvajs/konva.git",
+        "type": "git"
+      },
+      "source": "https://registry.npmjs.org/konva/latest"
+    },
+    {
+      "name": "@supabase/supabase-js",
+      "version": "2.118.0",
+      "license": "MIT",
+      "engines": {
+        "node": ">=22.0.0"
+      },
+      "peerDependencies": {
+        "@opentelemetry/api": ">=1.0.0"
+      },
+      "repository": {
+        "url": "https://github.com/supabase/supabase-js.git",
+        "type": "git",
+        "directory": "packages/core/supabase-js"
+      },
+      "source": "https://registry.npmjs.org/%40supabase%2Fsupabase-js/latest"
+    },
+    {
+      "name": "@supabase/ssr",
+      "version": "0.12.7",
+      "license": "MIT",
+      "peerDependencies": {
+        "@supabase/supabase-js": "^2.114.0"
+      },
+      "repository": {
+        "url": "git+https://github.com/supabase/ssr.git",
+        "type": "git"
+      },
+      "source": "https://registry.npmjs.org/%40supabase%2Fssr/latest"
+    },
+    {
+      "name": "zod",
+      "version": "4.6.7",
+      "license": "MIT",
+      "repository": {
+        "url": "git+https://github.com/colinhacks/zod.git",
+        "type": "git"
+      },
+      "source": "https://registry.npmjs.org/zod/latest"
+    },
+    {
+      "name": "tailwindcss",
+      "version": "4.3.3",
+      "license": "MIT",
+      "repository": {
+        "url": "https://github.com/tailwindlabs/tailwindcss.git",
+        "type": "git",
+        "directory": "packages/tailwindcss"
+      },
+      "source": "https://registry.npmjs.org/tailwindcss/latest"
+    },
+    {
+      "name": "@tailwindcss/postcss",
+      "version": "4.3.3",
+      "license": "MIT",
+      "repository": {
+        "url": "https://github.com/tailwindlabs/tailwindcss.git",
+        "type": "git",
+        "directory": "packages/@tailwindcss-postcss"
+      },
+      "source": "https://registry.npmjs.org/%40tailwindcss%2Fpostcss/latest"
+    },
+    {
+      "name": "@biomejs/biome",
+      "version": "2.5.15",
+      "license": "MIT OR Apache-2.0",
+      "engines": {
+        "node": ">=14.21.3"
+      },
+      "repository": {
+        "url": "git+https://github.com/biomejs/biome.git",
+        "type": "git",
+        "directory": "packages/@biomejs/biome"
+      },
+      "source": "https://registry.npmjs.org/%40biomejs%2Fbiome/latest"
+    },
+    {
+      "name": "supabase",
+      "version": "2.121.0",
+      "license": "MIT",
+      "repository": {
+        "url": "https://github.com/supabase/cli.git",
+        "type": "git",
+        "directory": "apps/cli"
+      },
+      "source": "https://registry.npmjs.org/supabase/latest"
+    }
+  ]
+}

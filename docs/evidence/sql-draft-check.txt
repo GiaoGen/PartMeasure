@@ -1,0 +1,114 @@
+               assert_true
+-----------------------------------------
+ PASS: all 16 business tables enable RLS
+(1 row)
+
+           assert_true
+---------------------------------
+ PASS: private bucket hard limit
+(1 row)
+
+              set_config
+--------------------------------------
+ 00000000-0000-4000-8000-000000000001
+(1 row)
+
+                assert_true
+-------------------------------------------
+ PASS: Owner A cannot read Owner B project
+(1 row)
+
+                 expect_error
+-----------------------------------------------
+ PASS: browser Owner has no direct write grant
+(1 row)
+
+                   expect_error
+---------------------------------------------------
+ PASS: Owner cannot read token hashes via Data API
+(1 row)
+
+              set_config
+--------------------------------------
+ 00000000-0000-4000-8000-000000000002
+(1 row)
+
+                assert_true
+-------------------------------------------
+ PASS: Owner B cannot read Owner A project
+(1 row)
+
+                   expect_error
+--------------------------------------------------
+ PASS: anon cannot directly query business tables
+(1 row)
+
+              expect_error
+-----------------------------------------
+ PASS: cross-project annotation rejected
+(1 row)
+
+                   expect_error
+---------------------------------------------------
+ PASS: measurement requires real annotation target
+(1 row)
+
+                  expect_error
+------------------------------------------------
+ PASS: responses cannot be silently overwritten
+(1 row)
+
+                   expect_error
+---------------------------------------------------
+ PASS: composite FK rejects cross-project response
+(1 row)
+
+               expect_error
+-------------------------------------------
+ PASS: issued geometry revisions immutable
+(1 row)
+
+                 expect_error
+-----------------------------------------------
+ PASS: historically referenced files protected
+(1 row)
+
+                expect_error
+--------------------------------------------
+ PASS: ready canonical dimensions immutable
+(1 row)
+
+              set_config
+--------------------------------------
+ 00000000-0000-4000-8000-000000000002
+(1 row)
+
+           assert_true
+---------------------------------
+ PASS: RLS isolates child assets
+(1 row)
+
+         assert_true
+------------------------------
+ PASS: RLS isolates responses
+(1 row)
+
+             expect_error
+--------------------------------------
+ PASS: published deliveries immutable
+(1 row)
+
+            expect_error
+-------------------------------------
+ PASS: published file sets immutable
+(1 row)
+
+            expect_error
+-------------------------------------
+ PASS: project version number unique
+(1 row)
+
+          expect_error
+--------------------------------
+ PASS: idempotency scope unique
+(1 row)

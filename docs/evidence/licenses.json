@@ -1,10 +1,11 @@
 {
-  "checkedAt": "2026-10-16T10:14:34.747Z",
+  "checkedAt": "2026-10-16T12:15:17.992Z",
   "packages": [
     {
       "name": "@alloc/quick-lru",
       "version": "5.3.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@alloc/quick-lru",
       "installed": true,
@@ -19,6 +20,7 @@
       "name": "@biomejs/biome",
       "version": "2.5.15",
       "license": "MIT OR Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": true,
       "path": "node_modules/@biomejs/biome",
       "installed": true,
@@ -37,6 +39,7 @@
       "name": "@biomejs/cli-darwin-arm64",
       "version": "2.5.15",
       "license": "MIT OR Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@biomejs/cli-darwin-arm64",
       "installed": false,
@@ -46,6 +49,7 @@
       "name": "@biomejs/cli-darwin-x64",
       "version": "2.5.15",
       "license": "MIT OR Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@biomejs/cli-darwin-x64",
       "installed": false,
@@ -55,6 +59,7 @@
       "name": "@biomejs/cli-linux-arm64",
       "version": "2.5.15",
       "license": "MIT OR Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@biomejs/cli-linux-arm64",
       "installed": false,
@@ -64,6 +69,7 @@
       "name": "@biomejs/cli-linux-arm64-musl",
       "version": "2.5.15",
       "license": "MIT OR Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@biomejs/cli-linux-arm64-musl",
       "installed": false,
@@ -73,6 +79,7 @@
       "name": "@biomejs/cli-linux-x64",
       "version": "2.5.15",
       "license": "MIT OR Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@biomejs/cli-linux-x64",
       "installed": false,
@@ -82,6 +89,7 @@
       "name": "@biomejs/cli-linux-x64-musl",
       "version": "2.5.15",
       "license": "MIT OR Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@biomejs/cli-linux-x64-musl",
       "installed": false,
@@ -91,6 +99,7 @@
       "name": "@biomejs/cli-win32-arm64",
       "version": "2.5.15",
       "license": "MIT OR Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@biomejs/cli-win32-arm64",
       "installed": false,
@@ -100,6 +109,7 @@
       "name": "@biomejs/cli-win32-x64",
       "version": "2.5.15",
       "license": "MIT OR Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@biomejs/cli-win32-x64",
       "installed": true,
@@ -109,6 +119,7 @@
       "name": "@ecies/ciphers",
       "version": "0.2.6",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@ecies/ciphers",
       "installed": true,
@@ -123,6 +134,7 @@
       "name": "@emnapi/core",
       "version": "1.10.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@emnapi/core",
       "installed": false,
@@ -132,6 +144,7 @@
       "name": "@emnapi/runtime",
       "version": "1.11.3",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@emnapi/runtime",
       "installed": true,
@@ -146,15 +159,277 @@
       "name": "@emnapi/wasi-threads",
       "version": "1.2.1",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@emnapi/wasi-threads",
       "installed": false,
       "notices": []
     },
     {
+      "name": "@esbuild/aix-ppc64",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/aix-ppc64",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/android-arm",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/android-arm",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/android-arm64",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/android-arm64",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/android-x64",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/android-x64",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/darwin-arm64",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/darwin-arm64",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/darwin-x64",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/darwin-x64",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/freebsd-arm64",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/freebsd-arm64",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/freebsd-x64",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/freebsd-x64",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/linux-arm",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/linux-arm",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/linux-arm64",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/linux-arm64",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/linux-ia32",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/linux-ia32",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/linux-loong64",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/linux-loong64",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/linux-mips64el",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/linux-mips64el",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/linux-ppc64",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/linux-ppc64",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/linux-riscv64",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/linux-riscv64",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/linux-s390x",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/linux-s390x",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/linux-x64",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/linux-x64",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/netbsd-arm64",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/netbsd-arm64",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/netbsd-x64",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/netbsd-x64",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/openbsd-arm64",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/openbsd-arm64",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/openbsd-x64",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/openbsd-x64",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/openharmony-arm64",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/openharmony-arm64",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/sunos-x64",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/sunos-x64",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/win32-arm64",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/win32-arm64",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/win32-ia32",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/win32-ia32",
+      "installed": false,
+      "notices": []
+    },
+    {
+      "name": "@esbuild/win32-x64",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/@esbuild/win32-x64",
+      "installed": true,
+      "notices": []
+    },
+    {
       "name": "@img/colour",
       "version": "1.1.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/colour",
       "installed": true,
@@ -169,6 +444,7 @@
       "name": "@img/sharp-darwin-arm64",
       "version": "0.35.5",
       "license": "Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-darwin-arm64",
       "installed": false,
@@ -178,6 +454,7 @@
       "name": "@img/sharp-darwin-x64",
       "version": "0.35.5",
       "license": "Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-darwin-x64",
       "installed": false,
@@ -187,6 +464,7 @@
       "name": "@img/sharp-freebsd-wasm32",
       "version": "0.35.5",
       "license": "Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-freebsd-wasm32",
       "installed": false,
@@ -196,6 +474,7 @@
       "name": "@img/sharp-libvips-darwin-arm64",
       "version": "1.3.4",
       "license": "LGPL-3.0-or-later",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-libvips-darwin-arm64",
       "installed": false,
@@ -205,6 +484,7 @@
       "name": "@img/sharp-libvips-darwin-x64",
       "version": "1.3.4",
       "license": "LGPL-3.0-or-later",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-libvips-darwin-x64",
       "installed": false,
@@ -214,6 +494,7 @@
       "name": "@img/sharp-libvips-linux-arm",
       "version": "1.3.4",
       "license": "LGPL-3.0-or-later",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-libvips-linux-arm",
       "installed": false,
@@ -223,6 +504,7 @@
       "name": "@img/sharp-libvips-linux-arm64",
       "version": "1.3.4",
       "license": "LGPL-3.0-or-later",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-libvips-linux-arm64",
       "installed": false,
@@ -232,6 +514,7 @@
       "name": "@img/sharp-libvips-linux-ppc64",
       "version": "1.3.4",
       "license": "LGPL-3.0-or-later",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-libvips-linux-ppc64",
       "installed": false,
@@ -241,6 +524,7 @@
       "name": "@img/sharp-libvips-linux-riscv64",
       "version": "1.3.4",
       "license": "LGPL-3.0-or-later",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-libvips-linux-riscv64",
       "installed": false,
@@ -250,6 +534,7 @@
       "name": "@img/sharp-libvips-linux-s390x",
       "version": "1.3.4",
       "license": "LGPL-3.0-or-later",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-libvips-linux-s390x",
       "installed": false,
@@ -259,6 +544,7 @@
       "name": "@img/sharp-libvips-linux-x64",
       "version": "1.3.4",
       "license": "LGPL-3.0-or-later",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-libvips-linux-x64",
       "installed": false,
@@ -268,6 +554,7 @@
       "name": "@img/sharp-libvips-linuxmusl-arm64",
       "version": "1.3.4",
       "license": "LGPL-3.0-or-later",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-libvips-linuxmusl-arm64",
       "installed": false,
@@ -277,6 +564,7 @@
       "name": "@img/sharp-libvips-linuxmusl-x64",
       "version": "1.3.4",
       "license": "LGPL-3.0-or-later",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-libvips-linuxmusl-x64",
       "installed": false,
@@ -286,6 +574,7 @@
       "name": "@img/sharp-linux-arm",
       "version": "0.35.5",
       "license": "Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-linux-arm",
       "installed": false,
@@ -295,6 +584,7 @@
       "name": "@img/sharp-linux-arm64",
       "version": "0.35.5",
       "license": "Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-linux-arm64",
       "installed": false,
@@ -304,6 +594,7 @@
       "name": "@img/sharp-linux-ppc64",
       "version": "0.35.5",
       "license": "Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-linux-ppc64",
       "installed": false,
@@ -313,6 +604,7 @@
       "name": "@img/sharp-linux-riscv64",
       "version": "0.35.5",
       "license": "Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-linux-riscv64",
       "installed": false,
@@ -322,6 +614,7 @@
       "name": "@img/sharp-linux-s390x",
       "version": "0.35.5",
       "license": "Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-linux-s390x",
       "installed": false,
@@ -331,6 +624,7 @@
       "name": "@img/sharp-linux-x64",
       "version": "0.35.5",
       "license": "Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-linux-x64",
       "installed": false,
@@ -340,6 +634,7 @@
       "name": "@img/sharp-linuxmusl-arm64",
       "version": "0.35.5",
       "license": "Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-linuxmusl-arm64",
       "installed": false,
@@ -349,6 +644,7 @@
       "name": "@img/sharp-linuxmusl-x64",
       "version": "0.35.5",
       "license": "Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-linuxmusl-x64",
       "installed": false,
@@ -358,6 +654,7 @@
       "name": "@img/sharp-wasm32",
       "version": "0.35.5",
       "license": "Apache-2.0 AND LGPL-3.0-or-later AND MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-wasm32",
       "installed": true,
@@ -372,6 +669,7 @@
       "name": "@img/sharp-webcontainers-wasm32",
       "version": "0.35.5",
       "license": "Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-webcontainers-wasm32",
       "installed": false,
@@ -381,6 +679,7 @@
       "name": "@img/sharp-win32-arm64",
       "version": "0.35.5",
       "license": "Apache-2.0 AND LGPL-3.0-or-later",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-win32-arm64",
       "installed": false,
@@ -390,6 +689,7 @@
       "name": "@img/sharp-win32-ia32",
       "version": "0.35.5",
       "license": "Apache-2.0 AND LGPL-3.0-or-later",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-win32-ia32",
       "installed": false,
@@ -399,6 +699,7 @@
       "name": "@img/sharp-win32-x64",
       "version": "0.35.5",
       "license": "Apache-2.0 AND LGPL-3.0-or-later",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@img/sharp-win32-x64",
       "installed": true,
@@ -413,6 +714,7 @@
       "name": "@jridgewell/gen-mapping",
       "version": "0.3.13",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@jridgewell/gen-mapping",
       "installed": true,
@@ -427,6 +729,7 @@
       "name": "@jridgewell/remapping",
       "version": "2.3.5",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@jridgewell/remapping",
       "installed": true,
@@ -441,6 +744,7 @@
       "name": "@jridgewell/resolve-uri",
       "version": "3.1.2",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@jridgewell/resolve-uri",
       "installed": true,
@@ -455,6 +759,7 @@
       "name": "@jridgewell/sourcemap-codec",
       "version": "1.6.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@jridgewell/sourcemap-codec",
       "installed": true,
@@ -469,6 +774,7 @@
       "name": "@jridgewell/trace-mapping",
       "version": "0.3.31",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@jridgewell/trace-mapping",
       "installed": true,
@@ -483,6 +789,7 @@
       "name": "@napi-rs/wasm-runtime",
       "version": "1.2.5",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@napi-rs/wasm-runtime",
       "installed": false,
@@ -492,6 +799,7 @@
       "name": "@next/env",
       "version": "16.4.2",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@next/env",
       "installed": true,
@@ -501,6 +809,7 @@
       "name": "@next/swc-darwin-arm64",
       "version": "16.4.2",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@next/swc-darwin-arm64",
       "installed": false,
@@ -510,6 +819,7 @@
       "name": "@next/swc-darwin-x64",
       "version": "16.4.2",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@next/swc-darwin-x64",
       "installed": false,
@@ -519,6 +829,7 @@
       "name": "@next/swc-linux-arm64-gnu",
       "version": "16.4.2",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@next/swc-linux-arm64-gnu",
       "installed": false,
@@ -528,6 +839,7 @@
       "name": "@next/swc-linux-arm64-musl",
       "version": "16.4.2",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@next/swc-linux-arm64-musl",
       "installed": false,
@@ -537,6 +849,7 @@
       "name": "@next/swc-linux-x64-gnu",
       "version": "16.4.2",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@next/swc-linux-x64-gnu",
       "installed": false,
@@ -546,6 +859,7 @@
       "name": "@next/swc-linux-x64-musl",
       "version": "16.4.2",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@next/swc-linux-x64-musl",
       "installed": false,
@@ -555,6 +869,7 @@
       "name": "@next/swc-win32-arm64-msvc",
       "version": "16.4.2",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@next/swc-win32-arm64-msvc",
       "installed": false,
@@ -564,6 +879,7 @@
       "name": "@next/swc-win32-x64-msvc",
       "version": "16.4.2",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@next/swc-win32-x64-msvc",
       "installed": true,
@@ -573,6 +889,7 @@
       "name": "@noble/ciphers",
       "version": "1.3.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@noble/ciphers",
       "installed": true,
@@ -587,6 +904,7 @@
       "name": "@noble/curves",
       "version": "1.9.7",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@noble/curves",
       "installed": true,
@@ -601,6 +919,7 @@
       "name": "@noble/hashes",
       "version": "1.8.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@noble/hashes",
       "installed": true,
@@ -615,6 +934,7 @@
       "name": "@oxc-project/types",
       "version": "0.154.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@oxc-project/types",
       "installed": true,
@@ -629,6 +949,7 @@
       "name": "@playwright/test",
       "version": "1.64.1",
       "license": "Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": true,
       "path": "node_modules/@playwright/test",
       "installed": true,
@@ -647,6 +968,7 @@
       "name": "@rolldown/binding-android-arm-eabi",
       "version": "1.2.14",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@rolldown/binding-android-arm-eabi",
       "installed": false,
@@ -656,6 +978,7 @@
       "name": "@rolldown/binding-android-arm64",
       "version": "1.2.14",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@rolldown/binding-android-arm64",
       "installed": false,
@@ -665,6 +988,7 @@
       "name": "@rolldown/binding-darwin-arm64",
       "version": "1.2.14",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@rolldown/binding-darwin-arm64",
       "installed": false,
@@ -674,6 +998,7 @@
       "name": "@rolldown/binding-darwin-x64",
       "version": "1.2.14",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@rolldown/binding-darwin-x64",
       "installed": false,
@@ -683,6 +1008,7 @@
       "name": "@rolldown/binding-freebsd-x64",
       "version": "1.2.14",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@rolldown/binding-freebsd-x64",
       "installed": false,
@@ -692,6 +1018,7 @@
       "name": "@rolldown/binding-linux-arm-gnueabihf",
       "version": "1.2.14",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@rolldown/binding-linux-arm-gnueabihf",
       "installed": false,
@@ -701,6 +1028,7 @@
       "name": "@rolldown/binding-linux-arm64-gnu",
       "version": "1.2.14",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@rolldown/binding-linux-arm64-gnu",
       "installed": false,
@@ -710,6 +1038,7 @@
       "name": "@rolldown/binding-linux-arm64-musl",
       "version": "1.2.14",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@rolldown/binding-linux-arm64-musl",
       "installed": false,
@@ -719,6 +1048,7 @@
       "name": "@rolldown/binding-linux-ppc64-gnu",
       "version": "1.2.14",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@rolldown/binding-linux-ppc64-gnu",
       "installed": false,
@@ -728,6 +1058,7 @@
       "name": "@rolldown/binding-linux-s390x-gnu",
       "version": "1.2.14",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@rolldown/binding-linux-s390x-gnu",
       "installed": false,
@@ -737,6 +1068,7 @@
       "name": "@rolldown/binding-linux-x64-gnu",
       "version": "1.2.14",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@rolldown/binding-linux-x64-gnu",
       "installed": false,
@@ -746,6 +1078,7 @@
       "name": "@rolldown/binding-linux-x64-musl",
       "version": "1.2.14",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@rolldown/binding-linux-x64-musl",
       "installed": false,
@@ -755,6 +1088,7 @@
       "name": "@rolldown/binding-openharmony-arm64",
       "version": "1.2.14",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@rolldown/binding-openharmony-arm64",
       "installed": false,
@@ -764,6 +1098,7 @@
       "name": "@rolldown/binding-win32-arm64-msvc",
       "version": "1.2.14",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@rolldown/binding-win32-arm64-msvc",
       "installed": false,
@@ -773,6 +1108,7 @@
       "name": "@rolldown/binding-win32-x64-msvc",
       "version": "1.2.14",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@rolldown/binding-win32-x64-msvc",
       "installed": true,
@@ -782,6 +1118,7 @@
       "name": "@rolldown/pluginutils",
       "version": "1.0.1",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@rolldown/pluginutils",
       "installed": true,
@@ -796,6 +1133,7 @@
       "name": "@supabase/auth-js",
       "version": "2.118.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@supabase/auth-js",
       "installed": true,
@@ -810,6 +1148,7 @@
       "name": "@supabase/cli-darwin-arm64",
       "version": "2.121.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@supabase/cli-darwin-arm64",
       "installed": false,
@@ -819,6 +1158,7 @@
       "name": "@supabase/cli-darwin-x64",
       "version": "2.121.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@supabase/cli-darwin-x64",
       "installed": false,
@@ -828,6 +1168,7 @@
       "name": "@supabase/cli-linux-arm64",
       "version": "2.121.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@supabase/cli-linux-arm64",
       "installed": false,
@@ -837,6 +1178,7 @@
       "name": "@supabase/cli-linux-arm64-musl",
       "version": "2.121.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@supabase/cli-linux-arm64-musl",
       "installed": false,
@@ -846,6 +1188,7 @@
       "name": "@supabase/cli-linux-x64",
       "version": "2.121.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@supabase/cli-linux-x64",
       "installed": false,
@@ -855,6 +1198,7 @@
       "name": "@supabase/cli-linux-x64-musl",
       "version": "2.121.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@supabase/cli-linux-x64-musl",
       "installed": false,
@@ -864,6 +1208,7 @@
       "name": "@supabase/cli-windows-arm64",
       "version": "2.121.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@supabase/cli-windows-arm64",
       "installed": false,
@@ -873,6 +1218,7 @@
       "name": "@supabase/cli-windows-x64",
       "version": "2.121.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@supabase/cli-windows-x64",
       "installed": true,
@@ -882,6 +1228,7 @@
       "name": "@supabase/functions-js",
       "version": "2.118.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@supabase/functions-js",
       "installed": true,
@@ -896,6 +1243,7 @@
       "name": "@supabase/phoenix",
       "version": "0.4.5",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@supabase/phoenix",
       "installed": true,
@@ -910,6 +1258,7 @@
       "name": "@supabase/postgrest-js",
       "version": "2.118.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@supabase/postgrest-js",
       "installed": true,
@@ -924,6 +1273,7 @@
       "name": "@supabase/realtime-js",
       "version": "2.118.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@supabase/realtime-js",
       "installed": true,
@@ -938,6 +1288,7 @@
       "name": "@supabase/ssr",
       "version": "0.12.7",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": true,
       "path": "node_modules/@supabase/ssr",
       "installed": true,
@@ -952,6 +1303,7 @@
       "name": "@supabase/storage-js",
       "version": "2.118.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@supabase/storage-js",
       "installed": true,
@@ -966,6 +1318,7 @@
       "name": "@supabase/supabase-js",
       "version": "2.118.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": true,
       "path": "node_modules/@supabase/supabase-js",
       "installed": true,
@@ -980,6 +1333,7 @@
       "name": "@swc/helpers",
       "version": "0.5.23",
       "license": "Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@swc/helpers",
       "installed": true,
@@ -994,6 +1348,7 @@
       "name": "@tailwindcss/node",
       "version": "4.3.3",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@tailwindcss/node",
       "installed": true,
@@ -1008,6 +1363,7 @@
       "name": "@tailwindcss/oxide",
       "version": "4.3.3",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@tailwindcss/oxide",
       "installed": true,
@@ -1022,6 +1378,7 @@
       "name": "@tailwindcss/oxide-android-arm64",
       "version": "4.3.3",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@tailwindcss/oxide-android-arm64",
       "installed": false,
@@ -1031,6 +1388,7 @@
       "name": "@tailwindcss/oxide-darwin-arm64",
       "version": "4.3.3",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@tailwindcss/oxide-darwin-arm64",
       "installed": false,
@@ -1040,6 +1398,7 @@
       "name": "@tailwindcss/oxide-darwin-x64",
       "version": "4.3.3",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@tailwindcss/oxide-darwin-x64",
       "installed": false,
@@ -1049,6 +1408,7 @@
       "name": "@tailwindcss/oxide-freebsd-x64",
       "version": "4.3.3",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@tailwindcss/oxide-freebsd-x64",
       "installed": false,
@@ -1058,6 +1418,7 @@
       "name": "@tailwindcss/oxide-linux-arm-gnueabihf",
       "version": "4.3.3",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@tailwindcss/oxide-linux-arm-gnueabihf",
       "installed": false,
@@ -1067,6 +1428,7 @@
       "name": "@tailwindcss/oxide-linux-arm64-gnu",
       "version": "4.3.3",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@tailwindcss/oxide-linux-arm64-gnu",
       "installed": false,
@@ -1076,6 +1438,7 @@
       "name": "@tailwindcss/oxide-linux-arm64-musl",
       "version": "4.3.3",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@tailwindcss/oxide-linux-arm64-musl",
       "installed": false,
@@ -1085,6 +1448,7 @@
       "name": "@tailwindcss/oxide-linux-x64-gnu",
       "version": "4.3.3",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@tailwindcss/oxide-linux-x64-gnu",
       "installed": false,
@@ -1094,6 +1458,7 @@
       "name": "@tailwindcss/oxide-linux-x64-musl",
       "version": "4.3.3",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@tailwindcss/oxide-linux-x64-musl",
       "installed": false,
@@ -1103,6 +1468,7 @@
       "name": "@tailwindcss/oxide-wasm32-wasi",
       "version": "4.3.3",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@tailwindcss/oxide-wasm32-wasi",
       "installed": false,
@@ -1112,6 +1478,7 @@
       "name": "@tailwindcss/oxide-win32-arm64-msvc",
       "version": "4.3.3",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@tailwindcss/oxide-win32-arm64-msvc",
       "installed": false,
@@ -1121,6 +1488,7 @@
       "name": "@tailwindcss/oxide-win32-x64-msvc",
       "version": "4.3.3",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@tailwindcss/oxide-win32-x64-msvc",
       "installed": true,
@@ -1135,6 +1503,7 @@
       "name": "@tailwindcss/postcss",
       "version": "4.3.3",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": true,
       "path": "node_modules/@tailwindcss/postcss",
       "installed": true,
@@ -1149,6 +1518,7 @@
       "name": "@tybys/wasm-util",
       "version": "0.10.4",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@tybys/wasm-util",
       "installed": false,
@@ -1158,6 +1528,7 @@
       "name": "@types/chai",
       "version": "5.2.3",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@types/chai",
       "installed": true,
@@ -1172,6 +1543,7 @@
       "name": "@types/deep-eql",
       "version": "4.0.2",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@types/deep-eql",
       "installed": true,
@@ -1186,6 +1558,7 @@
       "name": "@types/estree",
       "version": "1.0.9",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@types/estree",
       "installed": true,
@@ -1200,8 +1573,24 @@
       "name": "@types/node",
       "version": "24.19.2",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": true,
       "path": "node_modules/@types/node",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+        }
+      ]
+    },
+    {
+      "name": "@types/pg",
+      "version": "8.23.1",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": true,
+      "path": "node_modules/@types/pg",
       "installed": true,
       "notices": [
         {
@@ -1214,6 +1603,7 @@
       "name": "@types/react",
       "version": "19.3.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": true,
       "path": "node_modules/@types/react",
       "installed": true,
@@ -1228,6 +1618,7 @@
       "name": "@types/react-dom",
       "version": "19.3.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": true,
       "path": "node_modules/@types/react-dom",
       "installed": true,
@@ -1242,6 +1633,7 @@
       "name": "@types/react-reconciler",
       "version": "0.34.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@types/react-reconciler",
       "installed": true,
@@ -1256,6 +1648,7 @@
       "name": "@vitest/mocker",
       "version": "5.0.5",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@vitest/mocker",
       "installed": true,
@@ -1270,6 +1663,7 @@
       "name": "magic-string",
       "version": "1.4.3",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@vitest/mocker/node_modules/magic-string",
       "installed": true,
@@ -1284,6 +1678,7 @@
       "name": "@vitest/spy",
       "version": "5.0.5",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/@vitest/spy",
       "installed": true,
@@ -1298,6 +1693,7 @@
       "name": "assertion-error",
       "version": "2.0.1",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/assertion-error",
       "installed": true,
@@ -1312,6 +1708,7 @@
       "name": "baseline-browser-mapping",
       "version": "2.11.29",
       "license": "Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/baseline-browser-mapping",
       "installed": true,
@@ -1323,9 +1720,25 @@
       ]
     },
     {
+      "name": "buffer-from",
+      "version": "1.1.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/buffer-from",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "14275f5c8139d02054c5259d52a88ccbba662a86af18c30f071c8d082dc6004c"
+        }
+      ]
+    },
+    {
       "name": "caniuse-lite",
       "version": "1.0.30001816",
       "license": "CC-BY-4.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/caniuse-lite",
       "installed": true,
@@ -1340,6 +1753,7 @@
       "name": "chai",
       "version": "6.3.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/chai",
       "installed": true,
@@ -1354,15 +1768,32 @@
       "name": "client-only",
       "version": "0.0.1",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/client-only",
       "installed": true,
       "notices": []
     },
     {
+      "name": "combine-errors",
+      "version": "3.0.3",
+      "license": "MIT",
+      "licenseSource": "distributed Readme.md License section",
+      "direct": false,
+      "path": "node_modules/combine-errors",
+      "installed": true,
+      "notices": [
+        {
+          "file": "Readme.md#License",
+          "sha256": "7fcf5f7a668bd850f22616206261cda90774ed5a6450704dbe7f172ef9a44ec6"
+        }
+      ]
+    },
+    {
       "name": "cookie",
       "version": "1.1.1",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/cookie",
       "installed": true,
@@ -1377,6 +1808,7 @@
       "name": "csstype",
       "version": "3.2.3",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/csstype",
       "installed": true,
@@ -1388,9 +1820,20 @@
       ]
     },
     {
+      "name": "custom-error-instance",
+      "version": "2.1.1",
+      "license": "ISC",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/custom-error-instance",
+      "installed": true,
+      "notices": []
+    },
+    {
       "name": "detect-libc",
       "version": "2.1.2",
       "license": "Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/detect-libc",
       "installed": true,
@@ -1405,6 +1848,7 @@
       "name": "eciesjs",
       "version": "0.5.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/eciesjs",
       "installed": true,
@@ -1419,6 +1863,7 @@
       "name": "enhanced-resolve",
       "version": "5.26.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/enhanced-resolve",
       "installed": true,
@@ -1433,6 +1878,7 @@
       "name": "es-module-lexer",
       "version": "2.3.2",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/es-module-lexer",
       "installed": true,
@@ -1444,9 +1890,25 @@
       ]
     },
     {
+      "name": "esbuild",
+      "version": "0.28.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/esbuild",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE.md",
+          "sha256": "b40ec5baec7bb34fa5b1c09521fa3cd52d5fad7adafed74932a2010d3612a681"
+        }
+      ]
+    },
+    {
       "name": "estree-walker",
       "version": "3.0.3",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/estree-walker",
       "installed": true,
@@ -1461,6 +1923,7 @@
       "name": "expect-type",
       "version": "1.4.0",
       "license": "Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/expect-type",
       "installed": true,
@@ -1475,6 +1938,7 @@
       "name": "fsevents",
       "version": "2.3.3",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/fsevents",
       "installed": false,
@@ -1484,6 +1948,7 @@
       "name": "graceful-fs",
       "version": "4.2.11",
       "license": "ISC",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/graceful-fs",
       "installed": true,
@@ -1498,6 +1963,7 @@
       "name": "iceberg-js",
       "version": "0.8.1",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/iceberg-js",
       "installed": true,
@@ -1509,9 +1975,25 @@
       ]
     },
     {
+      "name": "is-stream",
+      "version": "2.0.1",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/is-stream",
+      "installed": true,
+      "notices": [
+        {
+          "file": "license",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        }
+      ]
+    },
+    {
       "name": "its-fine",
       "version": "2.1.1",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/its-fine",
       "installed": true,
@@ -1526,6 +2008,7 @@
       "name": "@types/react-reconciler",
       "version": "0.28.9",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/its-fine/node_modules/@types/react-reconciler",
       "installed": true,
@@ -1540,6 +2023,7 @@
       "name": "jiti",
       "version": "2.7.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/jiti",
       "installed": true,
@@ -1554,6 +2038,7 @@
       "name": "jose",
       "version": "6.2.12",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/jose",
       "installed": true,
@@ -1565,9 +2050,25 @@
       ]
     },
     {
+      "name": "js-base64",
+      "version": "3.9.4",
+      "license": "BSD-3-Clause",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/js-base64",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE.md",
+          "sha256": "fcf06aacb36ee29237110d6b3a9fbd6296e85ad4324263abf5f8a5cfb5706c81"
+        }
+      ]
+    },
+    {
       "name": "konva",
       "version": "10.9.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": true,
       "path": "node_modules/konva",
       "installed": true,
@@ -1582,6 +2083,7 @@
       "name": "lightningcss",
       "version": "1.32.0",
       "license": "MPL-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/lightningcss",
       "installed": true,
@@ -1596,6 +2098,7 @@
       "name": "lightningcss-android-arm64",
       "version": "1.32.0",
       "license": "MPL-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/lightningcss-android-arm64",
       "installed": false,
@@ -1605,6 +2108,7 @@
       "name": "lightningcss-darwin-arm64",
       "version": "1.32.0",
       "license": "MPL-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/lightningcss-darwin-arm64",
       "installed": false,
@@ -1614,6 +2118,7 @@
       "name": "lightningcss-darwin-x64",
       "version": "1.32.0",
       "license": "MPL-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/lightningcss-darwin-x64",
       "installed": false,
@@ -1623,6 +2128,7 @@
       "name": "lightningcss-freebsd-x64",
       "version": "1.32.0",
       "license": "MPL-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/lightningcss-freebsd-x64",
       "installed": false,
@@ -1632,6 +2138,7 @@
       "name": "lightningcss-linux-arm-gnueabihf",
       "version": "1.32.0",
       "license": "MPL-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/lightningcss-linux-arm-gnueabihf",
       "installed": false,
@@ -1641,6 +2148,7 @@
       "name": "lightningcss-linux-arm64-gnu",
       "version": "1.32.0",
       "license": "MPL-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/lightningcss-linux-arm64-gnu",
       "installed": false,
@@ -1650,6 +2158,7 @@
       "name": "lightningcss-linux-arm64-musl",
       "version": "1.32.0",
       "license": "MPL-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/lightningcss-linux-arm64-musl",
       "installed": false,
@@ -1659,6 +2168,7 @@
       "name": "lightningcss-linux-x64-gnu",
       "version": "1.32.0",
       "license": "MPL-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/lightningcss-linux-x64-gnu",
       "installed": false,
@@ -1668,6 +2178,7 @@
       "name": "lightningcss-linux-x64-musl",
       "version": "1.32.0",
       "license": "MPL-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/lightningcss-linux-x64-musl",
       "installed": false,
@@ -1677,6 +2188,7 @@
       "name": "lightningcss-win32-arm64-msvc",
       "version": "1.32.0",
       "license": "MPL-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/lightningcss-win32-arm64-msvc",
       "installed": false,
@@ -1686,6 +2198,7 @@
       "name": "lightningcss-win32-x64-msvc",
       "version": "1.32.0",
       "license": "MPL-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/lightningcss-win32-x64-msvc",
       "installed": true,
@@ -1697,9 +2210,130 @@
       ]
     },
     {
+      "name": "lodash._baseiteratee",
+      "version": "4.7.0",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/lodash._baseiteratee",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "ffd8b33b354585f4ce119f19c53728281e48a97b074491eb6bf6d5c5ff305272"
+        }
+      ]
+    },
+    {
+      "name": "lodash._basetostring",
+      "version": "4.12.0",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/lodash._basetostring",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "ffd8b33b354585f4ce119f19c53728281e48a97b074491eb6bf6d5c5ff305272"
+        }
+      ]
+    },
+    {
+      "name": "lodash._baseuniq",
+      "version": "4.6.0",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/lodash._baseuniq",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "ffd8b33b354585f4ce119f19c53728281e48a97b074491eb6bf6d5c5ff305272"
+        }
+      ]
+    },
+    {
+      "name": "lodash._createset",
+      "version": "4.0.3",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/lodash._createset",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "ffd8b33b354585f4ce119f19c53728281e48a97b074491eb6bf6d5c5ff305272"
+        }
+      ]
+    },
+    {
+      "name": "lodash._root",
+      "version": "3.0.1",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/lodash._root",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "5b36b1230e57ce107ef477283adbf8c20561846626a67e1a7d648f6c6e902980"
+        }
+      ]
+    },
+    {
+      "name": "lodash._stringtopath",
+      "version": "4.8.0",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/lodash._stringtopath",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "ffd8b33b354585f4ce119f19c53728281e48a97b074491eb6bf6d5c5ff305272"
+        }
+      ]
+    },
+    {
+      "name": "lodash.throttle",
+      "version": "4.1.1",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/lodash.throttle",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "ffd8b33b354585f4ce119f19c53728281e48a97b074491eb6bf6d5c5ff305272"
+        }
+      ]
+    },
+    {
+      "name": "lodash.uniqby",
+      "version": "4.5.0",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/lodash.uniqby",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "ffd8b33b354585f4ce119f19c53728281e48a97b074491eb6bf6d5c5ff305272"
+        }
+      ]
+    },
+    {
       "name": "magic-string",
       "version": "0.30.21",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/magic-string",
       "installed": true,
@@ -1714,6 +2348,7 @@
       "name": "nanoid",
       "version": "3.3.20",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/nanoid",
       "installed": true,
@@ -1728,6 +2363,7 @@
       "name": "next",
       "version": "16.4.2",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": true,
       "path": "node_modules/next",
       "installed": true,
@@ -1742,6 +2378,7 @@
       "name": "postcss",
       "version": "8.5.23",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/next/node_modules/postcss",
       "installed": true,
@@ -1756,6 +2393,7 @@
       "name": "obug",
       "version": "3.0.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/obug",
       "installed": true,
@@ -1767,9 +2405,120 @@
       ]
     },
     {
+      "name": "pg",
+      "version": "8.23.1",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": true,
+      "path": "node_modules/pg",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "192b8f5c96900f04a1271dec39688655d7416c1c6ea84a508e18b50d2b6751f3"
+        }
+      ]
+    },
+    {
+      "name": "pg-cloudflare",
+      "version": "1.4.1",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/pg-cloudflare",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "192b8f5c96900f04a1271dec39688655d7416c1c6ea84a508e18b50d2b6751f3"
+        }
+      ]
+    },
+    {
+      "name": "pg-connection-string",
+      "version": "2.14.1",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/pg-connection-string",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "2244b5486c4427001b6756a87b9a297d427c111dcc3ba64a097492a8979c23d0"
+        }
+      ]
+    },
+    {
+      "name": "pg-int8",
+      "version": "1.0.1",
+      "license": "ISC",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/pg-int8",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "4e8e87ccdfc7e4b47fd89015f78468aa53b6bf43ab6e6e12d43e8f55294911de"
+        }
+      ]
+    },
+    {
+      "name": "pg-pool",
+      "version": "3.14.0",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/pg-pool",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "4f15ee7fc2a72082859d7e0d12dfa4bcdd70b1c744ad3850d07780730ac08557"
+        }
+      ]
+    },
+    {
+      "name": "pg-protocol",
+      "version": "1.16.1",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/pg-protocol",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "192b8f5c96900f04a1271dec39688655d7416c1c6ea84a508e18b50d2b6751f3"
+        }
+      ]
+    },
+    {
+      "name": "pg-types",
+      "version": "2.2.0",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/pg-types",
+      "installed": true,
+      "notices": []
+    },
+    {
+      "name": "pgpass",
+      "version": "1.0.5",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/pgpass",
+      "installed": true,
+      "notices": []
+    },
+    {
       "name": "picocolors",
       "version": "1.1.1",
       "license": "ISC",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/picocolors",
       "installed": true,
@@ -1784,6 +2533,7 @@
       "name": "playwright",
       "version": "1.64.1",
       "license": "Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/playwright",
       "installed": true,
@@ -1802,6 +2552,7 @@
       "name": "playwright-core",
       "version": "1.64.1",
       "license": "Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/playwright-core",
       "installed": true,
@@ -1820,6 +2571,7 @@
       "name": "postcss",
       "version": "8.5.30",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/postcss",
       "installed": true,
@@ -1831,9 +2583,100 @@
       ]
     },
     {
+      "name": "postgres-array",
+      "version": "2.0.0",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/postgres-array",
+      "installed": true,
+      "notices": [
+        {
+          "file": "license",
+          "sha256": "f057f36739d53d228a746de4440c1e0c644ecde06d6beab45337d39c9d12a393"
+        }
+      ]
+    },
+    {
+      "name": "postgres-bytea",
+      "version": "1.0.1",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/postgres-bytea",
+      "installed": true,
+      "notices": [
+        {
+          "file": "license",
+          "sha256": "f057f36739d53d228a746de4440c1e0c644ecde06d6beab45337d39c9d12a393"
+        }
+      ]
+    },
+    {
+      "name": "postgres-date",
+      "version": "1.0.7",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/postgres-date",
+      "installed": true,
+      "notices": [
+        {
+          "file": "license",
+          "sha256": "f057f36739d53d228a746de4440c1e0c644ecde06d6beab45337d39c9d12a393"
+        }
+      ]
+    },
+    {
+      "name": "postgres-interval",
+      "version": "1.2.0",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/postgres-interval",
+      "installed": true,
+      "notices": [
+        {
+          "file": "license",
+          "sha256": "f057f36739d53d228a746de4440c1e0c644ecde06d6beab45337d39c9d12a393"
+        }
+      ]
+    },
+    {
+      "name": "proper-lockfile",
+      "version": "4.1.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/proper-lockfile",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "aaa78451b6fecd1b9c4594c796c133c0e90cad100372ff8bc6de615e9ef9adf1"
+        }
+      ]
+    },
+    {
+      "name": "querystringify",
+      "version": "2.2.0",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/querystringify",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "3b2a6a268aa815dec121d614245e03b5c68db1f044d5b525e36db7d5dc7fb9c3"
+        }
+      ]
+    },
+    {
       "name": "react",
       "version": "19.3.1",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": true,
       "path": "node_modules/react",
       "installed": true,
@@ -1848,6 +2691,7 @@
       "name": "react-dom",
       "version": "19.3.1",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": true,
       "path": "node_modules/react-dom",
       "installed": true,
@@ -1862,6 +2706,7 @@
       "name": "react-konva",
       "version": "19.3.2",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": true,
       "path": "node_modules/react-konva",
       "installed": true,
@@ -1876,6 +2721,7 @@
       "name": "react-reconciler",
       "version": "0.34.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/react-reconciler",
       "installed": true,
@@ -1887,9 +2733,40 @@
       ]
     },
     {
+      "name": "requires-port",
+      "version": "1.0.0",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/requires-port",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "3b2a6a268aa815dec121d614245e03b5c68db1f044d5b525e36db7d5dc7fb9c3"
+        }
+      ]
+    },
+    {
+      "name": "retry",
+      "version": "0.12.0",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/retry",
+      "installed": true,
+      "notices": [
+        {
+          "file": "License",
+          "sha256": "01ad164273e8e095abc9dbd1c21e194594a671af7d528cb43ee7b4c903ba7da3"
+        }
+      ]
+    },
+    {
       "name": "rolldown",
       "version": "1.2.14",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/rolldown",
       "installed": true,
@@ -1904,6 +2781,7 @@
       "name": "scheduler",
       "version": "0.28.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/scheduler",
       "installed": true,
@@ -1915,9 +2793,20 @@
       ]
     },
     {
+      "name": "server-only",
+      "version": "0.0.1",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": true,
+      "path": "node_modules/server-only",
+      "installed": true,
+      "notices": []
+    },
+    {
       "name": "sharp",
       "version": "0.35.5",
       "license": "Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": true,
       "path": "node_modules/sharp",
       "installed": true,
@@ -1932,6 +2821,7 @@
       "name": "semver",
       "version": "7.8.5",
       "license": "ISC",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/sharp/node_modules/semver",
       "installed": true,
@@ -1943,9 +2833,25 @@
       ]
     },
     {
+      "name": "signal-exit",
+      "version": "3.0.7",
+      "license": "ISC",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/signal-exit",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE.txt",
+          "sha256": "e05b1eaf5b5f99b7ad75cd1f38858ff9a311780b97715ead67936d60bf96aa7e"
+        }
+      ]
+    },
+    {
       "name": "source-map-js",
       "version": "1.2.2",
       "license": "BSD-3-Clause",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/source-map-js",
       "installed": true,
@@ -1957,9 +2863,25 @@
       ]
     },
     {
+      "name": "split2",
+      "version": "4.2.0",
+      "license": "ISC",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/split2",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "c372ef2fa1dfcb124ed807609751e75e3a009f108c5724916b489288fcb88a0c"
+        }
+      ]
+    },
+    {
       "name": "std-env",
       "version": "4.3.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/std-env",
       "installed": true,
@@ -1974,6 +2896,7 @@
       "name": "styled-jsx",
       "version": "5.1.6",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/styled-jsx",
       "installed": true,
@@ -1988,6 +2911,7 @@
       "name": "supabase",
       "version": "2.121.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": true,
       "path": "node_modules/supabase",
       "installed": true,
@@ -1997,6 +2921,7 @@
       "name": "tailwindcss",
       "version": "4.3.3",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": true,
       "path": "node_modules/tailwindcss",
       "installed": true,
@@ -2011,6 +2936,7 @@
       "name": "tapable",
       "version": "2.3.3",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/tapable",
       "installed": true,
@@ -2025,6 +2951,7 @@
       "name": "tinybench",
       "version": "6.2.2",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/tinybench",
       "installed": true,
@@ -2039,6 +2966,7 @@
       "name": "tinyexec",
       "version": "1.3.1",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/tinyexec",
       "installed": true,
@@ -2053,6 +2981,7 @@
       "name": "tinyglobby",
       "version": "0.2.17",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/tinyglobby",
       "installed": true,
@@ -2067,6 +2996,7 @@
       "name": "fdir",
       "version": "6.5.0",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/tinyglobby/node_modules/fdir",
       "installed": true,
@@ -2081,6 +3011,7 @@
       "name": "picomatch",
       "version": "4.0.7",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/tinyglobby/node_modules/picomatch",
       "installed": true,
@@ -2095,6 +3026,7 @@
       "name": "tslib",
       "version": "2.8.1",
       "license": "0BSD",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/tslib",
       "installed": true,
@@ -2106,9 +3038,40 @@
       ]
     },
     {
+      "name": "tsx",
+      "version": "4.23.15",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": true,
+      "path": "node_modules/tsx",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "8dded67841a9261a622c739fb61c81785e93765de852828ceeb9403d20a74581"
+        }
+      ]
+    },
+    {
+      "name": "tus-js-client",
+      "version": "4.3.1",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": true,
+      "path": "node_modules/tus-js-client",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "2ec372e137fa65938a6551e9abaa3d3ea21f5ebd398fca00a13354ea881e6539"
+        }
+      ]
+    },
+    {
       "name": "typescript",
       "version": "6.0.3",
       "license": "Apache-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": true,
       "path": "node_modules/typescript",
       "installed": true,
@@ -2123,6 +3086,7 @@
       "name": "undici-types",
       "version": "7.24.6",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/undici-types",
       "installed": true,
@@ -2134,9 +3098,25 @@
       ]
     },
     {
+      "name": "url-parse",
+      "version": "1.5.10",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/url-parse",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "3b2a6a268aa815dec121d614245e03b5c68db1f044d5b525e36db7d5dc7fb9c3"
+        }
+      ]
+    },
+    {
       "name": "vite",
       "version": "8.3.4",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/vite",
       "installed": true,
@@ -2151,6 +3131,7 @@
       "name": "lightningcss",
       "version": "1.33.0",
       "license": "MPL-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/vite/node_modules/lightningcss",
       "installed": true,
@@ -2165,6 +3146,7 @@
       "name": "lightningcss-android-arm64",
       "version": "1.33.0",
       "license": "MPL-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/vite/node_modules/lightningcss-android-arm64",
       "installed": false,
@@ -2174,6 +3156,7 @@
       "name": "lightningcss-darwin-arm64",
       "version": "1.33.0",
       "license": "MPL-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/vite/node_modules/lightningcss-darwin-arm64",
       "installed": false,
@@ -2183,6 +3166,7 @@
       "name": "lightningcss-darwin-x64",
       "version": "1.33.0",
       "license": "MPL-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/vite/node_modules/lightningcss-darwin-x64",
       "installed": false,
@@ -2192,6 +3176,7 @@
       "name": "lightningcss-freebsd-x64",
       "version": "1.33.0",
       "license": "MPL-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/vite/node_modules/lightningcss-freebsd-x64",
       "installed": false,
@@ -2201,6 +3186,7 @@
       "name": "lightningcss-linux-arm-gnueabihf",
       "version": "1.33.0",
       "license": "MPL-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/vite/node_modules/lightningcss-linux-arm-gnueabihf",
       "installed": false,
@@ -2210,6 +3196,7 @@
       "name": "lightningcss-linux-arm64-gnu",
       "version": "1.33.0",
       "license": "MPL-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/vite/node_modules/lightningcss-linux-arm64-gnu",
       "installed": false,
@@ -2219,6 +3206,7 @@
       "name": "lightningcss-linux-arm64-musl",
       "version": "1.33.0",
       "license": "MPL-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/vite/node_modules/lightningcss-linux-arm64-musl",
       "installed": false,
@@ -2228,6 +3216,7 @@
       "name": "lightningcss-linux-x64-gnu",
       "version": "1.33.0",
       "license": "MPL-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/vite/node_modules/lightningcss-linux-x64-gnu",
       "installed": false,
@@ -2237,6 +3226,7 @@
       "name": "lightningcss-linux-x64-musl",
       "version": "1.33.0",
       "license": "MPL-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/vite/node_modules/lightningcss-linux-x64-musl",
       "installed": false,
@@ -2246,6 +3236,7 @@
       "name": "lightningcss-win32-arm64-msvc",
       "version": "1.33.0",
       "license": "MPL-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/vite/node_modules/lightningcss-win32-arm64-msvc",
       "installed": false,
@@ -2255,6 +3246,7 @@
       "name": "lightningcss-win32-x64-msvc",
       "version": "1.33.0",
       "license": "MPL-2.0",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/vite/node_modules/lightningcss-win32-x64-msvc",
       "installed": true,
@@ -2269,6 +3261,7 @@
       "name": "picomatch",
       "version": "4.0.7",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/vite/node_modules/picomatch",
       "installed": true,
@@ -2283,6 +3276,7 @@
       "name": "vitest",
       "version": "5.0.5",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": true,
       "path": "node_modules/vitest",
       "installed": true,
@@ -2297,6 +3291,7 @@
       "name": "magic-string",
       "version": "1.4.3",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/vitest/node_modules/magic-string",
       "installed": true,
@@ -2311,6 +3306,7 @@
       "name": "picomatch",
       "version": "4.0.7",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/vitest/node_modules/picomatch",
       "installed": true,
@@ -2325,6 +3321,7 @@
       "name": "why-is-node-running",
       "version": "3.2.1",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": false,
       "path": "node_modules/why-is-node-running",
       "installed": true,
@@ -2336,9 +3333,25 @@
       ]
     },
     {
+      "name": "xtend",
+      "version": "4.0.2",
+      "license": "MIT",
+      "licenseSource": "package-lock metadata",
+      "direct": false,
+      "path": "node_modules/xtend",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "82e67379203d5794e7c44549847d8d64ae6904591381682360470898bd306821"
+        }
+      ]
+    },
+    {
       "name": "zod",
       "version": "4.6.7",
       "license": "MIT",
+      "licenseSource": "package-lock metadata",
       "direct": true,
       "path": "node_modules/zod",
       "installed": true,

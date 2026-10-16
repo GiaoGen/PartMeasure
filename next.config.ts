@@ -3,6 +3,7 @@ import type { NextConfig } from 'next';
 const config: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  logging: { incomingRequests: false },
   async headers() {
     return [{ source: '/:path*', headers: [
       { key: 'Referrer-Policy', value: 'no-referrer' },

@@ -1,0 +1,30 @@
+{
+  "checkedAt": "2026-10-16T12:28:25.967Z",
+  "results": [
+    {
+      "range": null,
+      "status": 200,
+      "bytes": 112,
+      "contentRange": null,
+      "canonicalWebpName": true
+    },
+    {
+      "range": "bytes=0-15",
+      "status": 206,
+      "bytes": 16,
+      "contentRange": "bytes 0-15/112",
+      "canonicalWebpName": true
+    },
+    {
+      "range": "bytes=0-1,3-4",
+      "status": 416,
+      "bytes": 111,
+      "contentRange": null,
+      "canonicalWebpName": false
+    },
+    {
+      "status": "FAIL",
+      "code": "RANGE_CHECK_INCOMPLETE"
+    }
+  ]
+}

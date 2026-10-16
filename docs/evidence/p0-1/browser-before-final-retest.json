@@ -1,0 +1,43 @@
+{
+  "checkedAt": "2026-10-16T11:55:40.659Z",
+  "browser": "Chromium desktop + Pixel7 viewport; NOT physical phone",
+  "traces": false,
+  "results": [
+    {
+      "check": "owner-SSR-page-and-browser-reload",
+      "status": "PASS"
+    },
+    {
+      "check": "two-sections-and-honest-delivery-placeholder",
+      "status": "PASS"
+    },
+    {
+      "check": "project-create-through-UI-and-mobile-empty-upload",
+      "status": "PASS"
+    },
+    {
+      "check": "guest-existing-files-and-preview-on-mobile-viewport",
+      "status": "PASS"
+    },
+    {
+      "check": "real-browser-batch-partial-failure-and-individual-retry",
+      "status": "PASS"
+    },
+    {
+      "check": "guest-attachment-upload-download-retest-after-lock-grant",
+      "status": "PASS"
+    },
+    {
+      "check": "real-browser-TUS-above-6MiB",
+      "status": "FAIL",
+      "errorType": "TimeoutError",
+      "screen": [
+        "安装板 · P0-1 验证"
+      ]
+    },
+    {
+      "check": "login-registration-and-invalid-link-screens",
+      "status": "PASS"
+    }
+  ]
+}

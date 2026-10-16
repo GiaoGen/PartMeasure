@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-10-16T11:01:17.598Z",
+  "results": [
+    {
+      "actor": "A",
+      "step": "signup",
+      "status": "FAIL",
+      "http": 422,
+      "code": "REGISTRATION_UNAVAILABLE"
+    },
+    {
+      "actor": "B",
+      "step": "signup",
+      "status": "FAIL",
+      "http": 422,
+      "code": "REGISTRATION_UNAVAILABLE"
+    }
+  ]
+}

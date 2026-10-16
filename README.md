@@ -1,6 +1,6 @@
-# PartMeasure · P0-0
+# PartMeasure · P0-1
 
-仅「约束与架构基线」。首页是工程启动标记，`GET /api/health` 是进程存活检查，明确不代表数据库就绪。没有认证、项目、分享、上传、标注、测量、交付业务实现。
+当前范围：密码认证、项目、Guest 分享权限与私有文件处理。P0-0 方案已获用户明确批准，依据见 [P0-1 授权记录](docs/P0-1/00-authorization.md)。数字 OTP 注册因发信域名问题经用户决定暂缓验证；测试账号为明确授权的 Admin 夹具，不能冒充注册通过。不实现几何编辑、测量回复或成果发布。
 
 ## 运行
 
@@ -12,7 +12,7 @@ npm run dev
 # http://127.0.0.1:3000
 ```
 
-P0-0 不需外部凭据即可启动。后续用 `Copy-Item .env.example .env.local` 创建本地配置；示例所有凭据均为空。不要提交 `.env.local`、数据库密码、分享令牌或服务端密钥。
+用 `Copy-Item .env.example .env.local` 创建本地配置；示例所有凭据均为空。正式流程需要受限 PostgreSQL runtime/worker 连接、CA、Auth 和服务端 Storage key，以及独立 ClamAV。不要提交 `.env.local`、数据库密码、分享令牌或服务端密钥。`GET /api/health` 只表示 liveness，database=not-probed，不能作为业务验收。
 
 ```powershell
 npm run lint
@@ -25,7 +25,7 @@ npm run start
 npm run licenses
 ```
 
-`test:e2e` 自动在 3100 端口启动**已构建**服务器；先 build，勿占用 3100。只测试基础页与健康检查。Pixel 7 viewport 是 Chromium 仿真，不是手机实测。Vitest 测无凭据健康契约；异步 Server Component 通过 Playwright 测。首次下载依赖/浏览器需外网。
+`test:e2e` 自动在3100启动已构建服务器，覆盖公开UI、无效链接和基本拒绝；真实业务脚本在3000另跑。Pixel7只是viewport，不能代替真机。Vitest覆盖文件边界/ZIP/大小及健康契约。全程无Docker。运行、迁移、worker与脱敏结果见 [实现说明](docs/P0-1/01-implementation.md)、[文件与migration](docs/P0-1/02-files-and-migrations.md)、[验证报告](docs/P0-1/03-verification.md)。
 
 ## 审阅入口
 
@@ -41,7 +41,7 @@ npm run licenses
 10. [无Docker云服务实验及邮件配置现状](docs/P0-0/09-cloud-service-lab.md)
 11. [独立Konva/EXIF实验结果](docs/P0-0/10-konva-experiment.md)
 
-`supabase/drafts/` 为**未批准 SQL 草案**，不在自动 migration 链中；`supabase/migrations/` 仅管理工程空基线。收尾只按用户明确授权在新建隔离云项目应用独立实验SQL，未应用业务草案、未操作既有生产项目或部署生产。全程无Docker；migration新流程见06。P0-0 未宣称验收通过。
+`supabase/drafts/` 留作历史架构草案，未整份应用。本阶段按范围建立正式migration，仅应用到已授权ref `rvysclscetfqicpnzlra`，业务位于私有pm schema，不部署本机auth/Storage替身。云端version与本地SQL/hash核对见本阶段报告；不操作生产，不自动进入P0-2。
 
 独立实验不进入业务路由：
 
@@ -52,6 +52,6 @@ npm run lab:konva:test
 node scripts/labs/record-konva.mjs
 ```
 
-云实验项目`partmeasure-p0-0-lab`可在后续阶段继续复用，不会完成P0-0即自动删除；真实Auth/Storage完整实验因用户暂不配置SMTP而待完成。邮件脚本有重发保护，不自动发送；密钥/邮箱/验证码/会话仅存ignored `tmp/p0-0-cloud/`，详情见09。中国大陆手机网络实测延到UI可操作后、P0最终验收前，当前不是P0-0阻断。
+`partmeasure-p0-0-lab`继续复用，不按阶段删除或重建。P0-0的07～10是当时历史状态；最新批准和验证以docs/P0-1为准。敏感配置/账号/会话只存ignored tmp与.env.local，邮件脚本不自动重发。大陆手机网络按用户决定延至P0最终出口，当前不因此阻断。
 
 本机目录归属为 Administrators，Git可能报dubious ownership。可仅对当前命令使用`git -c safe.directory=D:/PartMeasure status`（或log/diff），无需修改全局safe.directory。初始目录无Git，现建立本地历史；没有配置远程或推送。

@@ -1,0 +1,38 @@
+{
+  "checkedAt": "2026-10-16T12:43:06.235Z",
+  "status": "PASS",
+  "results": [
+    {
+      "range": null,
+      "status": 200,
+      "bytes": 112,
+      "contentRange": null,
+      "canonicalWebpName": true,
+      "errorCode": null
+    },
+    {
+      "range": "bytes=0-15",
+      "status": 206,
+      "bytes": 16,
+      "contentRange": "bytes 0-15/112",
+      "canonicalWebpName": true,
+      "errorCode": null
+    },
+    {
+      "range": "bytes=0-1,3-4",
+      "status": 416,
+      "bytes": 0,
+      "contentRange": "bytes */112",
+      "canonicalWebpName": false,
+      "errorCode": null
+    },
+    {
+      "range": "bytes=999999999-",
+      "status": 416,
+      "bytes": 0,
+      "contentRange": "bytes */112",
+      "canonicalWebpName": false,
+      "errorCode": null
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "checkedAt": "2026-10-16T11:13:26.568Z",
+  "adminFixtures": true,
+  "results": [
+    {
+      "actor": "A",
+      "step": "admin-fixture-not-otp",
+      "status": "CREATED"
+    },
+    {
+      "actor": "A",
+      "step": "real-password-login",
+      "status": "PASS",
+      "http": 200
+    },
+    {
+      "actor": "A",
+      "step": "fresh-context-session-restore",
+      "status": "PASS"
+    },
+    {
+      "actor": "B",
+      "step": "admin-fixture-not-otp",
+      "status": "CREATED"
+    },
+    {
+      "actor": "B",
+      "step": "real-password-login",
+      "status": "PASS",
+      "http": 200
+    },
+    {
+      "actor": "B",
+      "step": "fresh-context-session-restore",
+      "status": "PASS"
+    },
+    {
+      "step": "numeric-otp-registration",
+      "status": "PENDING_USER_DEFERRED"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-16T12:16:50.247Z",
+  "status": "PASS",
+  "bytes": 7500084,
+  "events": [
+    {
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "method": "PATCH",
+      "status": 204
+    }
+  ]
+}

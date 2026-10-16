@@ -1,0 +1,488 @@
+import "server-only";
+import { randomUUID } from "node:crypto";
+import type { PoolClient } from "pg";
+import { AppError, limits, uploadPolicy } from "../policy";
+import { type Actor, digest, idempotent, token, transaction } from "./db";
+import { effectiveFileLimit } from "./file-limits";
+
+export type Project = {
+	id: string;
+	name: string;
+	description: string;
+	revision: number;
+	owner_id: string;
+	created_at: string;
+};
+export const actorKey = (actor: Actor) =>
+	actor.kind === "owner" ? `owner:${actor.id}` : `guest:${actor.hash}`;
+export async function access(
+	db: PoolClient,
+	actor: Actor,
+	projectId: string,
+	manage = false,
+) {
+	const { rows } = await db.query<Project>(
+		"select id,name,description,revision,owner_id,created_at from pm.projects where id=$1 for update",
+		[projectId],
+	);
+	const project = rows[0];
+	if (!project)
+		throw new AppError(
+			actor.kind === "guest" ? "LINK_UNAVAILABLE" : "NOT_FOUND",
+			actor.kind === "guest" ? 401 : 404,
+		);
+	if (actor.kind === "owner" && project.owner_id !== actor.id)
+		throw new AppError("NOT_FOUND", 404);
+	if (actor.kind === "guest") {
+		if (manage) throw new AppError("FORBIDDEN", 403);
+		const { rows: sessions } = await db.query(
+			`select s.id,s.share_id from pm.guest_sessions s join pm.share_links l on l.id=s.share_id
+   where s.token_hash=$1 and s.project_id=$2 and s.expires_at>now() and l.revoked_at is null and l.expires_at>now() for update of l`,
+			[actor.hash, projectId],
+		);
+		if (!sessions[0]) throw new AppError("LINK_UNAVAILABLE", 401);
+		return { project, shareId: sessions[0].share_id as string };
+	}
+	return { project, shareId: null };
+}
+export const publicProject = (p: Project) => ({
+	id: p.id,
+	name: p.name,
+	description: p.description,
+	revision: p.revision,
+	createdAt: p.created_at,
+});
+export async function audit(
+	db: PoolClient,
+	actor: Actor,
+	projectId: string,
+	action: string,
+	objectId: string,
+) {
+	await db.query(
+		"insert into pm.audit_events(project_id,actor_type,action,object_id) values($1,$2,$3,$4)",
+		[projectId, actor.kind, action, objectId],
+	);
+}
+export async function listProjects(actor: Actor, cursor: string | null) {
+	if (actor.kind !== "owner") throw new AppError("FORBIDDEN", 403);
+	return transaction(actor, async (db) => {
+		const { rows } = await db.query<Project>(
+			`select id,name,description,revision,owner_id,created_at from pm.projects where owner_id=$1 and ($2::uuid is null or (created_at,id)<(select created_at,id from pm.projects where id=$2)) order by created_at desc,id desc limit 31`,
+			[actor.id, cursor],
+		);
+		return {
+			items: rows.slice(0, 30).map(publicProject),
+			nextCursor: rows.length > 30 ? rows[29]?.id : null,
+		};
+	});
+}
+export async function createProject(
+	actor: Actor,
+	input: { name: string; description: string },
+	key: string,
+) {
+	if (actor.kind !== "owner") throw new AppError("FORBIDDEN", 403);
+	return transaction(actor, (db) =>
+		idempotent(db, `${actorKey(actor)}:create`, key, input, async () => {
+			await db.query(
+				"insert into pm.owner_usage(owner_id) values($1) on conflict do nothing",
+				[actor.id],
+			);
+			const { rows } = await db.query<Project>(
+				"insert into pm.projects(owner_id,name,description) values($1,$2,$3) returning *",
+				[actor.id, input.name, input.description],
+			);
+			const project = rows[0];
+			if (!project) throw new AppError("DEPENDENCY_UNAVAILABLE", 503);
+			await audit(db, actor, project.id, "project.create", project.id);
+			return publicProject(project);
+		}),
+	);
+}
+export async function projectDetail(actor: Actor, id: string) {
+	return transaction(actor, async (db) => {
+		const { project } = await access(db, actor, id);
+		const data = publicProject(project);
+		const { rows } = await db.query(
+			'select id,expires_at as "expiresAt",revoked_at as "revokedAt" from pm.share_links where project_id=$1 order by created_at desc limit 1',
+			[id],
+		);
+		return {
+			...data,
+			share: actor.kind === "owner" ? (rows[0] ?? null) : null,
+		};
+	});
+}
+export async function editProject(
+	actor: Actor,
+	id: string,
+	input: { name: string; description: string },
+	revision: number,
+	key: string,
+) {
+	return transaction(actor, async (db) => {
+		await access(db, actor, id, true);
+		return idempotent(
+			db,
+			`${id}:${actorKey(actor)}:edit`,
+			key,
+			{ ...input, revision },
+			async () => {
+				const { rows } = await db.query<Project>(
+					"update pm.projects set name=$2,description=$3,revision=revision+1,updated_at=now() where id=$1 and revision=$4 returning *",
+					[id, input.name, input.description, revision],
+				);
+				if (!rows[0]) throw new AppError("REVISION_CONFLICT", 409);
+				await audit(db, actor, id, "project.edit", id);
+				return publicProject(rows[0]);
+			},
+		);
+	});
+}
+export async function rotateShare(actor: Actor, id: string, key: string) {
+	// Raw capability is never persisted in idempotency records: response loss requires another explicit rotation.
+	const raw = token();
+	return transaction(actor, async (db) => {
+		await access(db, actor, id, true);
+		const result = await idempotent(
+			db,
+			`${id}:${actorKey(actor)}:share`,
+			key,
+			{},
+			async () => {
+				await db.query(
+					"update pm.share_links set revoked_at=now() where project_id=$1 and revoked_at is null",
+					[id],
+				);
+				const { rows } = await db.query(
+					'insert into pm.share_links(project_id,token_hash) values($1,$2) returning id,expires_at as "expiresAt"',
+					[id, digest(raw)],
+				);
+				await audit(db, actor, id, "share.rotate", rows[0].id);
+				return {
+					id: rows[0].id as string,
+					expiresAt: rows[0].expiresAt as string,
+					hash: digest(raw),
+				};
+			},
+		);
+		return {
+			id: result.id,
+			expiresAt: result.expiresAt,
+			url:
+				result.hash === digest(raw) ? `${process.env.APP_URL}/s/${raw}` : null,
+			replayed: result.hash !== digest(raw),
+		};
+	});
+}
+export async function revokeShare(
+	actor: Actor,
+	id: string,
+	shareId: string,
+	key: string,
+) {
+	return transaction(actor, async (db) => {
+		await access(db, actor, id, true);
+		return idempotent(
+			db,
+			`${id}:${actorKey(actor)}:revoke`,
+			key,
+			{ shareId },
+			async () => {
+				const { rowCount } = await db.query(
+					"update pm.share_links set revoked_at=coalesce(revoked_at,now()) where id=$1 and project_id=$2",
+					[shareId, id],
+				);
+				if (!rowCount) throw new AppError("NOT_FOUND", 404);
+				await audit(db, actor, id, "share.revoke", shareId);
+				return { revoked: true };
+			},
+		);
+	});
+}
+export async function bootstrap(raw: string) {
+	const secret = token();
+	const hash = digest(raw);
+	return transaction(null, async (db) => {
+		await db.query("select set_config('pm.link_hash',$1,true)", [hash]);
+		const lookup = await db.query(
+			"select project_id from pm.share_links where token_hash=$1 and revoked_at is null and expires_at>now()",
+			[hash],
+		);
+		if (!lookup.rows[0]) throw new AppError("LINK_UNAVAILABLE", 401);
+		// Serialize with revoke by locking share; bootstrap does not hold a project lock and never locks project afterwards.
+		const { rows } = await db.query(
+			"select id,project_id from pm.share_links where token_hash=$1 and revoked_at is null and expires_at>now() for update",
+			[hash],
+		);
+		if (!rows[0]) throw new AppError("LINK_UNAVAILABLE", 401);
+		await db.query(
+			`insert into pm.guest_sessions(project_id,share_id,token_hash,expires_at) select project_id,id,$2,least(expires_at,now()+interval '24 hours') from pm.share_links where id=$1`,
+			[rows[0].id, digest(secret)],
+		);
+		return { projectId: rows[0].project_id as string, secret };
+	});
+}
+export async function reserve(
+	actor: Actor,
+	id: string,
+	input: {
+		filename: string;
+		byteSize: number;
+		declaredMime: string;
+		sha256: string;
+	},
+	key: string,
+) {
+	if (input.byteSize > effectiveFileLimit())
+		throw new AppError("STORAGE_FILE_TOO_LARGE", 413);
+	const policy = uploadPolicy(
+		input.filename,
+		input.byteSize,
+		input.declaredMime,
+	);
+	return transaction(actor, async (db) => {
+		// Serialize all projects of this owner before project/share locks, including guest reservations.
+		const ownerLookup = await db.query(
+			"select owner_id from pm.projects where id=$1",
+			[id],
+		);
+		if (!ownerLookup.rows[0]) throw new AppError("NOT_FOUND", 404);
+		const ownerId = ownerLookup.rows[0].owner_id;
+		await db.query(
+			"select owner_id from pm.owner_usage where owner_id=$1 for update",
+			[ownerId],
+		);
+		const { shareId } = await access(db, actor, id);
+		// Expired interaction windows stop occupying concurrency slots, but keep all storage budget reserved until cleanup.
+		await db.query("update pm.upload_reservations set state='rejected',error_code='UPLOAD_WINDOW_EXPIRED' where project_id=$1 and state='reserved' and created_at<now()-interval '15 minutes'",[id]);
+		return idempotent(
+			db,
+			`${id}:${actorKey(actor)}:reserve`,
+			key,
+			input,
+			async () => {
+				const duplicate = await db.query(
+					"select id,state,actor_key,(created_at<now()-interval '15 minutes') as expired from pm.upload_reservations where project_id=$1 and sha256=$2 and byte_size=$3 and state in ('reserved','queued','processing','ready')",
+					[id, input.sha256, input.byteSize],
+				);
+				if (duplicate.rows[0]) {
+					if (duplicate.rows[0].actor_key !== actorKey(actor))
+						throw new AppError("DUPLICATE_FILE", 409);
+					if (
+						duplicate.rows[0].state === "reserved" &&
+						duplicate.rows[0].expired
+					) {
+						await db.query(
+							"update pm.upload_reservations set state='rejected',error_code='UPLOAD_WINDOW_EXPIRED' where id=$1",
+							[duplicate.rows[0].id],
+						);
+					} else return { id: duplicate.rows[0].id as string, duplicate: true };
+				}
+				const { rows } = await db.query(
+					`select p.used_bytes+coalesce((select sum(reserved_bytes) from pm.upload_reservations where project_id=p.id and state not in ('ready','cleaned')),0) as project_bytes,
+   (select used_bytes+reserved_bytes from pm.owner_usage where owner_id=p.owner_id) as account_bytes,
+   coalesce((select sum(byte_size) from pm.upload_reservations where project_id=p.id and created_at>=date_trunc('day',now())),0) as daily_bytes,
+   (select count(*) from pm.upload_reservations where project_id=p.id and state in ('reserved','queued','processing')) as pending,
+   (select count(*) from pm.upload_reservations where project_id=p.id and actor_key=$2 and state in ('reserved','queued','processing')) as actor_pending
+   from pm.projects p where p.id=$1`,
+					[id, actorKey(actor)],
+				);
+				const usage = rows[0];
+				if (
+					Number(usage.project_bytes) + policy.budget > limits.project ||
+					Number(usage.account_bytes) + policy.budget > limits.account ||
+					Number(usage.daily_bytes) + input.byteSize > limits.daily
+				)
+					throw new AppError("QUOTA_EXCEEDED", 413);
+				if (Number(usage.pending) >= 4 || Number(usage.actor_pending) >= 2)
+					throw new AppError("UPLOAD_CONCURRENCY_LIMIT", 429);
+				const reservationId = randomUUID(),
+					path = `${id}/${reservationId}/source`;
+				await db.query(
+					"insert into pm.upload_reservations(id,project_id,actor_key,share_id,filename,extension,declared_mime,byte_size,sha256,reserved_bytes,quarantine_key) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)",
+					[
+						reservationId,
+						id,
+						actorKey(actor),
+						shareId,
+						input.filename,
+						policy.ext,
+						input.declaredMime,
+						input.byteSize,
+						input.sha256,
+						policy.budget,
+						path,
+					],
+				);
+				await db.query(
+					"update pm.owner_usage set reserved_bytes=reserved_bytes+$2 where owner_id=$1",
+					[ownerId, policy.budget],
+				);
+				await audit(db, actor, id, "upload.reserve", reservationId);
+				return { id: reservationId, duplicate: false };
+			},
+		);
+	});
+}
+export async function reservation(
+	actor: Actor,
+	id: string,
+	reservationId: string,
+	complete = false,
+	key = "",
+) {
+	return transaction(actor, async (db) => {
+		await access(db, actor, id);
+		const { rows } = await db.query(
+			"select * from pm.upload_reservations where id=$1 and project_id=$2 for update",
+			[reservationId, id],
+		);
+		const r = rows[0];
+		if (!r || (r.actor_key !== actorKey(actor) && actor.kind !== "owner"))
+			throw new AppError("NOT_FOUND", 404);
+		if (complete) {
+			if (r.actor_key !== actorKey(actor)) throw new AppError("FORBIDDEN", 403);
+			await idempotent(
+				db,
+				`${id}:${actorKey(actor)}:complete`,
+				key,
+				{ reservationId },
+				async () => {
+					if (r.state === "rejected" || r.state === "cleaned")
+						throw new AppError("FILE_REJECTED", 422);
+					if (r.state === "reserved") {
+						await db.query(
+							"update pm.upload_reservations set state='queued' where id=$1",
+							[reservationId],
+						);
+						await db.query("insert into pm.jobs(reservation_id) values($1)", [
+							reservationId,
+						]);
+						r.state = "queued";
+						await audit(db, actor, id, "upload.complete", reservationId);
+					}
+					return { accepted: true };
+				},
+			);
+		}
+		return {
+			id: r.id as string,
+			state: r.state as string,
+			errorCode: r.error_code as string | null,
+			path: r.quarantine_key as string,
+			grantExpiresAt: r.grant_expires_at as string,
+			cleanupAfter: r.cleanup_after as string,
+		};
+	});
+}
+export async function listReservations(actor: Actor, id: string) {
+	return transaction(actor, async (db) => {
+		await access(db, actor, id);
+		const { rows } = await db.query(
+			"select id,filename,state,error_code as \"errorCode\" from pm.upload_reservations where project_id=$1 and ($2::boolean or actor_key=$3) and state not in ('ready','cleaned') and created_at>now()-interval '1 day' order by created_at desc limit 30",
+			[id, actor.kind === "owner", actorKey(actor)],
+		);
+		return { items: rows };
+	});
+}
+export async function retryProcessing(
+	actor: Actor,
+	id: string,
+	reservationId: string,
+	key: string,
+) {
+	return transaction(actor, async (db) => {
+		await access(db, actor, id);
+		const r = await db.query(
+			"select actor_key,state from pm.upload_reservations where id=$1 and project_id=$2 for update",
+			[reservationId, id],
+		);
+		if (!r.rows[0] || r.rows[0].actor_key !== actorKey(actor))
+			throw new AppError("NOT_FOUND", 404);
+		return idempotent(
+			db,
+			`${id}:${actorKey(actor)}:retry`,
+			key,
+			{ reservationId },
+			async () => {
+				if (!["queued", "processing"].includes(r.rows[0].state))
+					throw new AppError("INVALID_STATE", 409);
+				const updated = await db.query(
+					"update pm.jobs set attempts=0,next_at=now(),dead_at=null,error_code=null where reservation_id=$1 and done_at is null and (lease_until is null or lease_until<now()) returning id",
+					[reservationId],
+				);
+				if (!updated.rows[0]) throw new AppError("PROCESSING_ACTIVE", 409);
+				await db.query(
+					"update pm.upload_reservations set error_code=null where id=$1",
+					[reservationId],
+				);
+				return { accepted: true };
+			},
+		);
+	});
+}
+export async function files(actor: Actor, id: string, cursor: string | null) {
+	return transaction(actor, async (db) => {
+		await access(db, actor, id);
+		const { rows } = await db.query(
+			`select id,filename,mime,extension,byte_size as "byteSize",width,height,uploader_type as "uploaderType",created_at as "createdAt" from pm.file_assets
+   where project_id=$1 and deleted_at is null and ($2::boolean or visibility='customer') and ($3::uuid is null or (created_at,id)<(select created_at,id from pm.file_assets where id=$3 and project_id=$1)) order by created_at desc,id desc limit 31`,
+			[id, actor.kind === "owner", cursor],
+		);
+		return {
+			items: rows.slice(0, 30),
+			nextCursor: rows.length > 30 ? rows[29].id : null,
+		};
+	});
+}
+export async function fileForRead(
+	actor: Actor,
+	id: string,
+	fileId: string,
+	original = false,
+) {
+	return transaction(actor, async (db) => {
+		await access(db, actor, id);
+		if (original && actor.kind !== "owner")
+			throw new AppError("FORBIDDEN", 403);
+		const { rows } = await db.query(
+			"select * from pm.file_assets where id=$1 and project_id=$2 and deleted_at is null and ($3::boolean or visibility='customer')",
+			[fileId, id, actor.kind === "owner"],
+		);
+		if (!rows[0]) throw new AppError("NOT_FOUND", 404);
+		return rows[0];
+	});
+}
+export async function deleteFile(
+	actor: Actor,
+	id: string,
+	fileId: string,
+	key: string,
+) {
+	return transaction(actor, async (db) => {
+		await access(db, actor, id, true);
+		return idempotent(
+			db,
+			`${id}:${actorKey(actor)}:delete`,
+			key,
+			{ fileId },
+			async () => {
+				const { rows } = await db.query(
+					"select history_protected from pm.file_assets where id=$1 and project_id=$2 for update",
+					[fileId, id],
+				);
+				if (!rows[0]) throw new AppError("NOT_FOUND", 404);
+				if (rows[0].history_protected)
+					throw new AppError("HISTORY_PROTECTED", 409);
+				await db.query(
+					"update pm.file_assets set deleted_at=coalesce(deleted_at,now()) where id=$1 and project_id=$2",
+					[fileId, id],
+				);
+				await audit(db, actor, id, "file.hide", fileId);
+				return { deleted: true };
+			},
+		);
+	});
+}

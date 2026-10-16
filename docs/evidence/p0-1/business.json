@@ -1,0 +1,78 @@
+{
+  "checkedAt": "2026-10-16T12:30:46.591Z",
+  "authSetup": "admin fixtures explicitly authorized; OTP deferred",
+  "results": [
+    {
+      "check": "project-create-idempotent",
+      "status": "PASS"
+    },
+    {
+      "check": "owners-isolated",
+      "status": "PASS"
+    },
+    {
+      "check": "project-edit-revision-and-persistence",
+      "status": "PASS"
+    },
+    {
+      "check": "guest-no-account-and-refresh-restore",
+      "status": "PASS"
+    },
+    {
+      "check": "guest-denied-management-and-cross-project",
+      "status": "PASS"
+    },
+    {
+      "check": "owner-real-private-image-upload-and-idempotent-complete",
+      "status": "PASS"
+    },
+    {
+      "check": "guest-real-private-attachment-upload",
+      "status": "PASS"
+    },
+    {
+      "check": "other-owner-upload",
+      "status": "PASS"
+    },
+    {
+      "check": "standard-image-preview-and-owner-original",
+      "status": "PASS"
+    },
+    {
+      "check": "cross-project-file-download-refused",
+      "status": "PASS"
+    },
+    {
+      "check": "authorized-download-range-and-canonical-name",
+      "status": "FAIL"
+    },
+    {
+      "check": "private-buckets-public-url-refused",
+      "status": "PASS"
+    },
+    {
+      "check": "format-size-and-mime-rejected",
+      "status": "PASS"
+    },
+    {
+      "check": "disguised-file-quarantined-not-readable",
+      "status": "PASS"
+    },
+    {
+      "check": "guest-cannot-soft-delete",
+      "status": "PASS"
+    },
+    {
+      "check": "owner-soft-delete-hidden-and-retained",
+      "status": "PASS"
+    },
+    {
+      "check": "revoke-invalidates-link-session-and-finalize",
+      "status": "PASS"
+    },
+    {
+      "check": "logout-invalidates-current-cookie",
+      "status": "PASS"
+    }
+  ]
+}

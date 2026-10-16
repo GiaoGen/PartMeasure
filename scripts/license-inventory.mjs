@@ -20,7 +20,20 @@ for (const [path, p] of Object.entries(lock.packages)) {
       }
     }
   } catch { installed = false; }
-  packages.push({ name, version: p.version, license: p.license ?? 'UNDECLARED', direct: direct.has(name), path, installed, notices });
+  let license = p.license ?? 'UNDECLARED';
+  let licenseSource = p.license ? 'package-lock metadata' : 'missing';
+  // Some older packages omit package.json SPDX but explicitly license their distributed README.
+  if (license === 'UNDECLARED' && installed) {
+    try {
+      const body = await readFile(`${path}/Readme.md`);
+      const match = body.toString('utf8').match(/^## License\s+\n?(MIT|Apache-2\.0|ISC)\s*$/m);
+      if (match) {
+        license = match[1]; licenseSource = 'distributed Readme.md License section';
+        notices.push({ file: 'Readme.md#License', sha256: createHash('sha256').update(body).digest('hex') });
+      }
+    } catch { /* An undeclared license remains a failing inventory item. */ }
+  }
+  packages.push({ name, version: p.version, license, licenseSource, direct: direct.has(name), path, installed, notices });
 }
 await writeFile('docs/evidence/licenses.json', `${JSON.stringify({ checkedAt: new Date().toISOString(), packages }, null, 2)}\n`);
 const licenses = [...new Set(packages.map((p) => p.license))].sort();

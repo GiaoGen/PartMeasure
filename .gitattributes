@@ -1,0 +1,2 @@
+# Applied migration source is compared with cloud history; keep byte-stable line endings.
+*.sql text eol=lf

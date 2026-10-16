@@ -1,0 +1,83 @@
+{
+  "checkedAt": "2026-10-16T11:12:09.509Z",
+  "synthetic": true,
+  "realPhone": false,
+  "results": [
+    {
+      "check": "worker-normalization-640x480-o1",
+      "status": "PASS"
+    },
+    {
+      "check": "worker-normalization-640x480-o2",
+      "status": "PASS"
+    },
+    {
+      "check": "worker-normalization-640x480-o3",
+      "status": "PASS"
+    },
+    {
+      "check": "worker-normalization-640x480-o4",
+      "status": "PASS"
+    },
+    {
+      "check": "worker-normalization-640x480-o5",
+      "status": "PASS"
+    },
+    {
+      "check": "worker-normalization-640x480-o6",
+      "status": "PASS"
+    },
+    {
+      "check": "worker-normalization-640x480-o7",
+      "status": "PASS"
+    },
+    {
+      "check": "worker-normalization-640x480-o8",
+      "status": "PASS"
+    },
+    {
+      "check": "worker-normalization-480x640-o1",
+      "status": "PASS"
+    },
+    {
+      "check": "worker-normalization-480x640-o2",
+      "status": "PASS"
+    },
+    {
+      "check": "worker-normalization-480x640-o3",
+      "status": "PASS"
+    },
+    {
+      "check": "worker-normalization-480x640-o4",
+      "status": "PASS"
+    },
+    {
+      "check": "worker-normalization-480x640-o5",
+      "status": "PASS"
+    },
+    {
+      "check": "worker-normalization-480x640-o6",
+      "status": "PASS"
+    },
+    {
+      "check": "worker-normalization-480x640-o7",
+      "status": "PASS"
+    },
+    {
+      "check": "worker-normalization-480x640-o8",
+      "status": "PASS"
+    },
+    {
+      "check": "real-clamav-clean",
+      "status": "PASS"
+    },
+    {
+      "check": "real-clamav-eicar-rejected",
+      "status": "PASS"
+    },
+    {
+      "check": "no-scanner-fail-closed",
+      "status": "PASS"
+    }
+  ]
+}

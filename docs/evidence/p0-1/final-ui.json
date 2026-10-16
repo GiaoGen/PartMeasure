@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-16T12:41:32.267Z",
+  "purpose": "Production workspace copy and size formatting recheck; not a substitute for business suite",
+  "results": [
+    {
+      "actor": "owner",
+      "status": "PASS"
+    },
+    {
+      "actor": "guest",
+      "status": "PASS"
+    }
+  ]
+}

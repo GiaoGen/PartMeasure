@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-10-16T12:11:53.029Z",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "security": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"lints\":[{\"name\":\"auth_leaked_password_protection\",\"title\":\"Leaked Password Protection Disabled\",\"level\":\"WARN\",\"facing\":\"EXTERNAL\",\"categories\":[\"SECURITY\"],\"description\":\"Leaked password protection is currently disabled.\",\"remediation\":\"https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection\",\"count\":1,\"findings\":[{\"detail\":\"Supabase Auth prevents the use of compromised passwords by checking against HaveIBeenPwned.org. Enable this feature to enhance security.\",\"metadata\":{\"type\":\"auth\",\"entity\":\"Auth\"}}]}]}}"
+    }
+  ],
+  "performance": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"lints\":[{\"name\":\"unused_index\",\"title\":\"Unused Index\",\"level\":\"INFO\",\"facing\":\"EXTERNAL\",\"categories\":[\"PERFORMANCE\"],\"description\":\"Detects if an index has never been used and may be a candidate for removal.\",\"remediation\":\"https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index\",\"count\":4,\"findings\":[{\"detail\":\"Index \\\\`p0_lab_owner\\\\` on table \\\\`public.p0_lab_records\\\\` has not been used\",\"metadata\":{\"name\":\"p0_lab_records\",\"type\":\"table\",\"schema\":\"public\"},\"observed_at\":\"2026-10-16T12:10:22.509Z\"},{\"detail\":\"Index \\\\`assets_project\\\\` on table \\\\`pm.file_assets\\\\` has not been used\",\"metadata\":{\"name\":\"file_assets\",\"type\":\"table\",\"schema\":\"pm\"},\"observed_at\":\"2026-10-16T12:10:22.509Z\"},{\"detail\":\"Index \\\\`audit_project\\\\` on table \\\\`pm.audit_events\\\\` has not been used\",\"metadata\":{\"name\":\"audit_events\",\"type\":\"table\",\"schema\":\"pm\"},\"observed_at\":\"2026-10-16T12:10:22.509Z\"},{\"detail\":\"Index \\\\`assets_reservation_fk\\\\` on table \\\\`pm.file_assets\\\\` has not been used\",\"metadata\":{\"name\":\"file_assets\",\"type\":\"table\",\"schema\":\"pm\"},\"observed_at\":\"2026-10-16T12:10:22.509Z\"}]}]}}"
+    }
+  ]
+}

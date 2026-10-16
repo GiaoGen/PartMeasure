@@ -1,0 +1,35 @@
+{
+  "checkedAt": "2026-10-16T11:37:46.640Z",
+  "structuralFixtureTests": true,
+  "notAuthAcceptance": true,
+  "results": [
+    {
+      "check": "runtime-worker-not-owner-not-bypass-and-no-browser-schema-grant",
+      "status": "PASS"
+    },
+    {
+      "check": "history-protection-through-HTTP-and-DB-trigger",
+      "status": "PASS"
+    },
+    {
+      "check": "immutable-storage-path-trigger",
+      "status": "PASS"
+    },
+    {
+      "check": "quota-counters-match-retained-assets-and-inflight",
+      "status": "PASS"
+    },
+    {
+      "check": "transaction-identity-does-not-leak-after-commit-or-rollback",
+      "status": "PASS"
+    },
+    {
+      "check": "applied-migration-source-matches-local-SQL",
+      "status": "FAIL"
+    },
+    {
+      "check": "orphan-cleanup-never-issued-grant-fixture",
+      "status": "FAIL"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-16T12:13:21.537Z",
+  "status": "FAIL",
+  "bytes": 7500084,
+  "events": [
+    {
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "method": "PATCH",
+      "status": 204
+    },
+    {
+      "result": "TUS_UI_NOT_READY"
+    }
+  ]
+}

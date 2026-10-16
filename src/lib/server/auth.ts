@@ -35,6 +35,28 @@ export async function authClient() {
 export async function owner(): Promise<Actor & { kind: "owner" }> {
 	const client = await authClient();
 	const { data, error } = await client.auth.getUser();
+	if (error) {
+		const transient =
+			error.name === "AuthRetryableFetchError" ||
+			(error.status !== undefined &&
+				(error.status >= 500 || error.status === 0));
+		const known = [
+			"session_not_found",
+			"refresh_token_already_used",
+			"refresh_token_not_found",
+			"bad_jwt",
+			"user_not_found",
+		];
+		console.warn(
+			JSON.stringify({
+				event: "auth_verification_failed",
+				kind: transient ? "transient" : "invalid",
+				code: known.includes(error.code ?? "") ? error.code : "OTHER",
+				status: error.status,
+			}),
+		);
+		if (transient) throw new AppError("DEPENDENCY_UNAVAILABLE", 503);
+	}
 	if (error || !data.user || !data.user.email_confirmed_at)
 		throw new AppError("AUTH_REQUIRED", 401);
 	return { kind: "owner", id: data.user.id };

@@ -1,0 +1,51 @@
+{
+  "checkedAt": "2026-10-16T14:10:10.764Z",
+  "realService": true,
+  "results": [
+    {
+      "check": "canonical-image-binding-and-owner-guest-read",
+      "status": "PASS"
+    },
+    {
+      "check": "create-four-types-human-fields-and-idempotency",
+      "status": "PASS"
+    },
+    {
+      "check": "owner-isolation-and-guest-write-denials",
+      "status": "PASS"
+    },
+    {
+      "check": "strict-validation-image-version-and-no-pixel-dimensions",
+      "status": "PASS"
+    },
+    {
+      "check": "edit-revision-conflict-and-immutable-old-snapshot",
+      "status": "PASS"
+    },
+    {
+      "check": "soft-delete-tombstone-and-restoration-as-new-revision",
+      "status": "PASS"
+    },
+    {
+      "check": "new-session-restores-real-saved-annotations",
+      "status": "PASS"
+    },
+    {
+      "check": "independent-file-comment-owner-create-guest-read-and-denial",
+      "status": "PASS"
+    },
+    {
+      "check": "history-referenced-files-cannot-be-hidden",
+      "status": "FAIL",
+      "code": "AssertionError"
+    },
+    {
+      "check": "concurrent-authorized-readers",
+      "status": "PASS"
+    },
+    {
+      "check": "revocation-denies-new-annotation-and-file-reads",
+      "status": "PASS"
+    }
+  ]
+}

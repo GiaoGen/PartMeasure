@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-10-16T16:58:57.698Z",
+  "productionBuild": true,
+  "realServiceExceptExplicit503": true,
+  "physicalPhone": false,
+  "httpFailures": [],
+  "results": [
+    {
+      "check": "file-question-create-refresh",
+      "status": "PASS"
+    },
+    {
+      "check": "mobile-guest-bootstrap-readonly-same-geometry-and-file-question",
+      "status": "PASS"
+    }
+  ]
+}

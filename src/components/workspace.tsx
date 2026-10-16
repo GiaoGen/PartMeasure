@@ -3,6 +3,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { api, ApiError } from "./api";
 import { Logout, type ProjectView } from "./projects";
 import { UploadQueue } from "./upload-queue";
+import { AnnotationEditor } from "./annotation-editor";
+import { FileIssues } from "./file-issues";
 type Asset = {
 	id: string;
 	filename: string;
@@ -70,9 +72,27 @@ export function Workspace({
 		[selected, setSelected] = useState<Asset | null>(null);
 	const [error, setError] = useState(""),
 		[loading, setLoading] = useState(true),
-		[invalid, setInvalid] = useState(false),
-		[zoom, setZoom] = useState(100),
-		[imageFailed, setImageFailed] = useState(false);
+		[invalid, setInvalid] = useState(false);
+	const editorDirty = useRef(false);
+	const onEditorDirty = useCallback((dirty: boolean) => {
+		editorDirty.current = dirty;
+	}, []);
+	function allowLeave() {
+		return (
+			!editorDirty.current ||
+			window.confirm(
+				"标注修改尚未确认。离开会丢弃本页草稿，已发出的保存请求可能仍完成。继续？",
+			)
+		);
+	}
+	function selectFile(file: Asset | null) {
+		if (selected?.id !== file?.id && !allowLeave()) return;
+		setSelected(file);
+	}
+	function selectSection(next: string) {
+		if (next !== section && !allowLeave()) return;
+		setSection(next);
+	}
 	const [shareUrl, setShareUrl] = useState(""),
 		[shareMessage, setShareMessage] = useState(""),
 		[shareBusy, setShareBusy] = useState(false);
@@ -311,14 +331,14 @@ export function Workspace({
 				<button
 					type="button"
 					aria-pressed={section === "files"}
-					onClick={() => setSection("files")}
+					onClick={() => selectSection("files")}
 				>
 					资料与补测
 				</button>
 				<button
 					type="button"
 					aria-pressed={section === "deliveries"}
-					onClick={() => setSection("deliveries")}
+					onClick={() => selectSection("deliveries")}
 				>
 					交付与版本
 				</button>
@@ -335,12 +355,14 @@ export function Workspace({
 				<section className="empty">
 					<h2>尚无交付</h2>
 					<p>成果发布尚未开放。目前可以上传和查看资料。</p>
-					<button type="button" onClick={() => setSection("files")}>
+					<button type="button" onClick={() => selectSection("files")}>
 						返回资料与补测
 					</button>
 				</section>
 			) : (
-				<div className={`file-workspace ${guest ? "guest-layout" : ""}`}>
+				<div
+					className={`file-workspace ${guest ? "guest-layout" : ""} ${selected ? "file-focused" : ""}`}
+				>
 					<aside className="file-column">
 						<UploadQueue
 							base={base}
@@ -362,11 +384,7 @@ export function Workspace({
 									<button
 										type="button"
 										className={selected?.id === file.id ? "selected" : ""}
-										onClick={() => {
-											setSelected(file);
-											setZoom(100);
-											setImageFailed(false);
-										}}
+										onClick={() => selectFile(file)}
 									>
 										<strong>{file.filename}</strong>
 										<small>
@@ -403,7 +421,19 @@ export function Workspace({
 							</button>
 						) : null}
 					</aside>
-					<section className="file-detail" aria-label="文件详情">
+					<section
+						className={`file-detail ${selected ? "has-file" : ""}`}
+						aria-label="文件详情"
+					>
+						{selected ? (
+							<button
+								className="back-to-files"
+								type="button"
+								onClick={() => selectFile(null)}
+							>
+								返回资料列表
+							</button>
+						) : null}
 						{selected ? (
 							<>
 								<div className="detail-heading">
@@ -429,6 +459,7 @@ export function Workspace({
 												type="button"
 												className="danger"
 												onClick={async () => {
+													if (!allowLeave()) return;
 													if (
 														!window.confirm(
 															`将“${selected.filename}”从当前列表隐藏？原件和必要历史仍保留。`,
@@ -450,57 +481,28 @@ export function Workspace({
 									</div>
 								</div>
 								{selected.mime.startsWith("image/") ? (
-									<>
-										<div className="actions image-tools">
-											<button
-												type="button"
-												onClick={() => setZoom((old) => Math.max(25, old - 25))}
-											>
-												缩小
-											</button>
-											<span aria-live="polite">{zoom}%</span>
-											<button
-												type="button"
-												onClick={() =>
-													setZoom((old) => Math.min(400, old + 25))
-												}
-											>
-												放大
-											</button>
-											<button type="button" onClick={() => setZoom(100)}>
-												适应宽度
-											</button>
-										</div>
-										<div className="image-viewport">
-											{imageFailed ? (
-												<p role="alert">
-													图片暂时无法载入。
-													<button
-														type="button"
-														onClick={() => setImageFailed(false)}
-													>
-														重试图片
-													</button>
-												</p>
-											) : (
-												// biome-ignore lint/performance/noImgElement: private preview must preserve per-request authorization, not public image optimization.
-												<img
-													src={`${base}/files/${selected.id}/preview`}
-													alt={selected.filename}
-													style={{ width: `${zoom}%`, maxWidth: "none" }}
-													onError={() => setImageFailed(true)}
-												/>
-											)}
-										</div>
-										<p className="muted">
-											图片方向已校正，照片元数据已移除。放大后可滚动查看。
-										</p>
-									</>
+									<AnnotationEditor
+										key={selected.id}
+										base={base}
+										fileId={selected.id}
+										guest={guest}
+										onInvalid={onInvalid}
+										onDirty={onEditorDirty}
+									/>
 								) : (
-									<div className="empty">
-										<p>{selected.extension.toUpperCase()} 附件</p>
-										<p>此格式暂不提供在线预览，请下载后用对应软件打开。</p>
-									</div>
+									<>
+										<div className="empty">
+											<p>{selected.extension.toUpperCase()} 附件</p>
+											<p>此格式暂不提供在线预览，请下载后用对应软件打开。</p>
+										</div>
+										<FileIssues
+											key={selected.id}
+											base={base}
+											fileId={selected.id}
+											guest={guest}
+											onInvalid={onInvalid}
+										/>
+									</>
 								)}
 							</>
 						) : (
@@ -514,10 +516,10 @@ export function Workspace({
 							</div>
 						)}
 					</section>
-					{!guest ? (
+					{!guest && !selected ? (
 						<aside className="stage-note">
 							<h2>补测</h2>
-							<p>几何标注、测量问题与回复尚未开放。</p>
+							<p>选择图片添加标注；选择附件填写文件问题。</p>
 							<p className="muted">可以先上传已有资料，并与客户共享。</p>
 						</aside>
 					) : null}

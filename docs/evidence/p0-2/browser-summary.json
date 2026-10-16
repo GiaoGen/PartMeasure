@@ -1,0 +1,55 @@
+{
+  "generatedAt": "2026-10-16T17:03:52.626Z",
+  "scope": "Latest functional browser coverage across three real production-build runs; not one all-green full run.",
+  "stageAccepted": false,
+  "historicalFailuresRetained": true,
+  "stability": "OPEN: historical real 401 and intermittent 503 not root-caused",
+  "manualExperience": "PENDING_USER",
+  "physicalPhone": "PENDING_EXTERNAL",
+  "newRegistrationOtp": "USER_DEFERRED",
+  "mainlandNetwork": "DEFERRED_UNTIL_P0_EXIT",
+  "results": [
+    {
+      "check": "desktop-draw-fields-save-and-session-undo-redo",
+      "status": "PASS",
+      "source": "browser.json",
+      "checkedAt": "2026-10-16T16:52:23.245Z"
+    },
+    {
+      "check": "drag-and-zoom-resize-hit-position-without-geometry-drift",
+      "status": "PASS",
+      "source": "browser.json",
+      "checkedAt": "2026-10-16T16:52:23.245Z"
+    },
+    {
+      "check": "reload-reenter-persistence-and-history-preview",
+      "status": "PASS",
+      "source": "browser.json",
+      "checkedAt": "2026-10-16T16:52:23.245Z"
+    },
+    {
+      "check": "simulated-503-retains-draft-and-retry-key-real-save",
+      "status": "PASS",
+      "source": "browser-recovery.json",
+      "checkedAt": "2026-10-16T16:56:12.613Z"
+    },
+    {
+      "check": "real-concurrent-edit-conflict-never-silently-overwrites",
+      "status": "PASS",
+      "source": "browser-recovery.json",
+      "checkedAt": "2026-10-16T16:56:12.613Z"
+    },
+    {
+      "check": "file-question-create-refresh",
+      "status": "PASS",
+      "source": "browser-files.json",
+      "checkedAt": "2026-10-16T17:01:33.071Z"
+    },
+    {
+      "check": "mobile-guest-bootstrap-readonly-same-geometry-and-file-question",
+      "status": "PASS",
+      "source": "browser-files.json",
+      "checkedAt": "2026-10-16T17:01:33.071Z"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+[{"check":"desktop-draw-fields-save-and-session-undo-redo","status":"FAIL","code":"TimeoutError","location":"at async file:///D:/PartMeasure/scripts/p0-2/browser.mjs:22:2"},{"check":"drag-and-zoom-resize-hit-position-without-geometry-drift","status":"FAIL","code":"TimeoutError"}]

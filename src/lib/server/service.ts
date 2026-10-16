@@ -20,9 +20,10 @@ export async function access(
 	actor: Actor,
 	projectId: string,
 	manage = false,
+	readOnly = false,
 ) {
 	const { rows } = await db.query<Project>(
-		"select id,name,description,revision,owner_id,created_at from pm.projects where id=$1 for update",
+		`select id,name,description,revision,owner_id,created_at from pm.projects where id=$1 ${readOnly ? "for share" : "for update"}`,
 		[projectId],
 	);
 	const project = rows[0];
@@ -37,7 +38,7 @@ export async function access(
 		if (manage) throw new AppError("FORBIDDEN", 403);
 		const { rows: sessions } = await db.query(
 			`select s.id,s.share_id from pm.guest_sessions s join pm.share_links l on l.id=s.share_id
-   where s.token_hash=$1 and s.project_id=$2 and s.expires_at>now() and l.revoked_at is null and l.expires_at>now() for update of l`,
+   where s.token_hash=$1 and s.project_id=$2 and s.expires_at>now() and l.revoked_at is null and l.expires_at>now() ${readOnly ? "for share of l" : "for update of l"}`,
 			[actor.hash, projectId],
 		);
 		if (!sessions[0]) throw new AppError("LINK_UNAVAILABLE", 401);
@@ -102,7 +103,7 @@ export async function createProject(
 }
 export async function projectDetail(actor: Actor, id: string) {
 	return transaction(actor, async (db) => {
-		const { project } = await access(db, actor, id);
+		const { project } = await access(db, actor, id, false, true);
 		const data = publicProject(project);
 		const { rows } = await db.query(
 			'select id,expires_at as "expiresAt",revoked_at as "revokedAt" from pm.share_links where project_id=$1 order by created_at desc limit 1',
@@ -334,7 +335,7 @@ export async function reservation(
 	key = "",
 ) {
 	return transaction(actor, async (db) => {
-		await access(db, actor, id);
+		await access(db, actor, id, false, !complete);
 		const { rows } = await db.query(
 			"select * from pm.upload_reservations where id=$1 and project_id=$2 for update",
 			[reservationId, id],
@@ -379,7 +380,7 @@ export async function reservation(
 }
 export async function listReservations(actor: Actor, id: string) {
 	return transaction(actor, async (db) => {
-		await access(db, actor, id);
+		await access(db, actor, id, false, true);
 		const { rows } = await db.query(
 			"select id,filename,state,error_code as \"errorCode\" from pm.upload_reservations where project_id=$1 and ($2::boolean or actor_key=$3) and state not in ('ready','cleaned') and created_at>now()-interval '1 day' order by created_at desc limit 30",
 			[id, actor.kind === "owner", actorKey(actor)],
@@ -425,7 +426,7 @@ export async function retryProcessing(
 }
 export async function files(actor: Actor, id: string, cursor: string | null) {
 	return transaction(actor, async (db) => {
-		await access(db, actor, id);
+		await access(db, actor, id, false, true);
 		const { rows } = await db.query(
 			`select id,filename,mime,extension,byte_size as "byteSize",width,height,uploader_type as "uploaderType",created_at as "createdAt" from pm.file_assets
    where project_id=$1 and deleted_at is null and ($2::boolean or visibility='customer') and ($3::uuid is null or (created_at,id)<(select created_at,id from pm.file_assets where id=$3 and project_id=$1)) order by created_at desc,id desc limit 31`,
@@ -444,7 +445,7 @@ export async function fileForRead(
 	original = false,
 ) {
 	return transaction(actor, async (db) => {
-		await access(db, actor, id);
+		await access(db, actor, id, false, true);
 		if (original && actor.kind !== "owner")
 			throw new AppError("FORBIDDEN", 403);
 		const { rows } = await db.query(

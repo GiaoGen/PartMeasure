@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-10-16T16:56:12.613Z",
+  "productionBuild": true,
+  "realServiceExceptExplicit503": true,
+  "physicalPhone": false,
+  "httpFailures": [
+    {
+      "path": "/api/projects/a293ec24-2f33-4aae-b73e-41e092259aca/annotations/3e20e6e2-3753-45e6-8825-737a52dfff60",
+      "status": 503
+    },
+    {
+      "path": "/api/projects/a293ec24-2f33-4aae-b73e-41e092259aca/annotations/3e20e6e2-3753-45e6-8825-737a52dfff60",
+      "status": 409
+    }
+  ],
+  "results": [
+    {
+      "check": "simulated-503-retains-draft-and-retry-key-real-save",
+      "status": "PASS"
+    },
+    {
+      "check": "real-concurrent-edit-conflict-never-silently-overwrites",
+      "status": "PASS"
+    }
+  ]
+}

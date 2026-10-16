@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-16T14:11:10.730Z",
+  "realService": true,
+  "results": [
+    {
+      "check": "history-protection-image",
+      "status": "PASS",
+      "http": 409,
+      "code": "HISTORY_PROTECTED"
+    },
+    {
+      "check": "history-protection-attachment",
+      "status": "PASS",
+      "http": 409,
+      "code": "HISTORY_PROTECTED"
+    }
+  ]
+}

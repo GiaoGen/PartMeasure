@@ -15,10 +15,22 @@ import * as service from "@/lib/server/service";
 import { privateBucket, storage, uploadGrant } from "@/lib/server/storage";
 import { effectiveFileLimit } from "@/lib/server/file-limits";
 import { satisfiableRange } from "@/lib/file-range";
+import {
+	createAnnotationSchema,
+	updateAnnotationSchema,
+	fileIssueSchema,
+} from "@/lib/annotations";
+import * as annotations from "@/lib/server/annotation-service";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 type Context = { params: Promise<{ segments: string[] }> };
+function expectedRevision(req: Request) {
+	const value = req.headers.get("if-match");
+	if (!value || !/^"[1-9]\d{0,8}"$/.test(value))
+		throw new AppError("REVISION_REQUIRED", 428);
+	return Number(value.slice(1, -1));
+}
 const credentials = z
 	.object({ email: z.email().max(254), password: z.string().min(12).max(128) })
 	.strict();
@@ -204,6 +216,69 @@ async function handle(req: Request, context: Context) {
 					await service.revokeShare(actor, projectId, objectId, idemKey(req)),
 				);
 		}
+		if (resource === "annotations") {
+			if (method !== "GET" && actor.kind === "guest")
+				throw new AppError("FORBIDDEN", 403);
+			if (method === "POST" && !objectId)
+				return response(
+					await annotations.createAnnotation(
+						actor,
+						projectId,
+						await body(req, createAnnotationSchema),
+						idemKey(req),
+					),
+					201,
+				);
+			if (objectId && method === "PATCH")
+				return response(
+					await annotations.changeAnnotation(
+						actor,
+						projectId,
+						objectId,
+						await body(req, updateAnnotationSchema),
+						expectedRevision(req),
+						idemKey(req),
+					),
+				);
+			if (objectId && method === "DELETE")
+				return response(
+					await annotations.changeAnnotation(
+						actor,
+						projectId,
+						objectId,
+						null,
+						expectedRevision(req),
+						idemKey(req),
+					),
+				);
+			if (objectId && method === "GET" && parts[4] === "revisions") {
+				const before = url.searchParams.get("before");
+				if (before && !/^[1-9]\d{0,8}$/.test(before))
+					throw new AppError("INVALID_INPUT", 422);
+				return response(
+					await annotations.revisions(
+						actor,
+						projectId,
+						objectId,
+						before ? Number(before) : null,
+					),
+				);
+			}
+		}
+		if (resource === "issues") {
+			if (actor.kind === "guest" && method !== "GET")
+				throw new AppError("FORBIDDEN", 403);
+			if (method === "POST" && !objectId)
+				return response(
+					await annotations.createFileIssue(
+						actor,
+						projectId,
+						await body(req, fileIssueSchema),
+						idemKey(req),
+					),
+					201,
+				);
+		}
 		if (resource === "uploads") {
 			if (method === "GET" && !objectId)
 				return response(await service.listReservations(actor, projectId));
@@ -276,6 +351,14 @@ async function handle(req: Request, context: Context) {
 			}
 		}
 		if (resource === "files") {
+			if (objectId && parts[4] === "annotations" && method === "GET")
+				return response(
+					await annotations.annotations(actor, projectId, objectId),
+				);
+			if (objectId && parts[4] === "issues" && method === "GET")
+				return response(
+					await annotations.fileIssues(actor, projectId, objectId, cursor),
+				);
 			if (method === "GET" && !objectId)
 				return response(await service.files(actor, projectId, cursor));
 			if (method === "DELETE" && objectId)
@@ -300,9 +383,18 @@ async function handle(req: Request, context: Context) {
 				)
 					throw new AppError("UNSUPPORTED_FORMAT", 415);
 				const range = req.headers.get("range");
-				const byteSize=Number(original?file.original_bytes:file.byte_size);
-				if(range&&!satisfiableRange(range,byteSize))
-					return new Response(null,{status:416,headers:{'Cache-Control':'private, no-store',Vary:'Cookie','Content-Range':`bytes */${byteSize}`}});
+				const byteSize = Number(
+					original ? file.original_bytes : file.byte_size,
+				);
+				if (range && !satisfiableRange(range, byteSize))
+					return new Response(null, {
+						status: 416,
+						headers: {
+							"Cache-Control": "private, no-store",
+							Vary: "Cookie",
+							"Content-Range": `bytes */${byteSize}`,
+						},
+					});
 				const { data, error } = await storage()
 					.from(privateBucket)
 					.createSignedUrl(original ? file.original_key : file.storage_key, 60);
@@ -313,10 +405,21 @@ async function handle(req: Request, context: Context) {
 				});
 				if (!fetched.ok) {
 					await fetched.body?.cancel();
-					if(fetched.status===416)return new Response(null,{status:416,headers:{'Cache-Control':'private, no-store',Vary:'Cookie','Content-Range':`bytes */${byteSize}`}});
+					if (fetched.status === 416)
+						return new Response(null, {
+							status: 416,
+							headers: {
+								"Cache-Control": "private, no-store",
+								Vary: "Cookie",
+								"Content-Range": `bytes */${byteSize}`,
+							},
+						});
 					throw new AppError("STORAGE_UNAVAILABLE", 503);
 				}
-				const downloadName=!original&&file.mime==='image/webp'?file.filename.replace(/\.[^.]+$/,'.webp'):file.filename;
+				const downloadName =
+					!original && file.mime === "image/webp"
+						? file.filename.replace(/\.[^.]+$/, ".webp")
+						: file.filename;
 				const headers = new Headers({
 					"Cache-Control": "private, no-store",
 					Vary: "Cookie",

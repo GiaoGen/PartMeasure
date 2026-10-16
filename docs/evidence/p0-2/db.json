@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-10-16T14:11:02.670Z",
+  "structuralRollbackFixtures": true,
+  "results": [
+    {
+      "check": "private-rls-no-browser-no-worker-no-history-update",
+      "status": "PASS"
+    },
+    {
+      "check": "database-rejects-invalid-geometry-and-rebinding",
+      "status": "PASS"
+    },
+    {
+      "check": "canonical-image-dimensions-and-history-immutable",
+      "status": "PASS"
+    },
+    {
+      "check": "valid-guest-context-can-read-but-cannot-create-annotations",
+      "status": "PASS"
+    },
+    {
+      "check": "formal-migration-source-matches-isolated-cloud",
+      "status": "PASS"
+    }
+  ]
+}

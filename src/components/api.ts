@@ -32,6 +32,17 @@ const messages: Record<string, string> = {
 	CSRF_INVALID: "页面安全凭据失效，请刷新。",
 	FORBIDDEN: "当前访问方式没有此操作权限。",
 	NOT_FOUND: "内容不存在或无权访问。",
+	IMAGE_NOT_READY: "图片尚未完成标准化处理，无法标注。",
+	IMAGE_VERSION_CONFLICT: "图片版本已变化，请保留草稿并重新载入。",
+	INVALID_GEOMETRY: "标注位置不合法，线或圆不能小于半个原图像素。",
+	INVALID_ENGINEERING_FIELDS: "工程字段与标注类型不一致，请检查。",
+	ANNOTATION_LIMIT: "这张图片已达到 200 个保留标注上限。",
+	ANNOTATION_REVISION_LIMIT: "这个标注的修订数已达到上限，请联系工程师。",
+	FILE_ISSUE_LIMIT: "这个文件的问题数已达到上限。",
+	DATABASE_BUSY: "资料正在被其他操作更新，请稍后重试。",
+	DATABASE_TIMEOUT: "读取资料超时，请稍后重试。",
+	DATABASE_CAPACITY: "数据库连接暂时繁忙，请稍后重试。",
+	DEPENDENCY_TIMEOUT: "服务连接超时，请重试。",
 };
 export const message = (code: string) =>
 	messages[code] ?? "操作未完成，请重试或联系工程师。";

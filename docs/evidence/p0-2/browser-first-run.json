@@ -1,0 +1,50 @@
+{
+  "checkedAt": "2026-10-16T14:15:09.157Z",
+  "productionBuild": true,
+  "realServiceExceptExplicit503": true,
+  "physicalPhone": false,
+  "results": [
+    {
+      "check": "desktop-draw-fields-save-and-session-undo-redo",
+      "status": "FAIL",
+      "code": "Error",
+      "location": "at async file:///D:/PartMeasure/scripts/p0-2/browser.mjs:22:59"
+    },
+    {
+      "check": "drag-and-zoom-resize-hit-position-without-geometry-drift",
+      "status": "FAIL",
+      "code": "AssertionError",
+      "location": "at file:///D:/PartMeasure/scripts/p0-2/browser.mjs:32:10"
+    },
+    {
+      "check": "reload-reenter-persistence-and-history-preview",
+      "status": "FAIL",
+      "code": "AssertionError",
+      "location": "at file:///D:/PartMeasure/scripts/p0-2/browser.mjs:40:10"
+    },
+    {
+      "check": "simulated-503-retains-draft-and-retry-key-real-save",
+      "status": "FAIL",
+      "code": "AssertionError",
+      "location": "at file:///D:/PartMeasure/scripts/p0-2/browser.mjs:45:10"
+    },
+    {
+      "check": "real-concurrent-edit-conflict-never-silently-overwrites",
+      "status": "FAIL",
+      "code": "AssertionError",
+      "location": "at file:///D:/PartMeasure/scripts/p0-2/browser.mjs:52:10"
+    },
+    {
+      "check": "file-question-create-refresh",
+      "status": "FAIL",
+      "code": "Error",
+      "location": "at async file:///D:/PartMeasure/scripts/p0-2/browser.mjs:58:2"
+    },
+    {
+      "check": "mobile-guest-bootstrap-readonly-same-geometry-and-file-question",
+      "status": "FAIL",
+      "code": "Error",
+      "location": "at async file:///D:/PartMeasure/scripts/p0-2/browser.mjs:63:83"
+    }
+  ]
+}

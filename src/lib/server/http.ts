@@ -66,14 +66,33 @@ export async function endpoint(work: () => Promise<Response>) {
 	try {
 		return await work();
 	} catch (error) {
+		const requestId = randomUUID();
+		const dependencyCode =
+			new Map([
+				["55P03", "DATABASE_BUSY"],
+				["57014", "DATABASE_TIMEOUT"],
+				["53300", "DATABASE_CAPACITY"],
+				["ETIMEDOUT", "DEPENDENCY_TIMEOUT"],
+			]).get((error as { code?: string } | null)?.code ?? "") ??
+			"DEPENDENCY_UNAVAILABLE";
 		const safe =
-			error instanceof AppError
-				? error
-				: new AppError("DEPENDENCY_UNAVAILABLE", 503);
+			error instanceof AppError ? error : new AppError(dependencyCode, 503);
+		if (!(error instanceof AppError)) {
+			const sqlState = (error as { code?: string } | null)?.code;
+			console.warn(
+				JSON.stringify({
+					event: "dependency_failed",
+					code: dependencyCode,
+					sqlState:
+						sqlState && /^[0-9A-Z]{5}$/.test(sqlState) ? sqlState : undefined,
+					requestId,
+				}),
+			);
+		}
 		return Response.json(
 			{
 				error: { code: safe.code, message: safe.code },
-				requestId: randomUUID(),
+				requestId,
 			},
 			{
 				status: safe.status,

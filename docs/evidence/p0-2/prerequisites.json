@@ -1,0 +1,47 @@
+{
+  "checkedAt": "2026-10-16T13:24:45.173Z",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "otp": "USER_DEFERRED_NOT_TESTED",
+  "results": [
+    {
+      "check": "A-real-password-login",
+      "status": "PASS",
+      "http": 200
+    },
+    {
+      "check": "B-real-password-login",
+      "status": "PASS",
+      "http": 200
+    },
+    {
+      "check": "owner-project",
+      "status": "PASS",
+      "http": 200
+    },
+    {
+      "check": "other-owner-denied",
+      "status": "PASS",
+      "http": 404
+    },
+    {
+      "check": "owner-private-image",
+      "status": "PASS",
+      "http": 200
+    },
+    {
+      "check": "guest-capability-bootstrap",
+      "status": "PASS",
+      "http": 200
+    },
+    {
+      "check": "guest-project",
+      "status": "PASS",
+      "http": 200
+    },
+    {
+      "check": "guest-private-image",
+      "status": "PASS",
+      "http": 200
+    }
+  ]
+}

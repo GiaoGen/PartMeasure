@@ -1,0 +1,48 @@
+{
+  "checkedAt": "2026-10-16T14:28:49.657Z",
+  "productionBuild": true,
+  "realServiceExceptExplicit503": true,
+  "physicalPhone": false,
+  "httpFailures": [],
+  "results": [
+    {
+      "check": "desktop-draw-fields-save-and-session-undo-redo",
+      "status": "FAIL",
+      "code": "Error",
+      "location": "at async file:///D:/PartMeasure/scripts/p0-2/browser.mjs:24:2"
+    },
+    {
+      "check": "drag-and-zoom-resize-hit-position-without-geometry-drift",
+      "status": "FAIL",
+      "code": "AssertionError",
+      "location": "at file:///D:/PartMeasure/scripts/p0-2/browser.mjs:36:66"
+    },
+    {
+      "check": "reload-reenter-persistence-and-history-preview",
+      "status": "FAIL",
+      "code": "TimeoutError",
+      "location": "at async file:///D:/PartMeasure/scripts/p0-2/browser.mjs:42:2"
+    },
+    {
+      "check": "simulated-503-retains-draft-and-retry-key-real-save",
+      "status": "FAIL",
+      "code": "TimeoutError"
+    },
+    {
+      "check": "real-concurrent-edit-conflict-never-silently-overwrites",
+      "status": "FAIL",
+      "code": "TimeoutError",
+      "location": "at async file:///D:/PartMeasure/scripts/p0-2/browser.mjs:54:2"
+    },
+    {
+      "check": "file-question-create-refresh",
+      "status": "PASS"
+    },
+    {
+      "check": "mobile-guest-bootstrap-readonly-same-geometry-and-file-question",
+      "status": "FAIL",
+      "code": "TypeError",
+      "location": "at file:///D:/PartMeasure/scripts/p0-2/browser.mjs:67:273"
+    }
+  ]
+}

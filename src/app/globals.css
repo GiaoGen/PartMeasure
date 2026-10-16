@@ -436,3 +436,182 @@ small {
 		overflow: auto;
 	}
 }
+
+/* P0-2: functional canvas and property panes, no decorative cards. */
+.file-detail.has-file {
+	grid-column: 2 / -1;
+}
+.annotation-editor {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 280px;
+	gap: 20px;
+	margin-top: 16px;
+	min-width: 0;
+}
+.editor-status {
+	grid-column: 1 / -1;
+	border-bottom: 1px solid #d5dae1;
+}
+.editor-status p:empty {
+	display: none;
+}
+.canvas-column {
+	min-width: 0;
+}
+.annotation-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+.annotation-toolbar button,
+.canvas-zoom button {
+	min-height: 44px;
+}
+.annotation-toolbar [aria-pressed="true"],
+.annotation-list [aria-pressed="true"] {
+	color: #073c9c;
+	border-color: #175cd3;
+	background: #eef4ff;
+}
+.canvas-zoom {
+	margin: 12px 0;
+}
+.annotation-viewport {
+	height: clamp(320px, 62vh, 760px);
+	width: 100%;
+	position: relative;
+	overflow: hidden;
+	touch-action: none;
+	background: #f5f7fa;
+	border: 1px solid #d5dae1;
+	box-sizing: border-box;
+}
+.annotation-viewport:focus-visible {
+	outline: 2px solid #175cd3;
+	outline-offset: 2px;
+}
+.canvas-message {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	z-index: 1;
+}
+.canvas-help {
+	font-size: 14px;
+	color: #536477;
+	line-height: 1.6;
+}
+.annotation-properties {
+	min-width: 0;
+	padding-left: 20px;
+	border-left: 1px solid #d5dae1;
+}
+.annotation-properties h3 {
+	margin-top: 0;
+}
+.annotation-list,
+.issue-list,
+.revision-list ol {
+	padding: 0;
+	list-style: none;
+}
+.annotation-list {
+	max-height: 240px;
+	overflow: auto;
+}
+.annotation-list button {
+	width: 100%;
+	text-align: left;
+	margin-bottom: 4px;
+	min-height: 44px;
+	overflow-wrap: anywhere;
+}
+.engineering-fields {
+	padding: 0;
+	border: 0;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	margin: 20px 0;
+}
+.engineering-fields legend {
+	font-weight: 600;
+	margin-bottom: 12px;
+}
+.engineering-fields label {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+.engineering-fields input,
+.engineering-fields select,
+.engineering-fields textarea {
+	max-width: 100%;
+	box-sizing: border-box;
+	min-height: 44px;
+}
+.annotation-readout p,
+.issue-list p {
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+.file-issues {
+	max-width: 760px;
+	border-top: 1px solid #d5dae1;
+	padding-top: 20px;
+}
+.issue-list li,
+.revision-list li {
+	padding: 12px 0;
+	border-bottom: 1px solid #d5dae1;
+}
+.revision-list button {
+	text-align: left;
+}
+.revision-list small {
+	display: block;
+}
+.save-recovery {
+	padding: 12px 0;
+}
+.save-recovery button {
+	margin: 0 8px 8px 0;
+}
+.back-to-files {
+	display: none;
+}
+@media (max-width: 1100px) {
+	.annotation-editor {
+		grid-template-columns: minmax(0, 1fr);
+	}
+	.annotation-properties {
+		border-left: 0;
+		border-top: 1px solid #d5dae1;
+		padding: 20px 0 0;
+	}
+}
+@media (max-width: 900px) {
+	.file-workspace.file-focused {
+		display: block;
+	}
+	.file-focused > .file-column {
+		display: none;
+	}
+	.back-to-files {
+		display: inline-block;
+		margin-bottom: 16px;
+		min-height: 44px;
+	}
+	.annotation-viewport {
+		height: 55vh;
+		min-height: 300px;
+	}
+	.file-detail.has-file {
+		padding-left: 0;
+		padding-right: 0;
+	}
+}

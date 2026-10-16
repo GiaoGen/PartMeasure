@@ -1,0 +1,56 @@
+{
+  "checkedAt": "2026-10-16T16:52:23.245Z",
+  "productionBuild": true,
+  "realServiceExceptExplicit503": true,
+  "physicalPhone": false,
+  "httpFailures": [
+    {
+      "path": "/api/projects/a293ec24-2f33-4aae-b73e-41e092259aca/annotations/3e20e6e2-3753-45e6-8825-737a52dfff60",
+      "status": 503
+    },
+    {
+      "path": "/api/projects/a293ec24-2f33-4aae-b73e-41e092259aca/files/c0174472-a829-48b7-a3a0-25b44b2f48ef/issues",
+      "status": 401
+    },
+    {
+      "path": "/api/projects/a293ec24-2f33-4aae-b73e-41e092259aca/uploads",
+      "status": 401
+    }
+  ],
+  "results": [
+    {
+      "check": "desktop-draw-fields-save-and-session-undo-redo",
+      "status": "PASS"
+    },
+    {
+      "check": "drag-and-zoom-resize-hit-position-without-geometry-drift",
+      "status": "PASS"
+    },
+    {
+      "check": "reload-reenter-persistence-and-history-preview",
+      "status": "PASS"
+    },
+    {
+      "check": "simulated-503-retains-draft-and-retry-key-real-save",
+      "status": "FAIL",
+      "code": "Error",
+      "location": "at async file:///D:/PartMeasure/scripts/p0-2/browser.mjs:47:2"
+    },
+    {
+      "check": "real-concurrent-edit-conflict-never-silently-overwrites",
+      "status": "FAIL",
+      "code": "TimeoutError",
+      "location": "at async file:///D:/PartMeasure/scripts/p0-2/browser.mjs:54:2"
+    },
+    {
+      "check": "file-question-create-refresh",
+      "status": "FAIL",
+      "code": "Error",
+      "location": "at async file:///D:/PartMeasure/scripts/p0-2/browser.mjs:61:2"
+    },
+    {
+      "check": "mobile-guest-bootstrap-readonly-same-geometry-and-file-question",
+      "status": "PASS"
+    }
+  ]
+}

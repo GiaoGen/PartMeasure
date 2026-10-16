@@ -1,0 +1,10 @@
+{
+  "checkedAt": "2026-10-16T09:34:01.202Z",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "scope": "isolated service experiment, not application acceptance",
+  "actor": "A",
+  "operation": "email-request",
+  "accepted": true,
+  "error": null,
+  "delivery": "not yet verified"
+}

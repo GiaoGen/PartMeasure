@@ -1,52 +1,51 @@
-# migration管理与回滚
+# 无Docker验证、migration管理与回滚
 
-## 本次已建立
+更新2026-10-16。当前用户明确要求全程不用Docker：本轮未运行任何Docker命令，也不以安装/启动Docker作为进入下一阶段的条件。
 
-固定`supabase@2.121.0`，已读其CLI帮助后执行`supabase init`与`migration new infrastructure_baseline`。CLI生成`supabase/migrations/20261016085629_infrastructure_baseline.sql`，仅注释标记，不改变业务schema。`supabase/config.toml`是本地开发配置（PG17占位，接入真实项目前比对实际major），关闭自动暴露表/seed，Data API仅public、max_rows100；不含远程project ref或凭据。`supabase/drafts/baseline.sql`不被reset/push读取。
+## 两条严格分开的SQL链
 
-P0-0无Docker daemon可用，因此没有运行Supabase本地全栈或迁移history回放；不得把本机PG18结构检查当作Supabase PG17/RLS/Storage/Auth集成测试通过。具体结果见07。
+| 路径 | 作用 | 当前状态 |
+|---|---|---|
+| `supabase/migrations/20261016085629_infrastructure_baseline.sql` | CLI生成的应用空history marker | 无业务DDL，未部署到云实验项目 |
+| `supabase/drafts/baseline.sql` | 待审查业务架构草案 | 未批准、未应用；不能自动提升为migration |
+| `experiments/cloud/setup.sql` | 独立真实服务实验表/桶/策略 | 经本轮明确授权，仅在新建实验项目由MCP应用 |
+| `tests/sql/draft-smoke.sql` | 原生本机PG的结构替身检查 | a9bdc83已有证据；本轮未重跑；**永不部署到真实Supabase** |
 
-## 审批后流程（此处是运行说明，不是已执行结果）
+实验项目ref `rvysclscetfqicpnzlra`，名称`partmeasure-p0-0-lab`，真实PG17.11；表名前缀`p0_lab_`、桶`p0-0-service-lab`。仅用于测试，可在后续P0继续复用，非阶段结束自动销毁。实验migration `20261016093639 / p0_0_isolated_service_lab`只属于此云实验库，不混入应用migration目录。源SQL与实际云对象需按名称、字段、约束、RLS逐项核对，不能把它当业务migration回放通过。
 
-每条命令先读固定CLI的`--help`，使用`npm run db -- ...`，不全局安装、不用临时latest。例：
+`supabase/config.toml`保留CLI生成的本地配置（PG17、auto_expose_new_tables=false、public、max_rows100），不包含远程project ref或密钥；本轮不使用它启动任何本地Supabase容器。
 
-```powershell
-npm run db -- start --help
-npm run db -- start
-npm run db -- db query --help
-npm run db -- db query --local --file <approved-local-draft.sql>
-npm run db -- db advisors --local --type all --fail-on error
-npm run db -- db lint --local --fail-on error
-npm run db -- db diff --help
-npm run db -- db diff --local
-npm run db -- db pull --help
-npm run db -- db pull <reviewed_name> --local --yes
-```
+## 当前可运行的无Docker流程
 
-只在一次性本地栈迭代（db query不写migration history）；审查干净diff后用`db pull --local`生成migration并核对结果，不手造时间戳、不用apply_migration工具堆本地历史。若从零写一份空migration，先用`npm run db:migration:new -- <reviewed_name>`；不能对同一差异同时new和pull生成两份重复migration。当前CLI已实际确认支持`db pull --local`，该命令可能写入被选库的migration history，必须显式local，不省略目标参数。schema首次实施按P0-1/2/3/4拆migration，不一次偷跑全部后续业务。
+1. MCP `list_organizations`后让用户指定组织，读取组织方案及`get_cost`报价；$0可按已授权任务创建，非零费用遵守工具成本确认，不选择既有production。
+2. `create_project`新建隔离项目，`get_project`核对ref/区域/PG版本；先`list_tables`确认无业务资料，再做只读版本/schema检查。保存脱敏实验清单。
+3. 只有已经获准的**实验SQL**才能调用MCP `apply_migration`；DML/只读检查用`execute_sql`。使用真实auth/storage schema，绝不执行替身setup或原业务草案。实验脚本还校验ref白名单。
+4. 真正客户端验证通过SDK/HTTP，以真实Auth用户JWT访问Data API/Storage；不能用MCP的高权限SELECT或SET ROLE模拟通过Auth、RLS及文件权限验收。MCP查bucket.public=false只证明配置，不证明私有上传/下载闭环。
+5. `get_advisors(security/performance)`审查并保留实际warning；目前SMTP/模板配置被Free限制，用户决定暂缓，所以完整A/B/Storage实验未运行，详见09。
 
-```powershell
-# 仅一次性本地测试数据；reset会丢弃该本地库内容
-npm run db -- db reset --local --no-seed
-npm run db -- migration list --local
-npm run db -- db lint --local --fail-on error
-npm run db -- db advisors --local --type all --fail-on error
-```
+## 业务方案批准后的migration流程（未执行）
 
-空库全量回放 + 从前版本升级 + 集成负面测试全部完成后提交schema、migration、测试证据和代码一起审阅。迁移文件应用后不可修改内容/时间戳；修复新增migration。SQL与应用分expand→backfill→切读写→contract，避免旧代码在部署中读不到列。手工改Dashboard造成漂移时先diff核对并纳入新migration，不用repair掩盖漏项。
-
-## 远程与回滚关卡
-
-本次**没有**login/link/db push/db reset --linked/deploy等远程操作。后续先确认测试项目引用、区域、PG版本、Data API自动授权状态、私有bucket已有策略及备份；配置独立开发/预发/生产凭据。服务端secret进部署环境，绝不写进SQL/README/日志。需要远程SQL或部署时依用户授权范围执行。
-
-远程发布先导出schema/dump与对象清单/hash、验证PITR/对象备份、在预发回放并做A/B Owner与Guest授权测试；`db push --dry-run`（先查help）只供审查，不代表批准。将实际批准人/时间、migration哈希、目标project ref的非敏感标记记入发布记录。
-
-应用回滚优先还原上一兼容构建；DB默认forward-fix，避免DOWN删除历史。若必须撤销schema，先证明没有新数据/依赖并用新补偿migration；生产不使用db reset。误发布交付也只能新版本修正，不能恢复旧文件路径覆盖内容。灾难恢复需同时恢复DB与Storage同一快照/清单，再校验文件引用和hash；单独数据库备份不包含Storage对象。所有恢复演练在隔离环境执行。
-
-## 草案的本机结构检查
+固定`supabase@2.121.0`，只使用已核对帮助的命令。`migration new`创建本地空文件本身不需要Docker：
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-sql-draft.ps1
+npm run db -- migration new --help
+npm run db:migration:new -- <approved_name>
 ```
 
-需要本机PostgreSQL18，可用`-PostgresBin`指定安装bin。脚本只在workspace/tmp创建唯一新cluster，绑定127.0.0.1:55439，短暂trust本地连接，finally停止；不接入已有集群、不删除目录。测试用自建auth.uid/storage.buckets **stub**，只能证明SQL语法/约束/部分Owner RLS与历史保护，不证明真实OTP、share验证、Storage HTTP授权/撤销、TUS、quota或业务事务。日志在ignored tmp。若端口被占用即失败，不能停止不属于本次测试的服务。
+在CLI生成的文件中写入**获批且按P0阶段拆分**的SQL，记录SHA-256、审批人/时间、目标测试ref，再经MCP在明确授权的隔离云环境应用。工具返回的云migration version可能不同于本地创建时间；以`list_migrations`返回的实际版本为准，保留映射并将这份尚未发布的本地文件对齐该实际版本，不能凭空编时间戳，也不能后续同时使用不匹配的CLI push。检查migration history中的name/statements与审查源一致；如果不一致则停止，不能随意repair掩盖差异。
+
+验证包括：空隔离云库从零回放、上一版测试库向前升级、显式GRANT/RLS、A/B与Guest拒绝用例、并发/幂等、真实Storage和补偿；全部通过后再审查用于正式环境的发布计划。空库回放可按需在同一Free额度允许且用户授权的第二测试项目做，不以已存在实验数据的库“执行成功”冒充全量回放；新增项目仍先核价。当前没有创建第二项目。
+
+本轮路线不使用可能调用容器的`supabase start / db start / db reset / db diff / db pull / db dump`。也不执行remote reset、生产push或迁移history repair。未来必须使用CLI某一命令时先检查固定版本help及是否依赖Docker；原生Postgres工具/MCP能完成的工作优先采用无Docker途径。
+
+## 备份、回滚及对象清理
+
+Free项目不假定具备PITR或可用自动备份。需要备份时，可用与服务端兼容的原生`pg_dump/pg_restore`配受控连接，凭据只在本地受保护配置/部署环境；密钥不写命令行、SQL或日志。MCP可核对schema/history，但不是数据库与Storage的完整备份工具。对象须另用Storage API按清单/hash保存并验证，数据库备份不包含对象字节。
+
+应用回滚优先上一兼容构建；数据库默认新增补偿migration/forward-fix。已应用migration不可修改内容；破坏性DOWN只有证明无新数据/依赖、完成备份并获明确批准后才执行。采用expand→backfill→切换→contract，不一次删除旧列。发布交付不能原路径覆盖，误交付用新版本纠正。
+
+实验结束后的`experiments/cloud/teardown.sql`只处理本实验表/桶/策略：先Storage API确认并删除实验对象，再移除元数据。当前没有执行，资源保留供后续测试。不要DROP整个public/auth/storage schema，不把清理脚本指向生产。恢复演练在隔离环境同时核对DB引用与对象hash。
+
+## 原有本机SQL检查的准确含义
+
+`scripts/check-sql-draft.ps1`使用原生PostgreSQL临时cluster，不依赖Docker；原有20项结果只证明草案语法/关系/部分RLS与历史保护。其自建auth.uid/storage.buckets是**本机替身**，不支持真实OTP或Storage HTTP。该脚本保留作离线结构诊断，但不是本轮云实验的setup，也不是业务验收证据。

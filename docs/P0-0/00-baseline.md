@@ -2,6 +2,8 @@
 
 日期：2026-10-16（Asia/Taipei）。状态：工程基础交付；架构与交互待审查；**P0-0 尚未验收通过**。
 
+收尾范围更新：用户授权无Docker的隔离云服务及独立Konva/EXIF实验；只在用户指定组织创建测试项目，正式业务草案仍未应用。SMTP用户决定暂不配置，相关验证待完成。大陆手机网络延至UI可操作后/P0最终验收前，不是当前P0-0阻断；当前状态以07～10文档为准。
+
 ## 仓库检查
 
 初始 `D:\PartMeasure` 只有 `PartMeasure_V1_PRD.md`，`git status` 返回非 Git 仓库，没有 package/锁文件/业务代码/项目或祖先目录 AGENTS.md。全局 `C:\Users\giaog\.codex\AGENTS.md` 为空。未覆盖 PRD；新增 AGENTS.md 固化边界。若后续并入既有远程库，先对比差异，不强推、不重写历史。

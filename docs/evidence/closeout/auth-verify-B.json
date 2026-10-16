@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-16T09:42:56.195Z",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "scope": "isolated service experiment, not application acceptance",
+  "actor": "B",
+  "operation": "email-verification",
+  "method": "existing-email-link",
+  "verified": false,
+  "emailMatchesExpected": false,
+  "error": {
+    "status": 403,
+    "code": "otp_expired"
+  }
+}

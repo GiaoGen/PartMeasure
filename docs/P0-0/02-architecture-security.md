@@ -24,6 +24,8 @@ Route Handler 只负责 DTO/会话/错误映射。授权集中到 server-only DA
 
 多步骤事务不能串联多个 Supabase REST 调用冒充原子操作。后续选择单个受控 SQL RPC（默认 SECURITY INVOKER、非公开 schema、明确 EXECUTE 授权）或服务端 PG 事务适配器。若选 RPC，须重新审查 PostgREST schema 暴露配置；若选 PG，须固定驱动并核对 pooler/事务模式。当前草案无业务 RPC，普通数据库角色无写授权，不能直接用于业务上线。
 
+收尾更新：明确推荐**服务端PG事务适配器**，具体runtime角色、事务上下文、pooler、校验/图像worker与孤儿清理见[ADR-01](08-runtime-decisions.md)。该选择待用户批准，前述两种方案不作为并存写入入口；SQL草案尚未按此批准方案更新或应用。
+
 ## 关系与历史
 
 ```mermaid

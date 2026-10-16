@@ -4,7 +4,10 @@
   "private": true,
   "type": "module",
   "packageManager": "npm@11.12.1",
-  "engines": { "node": ">=24.15.0 <25", "npm": ">=11.12.1 <12" },
+  "engines": {
+    "node": ">=24.15.0 <25",
+    "npm": ">=11.12.1 <12"
+  },
   "scripts": {
     "dev": "next dev --webpack --hostname 127.0.0.1",
     "build": "next build --webpack",
@@ -18,7 +21,11 @@
     "check": "npm run lint && npm run typecheck && npm test && npm run build",
     "db": "supabase",
     "db:migration:new": "supabase migration new",
-    "licenses": "node scripts/license-inventory.mjs"
+    "licenses": "node scripts/license-inventory.mjs",
+    "lab:images": "node scripts/labs/generate-images.mjs",
+    "lab:konva:build": "next build experiments/konva --webpack",
+    "lab:konva:start": "next start experiments/konva --hostname 127.0.0.1 --port 3102",
+    "lab:konva:test": "playwright test --config experiments/konva/playwright.config.ts"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",
@@ -37,6 +44,7 @@
     "@types/node": "24.19.2",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
+    "sharp": "0.35.5",
     "supabase": "2.121.0",
     "tailwindcss": "4.3.3",
     "typescript": "6.0.3",

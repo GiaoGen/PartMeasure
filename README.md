@@ -37,7 +37,21 @@ npm run licenses
 6. [双端交互提案与待决策项](docs/P0-0/05-interaction-proposal.md)
 7. [migration 流程及回滚](docs/P0-0/06-migrations.md)
 8. [实际检查、审批和外部验证状态](docs/P0-0/07-verification.md)
+9. [事务适配器、上传worker及孤儿清理决策](docs/P0-0/08-runtime-decisions.md)
+10. [无Docker云服务实验及邮件配置现状](docs/P0-0/09-cloud-service-lab.md)
+11. [独立Konva/EXIF实验结果](docs/P0-0/10-konva-experiment.md)
 
-`supabase/drafts/` 为**未批准 SQL 草案**，不在自动 migration 链中；`supabase/migrations/` 仅管理工程空基线。未经架构审查与后续实施授权，不把草案提升为 migration，不连接远程数据库，不部署。P0-0 未宣称验收通过。
+`supabase/drafts/` 为**未批准 SQL 草案**，不在自动 migration 链中；`supabase/migrations/` 仅管理工程空基线。收尾只按用户明确授权在新建隔离云项目应用独立实验SQL，未应用业务草案、未操作既有生产项目或部署生产。全程无Docker；migration新流程见06。P0-0 未宣称验收通过。
+
+独立实验不进入业务路由：
+
+```powershell
+npm run lab:images
+npm run lab:konva:build
+npm run lab:konva:test
+node scripts/labs/record-konva.mjs
+```
+
+云实验项目`partmeasure-p0-0-lab`可在后续阶段继续复用，不会完成P0-0即自动删除；真实Auth/Storage完整实验因用户暂不配置SMTP而待完成。邮件脚本有重发保护，不自动发送；密钥/邮箱/验证码/会话仅存ignored `tmp/p0-0-cloud/`，详情见09。中国大陆手机网络实测延到UI可操作后、P0最终验收前，当前不是P0-0阻断。
 
 本机目录归属为 Administrators，Git可能报dubious ownership。可仅对当前命令使用`git -c safe.directory=D:/PartMeasure status`（或log/diff），无需修改全局safe.directory。初始目录无Git，现建立本地历史；没有配置远程或推送。

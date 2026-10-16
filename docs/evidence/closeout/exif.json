@@ -1,0 +1,216 @@
+{
+  "checkedAt": "2026-10-16T09:39:04.433Z",
+  "sharp": "0.35.5",
+  "source": "synthetic inverse-EXIF pixel fixtures; not real phone photos",
+  "samples": [
+    {
+      "id": "640x480-o1",
+      "orientation": 1,
+      "dimensions": [
+        640,
+        480
+      ],
+      "cornerOracle": "PASS",
+      "exifRemoved": true,
+      "reorientationStable": true,
+      "sourceSha256": "760378fb72313a6084c8cf70d75dec3b384f13e872bf1a9378a969ec47a7503a",
+      "canonicalSha256": "9eb021ea8831906075396ccb1d39704daf2f58174c0bb7d16e8e562a0a0b90ca"
+    },
+    {
+      "id": "640x480-o2",
+      "orientation": 2,
+      "dimensions": [
+        640,
+        480
+      ],
+      "cornerOracle": "PASS",
+      "exifRemoved": true,
+      "reorientationStable": true,
+      "sourceSha256": "b67fb6f021f022738b8862e4bdaec3569f98dddf1905054a7a3b4170a1a6e024",
+      "canonicalSha256": "9eb021ea8831906075396ccb1d39704daf2f58174c0bb7d16e8e562a0a0b90ca"
+    },
+    {
+      "id": "640x480-o3",
+      "orientation": 3,
+      "dimensions": [
+        640,
+        480
+      ],
+      "cornerOracle": "PASS",
+      "exifRemoved": true,
+      "reorientationStable": true,
+      "sourceSha256": "489b6191e72020e4f66238feddecf514aea39439cb8ad646aae29772ddaecf7e",
+      "canonicalSha256": "9eb021ea8831906075396ccb1d39704daf2f58174c0bb7d16e8e562a0a0b90ca"
+    },
+    {
+      "id": "640x480-o4",
+      "orientation": 4,
+      "dimensions": [
+        640,
+        480
+      ],
+      "cornerOracle": "PASS",
+      "exifRemoved": true,
+      "reorientationStable": true,
+      "sourceSha256": "6d0edc7d2ae0e8652331742491afd70c7bcb9e4916261d377f58594587cb455c",
+      "canonicalSha256": "9eb021ea8831906075396ccb1d39704daf2f58174c0bb7d16e8e562a0a0b90ca"
+    },
+    {
+      "id": "640x480-o5",
+      "orientation": 5,
+      "dimensions": [
+        640,
+        480
+      ],
+      "cornerOracle": "PASS",
+      "exifRemoved": true,
+      "reorientationStable": true,
+      "sourceSha256": "2c13fce4a23065b94390bede1d2a766e37054066bef8f142659d67c9be4d3e2f",
+      "canonicalSha256": "9eb021ea8831906075396ccb1d39704daf2f58174c0bb7d16e8e562a0a0b90ca"
+    },
+    {
+      "id": "640x480-o6",
+      "orientation": 6,
+      "dimensions": [
+        640,
+        480
+      ],
+      "cornerOracle": "PASS",
+      "exifRemoved": true,
+      "reorientationStable": true,
+      "sourceSha256": "e31d996b013db2dc8231afdbba41c3b46f4ecd344ee685b38c951abb8c0dbcae",
+      "canonicalSha256": "9eb021ea8831906075396ccb1d39704daf2f58174c0bb7d16e8e562a0a0b90ca"
+    },
+    {
+      "id": "640x480-o7",
+      "orientation": 7,
+      "dimensions": [
+        640,
+        480
+      ],
+      "cornerOracle": "PASS",
+      "exifRemoved": true,
+      "reorientationStable": true,
+      "sourceSha256": "b0dd49b617f473afc00131ba8a98a1e71c9f11a83629f5d4e67adff65ef9b02f",
+      "canonicalSha256": "9eb021ea8831906075396ccb1d39704daf2f58174c0bb7d16e8e562a0a0b90ca"
+    },
+    {
+      "id": "640x480-o8",
+      "orientation": 8,
+      "dimensions": [
+        640,
+        480
+      ],
+      "cornerOracle": "PASS",
+      "exifRemoved": true,
+      "reorientationStable": true,
+      "sourceSha256": "4fc8c239cb2159d5d6920513b074d30e127cdeffeff1d8e6176fd9b7261ce293",
+      "canonicalSha256": "9eb021ea8831906075396ccb1d39704daf2f58174c0bb7d16e8e562a0a0b90ca"
+    },
+    {
+      "id": "480x640-o1",
+      "orientation": 1,
+      "dimensions": [
+        480,
+        640
+      ],
+      "cornerOracle": "PASS",
+      "exifRemoved": true,
+      "reorientationStable": true,
+      "sourceSha256": "cb6809f303b89962b40478df5fffad300bcd1f72cf7389f2d0d7c516e669d8df",
+      "canonicalSha256": "2236e49b0e1c5cc1df53099050bb8e738bf5385350770ea07e837ccb287832ae"
+    },
+    {
+      "id": "480x640-o2",
+      "orientation": 2,
+      "dimensions": [
+        480,
+        640
+      ],
+      "cornerOracle": "PASS",
+      "exifRemoved": true,
+      "reorientationStable": true,
+      "sourceSha256": "943f7c4700207d09f8cb64b480d4835a0e8464a2f2b1d65f25359b05154750f1",
+      "canonicalSha256": "2236e49b0e1c5cc1df53099050bb8e738bf5385350770ea07e837ccb287832ae"
+    },
+    {
+      "id": "480x640-o3",
+      "orientation": 3,
+      "dimensions": [
+        480,
+        640
+      ],
+      "cornerOracle": "PASS",
+      "exifRemoved": true,
+      "reorientationStable": true,
+      "sourceSha256": "550acda15259e9e963892616f2eeea6cf5817d0cdb5f97e799b0c570fa44e229",
+      "canonicalSha256": "2236e49b0e1c5cc1df53099050bb8e738bf5385350770ea07e837ccb287832ae"
+    },
+    {
+      "id": "480x640-o4",
+      "orientation": 4,
+      "dimensions": [
+        480,
+        640
+      ],
+      "cornerOracle": "PASS",
+      "exifRemoved": true,
+      "reorientationStable": true,
+      "sourceSha256": "e7d1308d802a8ecfd9face6d18a1d65d419d56c94535947284b9a6c2ddec5af5",
+      "canonicalSha256": "2236e49b0e1c5cc1df53099050bb8e738bf5385350770ea07e837ccb287832ae"
+    },
+    {
+      "id": "480x640-o5",
+      "orientation": 5,
+      "dimensions": [
+        480,
+        640
+      ],
+      "cornerOracle": "PASS",
+      "exifRemoved": true,
+      "reorientationStable": true,
+      "sourceSha256": "35b2a9214b16758261d566f47c26eb38d5efedf4e367971204558055699384f3",
+      "canonicalSha256": "2236e49b0e1c5cc1df53099050bb8e738bf5385350770ea07e837ccb287832ae"
+    },
+    {
+      "id": "480x640-o6",
+      "orientation": 6,
+      "dimensions": [
+        480,
+        640
+      ],
+      "cornerOracle": "PASS",
+      "exifRemoved": true,
+      "reorientationStable": true,
+      "sourceSha256": "1cb168986032553fa177044ba8869a65a8018e3ead7d9846c860e6f750e1bd29",
+      "canonicalSha256": "2236e49b0e1c5cc1df53099050bb8e738bf5385350770ea07e837ccb287832ae"
+    },
+    {
+      "id": "480x640-o7",
+      "orientation": 7,
+      "dimensions": [
+        480,
+        640
+      ],
+      "cornerOracle": "PASS",
+      "exifRemoved": true,
+      "reorientationStable": true,
+      "sourceSha256": "eb4b394f0f1e5aef79500f7704a1d75e8c6b20f7d5ca93a442bcb2a86705e51c",
+      "canonicalSha256": "2236e49b0e1c5cc1df53099050bb8e738bf5385350770ea07e837ccb287832ae"
+    },
+    {
+      "id": "480x640-o8",
+      "orientation": 8,
+      "dimensions": [
+        480,
+        640
+      ],
+      "cornerOracle": "PASS",
+      "exifRemoved": true,
+      "reorientationStable": true,
+      "sourceSha256": "2c22b5887d2ddc7931d56f8b32fe38601a472d44d54ca4d6b69dc3db360aff31",
+      "canonicalSha256": "2236e49b0e1c5cc1df53099050bb8e738bf5385350770ea07e837ccb287832ae"
+    }
+  ],
+  "passed": 16
+}

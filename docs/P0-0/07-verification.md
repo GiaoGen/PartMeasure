@@ -1,69 +1,83 @@
-# P0-0 交付、实际检查与审批登记
+# P0-0收尾验证与验收准备
 
-日期：2026-10-16（Asia/Taipei）。**P0-0尚未验收通过**：已完成可审阅工程/方案，架构权限与交互审查没有项目所有者批准记录。没有开展P0-1～P0-4的业务实现，没有远程数据库变更或生产部署。
+日期2026-10-16（Asia/Taipei）。基线提交`a9bdc83`；本轮收尾提交ID见`git log -1`与交付消息。**P0-0尚未获用户验收，架构/安全/交互方案仍待明确批准。** 没有提前实施P0-1～P0-4或正式业务UI，没有操作既有生产项目或部署生产，全程不使用Docker。
 
-## 已完成与实际执行
+## a9bdc83之后的实际范围
 
-| 检查 | 实际结果 | 覆盖范围/证据 |
+开始时没有新提交，工作树仅`next-env.d.ts`从`.next/types`变为`.next/dev/types`的Next生成变化。未把它当用户手写代码覆盖；正常typegen/build后回到原基线内容。主应用`src/app`、原PRD及未批准的业务SQL草案保持不变。
+
+新增的是独立实验与可复跑脚本：`experiments/konva`（单独Next应用与输出目录）、`experiments/cloud`（极小真实服务SQL/邮件模板候选）、`scripts/labs`、`tests/konva`；显式固定实验dev依赖Sharp0.35.5并提交lock。补齐无Docker流程、明确PG事务适配器推荐及worker/孤儿清理方案。所有业务选择均停留在文档待审批。
+
+## P0-0已通过的检查
+
+| 实际执行 | 结果 | 证据和准确覆盖范围 |
 |---|---|---|
-| 根PRD、仓库与AGENTS | 已读；初始只有PRD、非Git仓库，无项目AGENTS | 00文档；PRD未改；新增项目约束及Next自动生成的版本文档指引 |
-| 官方依赖/兼容/许可证 | 已核对并精确固定，统一npm | 01、THIRD_PARTY_NOTICES、registry/official-docs/licenses证据；传递依赖非全MIT |
-| `npm ci --no-fund --fetch-retries=1 --fetch-timeout=30000` | exit0；108包安装，审计109包，0已知漏洞 | 锁文件可干净安装；不同平台optional安装数不同 |
-| `npm run lint` | exit0；Biome recommended检查14个源/配置文件，0问题 | 不把关闭lint当通过 |
-| `npm run typecheck` | exit0；`next typegen --webpack && tsc --noEmit` | TS strict + noUncheckedIndexedAccess + exactOptionalPropertyTypes；先typegen支持新checkout |
-| `npm test` | exit0；1 test / 1 file通过 | 无凭据健康响应、数据库未连接标志、no-store；不代表业务单测 |
-| `npm run build` | exit0；Next16.4.2 webpack生产构建 | `/`静态基础标记，`/api/health`动态；生成404为框架默认 |
-| `npm run dev -- --port 3101` | Ready 691ms；根页与健康HTTP200 | 正常本地权限下实际访问后已停止；开发/生产都webpack |
-| `npm run test:e2e` | exit0；2通过（桌面Chromium/Pixel7 viewport） | 基础页标题、健康body、no-store/no-referrer；仅Chromium仿真，不是实机/业务闭环 |
-| `npm run test:e2e:list` | 2个基础测试可发现 | 两个project使用同一基础用例 |
-| `npm audit --json` | exit0；0 low/moderate/high/critical | `docs/evidence/npm-audit.json`；已知公告时间点，不是无漏洞保证 |
-| `npm run licenses` | exit0；203个lock条目均有SPDX声明 | `docs/evidence/licenses.json`；CLI包未附根许可证文本，见下方限制 |
-| `npm ls --depth=0` | exit0；版本与lock一致，无invalid peer | npm/Next在Windows clean install后仍显示两个optional wasm包extraneous，见下方说明，不伪报全树完全clean |
-| 固定Supabase CLI help/init/migration new | exit0，生成本地配置和空history marker | `supabase/migrations/20261016085629_infrastructure_baseline.sql`；没有应用业务schema |
-| 本机PostgreSQL18.4草案结构检查 | exit0；20项PASS，临时集群已停止 | `scripts/check-sql-draft.ps1`、`tests/sql/draft-smoke.sql`、`docs/evidence/sql-draft-check.txt`；auth.uid/storage.buckets为stub |
+| 根PRD、AGENTS与P0-0全部方案复核 | 完成 | 重点§4～6、8～10、12；未覆盖原PRD |
+| `npm run lint` | exit0，最终31源/配置文件，0问题 | Biome recommended，warning即失败；实验脚本也检查 |
+| `npm run typecheck` | exit0 | `next typegen --webpack && tsc --noEmit`；strict与额外空值/索引约束保留 |
+| `npm test` | exit0，1/1通过 | 基础健康响应/no-store/数据库未连接标记，不代表业务 |
+| `npm run build` | exit0 | 主应用webpack生产构建，只有`/`、框架404、动态`/api/health` |
+| `npm run test:e2e` | exit0，2/2通过 | 主应用生产构建；桌面/Pixel7 Chromium viewport基础页与健康契约 |
+| `npm run lab:images` | exit0，16份合成图断言通过 | EXIF1～8×横竖图，独立角点oracle、尺寸/metadata/再次标准化稳定性 |
+| `npm run lab:konva:build` | exit0 | 独立Next生产构建，无SSR window或native canvas错误 |
+| `npm run lab:konva:test` | exit0，36/36通过，0跳过/失败/flaky | DPR1/2，线圆点、逆矩阵、缩放/平移/旋转、resize、真实Canvas像素、修改后JSON保存/刷新恢复 |
+| `node scripts/labs/record-konva.mjs` | exit0，36条真实结果记录 | `docs/evidence/closeout/konva-browser.json`，约18.6秒 |
+| `npm audit --json` | exit0，0项已知漏洞 | `docs/evidence/closeout/npm-audit.json`；不是安全保证 |
+| `npm run licenses` | exit0，203个lock条目有SPDX | 原清单更新Sharp直接dev依赖；LGPL/MPL/CC-BY等传递通知保留，CLI根LICENSE缺项仍见01 |
+| 组织指定、Free核价、新云项目 | 完成，$0/月 | 用户指定MESS's Org；`partmeasure-p0-0-lab` / `rvysclscetfqicpnzlra` / 东京 / PG17.11 |
+| MCP真实系统与实验配置核对 | 通过到**配置层** | auth/storage真实存在；仅`p0_lab_records`及私有实验桶；7策略；0实验行/对象；不是上传下载或A/B权限PASS |
 
-本机结构检查覆盖：16业务表RLS开启；private bucket元数据上限；Owner A/B及子表隔离；Owner不可直写/读分享哈希；anon无表权限；跨项目annotation/response拒绝；测量需目标；回复/几何修订/历史文件/标准图尺寸不可静默改；发布版本和附件集合不可变；版本及幂等作用域唯一。**没有**验证真实Supabase HTTP、Guest验证代码、撤销竞态、Storage策略、事务RPC、扫描器和额度worker。
+本机PG替身的原20项检查是`a9bdc83`历史结构证据，本轮不冒充重跑，不部署云端。真实Chrome/Edge/Safari/Android/微信手机和大图性能均未验证。独立实验不是正式标注器、数据库保存或跨设备业务验收。
 
-## 工具链发现与限制
+云端只执行本轮授权的独立实验migration `20261016093639 / p0_0_isolated_service_lab`；未部署应用空marker或业务草案。实验表/桶/策略保留以便后续复用。安全advisors仍有1项warning：[Leaked Password Protection Disabled](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection)，没有宣称云端零告警。
 
-- npm沙箱DNS拒绝外网，已通过自动审查的正常本地网络安装官方registry依赖；未改全局registry。GitHub raw/CLI LICENSE链接未能取得许可证原文，官方npm manifest声明MIT；发布/再分发CLI二进制前补齐上游通知。其余直接依赖可检查到包内许可证文件hash。
-- ESLint候选有peer冲突及5项high依赖公告，已移除该链改用Biome；最终安全报告0。TypeScript7已调研，最终固定实际验证的6.0.3。没有force忽略peer。
-- Turbopack CSS子进程错误在沙箱与正常权限均出现；webpack构建已实际通过，所以固定官方回退。该问题不再阻止本基线运行，未来是否恢复Turbopack另评估。
-- 沙箱不能访问127.0.0.1，也影响浏览器启动等待；实际Playwright/SQL/开发访问在正常本地权限下运行。PowerShell的进程等待和psql NOTICE处理问题已修正。早期失败不计PASS，表中只记录最终实际结果。
-- 两个optional包`@emnapi/runtime@1.11.3`、`@img/sharp-wasm32@0.35.5`在npm ci后由依赖安装链保留，并被npm ls标为extraneous；它们已在lock/licenses清单中，未手改node_modules隐藏告警。无peer冲突，构建和测试正常；后续npm/Next升级时复核该元数据行为。
-- Docker daemon未运行；Supabase本地全栈、迁移history回放、db lint/advisors未执行。不能用本机PG18+stub替代PG17托管/Auth/Storage测试。
-- Playwright仅安装并运行Chromium；Firefox、WebKit、真实Chrome/Edge/iOS/Android/微信兼容未验证。NO_COLOR/FORCE_COLOR提示来自执行环境，不影响测试结果。
+## 邮件与真实服务验证：待完成，不标PASS
 
-## 主要变更
+两个邮箱经用户确认（B拼写更正）后，只发送过2个被接受的登录邮件请求。默认`signInWithOtp`发Magic Link；未先解释模板/配额就发送是本次流程失误。用户收到邮件并点击后，保存在ignored文件的原始链接各返回`403 otp_expired`；云端聚合显示2用户email_confirmed，但脚本没有取得可用session，不能当登录通过。
 
-- 保留PRD原文件；新增npm精确依赖/锁、Node版本、环境示例、ignore、TS/App Router、Tailwind PostCSS、Biome、Vitest、Playwright和无外部依赖健康路由。
-- 新增架构/权限、路由DTO、图像契约与Spike计划、交互低保真、审批表、migration与恢复说明；SQL独立于自动执行目录。
-- SQL采用真实关系与跨项目FK，追加历史、发布保护、只读Owner RLS和默认拒绝Guest直连。**方案尚未批准，缺少正式事务与完整约束，不得直接上线**。
-- 新建本地Git历史以便审阅，没有关联/推送远程；提交ID在最终交付消息及`git log -1`中查看。
-- 本机目录的Administrators归属触发Git safe.directory检查，使用命令级`-c safe.directory=D:/PartMeasure`，未改全局信任设置。未发现用户Git作者配置，本次提交使用`Codex <codex@local.invalid>`标记代理产物，不冒用用户身份。
-- 提交前检查未发现私钥或真实secret key；新增文件`git diff --cached --check`通过。原PRD自带3处Markdown行尾双空格（硬换行）原样保留，因此检查排除该原文件；SQL日志只去除表格行尾空白，保留实际结果。
+MCP无SMTP/模板接口，浏览器控制初始化失败；用户检查Dashboard确认“set up custom SMTP to edit source”。数字码需自有SMTP后把Magic Link/Confirm signup改为`{{ .Token }}`正文。用户决定**暂不配置，记录验证码验证待完成**，所以没有改模板、配SMTP、使用Admin凭证或重发邮件。
 
-## 待审批
+`services.mjs`准备了真实Auth getUser、A/B行隔离/伪造owner拒绝、私有Storage正向/拒绝及清理，但**尚未执行**；其存在不算测试通过。缺少session是明确前置条件，不以MCP高权限查询/SET ROLE模拟替代。数字OTP送达、A/B及Storage完整服务实验均待用户恢复验证。详见09与脱敏`auth-request/verify-*.json`。
 
-| 项目 | 状态 | 审查入口 |
+凭据、邮箱、登录链接、refresh/access token只存ignored本地配置/输入；错误只输出白名单status/code，不输出SDK响应/堆栈或URL。已消费输入处理后删除；没有把凭据写进提交。
+
+## 尚需用户批准的具体决策
+
+| 决策 | 当前推荐 | 审查入口/范围 |
 |---|---|---|
-| 架构、关系与安全策略 | pending，无批准人/时间 | 02及SQL草案，重点是服务端写入路径、撤销与签名窗口 |
-| API/annotation与图像契约 | pending | 03、04，含固定revision/归一化规则 |
-| UI-01～05双端主方案 | pending | 05，含两Section、空项目/待测双路径、四项禁令证据 |
-| SEC/FILE/OPS具体选项 | pending | 05末表，含30天链接、代理下载、格式配额、实测阈值 |
-| P0-0阶段验收 | 未通过/待审查 | 工程运行通过不等于完整P0-0验收 |
+| ARCH-01 | 服务端PostgreSQL事务适配器、受限非bypass runtime角色、transaction pooler | 08；不是RPC与适配器并行写入，业务SQL须后续获批修订 |
+| UI-01～05 | 工程师桌面三列/窄屏单目标、客户三条回复方式、冷灰白纯蓝、submitted修改与归档规则 | 05；仅两Section，正式UI未实施 |
+| SEC-01/02 | 链接30天、会话24h、每次核撤销；受控下载代理优先 | 02/05；短签名下载备选有残留窗口，上传grant2h/TUS24h另计 |
+| FILE-01/02、IMG-01 | 初始格式/大小/配额、客户标准图/Owner原件、Sharp标准化及历史版本 | 02/04/08；实验成功不等于生产管线批准 |
+| OPS-02、FILE-03 | 常驻Node worker、资源/托管/费用、扫描器、ZIP边界及清理租约/重试 | 08；没有部署或新增费用 |
+| OPS-01（延期部分） | 大陆实测指标与测试样本 | 用户已决定UI可操作后、P0最终验收前；阈值仍待审查 |
+| P0-0验收 | 在上述方案审查及暂缓验证边界被接受后由用户明确决定 | 本报告不替用户签收 |
 
-PRD §8.3/§12及本次用户指令要求明确批准正式交互方案；当前没有授权实施业务UI。本报告只交付审查材料，不把“收到文档”当批准，不以本次提交自动启动P0-1。
+“收到方案”或“继续执行收尾”不等于批准正式业务UI/数据库方案。本轮明确授权仅覆盖隔离服务实验与独立Canvas实验。
 
-## 待外部验证/阻断
+## 需后续业务实现才可验证的项目
 
-| 事项 | 缺少条件 | 后续证据要求 |
+| 阶段 | 验证项目 | 为什么本轮不算未完成业务阻断 |
 |---|---|---|
-| Supabase集成/RLS/Storage/迁移恢复 | 可用Docker本地栈，或明确授权的隔离测试项目与凭据 | 两Owner+无登录Guest、真实私有对象、拒绝越权、撤销/并发/幂等、up/down恢复、advisors/lint输出 |
-| 邮箱OTP | 测试邮箱/SMTP资源和隔离Auth环境 | 投递、过期、重复、登出恢复、中文模板/Free限制 |
-| 安全上传/成本窗口 | 实际Storage配额/套餐、扫描及图像worker、授权测试文件 | magic/解码/限额/断点恢复、撤销后finalize拒绝、2h/24h旧凭证窗口和清理实测 |
-| React Konva/EXIF | 独立实验授权、方向样本、真实手机与工程师操作 | 04的矩阵、定位误差/FPS/内存、原件/派生图hash |
-| 中国大陆网络 | 大陆城市/三运营商SIM、无VPN真机、授权预发域名 | 登录/分享/上传/回复/私有下载/断网恢复原始记录，失败根因和部署评估 |
-| 完整业务与视觉验收 | UI/架构批准及P0-1～P0-4后续授权实施 | PRD §10完整用例，真实持久化数据，截图/录屏对照批准方案 |
+| P0-1 | 正式SSR邮箱OTP/回调/Cookie恢复、项目归属、Guest链接校验撤销、真实业务文件网关/上传管线/限额 | 本轮无这些应用代码；服务实验不能代替，也不要求提前实现 |
+| P0-2 | 获批标注交互、revision保存、Guest只读、真实照片标准化与跨设备位置、手机手势/大图性能 | 独立固定几何实验已完成基础风险验证，业务保存仍属P0-2 |
+| P0-3 | 三类回复、重测/确认历史、真实多表事务/竞态/幂等 | ADR供审查，不提前写业务 |
+| P0-4 | 正式多附件交付、不可覆盖发布、真实端到端闭环 | 未实现交付不能拿模拟流程冒充验收 |
+| P0最终出口前 | 大陆真实手机网络登录/上传/回复/下载 | 按用户决定延期，当前**不是P0-0阻断** |
+| P2/P3 | 导出、完整版本UI、生产备份恢复/发布与全浏览器质量 | 对应阶段另行授权与验证 |
 
-以上均未实测，状态是待验证；没有模拟业务PASS。无远程数据库/生产部署行为。缺少外部条件不妨碍本次文档与基础代码审阅，但阻止相应集成/实机结论。
+只记录用户已确认**数据库可访问**；没有扩展为大陆Auth/Storage/整站通过。当前开发机使用系统代理连通服务也不提供大陆移动网络证据。
+
+## 真正影响进入P0-1的事项
+
+1. **必要审批仍缺失**：架构/权限与ARCH-01需明确批准，才能实施业务schema/事务；涉及P0-1新交互时，需对应UI方案批准。可以批准后先做不依赖UI的后端工作，不要求先实现所有P0。
+2. **SMTP和会话验证缺口是局部前置条件**：用户已选择暂缓，它阻止数字OTP及完整A/B/Storage服务实验被标通过，也会阻止P0-1邮箱登录能力验收；不自动扩大为所有P0-1技术工作的硬阻断。能否接受该暂缓条件并批准阶段，由用户决定，当前未获验收。
+3. 本轮适用的本地工程/Canvas检查没有未修复失败。无Docker、没有正式业务UI、未完成后续业务、未做大陆手机测试，均不能被额外列作强迫提前实现全部P0的理由。
+
+## 项目复用与交付状态
+
+`partmeasure-p0-0-lab`是隔离测试环境，P0-0是创建阶段标记，**不计划阶段完成即废弃**。可持续复用于P0-1～P0-4测试；不每阶段重建、不擅自删除/改名。若用户希望可另改显示名`partmeasure-test`，ref不变。正式业务migration获批后，先清理或明确隔离旧实验策略/对象；生产须另建环境、凭据和发布授权。当前2用户、0实验行、0对象及私有桶配置见`closeout/cloud-inventory.json`。
+
+主PRD和`src/app`未变，未批准草案未应用；提交包含文档、独立实验、锁和脱敏证据。Git目录归属问题继续使用命令级`-c safe.directory=D:/PartMeasure`，不改全局信任。提交前检查变更与密钥，工作树状态和最终commit在交付时报告。完整细节见06（无Docker）、08（运行决策）、09（云服务/邮件）、10（Canvas）。
+
+提交前对76个非ignored文件与本地配置中的真实key/测试邮箱精确比对，并扫描私钥/JWT格式：0匹配；确认私密config及生成图片被ignore，`git diff --check`通过。Next生成文件未被手工覆盖为新业务实现。

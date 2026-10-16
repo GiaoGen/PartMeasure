@@ -9,6 +9,8 @@
 - 私有数据/RLS/Storage 必须默认拒绝。分享令牌只存哈希，日志脱敏，密钥永不进版本库。
 - 检查：`npm run lint`、`npm run typecheck`、`npm test`、`npm run build`、`npm run test:e2e`。基础测试不能代替真实数据库与大陆手机网络验收。
 - 阶段报告区分已完成、待审批、待外部验证；未实测不得写通过。
+- 收尾用户要求全程无Docker；已明确授权的隔离云实验项目ref为`rvysclscetfqicpnzlra`，不得转而操作既有生产项目。业务草案未批准不得应用，本机auth/Storage替身永不部署云端。
+- 用户已决定暂不配置SMTP：OTP及完整A/B/Storage服务实验待完成，未经后续明确授权不得重发邮件。大陆手机网络延到UI可操作后、P0最终验收前，不是当前P0-0阻断；数据库可访问不等于Auth/Storage/整站通过。
 
 <!-- BEGIN:nextjs-agent-rules -->
 

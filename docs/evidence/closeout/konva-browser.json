@@ -1,0 +1,499 @@
+{
+  "scope": "independent Konva/EXIF experiment; not application acceptance",
+  "startTime": "2026-10-16T10:03:20.049Z",
+  "durationMs": 18555.700999999997,
+  "passed": 36,
+  "failed": 0,
+  "skipped": 0,
+  "flaky": 0,
+  "projects": [
+    {
+      "name": "desktop-dpr1",
+      "viewport": {
+        "width": 1100,
+        "height": 900
+      },
+      "deviceScaleFactor": 1,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36"
+    },
+    {
+      "name": "mobile-dpr2",
+      "viewport": {
+        "width": 412,
+        "height": 839
+      },
+      "deviceScaleFactor": 2,
+      "userAgent": "Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Mobile Safari/537.36"
+    }
+  ],
+  "tests": [
+    {
+      "name": "EXIF 1 640x480: browser raw + canonical have same upright corners",
+      "project": "desktop-dpr1",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 973,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 2 640x480: browser raw + canonical have same upright corners",
+      "project": "desktop-dpr1",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 921,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 3 640x480: browser raw + canonical have same upright corners",
+      "project": "desktop-dpr1",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 541,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 4 640x480: browser raw + canonical have same upright corners",
+      "project": "desktop-dpr1",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 478,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 5 640x480: browser raw + canonical have same upright corners",
+      "project": "desktop-dpr1",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 549,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 6 640x480: browser raw + canonical have same upright corners",
+      "project": "desktop-dpr1",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 551,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 7 640x480: browser raw + canonical have same upright corners",
+      "project": "desktop-dpr1",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 572,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 8 640x480: browser raw + canonical have same upright corners",
+      "project": "desktop-dpr1",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 569,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 1 480x640: browser raw + canonical have same upright corners",
+      "project": "desktop-dpr1",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 574,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 2 480x640: browser raw + canonical have same upright corners",
+      "project": "desktop-dpr1",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 552,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 3 480x640: browser raw + canonical have same upright corners",
+      "project": "desktop-dpr1",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 472,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 4 480x640: browser raw + canonical have same upright corners",
+      "project": "desktop-dpr1",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 520,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 5 480x640: browser raw + canonical have same upright corners",
+      "project": "desktop-dpr1",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 604,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 6 480x640: browser raw + canonical have same upright corners",
+      "project": "desktop-dpr1",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 605,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 7 480x640: browser raw + canonical have same upright corners",
+      "project": "desktop-dpr1",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 736,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 8 480x640: browser raw + canonical have same upright corners",
+      "project": "desktop-dpr1",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 710,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "Konva line/circle/point, inverse transform, resize, zoom, pan, rotation and serialization",
+      "project": "desktop-dpr1",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 1401,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "actual rendered Canvas pixels place normalized point and line at expected screen positions",
+      "project": "desktop-dpr1",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 709,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 1 640x480: browser raw + canonical have same upright corners",
+      "project": "mobile-dpr2",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 712,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 2 640x480: browser raw + canonical have same upright corners",
+      "project": "mobile-dpr2",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 779,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 3 640x480: browser raw + canonical have same upright corners",
+      "project": "mobile-dpr2",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 696,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 4 640x480: browser raw + canonical have same upright corners",
+      "project": "mobile-dpr2",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 910,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 5 640x480: browser raw + canonical have same upright corners",
+      "project": "mobile-dpr2",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 1029,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 6 640x480: browser raw + canonical have same upright corners",
+      "project": "mobile-dpr2",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 668,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 7 640x480: browser raw + canonical have same upright corners",
+      "project": "mobile-dpr2",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 692,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 8 640x480: browser raw + canonical have same upright corners",
+      "project": "mobile-dpr2",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 715,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 1 480x640: browser raw + canonical have same upright corners",
+      "project": "mobile-dpr2",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 751,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 2 480x640: browser raw + canonical have same upright corners",
+      "project": "mobile-dpr2",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 644,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 3 480x640: browser raw + canonical have same upright corners",
+      "project": "mobile-dpr2",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 683,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 4 480x640: browser raw + canonical have same upright corners",
+      "project": "mobile-dpr2",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 663,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 5 480x640: browser raw + canonical have same upright corners",
+      "project": "mobile-dpr2",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 622,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 6 480x640: browser raw + canonical have same upright corners",
+      "project": "mobile-dpr2",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 569,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 7 480x640: browser raw + canonical have same upright corners",
+      "project": "mobile-dpr2",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 539,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "EXIF 8 480x640: browser raw + canonical have same upright corners",
+      "project": "mobile-dpr2",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 527,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "Konva line/circle/point, inverse transform, resize, zoom, pan, rotation and serialization",
+      "project": "mobile-dpr2",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 1400,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    },
+    {
+      "name": "actual rendered Canvas pixels place normalized point and line at expected screen positions",
+      "project": "mobile-dpr2",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 560,
+          "retry": 0,
+          "errorCount": 0
+        }
+      ]
+    }
+  ]
+}

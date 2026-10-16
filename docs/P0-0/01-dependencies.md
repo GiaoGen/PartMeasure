@@ -19,6 +19,7 @@
 | Vitest | 5.0.5 | [指南](https://vitest.dev/guide/)：Vite≥6.4、Node≥22.12（实际engine有24范围）；采用Node环境，Vite解析由锁文件固定；不把async RSC当普通单测 | MIT |
 | @playwright/test | 1.64.1 | [安装](https://playwright.dev/docs/intro)：Node22/24/26、Windows11等；对应Chromium156固定下载；实际viewport测试另见结果 | Apache-2.0 |
 | Biome | 2.5.15 | [官方快速开始](https://biomejs.dev/installation/quick-start/)，Next官方安装文档允许Biome；启用recommended lint、告警即失败，formatter暂不强制 | MIT OR Apache-2.0 |
+| Sharp（独立实验dev依赖） | 0.35.5 | 本轮核对registry/官方autoOrient、metadata与输入限制；复用原Next相同版本，用于16份EXIF样本生成及标准化，不接入业务worker | Apache-2.0；libvips平台包另有LGPL等通知 |
 
 运行约束比单个依赖minimum更严格，`engine-strict`与项目engines约束Node24/npm11。最低浏览器由Next与Tailwind取交集：Chrome/Edge111+、Safari16.4+、Firefox128+；微信/X5及旧Android WebView需真实验证，不能假定满足现代CSS。系统字体不依赖Google Fonts。Konva的Node Canvas后端peer是可选，不安装canvas/skia-canvas来支撑浏览器画布。
 

@@ -1,0 +1,43 @@
+{
+  "checkedAt": "2026-10-16T10:16:57.043Z",
+  "source": "Supabase MCP execute_sql (aggregate metadata only)",
+  "scope": "isolated service configuration; no Auth/session or file operation PASS implied",
+  "project": {
+    "ref": "rvysclscetfqicpnzlra",
+    "name": "partmeasure-p0-0-lab",
+    "organization": "MESS's Org",
+    "region": "ap-northeast-1",
+    "quotedMonthlyCost": 0
+  },
+  "migration": {
+    "version": "20261016093639",
+    "name": "p0_0_isolated_service_lab",
+    "businessDraftApplied": false
+  },
+  "inventory": [
+    {
+      "lab_record_count": 0,
+      "lab_object_count": 0,
+      "lab_bucket_public": false,
+      "lab_file_size_limit": 1048576,
+      "lab_policy_count": 7,
+      "auth_user_count": 2,
+      "email_confirmed_user_count": 2,
+      "postgres_version": "17.11"
+    }
+  ],
+  "securityAdvisories": [
+    {
+      "name": "auth_leaked_password_protection",
+      "level": "WARN",
+      "remediation": "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection"
+    }
+  ],
+  "authStatus": "two email requests accepted; both link verifications returned 403 otp_expired; no usable session",
+  "deferredByUser": [
+    "custom SMTP configuration",
+    "numeric OTP delivery/verification",
+    "complete A/B and private Storage service experiment"
+  ],
+  "projectLifecycle": "retain and reuse for subsequent non-production tests; do not discard at P0-0 completion"
+}

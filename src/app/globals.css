@@ -615,3 +615,160 @@ small {
 		padding-right: 0;
 	}
 }
+/* P0-3: flat task rows, immutable target and contextual response/review forms. */
+.issue-inbox {
+	padding: 20px 0;
+	border-bottom: 1px solid #d5dae1;
+}
+.issue-inbox-list {
+	list-style: none;
+	padding: 0;
+	max-height: 210px;
+	overflow: auto;
+}
+.issue-inbox-list li {
+	border-bottom: 1px solid #d5dae1;
+}
+.issue-inbox-list button {
+	width: 100%;
+	justify-content: space-between;
+	text-align: left;
+	border: 0;
+	gap: 16px;
+}
+.issue-inbox-list small {
+	white-space: nowrap;
+	color: #536477;
+}
+.issue-target-layout.with-target {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 320px;
+	gap: 24px;
+}
+.issue-target,
+.issue-actions {
+	min-width: 0;
+}
+.issue-actions {
+	border-left: 1px solid #d5dae1;
+	padding-left: 20px;
+}
+.issue-detail fieldset,
+.measurement-create fieldset {
+	border: 0;
+	padding: 0;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+.issue-detail label,
+.measurement-create label {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+.issue-detail input,
+.issue-detail select,
+.issue-detail textarea,
+.measurement-create input,
+.measurement-create textarea,
+.measurement-create select {
+	width: 100%;
+	max-width: 100%;
+	min-height: 44px;
+}
+.response-choices {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+.response-choices [aria-pressed="true"] {
+	color: #073c9c;
+	border-color: #175cd3;
+	background: #eef4ff;
+}
+.numeric-entry {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 85px;
+	gap: 12px;
+}
+.preserve-lines {
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+.remeasure-note {
+	border-left: 3px solid #175cd3;
+	padding-left: 12px;
+	white-space: pre-wrap;
+}
+.response-evidence .upload-area {
+	padding: 12px 0;
+}
+.evidence-pick-list {
+	max-height: 240px;
+	overflow: auto;
+}
+.evidence-pick-list label {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	min-height: 44px;
+	overflow-wrap: anywhere;
+}
+.evidence-pick-list input[type="checkbox"] {
+	width: 20px;
+	min-height: 20px;
+	flex: none;
+}
+.issue-history {
+	border-top: 1px solid #d5dae1;
+	margin-top: 24px;
+	padding-top: 20px;
+}
+.issue-history ol {
+	list-style: none;
+	padding: 0;
+}
+.issue-history ol > li {
+	padding: 16px 0;
+	border-bottom: 1px solid #d5dae1;
+}
+.evidence-gallery {
+	list-style: none;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px;
+}
+.issue-history .evidence-gallery > li {
+	max-width: 260px;
+	overflow-wrap: anywhere;
+}
+.issue-detail .response-choices {
+	flex-direction: row;
+}
+.evidence-gallery img {
+	width: 100%;
+	max-height: 220px;
+	object-fit: contain;
+	display: block;
+}
+.measurement-create {
+	margin-top: 20px;
+	border-top: 1px solid #d5dae1;
+	padding-top: 12px;
+}
+.measurement-create form {
+	margin-top: 12px;
+}
+@media (max-width: 1100px) {
+	.issue-target-layout.with-target {
+		display: block;
+	}
+	.issue-actions {
+		border-left: 0;
+		border-top: 1px solid #d5dae1;
+		padding: 20px 0 0;
+	}
+}

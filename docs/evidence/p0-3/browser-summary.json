@@ -1,0 +1,34 @@
+{
+  "checkedAt": "2026-10-17T15:52:49.883Z",
+  "status": "PASS",
+  "execution": "staged verification; not a clean first full run",
+  "transientHttpFailuresPreserved": true,
+  "physicalPhone": false,
+  "results": [
+    {
+      "check": "normal-password-login-and-owner-creates-fixed-target-request-in-ui",
+      "status": "PASS",
+      "source": "browser-fifth-run.json"
+    },
+    {
+      "check": "mobile-guest-priority-real-image-three-options-numeric-submit-refresh",
+      "status": "PASS",
+      "source": "browser-fifth-run.json"
+    },
+    {
+      "check": "owner-review-manual-correction-source-and-guest-confirmed-history",
+      "status": "PASS",
+      "source": "browser-fifth-run.json"
+    },
+    {
+      "check": "normal-password-login-and-resume-existing-saved-target",
+      "status": "PASS",
+      "source": "browser-photo-retry.json"
+    },
+    {
+      "check": "photo-only-real-private-upload-processing-evidence-and-manual-review",
+      "status": "PASS",
+      "source": "browser-photo-retry.json"
+    }
+  ]
+}

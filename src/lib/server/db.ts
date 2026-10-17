@@ -83,7 +83,13 @@ export async function transaction<T>(
 			return await oneTransaction(actor, work, worker);
 		} catch (error) {
 			const code = (error as { code?: string }).code;
-			if (attempt >= 2 || (code !== "40001" && code !== "40P01")) throw error;
+			// These SQLSTATEs abort the attempt and oneTransaction rolls it back first.
+			// Bounded retry is safe for SQL-only work; never retry unknown network/commit results.
+			if (
+				attempt >= 2 ||
+				(code !== "40001" && code !== "40P01" && code !== "55P03")
+			)
+				throw error;
 			await new Promise((resolve) =>
 				setTimeout(resolve, 25 + Math.random() * 75),
 			);

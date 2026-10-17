@@ -1,19 +1,23 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import type { FileIssue } from "@/lib/annotations";
+import { type IssueSummary, stateLabel } from "@/lib/issues";
 import { api, ApiError } from "./api";
 export function FileIssues({
 	base,
 	fileId,
 	guest,
 	onInvalid,
+	onOpen,
+	onCreated,
 }: {
 	base: string;
 	fileId: string;
 	guest: boolean;
 	onInvalid: () => void;
+	onOpen: (id: string) => void;
+	onCreated: () => void;
 }) {
-	const [items, setItems] = useState<FileIssue[]>([]),
+	const [items, setItems] = useState<IssueSummary[]>([]),
 		[loading, setLoading] = useState(true),
 		[error, setError] = useState(""),
 		[title, setTitle] = useState(""),
@@ -28,9 +32,10 @@ export function FileIssues({
 		setLoading(true);
 		setError("");
 		try {
-			const data = await api<{ items: FileIssue[]; nextCursor: string | null }>(
-				`${base}/files/${fileId}/issues${next ? `?cursor=${next}` : ""}`,
-			);
+			const data = await api<{
+				items: IssueSummary[];
+				nextCursor: string | null;
+			}>(`${base}/files/${fileId}/issues${next ? `?cursor=${next}` : ""}`);
 			setItems((old) => (next ? [...old, ...data.items] : data.items));
 			setCursor(data.nextCursor);
 		} catch (e) {
@@ -49,7 +54,7 @@ export function FileIssues({
 		<section className="file-issues" aria-label="文件级文字问题">
 			<h3>文件问题</h3>
 			<p className="muted">
-				针对这份文件的文字说明，不关联几何位置。测量回复与审核尚未开放。
+				针对这份文件的文字说明，不关联几何位置。打开问题可查看回复与处理状态。
 			</p>
 			{loading ? (
 				<p role="status">读取文件问题…</p>
@@ -69,6 +74,12 @@ export function FileIssues({
 					<li key={item.id}>
 						<strong>{item.title}</strong>
 						<p>{item.description}</p>
+						<p>
+							{stateLabel[item.state]}{" "}
+							<button type="button" onClick={() => onOpen(item.id)}>
+								查看问题与回复
+							</button>
+						</p>
 						<small>
 							{new Date(item.createdAt).toLocaleString("zh-CN")} · 工程师
 						</small>
@@ -93,7 +104,7 @@ export function FileIssues({
 						setBusy(true);
 						setError("");
 						try {
-							const result = await api<FileIssue>(
+							const result = await api<IssueSummary>(
 								`${base}/issues`,
 								"POST",
 								{ fileId, title, description },
@@ -107,6 +118,7 @@ export function FileIssues({
 							setDescription("");
 							key.current = crypto.randomUUID();
 							setStatus("文件问题已保存");
+							onCreated();
 						} catch (e) {
 							if (e instanceof ApiError && e.status === 401)
 								invalidRef.current();

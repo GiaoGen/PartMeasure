@@ -1,0 +1,36 @@
+{
+  "checkedAt": "2026-10-17T15:18:15.481Z",
+  "realService": true,
+  "results": [
+    {
+      "check": "two-real-concurrent-responses",
+      "status": "PASS",
+      "http": [
+        {
+          "status": 201
+        },
+        {
+          "status": 409,
+          "code": "REVISION_CONFLICT"
+        }
+      ]
+    },
+    {
+      "check": "two-real-concurrent-reviews",
+      "status": "PASS",
+      "http": [
+        {
+          "status": 201
+        },
+        {
+          "status": 409,
+          "code": "REVISION_CONFLICT"
+        }
+      ]
+    },
+    {
+      "check": "single-history-record-per-transition",
+      "status": "PASS"
+    }
+  ]
+}

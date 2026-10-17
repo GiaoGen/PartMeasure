@@ -21,6 +21,8 @@ import {
 	fileIssueSchema,
 } from "@/lib/annotations";
 import * as annotations from "@/lib/server/annotation-service";
+import * as issues from "@/lib/server/issue-service";
+import { measurementSchema, responseSchema, reviewSchema } from "@/lib/issues";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -266,18 +268,62 @@ async function handle(req: Request, context: Context) {
 			}
 		}
 		if (resource === "issues") {
-			if (actor.kind === "guest" && method !== "GET")
+			if (
+				actor.kind === "guest" &&
+				method !== "GET" &&
+				!(objectId && parts[4] === "responses" && method === "POST")
+			)
 				throw new AppError("FORBIDDEN", 403);
-			if (method === "POST" && !objectId)
+			if (method === "GET" && !objectId)
+				return response(await issues.listIssues(actor, projectId, cursor));
+			if (method === "GET" && objectId && (!parts[4] || parts[4] === "history"))
+				return response(await issues.detailIssue(actor, projectId, objectId));
+			if (method === "POST" && objectId && parts[4] === "responses")
 				return response(
-					await annotations.createFileIssue(
+					await issues.respondIssue(
 						actor,
 						projectId,
-						await body(req, fileIssueSchema),
+						objectId,
+						await body(req, responseSchema),
+						expectedRevision(req),
 						idemKey(req),
 					),
 					201,
 				);
+			if (method === "POST" && objectId && parts[4] === "review")
+				return response(
+					await issues.reviewIssue(
+						actor,
+						projectId,
+						objectId,
+						await body(req, reviewSchema),
+						expectedRevision(req),
+						idemKey(req),
+					),
+					201,
+				);
+			if (method === "POST" && !objectId) {
+				const input = await body(
+					req,
+					z.union([measurementSchema, fileIssueSchema]),
+				);
+				return response(
+					"kind" in input
+						? await issues.createMeasurement(
+								actor,
+								projectId,
+								input,
+								idemKey(req),
+							)
+						: await annotations.createFileIssue(
+								actor,
+								projectId,
+								input,
+								idemKey(req),
+							),
+					201,
+				);
+			}
 		}
 		if (resource === "uploads") {
 			if (method === "GET" && !objectId)
@@ -357,7 +403,7 @@ async function handle(req: Request, context: Context) {
 				);
 			if (objectId && parts[4] === "issues" && method === "GET")
 				return response(
-					await annotations.fileIssues(actor, projectId, objectId, cursor),
+					await issues.listIssues(actor, projectId, cursor, objectId),
 				);
 			if (method === "GET" && !objectId)
 				return response(await service.files(actor, projectId, cursor));

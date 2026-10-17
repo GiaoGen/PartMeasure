@@ -5,6 +5,8 @@ import { Logout, type ProjectView } from "./projects";
 import { UploadQueue } from "./upload-queue";
 import { AnnotationEditor } from "./annotation-editor";
 import { FileIssues } from "./file-issues";
+import { IssueInbox } from "./issue-inbox";
+import { IssueDetail } from "./issue-detail";
 type Asset = {
 	id: string;
 	filename: string;
@@ -70,6 +72,10 @@ export function Workspace({
 		[assets, setAssets] = useState<Asset[]>([]),
 		[cursor, setCursor] = useState<string | null>(null),
 		[selected, setSelected] = useState<Asset | null>(null);
+	const [selectedIssue, setSelectedIssue] = useState<string | null>(null),
+		[issueRefresh, setIssueRefresh] = useState(0);
+	const initialChoiceMade = useRef(false);
+	const issueUpdated = useCallback(() => setIssueRefresh((v) => v + 1), []);
 	const [error, setError] = useState(""),
 		[loading, setLoading] = useState(true),
 		[invalid, setInvalid] = useState(false);
@@ -81,16 +87,28 @@ export function Workspace({
 		return (
 			!editorDirty.current ||
 			window.confirm(
-				"标注修改尚未确认。离开会丢弃本页草稿，已发出的保存请求可能仍完成。继续？",
+				"修改尚未确认。离开会丢弃本页草稿，已发出的请求可能仍完成。继续？",
 			)
 		);
 	}
 	function selectFile(file: Asset | null) {
-		if (selected?.id !== file?.id && !allowLeave()) return;
+		if ((selected?.id !== file?.id || selectedIssue) && !allowLeave()) return;
+		initialChoiceMade.current = true;
+		setSelectedIssue(null);
 		setSelected(file);
+	}
+	function selectIssue(id: string) {
+		if (selectedIssue !== id && !allowLeave()) return;
+		initialChoiceMade.current = true;
+		setSelected(null);
+		setSelectedIssue(id);
+	}
+	function initialIssue(id: string) {
+		if (guest && !initialChoiceMade.current) selectIssue(id);
 	}
 	function selectSection(next: string) {
 		if (next !== section && !allowLeave()) return;
+		initialChoiceMade.current = true;
 		setSection(next);
 	}
 	const [shareUrl, setShareUrl] = useState(""),
@@ -104,6 +122,7 @@ export function Workspace({
 		setInvalid(true);
 		setAssets([]);
 		setSelected(null);
+		setSelectedIssue(null);
 		setShareUrl("");
 	}, []);
 	const failure = useCallback(
@@ -360,170 +379,199 @@ export function Workspace({
 					</button>
 				</section>
 			) : (
-				<div
-					className={`file-workspace ${guest ? "guest-layout" : ""} ${selected ? "file-focused" : ""}`}
-				>
-					<aside className="file-column">
-						<UploadQueue
-							base={base}
-							onReady={() => void load()}
-							onInvalid={onInvalid}
-						/>
-						<h2>项目资料</h2>
-						{loading ? (
-							<p role="status">加载资料…</p>
-						) : assets.length === 0 ? (
-							<p className="empty">
-								还没有可查看资料。请先上传照片、PDF 或
-								CAD；处理中的文件会保留在上传队列。
-							</p>
-						) : null}
-						<ul className="file-list">
-							{assets.map((file) => (
-								<li key={file.id}>
-									<button
-										type="button"
-										className={selected?.id === file.id ? "selected" : ""}
-										onClick={() => selectFile(file)}
-									>
-										<strong>{file.filename}</strong>
-										<small>
-											{file.extension.toUpperCase()} ·{" "}
-											{formatBytes(Number(file.byteSize))}
-										</small>
-										<small>
-											{file.uploaderType === "owner" ? "工程师" : "客户"} ·{" "}
-											{new Date(file.createdAt).toLocaleString("zh-CN", {
-												timeZone: "Asia/Shanghai",
-											})}
-										</small>
-									</button>
-								</li>
-							))}
-						</ul>
-						{cursor ? (
-							<button
-								type="button"
-								onClick={async () => {
-									try {
-										const next = await api<{
-											items: Asset[];
-											nextCursor: string | null;
-										}>(`${base}/files?cursor=${cursor}`);
-										setAssets((old) => [...old, ...next.items]);
-										setCursor(next.nextCursor);
-									} catch (e) {
-										failure(e);
-									}
-								}}
-							>
-								加载更多资料
-							</button>
-						) : null}
-					</aside>
-					<section
-						className={`file-detail ${selected ? "has-file" : ""}`}
-						aria-label="文件详情"
+				<>
+					<IssueInbox
+						base={base}
+						guest={guest}
+						refreshKey={issueRefresh}
+						onSelect={selectIssue}
+						onInitial={initialIssue}
+						onInvalid={onInvalid}
+						onBrowse={() => selectFile(null)}
+					/>
+					<div
+						className={`file-workspace ${guest ? "guest-layout" : ""} ${selected || selectedIssue ? "file-focused" : ""}`}
 					>
-						{selected ? (
-							<button
-								className="back-to-files"
-								type="button"
-								onClick={() => selectFile(null)}
-							>
-								返回资料列表
-							</button>
-						) : null}
-						{selected ? (
-							<>
-								<div className="detail-heading">
-									<h2>{selected.filename}</h2>
-									<div className="actions">
-										<a
-											className="button"
-											href={`${base}/files/${selected.id}/download`}
+						<aside className="file-column">
+							<UploadQueue
+								base={base}
+								onReady={() => void load()}
+								onInvalid={onInvalid}
+							/>
+							<h2>项目资料</h2>
+							{loading ? (
+								<p role="status">加载资料…</p>
+							) : assets.length === 0 ? (
+								<p className="empty">
+									还没有可查看资料。请先上传照片、PDF 或
+									CAD；处理中的文件会保留在上传队列。
+								</p>
+							) : null}
+							<ul className="file-list">
+								{assets.map((file) => (
+									<li key={file.id}>
+										<button
+											type="button"
+											className={selected?.id === file.id ? "selected" : ""}
+											onClick={() => selectFile(file)}
 										>
-											下载
-											{selected.mime.startsWith("image/") ? "标准图" : "附件"}
-										</a>
-										{!guest && selected.mime.startsWith("image/") ? (
+											<strong>{file.filename}</strong>
+											<small>
+												{file.extension.toUpperCase()} ·{" "}
+												{formatBytes(Number(file.byteSize))}
+											</small>
+											<small>
+												{file.uploaderType === "owner" ? "工程师" : "客户"} ·{" "}
+												{new Date(file.createdAt).toLocaleString("zh-CN", {
+													timeZone: "Asia/Shanghai",
+												})}
+											</small>
+										</button>
+									</li>
+								))}
+							</ul>
+							{cursor ? (
+								<button
+									type="button"
+									onClick={async () => {
+										try {
+											const next = await api<{
+												items: Asset[];
+												nextCursor: string | null;
+											}>(`${base}/files?cursor=${cursor}`);
+											setAssets((old) => [...old, ...next.items]);
+											setCursor(next.nextCursor);
+										} catch (e) {
+											failure(e);
+										}
+									}}
+								>
+									加载更多资料
+								</button>
+							) : null}
+						</aside>
+						<section
+							className={`file-detail ${selected || selectedIssue ? "has-file" : ""}`}
+							aria-label="文件详情"
+						>
+							{selectedIssue ? (
+								<IssueDetail
+									key={selectedIssue}
+									base={base}
+									id={selectedIssue}
+									guest={guest}
+									onInvalid={onInvalid}
+									onUpdated={issueUpdated}
+									onDirty={onEditorDirty}
+									onBack={() => selectFile(null)}
+								/>
+							) : null}
+							{selected ? (
+								<button
+									className="back-to-files"
+									type="button"
+									onClick={() => selectFile(null)}
+								>
+									返回资料列表
+								</button>
+							) : null}
+							{selected ? (
+								<>
+									<div className="detail-heading">
+										<h2>{selected.filename}</h2>
+										<div className="actions">
 											<a
 												className="button"
-												href={`${base}/files/${selected.id}/download?original=1`}
+												href={`${base}/files/${selected.id}/download`}
 											>
-												下载原件
+												下载
+												{selected.mime.startsWith("image/") ? "标准图" : "附件"}
 											</a>
-										) : null}
-										{!guest ? (
-											<button
-												type="button"
-												className="danger"
-												onClick={async () => {
-													if (!allowLeave()) return;
-													if (
-														!window.confirm(
-															`将“${selected.filename}”从当前列表隐藏？原件和必要历史仍保留。`,
+											{!guest && selected.mime.startsWith("image/") ? (
+												<a
+													className="button"
+													href={`${base}/files/${selected.id}/download?original=1`}
+												>
+													下载原件
+												</a>
+											) : null}
+											{!guest ? (
+												<button
+													type="button"
+													className="danger"
+													onClick={async () => {
+														if (!allowLeave()) return;
+														if (
+															!window.confirm(
+																`将“${selected.filename}”从当前列表隐藏？原件和必要历史仍保留。`,
+															)
 														)
-													)
-														return;
-													try {
-														await api(`${base}/files/${selected.id}`, "DELETE");
-														setSelected(null);
-														await load();
-													} catch (e) {
-														failure(e);
-													}
-												}}
-											>
-												隐藏文件
-											</button>
-										) : null}
-									</div>
-								</div>
-								{selected.mime.startsWith("image/") ? (
-									<AnnotationEditor
-										key={selected.id}
-										base={base}
-										fileId={selected.id}
-										guest={guest}
-										onInvalid={onInvalid}
-										onDirty={onEditorDirty}
-									/>
-								) : (
-									<>
-										<div className="empty">
-											<p>{selected.extension.toUpperCase()} 附件</p>
-											<p>此格式暂不提供在线预览，请下载后用对应软件打开。</p>
+															return;
+														try {
+															await api(
+																`${base}/files/${selected.id}`,
+																"DELETE",
+															);
+															setSelected(null);
+															await load();
+														} catch (e) {
+															failure(e);
+														}
+													}}
+												>
+													隐藏文件
+												</button>
+											) : null}
 										</div>
-										<FileIssues
+									</div>
+									{selected.mime.startsWith("image/") ? (
+										<AnnotationEditor
 											key={selected.id}
 											base={base}
 											fileId={selected.id}
 											guest={guest}
 											onInvalid={onInvalid}
+											onDirty={onEditorDirty}
+											onIssueCreated={issueUpdated}
 										/>
-									</>
-								)}
-							</>
-						) : (
-							<div className="empty">
-								<h2>{assets.length ? "选择一份资料" : "从零件资料开始"}</h2>
-								<p>
-									{guest
-										? "请上传零件正反面照片，也可补充 CAD、PDF。"
-										: "可以先上传已有资料，或生成分享链接让客户先上传。"}
-								</p>
-							</div>
-						)}
-					</section>
-					{!guest && !selected ? (
-						<aside className="stage-note">
-							<h2>补测</h2>
-							<p>选择图片添加标注；选择附件填写文件问题。</p>
-							<p className="muted">可以先上传已有资料，并与客户共享。</p>
-						</aside>
-					) : null}
-				</div>
+									) : (
+										<>
+											<div className="empty">
+												<p>{selected.extension.toUpperCase()} 附件</p>
+												<p>此格式暂不提供在线预览，请下载后用对应软件打开。</p>
+											</div>
+											<FileIssues
+												key={selected.id}
+												base={base}
+												fileId={selected.id}
+												guest={guest}
+												onInvalid={onInvalid}
+												onOpen={selectIssue}
+												onCreated={issueUpdated}
+											/>
+										</>
+									)}
+								</>
+							) : !selectedIssue ? (
+								<div className="empty">
+									<h2>{assets.length ? "选择一份资料" : "从零件资料开始"}</h2>
+									<p>
+										{guest
+											? "请上传零件正反面照片，也可补充 CAD、PDF。"
+											: "可以先上传已有资料，或生成分享链接让客户先上传。"}
+									</p>
+								</div>
+							) : null}
+						</section>
+						{!guest && !selected && !selectedIssue ? (
+							<aside className="stage-note">
+								<h2>补测</h2>
+								<p>选择图片添加标注；选择附件填写文件问题。</p>
+								<p className="muted">可以先上传已有资料，并与客户共享。</p>
+							</aside>
+						) : null}
+					</div>
+				</>
 			)}
 		</main>
 	);

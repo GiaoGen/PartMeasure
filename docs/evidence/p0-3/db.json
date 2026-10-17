@@ -1,0 +1,35 @@
+{
+  "checkedAt": "2026-10-17T15:46:03.460Z",
+  "realDatabase": true,
+  "structuralRollbackFixtures": true,
+  "results": [
+    {
+      "check": "private-new-tables-rls-and-no-browser-worker-history-mutation-grants",
+      "status": "PASS"
+    },
+    {
+      "check": "guest-valid-read-but-direct-review-status-and-asset-forgery-rejected",
+      "status": "PASS"
+    },
+    {
+      "check": "immutable-request-snapshot-response-review-and-attachment-history",
+      "status": "PASS"
+    },
+    {
+      "check": "response-requires-state-change-in-same-transaction",
+      "status": "PASS"
+    },
+    {
+      "check": "no-late-evidence-attachment-to-committed-response",
+      "status": "PASS"
+    },
+    {
+      "check": "review-requires-head-state-in-same-transaction",
+      "status": "PASS"
+    },
+    {
+      "check": "formal-migration-cloud-and-local-source-match",
+      "status": "PASS"
+    }
+  ]
+}

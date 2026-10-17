@@ -245,7 +245,7 @@ export async function createFileIssue(
 				);
 				if (count.rows[0].n >= 200) throw new AppError("FILE_ISSUE_LIMIT", 409);
 				const { rows } = await db.query<FileIssue>(
-					'insert into pm.issues(project_id,file_id,title,description,created_by) values($1,$2,$3,$4,$5) returning id,file_id as "fileId",kind,title,description,created_at as "createdAt"',
+					'insert into pm.issues(project_id,file_id,title,description,created_by) values($1,$2,$3,$4,$5) returning id,file_id as "fileId",kind,title,description,state,revision,target_info as "targetInfo",measurement_method as "measurementMethod",latest_response_id as "latestResponseId",created_at as "createdAt",updated_at as "updatedAt"',
 					[projectId, input.fileId, input.title, input.description, actor.id],
 				);
 				await audit(

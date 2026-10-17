@@ -1,0 +1,29 @@
+{
+  "checkedAt": "2026-10-17T15:34:28.352Z",
+  "productionBuild": true,
+  "realAuthDatabaseStorage": true,
+  "syntheticEvidencePhoto": true,
+  "physicalPhone": false,
+  "httpFailures": [],
+  "results": [
+    {
+      "check": "normal-password-login-and-owner-creates-fixed-target-request-in-ui",
+      "status": "PASS"
+    },
+    {
+      "check": "mobile-guest-priority-real-image-three-options-numeric-submit-refresh",
+      "status": "FAIL",
+      "code": "Error"
+    },
+    {
+      "check": "owner-review-manual-correction-source-and-guest-confirmed-history",
+      "status": "FAIL",
+      "code": "Error"
+    },
+    {
+      "check": "photo-only-real-private-upload-processing-evidence-and-manual-review",
+      "status": "FAIL",
+      "code": "Error"
+    }
+  ]
+}

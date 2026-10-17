@@ -1,0 +1,49 @@
+{
+  "checkedAt": "2026-10-17T15:12:27.879Z",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "realService": true,
+  "reusesP02ProjectAndProcessedFiles": true,
+  "results": [
+    {
+      "check": "normal-auth-projects-and-guest-private-file-prerequisites",
+      "status": "PASS"
+    },
+    {
+      "check": "fixed-revision-snapshot-survives-later-annotation-edit",
+      "status": "PASS"
+    },
+    {
+      "check": "numeric-response-atomic-evidence-idempotency-and-original-confirmation",
+      "status": "PASS"
+    },
+    {
+      "check": "photo-only-reply-and-manual-photo-confirmation-with-source-note",
+      "status": "PASS"
+    },
+    {
+      "check": "unable-remeasure-resubmit-append-history-and-manual-correction",
+      "status": "PASS"
+    },
+    {
+      "check": "legacy-file-comment-text-reply-and-processing-without-number-or-geometry",
+      "status": "PASS"
+    },
+    {
+      "check": "guest-review-and-management-denied-owner-isolation",
+      "status": "PASS"
+    },
+    {
+      "check": "invalid-numeric-control-fields-and-not-ready-evidence-roll-back",
+      "status": "PASS"
+    },
+    {
+      "check": "real-concurrent-responses-and-reviews-cas-one-winner",
+      "status": "FAIL",
+      "code": "AssertionError"
+    },
+    {
+      "check": "new-normal-session-restores-history-and-priority-summary",
+      "status": "PASS"
+    }
+  ]
+}

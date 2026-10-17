@@ -1,0 +1,36 @@
+{
+  "checkedAt": "2026-10-17T15:26:12.214Z",
+  "productionBuild": true,
+  "realAuthDatabaseStorage": true,
+  "syntheticEvidencePhoto": true,
+  "physicalPhone": false,
+  "httpFailures": [
+    {
+      "actor": "owner",
+      "path": "/api/projects/a293ec24-2f33-4aae-b73e-41e092259aca/uploads",
+      "status": 503
+    }
+  ],
+  "results": [
+    {
+      "check": "normal-password-login-and-owner-creates-fixed-target-request-in-ui",
+      "status": "FAIL",
+      "code": "TimeoutError"
+    },
+    {
+      "check": "mobile-guest-priority-real-image-three-options-numeric-submit-refresh",
+      "status": "FAIL",
+      "code": "AssertionError"
+    },
+    {
+      "check": "owner-review-manual-correction-source-and-guest-confirmed-history",
+      "status": "FAIL",
+      "code": "AssertionError"
+    },
+    {
+      "check": "photo-only-real-private-upload-processing-evidence-and-manual-review",
+      "status": "FAIL",
+      "code": "TimeoutError"
+    }
+  ]
+}

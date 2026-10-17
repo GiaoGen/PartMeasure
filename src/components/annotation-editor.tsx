@@ -1,6 +1,6 @@
 "use client";
 import dynamic from "next/dynamic";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
 	type AnnotationDraft,
 	type Geometry,
@@ -12,6 +12,7 @@ import {
 import { api, ApiError, message } from "./api";
 import { useAnnotationSession } from "./use-annotation-session";
 import { EngineeringFields } from "./engineering-fields";
+import { MeasurementCreate } from "./measurement-create";
 const Canvas = dynamic(() => import("./annotation-canvas"), {
 	ssr: false,
 	loading: () => <p role="status">载入画布…</p>,
@@ -29,14 +30,39 @@ export function AnnotationEditor({
 	guest,
 	onInvalid,
 	onDirty,
+	onIssueCreated,
 }: {
 	base: string;
 	fileId: string;
 	guest: boolean;
 	onInvalid: () => void;
 	onDirty: (dirty: boolean) => void;
+	onIssueCreated: () => void;
 }) {
-	const session = useAnnotationSession(base, fileId, guest, onInvalid, onDirty);
+	const changes = useRef({ annotation: false, request: false });
+	const [requestDirty, setRequestDirty] = useState(false);
+	const onAnnotationDirty = useCallback(
+		(dirty: boolean) => {
+			changes.current.annotation = dirty;
+			onDirty(dirty || changes.current.request);
+		},
+		[onDirty],
+	);
+	const onRequestDirty = useCallback(
+		(dirty: boolean) => {
+			changes.current.request = dirty;
+			setRequestDirty(dirty);
+			onDirty(dirty || changes.current.annotation);
+		},
+		[onDirty],
+	);
+	const session = useAnnotationSession(
+		base,
+		fileId,
+		guest,
+		onInvalid,
+		onAnnotationDirty,
+	);
 	const [history, setHistory] = useState<Revision[]>([]),
 		[historyId, setHistoryId] = useState<string | null>(null),
 		[before, setBefore] = useState<number | null>(null),
@@ -45,8 +71,15 @@ export function AnnotationEditor({
 		[notice, setNotice] = useState("");
 	const historyRun = useRef(0);
 	const selected = session.items.find((i) => i.id === session.selected) ?? null;
-	const editDisabled = session.saving || session.blocked || !!preview;
+	const editDisabled =
+		session.saving || session.blocked || !!preview || requestDirty;
 	function select(id: string | null) {
+		if (
+			id !== session.selected &&
+			changes.current.request &&
+			!window.confirm("测量请求尚未保存，切换标注会放弃输入。继续？")
+		)
+			return;
 		session.setSelected(id);
 		setPreview(null);
 		setHistory([]);
@@ -56,6 +89,11 @@ export function AnnotationEditor({
 	}
 	function remove() {
 		if (guest || editDisabled || !selected) return;
+		if (
+			changes.current.request &&
+			!window.confirm("测量请求尚未保存，删除标注会放弃请求输入。继续？")
+		)
+			return;
 		session.change(session.items.filter((i) => i.id !== selected.id));
 		select(null);
 	}
@@ -362,6 +400,30 @@ export function AnnotationEditor({
 								</button>
 							</div>
 						) : null}
+						{!guest &&
+						selected &&
+						!preview &&
+						!session.dirty &&
+						!session.saving &&
+						!session.blocked
+							? (() => {
+									const head = session.heads.find(
+										(h) => h.id === selected.id && !h.deleted,
+									);
+									return head ? (
+										<MeasurementCreate
+											key={`${head.id}:${head.revision}`}
+											base={base}
+											fileId={fileId}
+											annotation={head}
+											image={image}
+											onCreated={onIssueCreated}
+											onInvalid={onInvalid}
+											onDirty={onRequestDirty}
+										/>
+									) : null;
+								})()
+							: null}
 					</>
 				) : null}
 				{!guest && session.heads.some((h) => h.deleted) ? (

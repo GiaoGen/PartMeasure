@@ -1,0 +1,25 @@
+{
+  "checkedAt": "2026-10-17T15:51:15.606Z",
+  "productionBuild": true,
+  "realAuthDatabaseStorage": true,
+  "syntheticEvidencePhoto": true,
+  "physicalPhone": false,
+  "httpFailures": [
+    {
+      "actor": "guest",
+      "path": "/api/guest/projects/a293ec24-2f33-4aae-b73e-41e092259aca/files",
+      "status": 503
+    }
+  ],
+  "uiRetries": [],
+  "results": [
+    {
+      "check": "normal-password-login-and-resume-existing-saved-target",
+      "status": "PASS"
+    },
+    {
+      "check": "photo-only-real-private-upload-processing-evidence-and-manual-review",
+      "status": "PASS"
+    }
+  ]
+}

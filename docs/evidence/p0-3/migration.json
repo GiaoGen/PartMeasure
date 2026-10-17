@@ -1,0 +1,14 @@
+[
+  {
+    "projectRef": "rvysclscetfqicpnzlra",
+    "version": "20261017145122",
+    "name": "p0_3_measurement_workflow",
+    "sha256": "c206c6372c32ed8a76dd52b99034091a040c23614d1a4043e2815bb4c7016cb2"
+  },
+  {
+    "projectRef": "rvysclscetfqicpnzlra",
+    "version": "20261017152616",
+    "name": "p0_3_issue_response_index",
+    "sha256": "ef8aa4f8d143458f9298dc7a232925229d5ff74d9bd8ccc9887b396fa1e5d48f"
+  }
+]

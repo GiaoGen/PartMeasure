@@ -1,0 +1,14 @@
+{
+  "recordedAt": "2026-10-17T15:46:00Z",
+  "productionBuildFinishedAtLocal": "2026-10-17 23:15:19 +08:00",
+  "noApplicationSourceEditsAfterBuild": true,
+  "checks": [
+    { "command": "npm run lint", "status": "PASS", "files": 102 },
+    { "command": "npm run typecheck", "status": "PASS", "strict": true },
+    { "command": "npm test", "status": "PASS", "files": 5, "tests": 39 },
+    { "command": "npm run build", "status": "PASS", "mode": "production webpack" },
+    { "command": "npm run test:e2e", "status": "PASS", "tests": 6, "scope": "baseline only; business evidence is separate" },
+    { "command": "node --check scripts/p0-3/*.mjs (PowerShell enumerated files)", "status": "PASS" }
+  ],
+  "notes": ["Biome formatter is disabled by existing configuration; format-only attempts processed no files. Lint, strict types and syntax checks are recorded separately.", "No new dependencies, Docker, production deployment or remote push."]
+}

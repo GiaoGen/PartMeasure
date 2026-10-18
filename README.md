@@ -4,6 +4,8 @@
 
 最新：[实现与契约](docs/P0-4/01-implementation.md)、[人工与大陆手机清单](docs/P0-4/02-manual-checklist.md)、[实际验证/已知问题](docs/P0-4/03-verification.md)、[P0总验收表](docs/P0-4/04-p0-exit-matrix.md)、[无Docker运行/测试部署](docs/P0-4/05-deployment-runbook.md)。[HTTPS staging入口](https://partmeasure-staging-em72unjso-messup-s-projects.vercel.app/login)已跑通真实闭环；P0-4实现与整个P0验收分别记录，真实手机/大陆网络和OTP未验证时不能宣称整个P0通过。
 
+[P0 缺失实现与验收缺口清单](docs/P0-4/06-p0-gaps.md)分别列出尚未落实的运行配置、已实现待验证项目、历史质量风险及不属于 P0 的后续能力，供收尾排期使用。
+
 ## 运行
 
 需要 Node **24.15.0**（`.nvmrc`）、npm **11.12.1**。统一 npm；不用 pnpm/yarn，不修改全局 registry。依赖精确版本与 `package-lock.json` 一并管理。

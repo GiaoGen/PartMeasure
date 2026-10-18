@@ -1,0 +1,194 @@
+{
+  "checkedAt": "2026-10-18T06:03:29.705Z",
+  "root": "https://partmeasure-staging-em72unjso-messup-s-projects.vercel.app",
+  "realService": true,
+  "httpFailures": [
+    {
+      "path": "/api/guest/projects/300ad0f4-75dd-43dc-8038-11054ae63722/files/583f90ed-1113-4fb4-a5d4-dd212e34d704/download",
+      "method": "GET",
+      "status": 404,
+      "code": "NOT_FOUND",
+      "requestId": "7ada7a44-9938-448e-b8e2-52b3df377612"
+    },
+    {
+      "path": "/api/projects/300ad0f4-75dd-43dc-8038-11054ae63722/deliveries",
+      "method": "POST",
+      "status": 409,
+      "code": "IDEMPOTENCY_CONFLICT",
+      "requestId": "fe0802d7-2405-48e6-a148-69f5ffc8b9f0"
+    },
+    {
+      "path": "/api/guest/projects/300ad0f4-75dd-43dc-8038-11054ae63722/deliveries/4a8d090b-8236-4f87-8d54-ba5a2ab8436c",
+      "method": "GET",
+      "status": 404,
+      "code": "NOT_FOUND",
+      "requestId": "5307ff02-c99f-45dd-a9b3-f0253eb8aad6"
+    },
+    {
+      "path": "/api/projects/300ad0f4-75dd-43dc-8038-11054ae63722/deliveries/4a8d090b-8236-4f87-8d54-ba5a2ab8436c",
+      "method": "PATCH",
+      "status": 409,
+      "code": "REVISION_CONFLICT",
+      "requestId": "d6126795-13fa-4239-89bf-25298838c893"
+    },
+    {
+      "path": "/api/projects/300ad0f4-75dd-43dc-8038-11054ae63722/deliveries",
+      "method": "POST",
+      "status": 422,
+      "code": "DELIVERY_FILE_UNAVAILABLE",
+      "requestId": "08825faa-6c34-4f8f-9f99-c884975bee1f"
+    },
+    {
+      "path": "/api/projects/300ad0f4-75dd-43dc-8038-11054ae63722/deliveries",
+      "method": "POST",
+      "status": 422,
+      "code": "DELIVERY_FILE_UNAVAILABLE",
+      "requestId": "d5433261-ee5b-4a5b-9a4d-671fb11ac4e4"
+    },
+    {
+      "path": "/api/projects/300ad0f4-75dd-43dc-8038-11054ae63722/deliveries",
+      "method": "POST",
+      "status": 422,
+      "code": "DELIVERY_FILE_UNAVAILABLE",
+      "requestId": "06f2681a-f162-4968-91e1-c430fa9edd4c"
+    },
+    {
+      "path": "/api/projects/300ad0f4-75dd-43dc-8038-11054ae63722/deliveries/4a8d090b-8236-4f87-8d54-ba5a2ab8436c/publish",
+      "method": "POST",
+      "status": 409,
+      "code": "DELIVERY_PUBLISHED",
+      "requestId": "6fcc2f0a-84f9-47c4-b356-d99c2a9a53c2"
+    },
+    {
+      "path": "/api/projects/300ad0f4-75dd-43dc-8038-11054ae63722/deliveries/4a8d090b-8236-4f87-8d54-ba5a2ab8436c",
+      "method": "PATCH",
+      "status": 409,
+      "code": "DELIVERY_PUBLISHED",
+      "requestId": "1ea4004e-20d1-4f46-adbc-f649d40efff6"
+    },
+    {
+      "path": "/api/projects/300ad0f4-75dd-43dc-8038-11054ae63722/files/583f90ed-1113-4fb4-a5d4-dd212e34d704",
+      "method": "DELETE",
+      "status": 409,
+      "code": "HISTORY_PROTECTED",
+      "requestId": "85f44f4d-e43d-4407-a4de-e7e1ba0a9017"
+    },
+    {
+      "path": "/api/projects/300ad0f4-75dd-43dc-8038-11054ae63722/files/730afc89-1ba7-47ec-8bc9-7430a3693101",
+      "method": "DELETE",
+      "status": 409,
+      "code": "HISTORY_PROTECTED",
+      "requestId": "9f25c901-5fcd-414c-994c-3877e8a25a72"
+    },
+    {
+      "path": "/api/guest/projects/300ad0f4-75dd-43dc-8038-11054ae63722/uploads",
+      "method": "POST",
+      "status": 403,
+      "code": "FORBIDDEN",
+      "requestId": "7b2c4ca1-49b9-483f-9275-dc758dd41e67"
+    },
+    {
+      "path": "/api/guest/projects/300ad0f4-75dd-43dc-8038-11054ae63722/files?purpose=delivery",
+      "method": "GET",
+      "status": 403,
+      "code": "FORBIDDEN",
+      "requestId": "c79c89f8-b248-4071-a32c-93dc09c0bdb3"
+    },
+    {
+      "path": "/api/guest/projects/300ad0f4-75dd-43dc-8038-11054ae63722/deliveries",
+      "method": "POST",
+      "status": 403,
+      "code": "FORBIDDEN",
+      "requestId": "be1c6c97-2fdb-49e1-b26e-7bf6302ef7da"
+    },
+    {
+      "path": "/api/guest/projects/300ad0f4-75dd-43dc-8038-11054ae63722/deliveries/4a8d090b-8236-4f87-8d54-ba5a2ab8436c/publish",
+      "method": "POST",
+      "status": 403,
+      "code": "FORBIDDEN",
+      "requestId": "13d7a06d-8121-463a-88bc-031160a82bfa"
+    },
+    {
+      "path": "/api/guest/projects/300ad0f4-75dd-43dc-8038-11054ae63722/deliveries/4a8d090b-8236-4f87-8d54-ba5a2ab8436c",
+      "method": "PATCH",
+      "status": 403,
+      "code": "FORBIDDEN",
+      "requestId": "b57c158b-0672-47ef-8e8e-870c69cfba53"
+    },
+    {
+      "path": "/api/projects/300ad0f4-75dd-43dc-8038-11054ae63722/deliveries",
+      "method": "GET",
+      "status": 404,
+      "code": "NOT_FOUND",
+      "requestId": "241f7009-1ffb-4329-889c-e762612e87b1"
+    },
+    {
+      "path": "/api/projects/300ad0f4-75dd-43dc-8038-11054ae63722/deliveries/4a8d090b-8236-4f87-8d54-ba5a2ab8436c",
+      "method": "GET",
+      "status": 404,
+      "code": "NOT_FOUND",
+      "requestId": "203707b6-ca18-4a7c-b2c6-08dcac1cc056"
+    },
+    {
+      "path": "/api/guest/projects/300ad0f4-75dd-43dc-8038-11054ae63722/deliveries/4a8d090b-8236-4f87-8d54-ba5a2ab8436c/files/25d7fa12-8845-42cd-bdfd-7a85d699b71e/download",
+      "method": "GET",
+      "status": 404,
+      "code": "NOT_FOUND",
+      "requestId": "234b6b5d-0764-47c2-a55f-5a3e74e080c0"
+    },
+    {
+      "path": "/api/guest/projects/300ad0f4-75dd-43dc-8038-11054ae63722/deliveries/4a8d090b-8236-4f87-8d54-ba5a2ab8436c/files/37a9d1ae-1c28-493d-9f01-6555661c329a/download",
+      "method": "GET",
+      "status": 404,
+      "code": "NOT_FOUND",
+      "requestId": "31d2408f-8dad-4514-8db9-dfe168aa9bcb"
+    },
+    {
+      "path": "/api/projects/300ad0f4-75dd-43dc-8038-11054ae63722/deliveries/d5b6b16b-a0ec-4b08-8755-67de65ae77ad/publish",
+      "method": "POST",
+      "status": 409,
+      "code": "DELIVERY_PUBLISHED",
+      "requestId": "ae1e8662-1a77-4b83-a0c5-9250c1a55a75"
+    },
+    {
+      "path": "/api/guest/projects/300ad0f4-75dd-43dc-8038-11054ae63722/deliveries",
+      "method": "GET",
+      "status": 401,
+      "code": "LINK_UNAVAILABLE",
+      "requestId": "cde131d3-7de8-46ad-8a9e-5a70f2ae5cfa"
+    }
+  ],
+  "synthetic": true,
+  "isolatedTaggedProjects": true,
+  "mailRegistration": false,
+  "results": [
+    {
+      "check": "normal-A-B-auth-and-independent-P04-projects",
+      "status": "PASS"
+    },
+    {
+      "check": "real-material-and-owner-private-delivery-pipeline",
+      "status": "PASS"
+    },
+    {
+      "check": "private-draft-persistence-CAS-idempotency-and-attachment-boundaries",
+      "status": "PASS"
+    },
+    {
+      "check": "atomic-multi-file-publication-replay-and-no-overwrite",
+      "status": "PASS"
+    },
+    {
+      "check": "guest-management-denied-owner-isolation-and-project-file-scope",
+      "status": "PASS"
+    },
+    {
+      "check": "concurrent-publish-single-winner-and-new-version-retains-old",
+      "status": "PASS"
+    },
+    {
+      "check": "fresh-normal-session-restores-and-revocation-denies-existing-session-download",
+      "status": "PASS"
+    }
+  ]
+}

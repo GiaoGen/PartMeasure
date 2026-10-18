@@ -1,0 +1,11 @@
+{
+  "root": "https://partmeasure-staging-em72unjso-messup-s-projects.vercel.app",
+  "status": 200,
+  "contentType": "application/json",
+  "hasEtag": false,
+  "revisionAfter": 2,
+  "expectedDescriptionPersisted": true,
+  "legacy": false,
+  "staleRevisionRejected": true,
+  "unknownResultRecoveredWithoutDuplicateRevision": true
+}

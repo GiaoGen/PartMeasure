@@ -29,10 +29,12 @@ export function UploadQueue({
 	base,
 	onReady,
 	onInvalid,
+	purpose = "material",
 }: {
 	base: string;
 	onReady: () => void;
 	onInvalid: () => void;
+	purpose?: "material" | "delivery";
 }) {
 	const [items, setItems] = useState<Item[]>([]),
 		[error, setError] = useState("");
@@ -58,7 +60,9 @@ export function UploadQueue({
 			if (busy) return;
 			busy = true;
 			try {
-				const result = await api<{ items: Tracked[] }>(`${base}/uploads`);
+				const result = await api<{ items: Tracked[] }>(
+					`${base}/uploads${purpose === "delivery" ? "?purpose=delivery" : ""}`,
+				);
 				if (active) {
 					setTracked(result.items);
 					readyRef.current();
@@ -77,7 +81,7 @@ export function UploadQueue({
 			active = false;
 			clearInterval(timer);
 		};
-	}, [base]);
+	}, [base, purpose]);
 	const update = useCallback(
 		(id: string, changes: Partial<Item>) =>
 			setItems((old) =>
@@ -159,6 +163,7 @@ export function UploadQueue({
 					byteSize: item.file.size,
 					declaredMime: item.file.type,
 					sha256: hash,
+					...(purpose === "delivery" ? { purpose } : {}),
 				},
 				{ key: item.key },
 			);
@@ -256,8 +261,11 @@ export function UploadQueue({
 		for (const item of batch) await send(item);
 	}
 	return (
-		<section className="uploads" aria-label="上传资料">
-			<h2>上传资料</h2>
+		<section
+			className="uploads"
+			aria-label={purpose === "delivery" ? "上传成果附件" : "上传资料"}
+		>
+			<h2>{purpose === "delivery" ? "上传成果附件" : "上传资料"}</h2>
 			<label className="file-picker">
 				拍照 / 选择照片或附件
 				<input
@@ -299,6 +307,33 @@ export function UploadQueue({
 							{r.errorCode ? (
 								<p className="error">{message(r.errorCode)}</p>
 							) : null}
+							{r.errorCode &&
+							(r.state === "queued" || r.state === "processing") ? (
+								<button
+									type="button"
+									onClick={async () => {
+										try {
+											await api(`${base}/uploads/${r.id}/retry`, "POST", {});
+											setTracked((old) =>
+												old.map((x) =>
+													x.id === r.id ? { ...x, errorCode: null } : x,
+												),
+											);
+											setError("");
+										} catch (e) {
+											if ((e as { status?: number }).status === 401)
+												invalidRef.current();
+											setError(
+												e instanceof Error
+													? e.message
+													: "处理重试未完成，请稍后重试。",
+											);
+										}
+									}}
+								>
+									重试处理
+								</button>
+							) : null}
 						</li>
 					))}
 				{items.map((item) => (
@@ -317,7 +352,10 @@ export function UploadQueue({
 									waiting: "等待传输",
 									uploading: `传输 ${item.progress}%`,
 									processing: "传输完成 · 安全处理中",
-									ready: "已完成 · 工程师和客户可查看",
+									ready:
+										purpose === "delivery"
+											? "已完成 · 仅工程师可见，发布后开放客户"
+											: "已完成 · 工程师和客户可查看",
 									failed: "未完成",
 								}[item.state]
 							}

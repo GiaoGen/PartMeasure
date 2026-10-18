@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-10-17T16:38:42.881Z",
+  "results": [
+    {
+      "roleKind": "DATABASE_URL",
+      "status": "PASS",
+      "role": "partmeasure_runtime",
+      "caInline": false
+    },
+    {
+      "roleKind": "WORKER_DATABASE_URL",
+      "status": "PASS",
+      "role": "partmeasure_worker",
+      "caInline": false
+    }
+  ]
+}

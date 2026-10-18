@@ -1,0 +1,70 @@
+{
+  "checkedAt": "2026-10-18T01:01:20.472Z",
+  "root": "http://127.0.0.1:3001",
+  "realService": true,
+  "httpFailures": [],
+  "limitedObservation": true,
+  "longTermStabilityProven": false,
+  "results": [
+    {
+      "sample": 1,
+      "status": "PASS",
+      "elapsedMs": 10772
+    },
+    {
+      "sample": 2,
+      "status": "PASS",
+      "elapsedMs": 15926
+    },
+    {
+      "sample": 3,
+      "status": "PASS",
+      "elapsedMs": 11191
+    },
+    {
+      "sample": 4,
+      "status": "PASS",
+      "elapsedMs": 13835
+    },
+    {
+      "sample": 5,
+      "status": "PASS",
+      "elapsedMs": 12615
+    },
+    {
+      "sample": 6,
+      "status": "PASS",
+      "elapsedMs": 11467
+    },
+    {
+      "sample": 7,
+      "status": "PASS",
+      "elapsedMs": 9684
+    },
+    {
+      "sample": 8,
+      "status": "PASS",
+      "elapsedMs": 8738
+    },
+    {
+      "sample": 9,
+      "status": "PASS",
+      "elapsedMs": 9815
+    },
+    {
+      "sample": 10,
+      "status": "PASS",
+      "elapsedMs": 15265
+    },
+    {
+      "sample": 11,
+      "status": "PASS",
+      "elapsedMs": 11189
+    },
+    {
+      "sample": 12,
+      "status": "PASS",
+      "elapsedMs": 12898
+    }
+  ]
+}

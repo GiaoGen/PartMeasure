@@ -1,0 +1,35 @@
+{
+  "checkedAt": "2026-10-18T00:53:40.702Z",
+  "realDatabase": true,
+  "rollbackOnly": true,
+  "results": [
+    {
+      "check": "new-tables-RLS-and-minimal-grants",
+      "status": "PASS"
+    },
+    {
+      "check": "Owner-B-RLS-cannot-read-A-deliveries",
+      "status": "PASS"
+    },
+    {
+      "check": "published-delivery-and-membership-immutable",
+      "status": "PASS"
+    },
+    {
+      "check": "published-underlying-file-immutable",
+      "status": "PASS"
+    },
+    {
+      "check": "publication-without-protection-rolls-back-whole-transaction",
+      "status": "PASS"
+    },
+    {
+      "check": "empty-publication-cannot-commit-and-purpose-immutable",
+      "status": "PASS"
+    },
+    {
+      "check": "cloud-migration-exact-source-match",
+      "status": "PASS"
+    }
+  ]
+}

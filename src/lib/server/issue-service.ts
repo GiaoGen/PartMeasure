@@ -43,7 +43,7 @@ async function head(
 }
 async function visibleFile(db: PoolClient, projectId: string, fileId: string) {
 	const { rows } = await db.query(
-		"select id,filename,mime,byte_size as \"byteSize\",width,height,sha256,normalization_version from pm.file_assets where project_id=$1 and id=$2 and deleted_at is null and visibility='customer'",
+		"select id,filename,mime,byte_size as \"byteSize\",width,height,sha256,normalization_version from pm.file_assets where project_id=$1 and id=$2 and deleted_at is null and visibility='customer' and purpose='material'",
 		[projectId, fileId],
 	);
 	if (!rows[0]) throw new AppError("ATTACHMENT_UNAVAILABLE", 422);

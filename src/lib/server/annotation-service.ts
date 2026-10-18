@@ -40,7 +40,7 @@ async function target(
 	imageOnly: boolean,
 ) {
 	const { rows } = await db.query(
-		"select id,mime,width,height,sha256,normalization_version from pm.file_assets where project_id=$1 and id=$2 and deleted_at is null",
+		"select id,mime,width,height,sha256,normalization_version from pm.file_assets where project_id=$1 and id=$2 and deleted_at is null and purpose='material'",
 		[projectId, fileId],
 	);
 	const f = rows[0];

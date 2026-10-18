@@ -1,0 +1,16 @@
+[
+  {
+    "projectRef": "rvysclscetfqicpnzlra",
+    "version": "20261017162310",
+    "name": "p0_4_deliveries",
+    "sha256": "164d74b730747320e762e7230108875b6ed71d7ee65ac710e157424e1f57a3c4",
+    "sourceMatch": true
+  },
+  {
+    "projectRef": "rvysclscetfqicpnzlra",
+    "version": "20261018010435",
+    "name": "p0_4_worker_purpose_guard",
+    "sha256": "17ec7296d4773cf389ea7b75d2fa80a499d4cf8af928d5586df1b169459531c3",
+    "sourceMatch": true
+  }
+]

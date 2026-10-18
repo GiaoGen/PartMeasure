@@ -1,0 +1,73 @@
+{
+  "checkedAt": "2026-10-18T06:14:55.403Z",
+  "project": "partmeasure-staging",
+  "envs": [
+    {
+      "key": "APP_URL_IMPORTED_UNUSED",
+      "target": [
+        "preview"
+      ],
+      "type": "encrypted"
+    },
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_URL",
+      "target": [
+        "preview"
+      ],
+      "type": "encrypted"
+    },
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+      "target": [
+        "preview"
+      ],
+      "type": "encrypted"
+    },
+    {
+      "key": "SUPABASE_SECRET_KEY",
+      "target": [
+        "preview"
+      ],
+      "type": "encrypted"
+    },
+    {
+      "key": "DATABASE_URL",
+      "target": [
+        "preview"
+      ],
+      "type": "encrypted"
+    },
+    {
+      "key": "DATABASE_CA_PEM",
+      "target": [
+        "preview"
+      ],
+      "type": "encrypted"
+    },
+    {
+      "key": "SUPABASE_PROJECT_REF",
+      "target": [
+        "preview"
+      ],
+      "type": "encrypted"
+    },
+    {
+      "key": "STORAGE_MAX_FILE_BYTES",
+      "target": [
+        "preview"
+      ],
+      "type": "encrypted"
+    },
+    {
+      "key": "APP_URL",
+      "target": [
+        "preview"
+      ],
+      "type": "encrypted"
+    }
+  ],
+  "valueVerified": false,
+  "valueVerificationMeaning": "No plaintext read or compared",
+  "previewRuntimeVerified": true,
+  "verification": "Real HTTPS Auth, strict-TLS runtime database transactions, private Storage upload/processing/download, CSRF and cookie checks"
+}

@@ -1,0 +1,36 @@
+{
+  "checkedAt": "2026-10-18T06:04:04.117Z",
+  "root": "https://partmeasure-staging-em72unjso-messup-s-projects.vercel.app",
+  "https": true,
+  "realAuthDatabaseStorage": true,
+  "physicalPhone": false,
+  "synthetic": true,
+  "downloadRetryFaultInjectionOnly": true,
+  "httpFailures": [],
+  "results": [
+    {
+      "check": "normal-password-login-empty-project-create-share-guest-upload",
+      "status": "PASS"
+    },
+    {
+      "check": "owner-draws-saves-annotation-and-fixed-measurement-request",
+      "status": "PASS"
+    },
+    {
+      "check": "guest-numeric-response-owner-confirmation-and-refresh-history",
+      "status": "PASS"
+    },
+    {
+      "check": "owner-private-multi-upload-draft-save-refresh-guest-invisible",
+      "status": "PASS"
+    },
+    {
+      "check": "owner-publishes-multiple-files-guest-range-download-real-bytes",
+      "status": "PASS"
+    },
+    {
+      "check": "download-network-failure-actionable-retry-real-service",
+      "status": "PASS"
+    }
+  ]
+}

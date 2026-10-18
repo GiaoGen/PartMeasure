@@ -1,0 +1,21 @@
+{
+  "project": "partmeasure-staging",
+  "projectId": "prj_rf7HXAsGzV6khGK5hxPkadCKhhAC",
+  "team": "messup-s-projects",
+  "target": "staging",
+  "state": "READY",
+  "id": "dpl_CpXV93iLkWV9Gm1pFpbD9ABSBfTw",
+  "url": "https://partmeasure-staging-em72unjso-messup-s-projects.vercel.app",
+  "nodeVersion": "24.x",
+  "installCommand": "npm ci",
+  "buildCommand": "npm run build",
+  "supabaseRef": "rvysclscetfqicpnzlra",
+  "sourceBaseCommit": "8768b1b",
+  "sourceSnapshot": "deploy-manifest.json",
+  "sourceUploadExcludes": [".env*", "tmp", "docs", ".git", ".next", "worker credentials"],
+  "workerTopology": "local isolated worker and ClamAV; not hosted by Vercel",
+  "userExplicitlyAuthorizedUploadAndResume": true,
+  "mailRegistrationVerified": false,
+  "physicalPhoneVerified": false,
+  "mainlandMobileNetworkVerified": false
+}

@@ -2,12 +2,13 @@
 import { useEffect, useRef, useState } from "react";
 import { api, ApiError } from "./api";
 
-export function useIssueWrite(
+export function useIssueWrite<T = unknown>(
 	url: string,
 	revision: number | undefined,
-	onSuccess: () => void,
+	onSuccess: (result: T) => void,
 	onInvalid: () => void,
 	onDirty?: (dirty: boolean) => void,
+	method: "POST" | "PATCH" = "POST",
 ) {
 	const [dirty, setDirty] = useState(false),
 		[busy, setBusy] = useState(false),
@@ -48,7 +49,7 @@ export function useIssueWrite(
 		};
 		pending.current = operation;
 		try {
-			await api(url, "POST", operation.data, {
+			const result = await api<T>(url, method, operation.data, {
 				key: operation.key,
 				...(operation.revision !== undefined
 					? { revision: operation.revision }
@@ -59,7 +60,7 @@ export function useIssueWrite(
 			setDirty(false);
 			setStatus("已保存");
 			onDirty?.(false);
-			onSuccess();
+			onSuccess(result);
 		} catch (e) {
 			setError(e instanceof Error ? e.message : "操作未完成，请重试。");
 			setStatus("提交未完成，输入仍保留");

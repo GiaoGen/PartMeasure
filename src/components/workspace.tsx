@@ -7,6 +7,7 @@ import { AnnotationEditor } from "./annotation-editor";
 import { FileIssues } from "./file-issues";
 import { IssueInbox } from "./issue-inbox";
 import { IssueDetail } from "./issue-detail";
+import { DeliverySection } from "./delivery-section";
 type Asset = {
 	id: string;
 	filename: string;
@@ -371,13 +372,7 @@ export function Workspace({
 				</p>
 			) : null}
 			{section === "deliveries" ? (
-				<section className="empty">
-					<h2>尚无交付</h2>
-					<p>成果发布尚未开放。目前可以上传和查看资料。</p>
-					<button type="button" onClick={() => selectSection("files")}>
-						返回资料与补测
-					</button>
-				</section>
+				<DeliverySection base={base} guest={guest} onInvalid={onInvalid} onDirty={onEditorDirty}/>
 			) : (
 				<>
 					<IssueInbox

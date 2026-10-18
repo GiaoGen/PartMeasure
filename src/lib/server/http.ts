@@ -3,10 +3,11 @@ import { randomUUID, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { z } from "zod";
 import { AppError } from "../policy";
+import { appOrigin } from "./origin";
 export const uuid = z.uuid();
 export function sameOrigin(req: Request) {
 	const origin = req.headers.get("origin");
-	const expected = process.env.APP_URL;
+	const expected = appOrigin();
 	if (
 		!expected ||
 		origin !== new URL(expected).origin ||

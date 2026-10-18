@@ -1,0 +1,74 @@
+{
+  "checkedAt": "2026-10-17T16:41:17.069Z",
+  "root": "http://127.0.0.1:3000",
+  "realService": true,
+  "httpFailures": [
+    {
+      "path": "/api/guest/projects/0900f7b8-8583-4ff6-9fe3-7fb21b0174fe/uploads",
+      "method": "POST",
+      "status": 403,
+      "code": "FORBIDDEN",
+      "requestId": "5165cee5-1fbc-4eb5-946b-a090b6e7eab9"
+    },
+    {
+      "path": "/api/guest/projects/0900f7b8-8583-4ff6-9fe3-7fb21b0174fe/files?purpose=delivery",
+      "method": "GET",
+      "status": 403,
+      "code": "FORBIDDEN",
+      "requestId": "c6032007-e27d-48a3-9ca8-46b346cb676d"
+    },
+    {
+      "path": "/api/guest/projects/0900f7b8-8583-4ff6-9fe3-7fb21b0174fe/deliveries",
+      "method": "POST",
+      "status": 403,
+      "code": "FORBIDDEN",
+      "requestId": "72efc88c-3a17-4d4f-a36e-62d32e9afd4a"
+    },
+    {
+      "path": "/api/guest/projects/0900f7b8-8583-4ff6-9fe3-7fb21b0174fe/deliveries/undefined/publish",
+      "method": "POST",
+      "status": 404,
+      "code": "NOT_FOUND",
+      "requestId": "f5fc4d06-47a9-4644-b3a9-c5024aa7888d"
+    }
+  ],
+  "synthetic": true,
+  "isolatedTaggedProjects": true,
+  "mailRegistration": false,
+  "results": [
+    {
+      "check": "normal-A-B-auth-and-independent-P04-projects",
+      "status": "PASS"
+    },
+    {
+      "check": "real-material-and-owner-private-delivery-pipeline",
+      "status": "FAIL",
+      "code": "TypeError"
+    },
+    {
+      "check": "private-draft-persistence-CAS-idempotency-and-attachment-boundaries",
+      "status": "FAIL",
+      "code": "TypeError"
+    },
+    {
+      "check": "atomic-multi-file-publication-replay-and-no-overwrite",
+      "status": "FAIL",
+      "code": "TypeError"
+    },
+    {
+      "check": "guest-management-denied-owner-isolation-and-project-file-scope",
+      "status": "FAIL",
+      "code": "AssertionError"
+    },
+    {
+      "check": "concurrent-publish-single-winner-and-new-version-retains-old",
+      "status": "FAIL",
+      "code": "TypeError"
+    },
+    {
+      "check": "fresh-normal-session-restores-and-revocation-denies-existing-session-download",
+      "status": "FAIL",
+      "code": "TypeError"
+    }
+  ]
+}

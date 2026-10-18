@@ -1,0 +1,194 @@
+{
+  "checkedAt": "2026-10-18T00:53:08.773Z",
+  "root": "http://127.0.0.1:3001",
+  "realService": true,
+  "httpFailures": [
+    {
+      "path": "/api/guest/projects/626d8578-f3fb-4134-ba81-dc8cbda56d53/files/d38f3bee-08e5-4cd3-b0a1-e52e0fffc284/download",
+      "method": "GET",
+      "status": 404,
+      "code": "NOT_FOUND",
+      "requestId": "4995f7b8-a49b-428f-8e3a-7d504c98ef06"
+    },
+    {
+      "path": "/api/projects/626d8578-f3fb-4134-ba81-dc8cbda56d53/deliveries",
+      "method": "POST",
+      "status": 409,
+      "code": "IDEMPOTENCY_CONFLICT",
+      "requestId": "f8591f8a-2561-4a0b-96d5-b0e52a89838b"
+    },
+    {
+      "path": "/api/guest/projects/626d8578-f3fb-4134-ba81-dc8cbda56d53/deliveries/9c3c0d6f-7b4f-47ee-b091-0a2a830c0747",
+      "method": "GET",
+      "status": 404,
+      "code": "NOT_FOUND",
+      "requestId": "f5c52ae9-19fb-4d14-b5eb-3bcb64032162"
+    },
+    {
+      "path": "/api/projects/626d8578-f3fb-4134-ba81-dc8cbda56d53/deliveries/9c3c0d6f-7b4f-47ee-b091-0a2a830c0747",
+      "method": "PATCH",
+      "status": 409,
+      "code": "REVISION_CONFLICT",
+      "requestId": "10c73de5-f597-4962-bacc-bec356ceffbe"
+    },
+    {
+      "path": "/api/projects/626d8578-f3fb-4134-ba81-dc8cbda56d53/deliveries",
+      "method": "POST",
+      "status": 422,
+      "code": "DELIVERY_FILE_UNAVAILABLE",
+      "requestId": "84f24e84-ecb4-4d83-bbd6-1ee7b919b19c"
+    },
+    {
+      "path": "/api/projects/626d8578-f3fb-4134-ba81-dc8cbda56d53/deliveries",
+      "method": "POST",
+      "status": 422,
+      "code": "DELIVERY_FILE_UNAVAILABLE",
+      "requestId": "243fe1c2-dc4a-4061-9dfa-991b405964b4"
+    },
+    {
+      "path": "/api/projects/626d8578-f3fb-4134-ba81-dc8cbda56d53/deliveries",
+      "method": "POST",
+      "status": 422,
+      "code": "DELIVERY_FILE_UNAVAILABLE",
+      "requestId": "0068c5a4-e28b-4ea2-a53c-a6159764e634"
+    },
+    {
+      "path": "/api/projects/626d8578-f3fb-4134-ba81-dc8cbda56d53/deliveries/9c3c0d6f-7b4f-47ee-b091-0a2a830c0747/publish",
+      "method": "POST",
+      "status": 409,
+      "code": "DELIVERY_PUBLISHED",
+      "requestId": "7682a752-10ee-41ef-8515-e02cecbccbf4"
+    },
+    {
+      "path": "/api/projects/626d8578-f3fb-4134-ba81-dc8cbda56d53/deliveries/9c3c0d6f-7b4f-47ee-b091-0a2a830c0747",
+      "method": "PATCH",
+      "status": 409,
+      "code": "DELIVERY_PUBLISHED",
+      "requestId": "99b415c8-6385-4c2f-ab7e-8aa6eac61b0e"
+    },
+    {
+      "path": "/api/projects/626d8578-f3fb-4134-ba81-dc8cbda56d53/files/d38f3bee-08e5-4cd3-b0a1-e52e0fffc284",
+      "method": "DELETE",
+      "status": 409,
+      "code": "HISTORY_PROTECTED",
+      "requestId": "3c3ebbd7-666c-4c5d-9bf2-5481e6f36bc6"
+    },
+    {
+      "path": "/api/projects/626d8578-f3fb-4134-ba81-dc8cbda56d53/files/68c03ab9-44b8-4ce1-b451-c5c18cd3f4ed",
+      "method": "DELETE",
+      "status": 409,
+      "code": "HISTORY_PROTECTED",
+      "requestId": "cfe1d353-5762-4899-be00-7e89015ce523"
+    },
+    {
+      "path": "/api/guest/projects/626d8578-f3fb-4134-ba81-dc8cbda56d53/uploads",
+      "method": "POST",
+      "status": 403,
+      "code": "FORBIDDEN",
+      "requestId": "0b71ca38-98b8-49f7-92c6-e14f3bc380a3"
+    },
+    {
+      "path": "/api/guest/projects/626d8578-f3fb-4134-ba81-dc8cbda56d53/files?purpose=delivery",
+      "method": "GET",
+      "status": 403,
+      "code": "FORBIDDEN",
+      "requestId": "7dde80bf-1c55-4dad-a7dd-dd5b0789112e"
+    },
+    {
+      "path": "/api/guest/projects/626d8578-f3fb-4134-ba81-dc8cbda56d53/deliveries",
+      "method": "POST",
+      "status": 403,
+      "code": "FORBIDDEN",
+      "requestId": "d9adaac5-cce7-450f-aae1-d07873f4f4dd"
+    },
+    {
+      "path": "/api/guest/projects/626d8578-f3fb-4134-ba81-dc8cbda56d53/deliveries/9c3c0d6f-7b4f-47ee-b091-0a2a830c0747/publish",
+      "method": "POST",
+      "status": 403,
+      "code": "FORBIDDEN",
+      "requestId": "39bd1d0a-31dd-4935-883f-e05b4ba3bbe6"
+    },
+    {
+      "path": "/api/guest/projects/626d8578-f3fb-4134-ba81-dc8cbda56d53/deliveries/9c3c0d6f-7b4f-47ee-b091-0a2a830c0747",
+      "method": "PATCH",
+      "status": 403,
+      "code": "FORBIDDEN",
+      "requestId": "55d545d7-a0da-4141-8b13-e27b5759759a"
+    },
+    {
+      "path": "/api/projects/626d8578-f3fb-4134-ba81-dc8cbda56d53/deliveries",
+      "method": "GET",
+      "status": 404,
+      "code": "NOT_FOUND",
+      "requestId": "e7845e47-4302-4010-97ba-0305f5afc394"
+    },
+    {
+      "path": "/api/projects/626d8578-f3fb-4134-ba81-dc8cbda56d53/deliveries/9c3c0d6f-7b4f-47ee-b091-0a2a830c0747",
+      "method": "GET",
+      "status": 404,
+      "code": "NOT_FOUND",
+      "requestId": "fe338972-a0f8-4dcb-9715-611034e8dd09"
+    },
+    {
+      "path": "/api/guest/projects/626d8578-f3fb-4134-ba81-dc8cbda56d53/deliveries/9c3c0d6f-7b4f-47ee-b091-0a2a830c0747/files/1b2aa547-5636-406a-8951-6a2490ca93f1/download",
+      "method": "GET",
+      "status": 404,
+      "code": "NOT_FOUND",
+      "requestId": "3c078a41-e3f8-412b-8482-d8e6db515af3"
+    },
+    {
+      "path": "/api/guest/projects/626d8578-f3fb-4134-ba81-dc8cbda56d53/deliveries/9c3c0d6f-7b4f-47ee-b091-0a2a830c0747/files/64724a69-1d95-46ac-8194-36836d964914/download",
+      "method": "GET",
+      "status": 404,
+      "code": "NOT_FOUND",
+      "requestId": "e74fbdab-27fe-4535-bf84-a171e2209638"
+    },
+    {
+      "path": "/api/projects/626d8578-f3fb-4134-ba81-dc8cbda56d53/deliveries/2890d113-fb73-4ebd-b992-1e108ef3e693/publish",
+      "method": "POST",
+      "status": 409,
+      "code": "DELIVERY_PUBLISHED",
+      "requestId": "d3d57e45-d6c9-4699-9c6e-1b5f68448c62"
+    },
+    {
+      "path": "/api/guest/projects/626d8578-f3fb-4134-ba81-dc8cbda56d53/deliveries",
+      "method": "GET",
+      "status": 401,
+      "code": "LINK_UNAVAILABLE",
+      "requestId": "e3d763bf-67f0-4e8f-b645-60460d466da2"
+    }
+  ],
+  "synthetic": true,
+  "isolatedTaggedProjects": true,
+  "mailRegistration": false,
+  "results": [
+    {
+      "check": "normal-A-B-auth-and-independent-P04-projects",
+      "status": "PASS"
+    },
+    {
+      "check": "real-material-and-owner-private-delivery-pipeline",
+      "status": "PASS"
+    },
+    {
+      "check": "private-draft-persistence-CAS-idempotency-and-attachment-boundaries",
+      "status": "PASS"
+    },
+    {
+      "check": "atomic-multi-file-publication-replay-and-no-overwrite",
+      "status": "PASS"
+    },
+    {
+      "check": "guest-management-denied-owner-isolation-and-project-file-scope",
+      "status": "PASS"
+    },
+    {
+      "check": "concurrent-publish-single-winner-and-new-version-retains-old",
+      "status": "PASS"
+    },
+    {
+      "check": "fresh-normal-session-restores-and-revocation-denies-existing-session-download",
+      "status": "PASS"
+    }
+  ]
+}

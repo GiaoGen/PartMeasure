@@ -620,6 +620,7 @@ small {
 	padding: 20px 0;
 	border-bottom: 1px solid #d5dae1;
 }
+
 .issue-inbox-list {
 	list-style: none;
 	padding: 0;
@@ -770,5 +771,85 @@ small {
 		border-left: 0;
 		border-top: 1px solid #d5dae1;
 		padding: 20px 0 0;
+	}
+}
+
+/* P0-4: delivery rows and a private draft; same two-section workspace. */
+.delivery-section {
+	padding: 20px 0;
+}
+.published-delivery,
+.delivery-editor {
+	padding: 20px 0;
+	border-bottom: 1px solid #d5dae1;
+}
+.delivery-file-list {
+	list-style: none;
+	padding: 0;
+}
+.delivery-section .delivery-file-list > li {
+	display: flex;
+	justify-content: space-between;
+	align-items: start;
+	gap: 20px;
+	padding: 16px 0;
+	border-top: 1px solid #d5dae1;
+	overflow-wrap: anywhere;
+}
+.delivery-file-list small,
+.delivery-download small {
+	display: block;
+	color: #536477;
+	margin: 6px 0;
+}
+.delivery-download {
+	max-width: 300px;
+	flex: none;
+}
+.delivery-editor form {
+	max-width: 760px;
+}
+.delivery-editor fieldset {
+	border: 0;
+	padding: 0;
+	min-width: 0;
+}
+.delivery-editor textarea {
+	display: block;
+	width: 100%;
+	min-height: 100px;
+	margin: 8px 0 20px;
+}
+.delivery-editor .uploads {
+	border: 0;
+	padding: 0 0 20px;
+}
+.delivery-editor .evidence-pick-list {
+	margin: 16px 0;
+}
+.delivery-editor .evidence-pick-list label {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	min-height: 44px;
+	overflow-wrap: anywhere;
+}
+.delivery-editor input[type="checkbox"] {
+	width: 20px;
+	height: 20px;
+	flex: none;
+}
+.delivery-publish {
+	margin-top: 20px;
+	border-top: 1px solid #d5dae1;
+	padding-top: 12px;
+}
+@media (max-width: 640px) {
+	.delivery-section .delivery-file-list > li {
+		display: block;
+	}
+	.delivery-download {
+		max-width: 100%;
+		margin-top: 12px;
 	}
 }

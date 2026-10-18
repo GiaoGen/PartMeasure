@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-18T00:50:40.666Z",
+  "root": "http://127.0.0.1:3001",
+  "https": false,
+  "realAuthDatabaseStorage": true,
+  "physicalPhone": false,
+  "synthetic": true,
+  "downloadRetryFaultInjectionOnly": true,
+  "httpFailures": [],
+  "results": [
+    {
+      "check": "normal-password-login-empty-project-create-share-guest-upload",
+      "status": "FAIL",
+      "code": "TimeoutError",
+      "location": "at async file:///D:/PartMeasure/scripts/p0-4/browser.mjs:25:2"
+    }
+  ]
+}

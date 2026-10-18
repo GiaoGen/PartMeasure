@@ -242,8 +242,8 @@ async function processOne() {
 			if (total > Number(job.reserved_bytes))
 				throw new AppError("DERIVATIVE_LIMIT", 422);
 			await db.query(
-				`insert into pm.file_assets(id,project_id,reservation_id,filename,mime,extension,byte_size,original_bytes,storage_key,original_key,sha256,original_sha256,width,height,normalization_version,uploader_type)
-    values($1,$2,$1,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`,
+				`insert into pm.file_assets(id,project_id,reservation_id,filename,mime,extension,byte_size,original_bytes,storage_key,original_key,sha256,original_sha256,width,height,normalization_version,uploader_type,purpose,visibility)
+    values($1,$2,$1,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`,
 				[
 					job.id,
 					job.project_id,
@@ -260,6 +260,8 @@ async function processOne() {
 					meta?.height ?? null,
 					meta?.normalizationVersion ?? null,
 					job.share_id ? "guest" : "owner",
+					job.purpose,
+					job.purpose === "delivery" ? "internal" : "customer",
 				],
 			);
 			await db.query(
@@ -412,15 +414,47 @@ export async function cleanup() {
 }
 async function main() {
 	let lastSweep = 0;
+	let failures = 0;
 	do {
-		if (Date.now() - lastSweep > 900000) {
-			await cleanup();
-			lastSweep = Date.now();
+		try {
+			if (Date.now() - lastSweep > 900000) {
+				try {
+					await cleanup();
+					lastSweep = Date.now();
+				} catch (error) {
+					if (
+						process.argv.includes("--cleanup-only") ||
+						process.argv.includes("--once")
+					)
+						throw error;
+					lastSweep = Date.now() - 840000;
+					process.stderr.write(
+						`${JSON.stringify({ event: "worker_cleanup_retry", code: code(error), retryInSeconds: 60 })}\n`,
+					);
+				}
+			}
+			if (process.argv.includes("--cleanup-only")) return;
+			const worked = await processOne();
+			failures = 0;
+			if (process.argv.includes("--once")) break;
+			if (!worked) await new Promise((resolve) => setTimeout(resolve, 2000));
+		} catch (error) {
+			if (
+				process.argv.includes("--once") ||
+				process.argv.includes("--cleanup-only") ||
+				(error instanceof AppError &&
+					["DATABASE_NOT_CONFIGURED", "UNSAFE_DATABASE_ROLE"].includes(
+						error.code,
+					))
+			)
+				throw error;
+			failures++;
+			const delay = Math.min(30, 2 ** Math.min(failures, 5));
+			process.stderr.write(
+				`${JSON.stringify({ event: "worker_iteration_retry", code: code(error), retryInSeconds: delay })}\n`,
+			);
+			await new Promise((resolve) => setTimeout(resolve, delay * 1000));
 		}
-		if (process.argv.includes("--cleanup-only")) return;
-		const worked = await processOne();
-		if (process.argv.includes("--once")) break;
-		if (!worked) await new Promise((resolve) => setTimeout(resolve, 2000));
 	} while (!process.argv.includes("--once"));
 }
 main().catch(() => {

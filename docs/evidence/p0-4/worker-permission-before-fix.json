@@ -1,0 +1,6 @@
+{
+  "status": "REPRODUCED",
+  "code": "42501",
+  "relation": "delivery_files",
+  "phase": "rollback-worker-material-insert"
+}

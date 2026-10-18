@@ -1,8 +1,8 @@
-# PartMeasure · P0-3
+# PartMeasure · P0-4
 
-当前范围：复用认证/项目/私有文件/手动标注，增加固定标注修订的测量请求、客户数值/仅照片/无法测量回复、追加证据历史、工程师确认/重测和文件问题处理。用户已确认P0-2验收并授权P0-3，见 [阶段授权](docs/P0-3/00-authorization.md)。数字OTP注册仍按此前决定待验证，正常测试账号密码登录不能冒充注册通过。成果发布/交付未实施，不自动进入P0-4。
+当前范围：在既有认证、文件、标注和测量审核基础上，新增私有交付草稿、多附件原子发布、不可覆盖成果集合和受控下载。用户已确认P0-3人工验收并授权P0-4，见 [阶段授权](docs/P0-4/00-authorization.md)。本轮停在P0-4验收，不自动进入P1/P2。数字OTP注册仍按此前决定待验证，正常测试账号密码登录不能代替注册通过。
 
-最新：[实现与运行](docs/P0-3/01-implementation.md)、[5～10分钟人工清单](docs/P0-3/02-manual-checklist.md)、[实际验证/已知问题/验收状态](docs/P0-3/03-verification.md)。P0-3停在验收准备，主观体验与真机待人工；此前长流程401/偶发503风险继续记录，本轮有限锁重试通过不等于历史所有根因关闭。
+最新：[实现与契约](docs/P0-4/01-implementation.md)、[人工与大陆手机清单](docs/P0-4/02-manual-checklist.md)、[实际验证/已知问题](docs/P0-4/03-verification.md)、[P0总验收表](docs/P0-4/04-p0-exit-matrix.md)、[无Docker运行/测试部署](docs/P0-4/05-deployment-runbook.md)。[HTTPS staging入口](https://partmeasure-staging-em72unjso-messup-s-projects.vercel.app/login)已跑通真实闭环；P0-4实现与整个P0验收分别记录，真实手机/大陆网络和OTP未验证时不能宣称整个P0通过。
 
 ## 运行
 
@@ -27,7 +27,7 @@ npm run start
 npm run licenses
 ```
 
-`test:e2e` 自动在3100启动已构建服务器，覆盖公开UI、无效链接和基本拒绝；真实业务脚本在3000另跑，见P0-3运行说明。手机viewport不能代替真机。Vitest覆盖文件边界/ZIP/大小、归一化几何和测量回复/审核契约。全程无Docker。基础认证/文件运行与worker说明沿用 [P0-1实现](docs/P0-1/01-implementation.md) 和 [文件与migration](docs/P0-1/02-files-and-migrations.md)。
+`test:e2e` 自动在3100启动已构建服务器，覆盖公开UI、无效链接和基本拒绝；P0-4真实业务脚本在3001另跑，见部署运行文档。正常dev默认3000，本次该端口被其他应用占用，未停止它。手机viewport不能代替真机。Vitest覆盖文件边界/ZIP/大小、归一化几何、测量审核和交付DTO。全程无Docker。基础认证/文件运行与worker说明沿用 [P0-1实现](docs/P0-1/01-implementation.md) 和 [文件与migration](docs/P0-1/02-files-and-migrations.md)。
 
 ## 审阅入口
 
@@ -43,7 +43,7 @@ npm run licenses
 10. [无Docker云服务实验及邮件配置现状](docs/P0-0/09-cloud-service-lab.md)
 11. [独立Konva/EXIF实验结果](docs/P0-0/10-konva-experiment.md)
 
-`supabase/drafts/` 留作历史架构草案，未整份应用。本阶段正式migration只包含测量请求、追加回复/附件/审核、事务状态约束、权限和相关索引，应用到已授权ref `rvysclscetfqicpnzlra`。业务位于私有pm schema，不部署本机auth/Storage替身；云端version与本地SQL/hash核对见P0-3证据。不操作生产，不自动进入P0-4。
+`supabase/drafts/` 留作历史架构草案，未整份应用。本阶段正式migration只包含成果用途、delivery/delivery_files、发布原子性/不可变/权限和worker分支修复，应用到已授权ref `rvysclscetfqicpnzlra`。业务位于私有pm schema，不部署本机auth/Storage替身；云端version与本地SQL/hash核对见P0-4证据。既有生产项目未动；新建Vercel测试站曾因目标异常暂停，用户明确批准恢复后，当前仅以已核对的最新staging做验收，详见部署记录。
 
 独立实验不进入业务路由：
 
@@ -54,6 +54,6 @@ npm run lab:konva:test
 node scripts/labs/record-konva.mjs
 ```
 
-`partmeasure-p0-0-lab`继续复用，不按阶段删除或重建。早期文档保留当时历史状态，最新批准和验证以docs/P0-3为准。敏感配置/账号/会话只存ignored tmp与.env.local，邮件脚本不自动重发。大陆手机网络按用户决定延至P0最终出口，当前不因此阻断。
+`partmeasure-p0-0-lab`继续复用，不按阶段删除或重建。早期文档保留当时历史状态，最新批准和验证以docs/P0-4为准。敏感配置/账号/会话只存ignored tmp与.env.local，邮件脚本不自动重发。大陆手机网络已安排在P0最终出口清单，当前等待有效HTTPS入口和实测结果，不能据数据库可访问宣布整站通过。
 
 本机目录归属为 Administrators，Git可能报dubious ownership。可仅对当前命令使用`git -c safe.directory=D:/PartMeasure status`（或log/diff），无需修改全局safe.directory。初始目录无Git，现建立本地历史；没有配置远程或推送。

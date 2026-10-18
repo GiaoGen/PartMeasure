@@ -1,0 +1,62 @@
+{
+  "checkedAt": "2026-10-18T06:16:57.282Z",
+  "commands": [
+    {
+      "command": "npm run lint",
+      "status": "PASS",
+      "files": 123
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "PASS"
+    },
+    {
+      "command": "npm test",
+      "status": "PASS",
+      "files": 7,
+      "tests": 46
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS",
+      "framework": "Next.js 16.4.2 webpack"
+    },
+    {
+      "command": "npm run test:e2e",
+      "status": "PASS",
+      "tests": 6,
+      "scope": "baseline only"
+    }
+  ],
+  "business": {
+    "api": {
+      "passed": 7,
+      "total": 7,
+      "evidence": "api.json"
+    },
+    "browser": {
+      "passed": 6,
+      "total": 6,
+      "evidence": "browser.json"
+    },
+    "database": {
+      "passed": 8,
+      "total": 8,
+      "evidence": "db.json"
+    },
+    "workflow": {
+      "passed": 3,
+      "total": 3,
+      "evidence": "workflow.json"
+    },
+    "transfer": {
+      "passed": 1,
+      "total": 1,
+      "evidence": "transfer.json"
+    }
+  },
+  "manualPhone": "PENDING",
+  "mainlandMobileNetwork": "PENDING",
+  "registrationOTP": "PENDING_USER_DEFERRED",
+  "wholeP0Accepted": false
+}

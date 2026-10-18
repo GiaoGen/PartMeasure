@@ -1,0 +1,8 @@
+{
+  "status": "FAIL",
+  "phase": "post-seed-cookie-assertion",
+  "reason": "Test incorrectly expected a global pm_guest cookie; application uses a project-scoped pm_guest_<projectId> cookie.",
+  "manualTasksCreated": 3,
+  "applicationChangeRequired": false,
+  "secretValuesRecorded": false
+}

@@ -12,9 +12,9 @@ import {
 	uuid,
 } from "@/lib/server/http";
 import * as service from "@/lib/server/service";
-import { privateBucket, storage, uploadGrant } from "@/lib/server/storage";
+import { storage, uploadGrant } from "@/lib/server/storage";
 import { effectiveFileLimit } from "@/lib/server/file-limits";
-import { satisfiableRange } from "@/lib/file-range";
+import { fileResponse } from "@/lib/server/file-response";
 import {
 	createAnnotationSchema,
 	updateAnnotationSchema,
@@ -23,15 +23,16 @@ import {
 import * as annotations from "@/lib/server/annotation-service";
 import * as issues from "@/lib/server/issue-service";
 import { measurementSchema, responseSchema, reviewSchema } from "@/lib/issues";
+import { deliveryDraftSchema } from "@/lib/deliveries";
+import * as deliveries from "@/lib/server/delivery-service";
+import { appOrigin } from "@/lib/server/origin";
+import { revisionFromHeaders } from "@/lib/revision";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 type Context = { params: Promise<{ segments: string[] }> };
 function expectedRevision(req: Request) {
-	const value = req.headers.get("if-match");
-	if (!value || !/^"[1-9]\d{0,8}"$/.test(value))
-		throw new AppError("REVISION_REQUIRED", 428);
-	return Number(value.slice(1, -1));
+	return revisionFromHeaders(req.headers);
 }
 const credentials = z
 	.object({ email: z.email().max(254), password: z.string().min(12).max(128) })
@@ -47,7 +48,7 @@ async function handle(req: Request, context: Context) {
 			jar.set("pm_csrf", value, {
 				httpOnly: true,
 				sameSite: "strict",
-				secure: process.env.APP_URL?.startsWith("https:") ?? false,
+				secure: appOrigin().startsWith("https:"),
 				path: "/",
 			});
 			return response({ token: value });
@@ -126,7 +127,7 @@ async function handle(req: Request, context: Context) {
 			const result = await service.bootstrap(raw);
 			(await cookies()).set(`pm_guest_${result.projectId}`, result.secret, {
 				httpOnly: true,
-				secure: process.env.APP_URL?.startsWith("https:") ?? false,
+				secure: appOrigin().startsWith("https:"),
 				sameSite: "lax",
 				path: "/",
 				maxAge: 86400,
@@ -185,6 +186,11 @@ async function handle(req: Request, context: Context) {
 				);
 		}
 		if (!projectId) throw new AppError("NOT_FOUND", 404);
+		const parsedPurpose = z
+			.enum(["material", "delivery"])
+			.safeParse(url.searchParams.get("purpose") ?? "material");
+		if (!parsedPurpose.success) throw new AppError("INVALID_INPUT", 422);
+		const purpose = parsedPurpose.data;
 		const resource = parts[2],
 			objectId = parts[3];
 		if (objectId && !uuid.safeParse(objectId).success)
@@ -193,19 +199,83 @@ async function handle(req: Request, context: Context) {
 			if (method === "GET")
 				return response(await service.projectDetail(actor, projectId));
 			if (method === "PATCH") {
-				const match = req.headers.get("if-match");
-				if (!match || !/^"\d+"$/.test(match))
-					throw new AppError("REVISION_REQUIRED", 428);
+				const revision = expectedRevision(req);
 				return response(
 					await service.editProject(
 						actor,
 						projectId,
 						await body(req, projectInput),
-						Number(match.slice(1, -1)),
+						revision,
 						idemKey(req),
 					),
 				);
 			}
+		}
+		if (resource === "deliveries") {
+			if (actor.kind === "guest" && method !== "GET")
+				throw new AppError("FORBIDDEN", 403);
+			if (method === "GET" && !objectId)
+				return response(await deliveries.listDeliveries(actor, projectId));
+			if (method === "POST" && !objectId)
+				return response(
+					await deliveries.saveDelivery(
+						actor,
+						projectId,
+						null,
+						await body(req, deliveryDraftSchema),
+						null,
+						idemKey(req),
+					),
+					201,
+				);
+			if (objectId) {
+				if (method === "GET" && !parts[4])
+					return response(
+						await deliveries.getDelivery(actor, projectId, objectId),
+					);
+				if (method === "PATCH" && !parts[4])
+					return response(
+						await deliveries.saveDelivery(
+							actor,
+							projectId,
+							objectId,
+							await body(req, deliveryDraftSchema),
+							expectedRevision(req),
+							idemKey(req),
+						),
+					);
+				if (method === "POST" && parts[4] === "publish" && !parts[5]) {
+					await body(req, z.object({}).strict());
+					return response(
+						await deliveries.publishDelivery(
+							actor,
+							projectId,
+							objectId,
+							expectedRevision(req),
+							idemKey(req),
+						),
+						201,
+					);
+				}
+				if (
+					method === "GET" &&
+					parts[4] === "files" &&
+					parts[5] &&
+					parts[6] === "download" &&
+					!parts[7]
+				) {
+					const fileId = uuid.safeParse(parts[5]);
+					if (!fileId.success) throw new AppError("NOT_FOUND", 404);
+					const d = await deliveries.getDelivery(actor, projectId, objectId);
+					if (!d.files.some((f) => f.id === fileId.data))
+						throw new AppError("NOT_FOUND", 404);
+					return fileResponse(
+						req,
+						await service.fileForRead(actor, projectId, fileId.data),
+					);
+				}
+			}
+			throw new AppError("NOT_FOUND", 404);
 		}
 		if (resource === "share-links") {
 			if (method === "POST" && !objectId)
@@ -327,7 +397,9 @@ async function handle(req: Request, context: Context) {
 		}
 		if (resource === "uploads") {
 			if (method === "GET" && !objectId)
-				return response(await service.listReservations(actor, projectId));
+				return response(
+					await service.listReservations(actor, projectId, purpose),
+				);
 			if (method === "POST" && !objectId) {
 				await transaction(actor, (db) =>
 					rate(db, `reserve:${projectId}:${service.actorKey(actor)}`, 10),
@@ -406,7 +478,7 @@ async function handle(req: Request, context: Context) {
 					await issues.listIssues(actor, projectId, cursor, objectId),
 				);
 			if (method === "GET" && !objectId)
-				return response(await service.files(actor, projectId, cursor));
+				return response(await service.files(actor, projectId, cursor, purpose));
 			if (method === "DELETE" && objectId)
 				return response(
 					await service.deleteFile(actor, projectId, objectId, idemKey(req)),
@@ -423,65 +495,7 @@ async function handle(req: Request, context: Context) {
 					objectId,
 					original,
 				);
-				if (
-					parts[4] === "preview" &&
-					(!file.mime.startsWith("image/") || original)
-				)
-					throw new AppError("UNSUPPORTED_FORMAT", 415);
-				const range = req.headers.get("range");
-				const byteSize = Number(
-					original ? file.original_bytes : file.byte_size,
-				);
-				if (range && !satisfiableRange(range, byteSize))
-					return new Response(null, {
-						status: 416,
-						headers: {
-							"Cache-Control": "private, no-store",
-							Vary: "Cookie",
-							"Content-Range": `bytes */${byteSize}`,
-						},
-					});
-				const { data, error } = await storage()
-					.from(privateBucket)
-					.createSignedUrl(original ? file.original_key : file.storage_key, 60);
-				if (error || !data) throw new AppError("STORAGE_UNAVAILABLE", 503);
-				const fetched = await fetch(data.signedUrl, {
-					cache: "no-store",
-					headers: range ? { Range: range } : {},
-				});
-				if (!fetched.ok) {
-					await fetched.body?.cancel();
-					if (fetched.status === 416)
-						return new Response(null, {
-							status: 416,
-							headers: {
-								"Cache-Control": "private, no-store",
-								Vary: "Cookie",
-								"Content-Range": `bytes */${byteSize}`,
-							},
-						});
-					throw new AppError("STORAGE_UNAVAILABLE", 503);
-				}
-				const downloadName =
-					!original && file.mime === "image/webp"
-						? file.filename.replace(/\.[^.]+$/, ".webp")
-						: file.filename;
-				const headers = new Headers({
-					"Cache-Control": "private, no-store",
-					Vary: "Cookie",
-					"Content-Type": original ? "application/octet-stream" : file.mime,
-					"X-Content-Type-Options": "nosniff",
-					"Content-Disposition": `${parts[4] === "preview" ? "inline" : "attachment"}; filename="download"; filename*=UTF-8''${encodeURIComponent(downloadName).replace(/['()*]/g, (c) => `%${c.charCodeAt(0).toString(16)}`)}`,
-				});
-				for (const key of [
-					"content-length",
-					"content-range",
-					"accept-ranges",
-				]) {
-					const value = fetched.headers.get(key);
-					if (value) headers.set(key, value);
-				}
-				return new Response(fetched.body, { status: fetched.status, headers });
+				return fileResponse(req, file, parts[4] === "preview", original);
 			}
 		}
 		throw new AppError("NOT_FOUND", 404);

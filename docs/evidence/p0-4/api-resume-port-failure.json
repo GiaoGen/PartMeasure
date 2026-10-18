@@ -1,0 +1,30 @@
+{
+  "checkedAt": "2026-10-18T00:42:58.039Z",
+  "root": "http://127.0.0.1:3000",
+  "realService": true,
+  "httpFailures": [],
+  "synthetic": true,
+  "isolatedTaggedProjects": true,
+  "mailRegistration": false,
+  "results": [
+    {
+      "check": "normal-A-B-auth-and-independent-P04-projects",
+      "status": "FAIL",
+      "code": "SyntaxError",
+      "frames": [
+        "    at JSON.parse (<anonymous>)",
+        "    at APIResponse.json (D:\\PartMeasure\\node_modules\\playwright-core\\lib\\coreBundle.js:60966:21)",
+        "    at async call (file:///D:/PartMeasure/scripts/p0-4/helpers.mjs:11:32)",
+        "    at async context (file:///D:/PartMeasure/scripts/p0-4/helpers.mjs:8:128)"
+      ]
+    },
+    {
+      "check": "suite-prerequisite",
+      "status": "FAIL",
+      "code": "Error",
+      "frames": [
+        "    at file:///D:/PartMeasure/scripts/p0-4/api.mjs:27:14"
+      ]
+    }
+  ]
+}

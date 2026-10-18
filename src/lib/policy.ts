@@ -51,6 +51,7 @@ export const uploadInput = z
 			.max(100 * MiB),
 		declaredMime: z.string().max(120),
 		sha256: z.string().regex(/^[0-9a-f]{64}$/),
+		purpose: z.enum(["material", "delivery"]).optional(),
 	})
 	.strict();
 export class AppError extends Error {

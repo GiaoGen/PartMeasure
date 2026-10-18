@@ -1,0 +1,24 @@
+{
+  "checkedAt": "2026-10-18T06:09:55.300Z",
+  "root": "https://partmeasure-staging-em72unjso-messup-s-projects.vercel.app",
+  "realService": true,
+  "httpFailures": [],
+  "containsSecrets": false,
+  "physicalPhone": false,
+  "cookieFlagsVerified": true,
+  "guestRestoreVerified": true,
+  "results": [
+    {
+      "title": "人工 · 数值回复",
+      "status": "EXISTING"
+    },
+    {
+      "title": "人工 · 仅照片与人工确认",
+      "status": "EXISTING"
+    },
+    {
+      "title": "人工 · 无法测量与重测",
+      "status": "EXISTING"
+    }
+  ]
+}

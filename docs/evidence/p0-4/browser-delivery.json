@@ -1,0 +1,28 @@
+{
+  "checkedAt": "2026-10-18T01:13:22.047Z",
+  "root": "http://127.0.0.1:3001",
+  "https": false,
+  "realAuthDatabaseStorage": true,
+  "physicalPhone": false,
+  "synthetic": true,
+  "downloadRetryFaultInjectionOnly": true,
+  "httpFailures": [],
+  "results": [
+    {
+      "check": "normal-password-login-resumes-saved-project-and-guest-session",
+      "status": "PASS"
+    },
+    {
+      "check": "owner-private-multi-upload-draft-save-refresh-guest-invisible",
+      "status": "PASS"
+    },
+    {
+      "check": "owner-publishes-multiple-files-guest-range-download-real-bytes",
+      "status": "PASS"
+    },
+    {
+      "check": "download-network-failure-actionable-retry-real-service",
+      "status": "PASS"
+    }
+  ]
+}

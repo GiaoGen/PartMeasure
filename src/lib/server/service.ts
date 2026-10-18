@@ -4,6 +4,7 @@ import type { PoolClient } from "pg";
 import { AppError, limits, uploadPolicy } from "../policy";
 import { type Actor, digest, idempotent, token, transaction } from "./db";
 import { effectiveFileLimit } from "./file-limits";
+import { appOrigin } from "./origin";
 
 export type Project = {
 	id: string;
@@ -171,8 +172,7 @@ export async function rotateShare(actor: Actor, id: string, key: string) {
 		return {
 			id: result.id,
 			expiresAt: result.expiresAt,
-			url:
-				result.hash === digest(raw) ? `${process.env.APP_URL}/s/${raw}` : null,
+			url: result.hash === digest(raw) ? `${appOrigin()}/s/${raw}` : null,
 			replayed: result.hash !== digest(raw),
 		};
 	});
@@ -233,9 +233,13 @@ export async function reserve(
 		byteSize: number;
 		declaredMime: string;
 		sha256: string;
+		purpose?: "material" | "delivery" | undefined;
 	},
 	key: string,
 ) {
+	const purpose = input.purpose ?? "material";
+	if (purpose === "delivery" && actor.kind !== "owner")
+		throw new AppError("FORBIDDEN", 403);
 	if (input.byteSize > effectiveFileLimit())
 		throw new AppError("STORAGE_FILE_TOO_LARGE", 413);
 	const policy = uploadPolicy(
@@ -257,7 +261,10 @@ export async function reserve(
 		);
 		const { shareId } = await access(db, actor, id);
 		// Expired interaction windows stop occupying concurrency slots, but keep all storage budget reserved until cleanup.
-		await db.query("update pm.upload_reservations set state='rejected',error_code='UPLOAD_WINDOW_EXPIRED' where project_id=$1 and state='reserved' and created_at<now()-interval '15 minutes'",[id]);
+		await db.query(
+			"update pm.upload_reservations set state='rejected',error_code='UPLOAD_WINDOW_EXPIRED' where project_id=$1 and state='reserved' and created_at<now()-interval '15 minutes'",
+			[id],
+		);
 		return idempotent(
 			db,
 			`${id}:${actorKey(actor)}:reserve`,
@@ -265,8 +272,8 @@ export async function reserve(
 			input,
 			async () => {
 				const duplicate = await db.query(
-					"select id,state,actor_key,(created_at<now()-interval '15 minutes') as expired from pm.upload_reservations where project_id=$1 and sha256=$2 and byte_size=$3 and state in ('reserved','queued','processing','ready')",
-					[id, input.sha256, input.byteSize],
+					"select id,state,actor_key,(created_at<now()-interval '15 minutes') as expired from pm.upload_reservations where project_id=$1 and sha256=$2 and byte_size=$3 and purpose=$4 and state in ('reserved','queued','processing','ready')",
+					[id, input.sha256, input.byteSize, purpose],
 				);
 				if (duplicate.rows[0]) {
 					if (duplicate.rows[0].actor_key !== actorKey(actor))
@@ -302,7 +309,7 @@ export async function reserve(
 				const reservationId = randomUUID(),
 					path = `${id}/${reservationId}/source`;
 				await db.query(
-					"insert into pm.upload_reservations(id,project_id,actor_key,share_id,filename,extension,declared_mime,byte_size,sha256,reserved_bytes,quarantine_key) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)",
+					"insert into pm.upload_reservations(id,project_id,actor_key,share_id,filename,extension,declared_mime,byte_size,sha256,reserved_bytes,quarantine_key,purpose) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)",
 					[
 						reservationId,
 						id,
@@ -315,6 +322,7 @@ export async function reserve(
 						input.sha256,
 						policy.budget,
 						path,
+						purpose,
 					],
 				);
 				await db.query(
@@ -378,12 +386,18 @@ export async function reservation(
 		};
 	});
 }
-export async function listReservations(actor: Actor, id: string) {
+export async function listReservations(
+	actor: Actor,
+	id: string,
+	purpose: "material" | "delivery" = "material",
+) {
+	if (purpose === "delivery" && actor.kind !== "owner")
+		throw new AppError("FORBIDDEN", 403);
 	return transaction(actor, async (db) => {
 		await access(db, actor, id, false, true);
 		const { rows } = await db.query(
-			"select id,filename,state,error_code as \"errorCode\" from pm.upload_reservations where project_id=$1 and ($2::boolean or actor_key=$3) and state not in ('ready','cleaned') and created_at>now()-interval '1 day' order by created_at desc limit 30",
-			[id, actor.kind === "owner", actorKey(actor)],
+			"select id,filename,state,error_code as \"errorCode\" from pm.upload_reservations where project_id=$1 and ($2::boolean or actor_key=$3) and purpose=$4 and state not in ('ready','cleaned') and created_at>now()-interval '1 day' order by created_at desc limit 30",
+			[id, actor.kind === "owner", actorKey(actor), purpose],
 		);
 		return { items: rows };
 	});
@@ -424,13 +438,20 @@ export async function retryProcessing(
 		);
 	});
 }
-export async function files(actor: Actor, id: string, cursor: string | null) {
+export async function files(
+	actor: Actor,
+	id: string,
+	cursor: string | null,
+	purpose: "material" | "delivery" = "material",
+) {
+	if (purpose === "delivery" && actor.kind !== "owner")
+		throw new AppError("FORBIDDEN", 403);
 	return transaction(actor, async (db) => {
 		await access(db, actor, id, false, true);
 		const { rows } = await db.query(
 			`select id,filename,mime,extension,byte_size as "byteSize",width,height,uploader_type as "uploaderType",created_at as "createdAt" from pm.file_assets
-   where project_id=$1 and deleted_at is null and ($2::boolean or visibility='customer') and ($3::uuid is null or (created_at,id)<(select created_at,id from pm.file_assets where id=$3 and project_id=$1)) order by created_at desc,id desc limit 31`,
-			[id, actor.kind === "owner", cursor],
+   where project_id=$1 and deleted_at is null and ($2::boolean or visibility='customer') and purpose=$4 and ($3::uuid is null or (created_at,id)<(select created_at,id from pm.file_assets where id=$3 and project_id=$1)) order by created_at desc,id desc limit 31`,
+			[id, actor.kind === "owner", cursor, purpose],
 		);
 		return {
 			items: rows.slice(0, 30),
@@ -449,7 +470,7 @@ export async function fileForRead(
 		if (original && actor.kind !== "owner")
 			throw new AppError("FORBIDDEN", 403);
 		const { rows } = await db.query(
-			"select * from pm.file_assets where id=$1 and project_id=$2 and deleted_at is null and ($3::boolean or visibility='customer')",
+			"select * from pm.file_assets f where id=$1 and project_id=$2 and deleted_at is null and ($3::boolean or (visibility='customer' and (purpose='material' or exists(select 1 from pm.delivery_files a join pm.deliveries d on d.id=a.delivery_id and d.project_id=a.project_id where a.file_id=f.id and a.project_id=f.project_id and a.selected and d.state='published'))))",
 			[fileId, id, actor.kind === "owner"],
 		);
 		if (!rows[0]) throw new AppError("NOT_FOUND", 404);

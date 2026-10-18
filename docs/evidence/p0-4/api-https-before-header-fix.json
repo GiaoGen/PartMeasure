@@ -1,0 +1,178 @@
+{
+  "checkedAt": "2026-10-18T05:50:41.969Z",
+  "root": "https://partmeasure-staging-eosgztfn5-messup-s-projects.vercel.app",
+  "realService": true,
+  "httpFailures": [
+    {
+      "path": "/api/guest/projects/a4d17679-a75a-4c9b-b183-33ce3f57e907/files/85b05631-1a56-4fe2-adf5-7e5b35059019/download",
+      "method": "GET",
+      "status": 404,
+      "code": "NOT_FOUND",
+      "requestId": "cf68539b-e355-4a81-afdd-5c0c0f09b352"
+    },
+    {
+      "path": "/api/projects/a4d17679-a75a-4c9b-b183-33ce3f57e907/deliveries",
+      "method": "POST",
+      "status": 409,
+      "code": "IDEMPOTENCY_CONFLICT",
+      "requestId": "64d2e8d7-ea8f-4d60-9dac-7d53b0d7333f"
+    },
+    {
+      "path": "/api/guest/projects/a4d17679-a75a-4c9b-b183-33ce3f57e907/deliveries/c19866b7-7c65-45ff-b031-cb6bac48bdb3",
+      "method": "GET",
+      "status": 404,
+      "code": "NOT_FOUND",
+      "requestId": "a7b01b29-8c54-4b92-8166-91575c678352"
+    },
+    {
+      "path": "/api/projects/a4d17679-a75a-4c9b-b183-33ce3f57e907/deliveries/c19866b7-7c65-45ff-b031-cb6bac48bdb3",
+      "method": "PATCH",
+      "status": 412
+    },
+    {
+      "path": "/api/projects/a4d17679-a75a-4c9b-b183-33ce3f57e907/deliveries/c19866b7-7c65-45ff-b031-cb6bac48bdb3/publish",
+      "method": "POST",
+      "status": 409,
+      "code": "DELIVERY_PUBLISHED",
+      "requestId": "91c0679a-e39b-4e69-9fb9-9c245cf9c7b2"
+    },
+    {
+      "path": "/api/projects/a4d17679-a75a-4c9b-b183-33ce3f57e907/deliveries/c19866b7-7c65-45ff-b031-cb6bac48bdb3",
+      "method": "PATCH",
+      "status": 409,
+      "code": "DELIVERY_PUBLISHED",
+      "requestId": "88aa64f1-cf47-4207-915b-0b3e8937c2d7"
+    },
+    {
+      "path": "/api/projects/a4d17679-a75a-4c9b-b183-33ce3f57e907/files/85b05631-1a56-4fe2-adf5-7e5b35059019",
+      "method": "DELETE",
+      "status": 409,
+      "code": "HISTORY_PROTECTED",
+      "requestId": "43dc43c9-b8c5-448f-b20f-6446a9557974"
+    },
+    {
+      "path": "/api/projects/a4d17679-a75a-4c9b-b183-33ce3f57e907/files/a58ef4e7-b46d-4f0f-b609-7da37129c4aa",
+      "method": "DELETE",
+      "status": 409,
+      "code": "HISTORY_PROTECTED",
+      "requestId": "762be192-b093-4366-8620-d40c58d9641c"
+    },
+    {
+      "path": "/api/guest/projects/a4d17679-a75a-4c9b-b183-33ce3f57e907/uploads",
+      "method": "POST",
+      "status": 403,
+      "code": "FORBIDDEN",
+      "requestId": "48423579-47eb-46ef-941f-2fb98dae2789"
+    },
+    {
+      "path": "/api/guest/projects/a4d17679-a75a-4c9b-b183-33ce3f57e907/files?purpose=delivery",
+      "method": "GET",
+      "status": 403,
+      "code": "FORBIDDEN",
+      "requestId": "c3b1aed3-9a36-45b4-baa3-03365e439829"
+    },
+    {
+      "path": "/api/guest/projects/a4d17679-a75a-4c9b-b183-33ce3f57e907/deliveries",
+      "method": "POST",
+      "status": 403,
+      "code": "FORBIDDEN",
+      "requestId": "527c85bf-326d-4eb7-a0f3-974f44a8055d"
+    },
+    {
+      "path": "/api/guest/projects/a4d17679-a75a-4c9b-b183-33ce3f57e907/deliveries/c19866b7-7c65-45ff-b031-cb6bac48bdb3/publish",
+      "method": "POST",
+      "status": 403,
+      "code": "FORBIDDEN",
+      "requestId": "896d5bac-633c-4cb7-848d-5cbb96f9d2c6"
+    },
+    {
+      "path": "/api/guest/projects/a4d17679-a75a-4c9b-b183-33ce3f57e907/deliveries/c19866b7-7c65-45ff-b031-cb6bac48bdb3",
+      "method": "PATCH",
+      "status": 403,
+      "code": "FORBIDDEN",
+      "requestId": "8fd7dbba-b1e0-48dc-800f-66064d5b9dfa"
+    },
+    {
+      "path": "/api/projects/a4d17679-a75a-4c9b-b183-33ce3f57e907/deliveries",
+      "method": "GET",
+      "status": 404,
+      "code": "NOT_FOUND",
+      "requestId": "be59dd93-db71-4902-b023-20cd09597db0"
+    },
+    {
+      "path": "/api/projects/a4d17679-a75a-4c9b-b183-33ce3f57e907/deliveries/c19866b7-7c65-45ff-b031-cb6bac48bdb3",
+      "method": "GET",
+      "status": 404,
+      "code": "NOT_FOUND",
+      "requestId": "9f1c525f-e0b8-4110-b696-43cc8a2c4fae"
+    },
+    {
+      "path": "/api/guest/projects/a4d17679-a75a-4c9b-b183-33ce3f57e907/deliveries/c19866b7-7c65-45ff-b031-cb6bac48bdb3/files/cf304948-63cc-42c9-aa2c-7d7f9a619463/download",
+      "method": "GET",
+      "status": 404,
+      "code": "NOT_FOUND",
+      "requestId": "76153af4-971c-43b6-ade8-2370496fd0d5"
+    },
+    {
+      "path": "/api/guest/projects/a4d17679-a75a-4c9b-b183-33ce3f57e907/deliveries/c19866b7-7c65-45ff-b031-cb6bac48bdb3/files/358f7220-a7f2-413d-97ad-7ac97adba093/download",
+      "method": "GET",
+      "status": 404,
+      "code": "NOT_FOUND",
+      "requestId": "b4632193-d3f4-4a35-b444-018996318d09"
+    },
+    {
+      "path": "/api/projects/a4d17679-a75a-4c9b-b183-33ce3f57e907/deliveries/1c288490-284a-4971-b5e8-c2b07b296a1e/publish",
+      "method": "POST",
+      "status": 409,
+      "code": "DELIVERY_PUBLISHED",
+      "requestId": "778224ea-d4ba-43c3-b028-2f6c88b4673d"
+    },
+    {
+      "path": "/api/guest/projects/a4d17679-a75a-4c9b-b183-33ce3f57e907/deliveries",
+      "method": "GET",
+      "status": 401,
+      "code": "LINK_UNAVAILABLE",
+      "requestId": "a528680b-d5fa-4f4c-a05c-59e0346a0b13"
+    }
+  ],
+  "synthetic": true,
+  "isolatedTaggedProjects": true,
+  "mailRegistration": false,
+  "results": [
+    {
+      "check": "normal-A-B-auth-and-independent-P04-projects",
+      "status": "PASS"
+    },
+    {
+      "check": "real-material-and-owner-private-delivery-pipeline",
+      "status": "PASS"
+    },
+    {
+      "check": "private-draft-persistence-CAS-idempotency-and-attachment-boundaries",
+      "status": "FAIL",
+      "code": "HTTP_412_UNEXPECTED",
+      "frames": [
+        "    at requireData (file:///D:/PartMeasure/scripts/p0-4/helpers.mjs:57:9)",
+        "    at file:///D:/PartMeasure/scripts/p0-4/api.mjs:216:18",
+        "    at async check (file:///D:/PartMeasure/scripts/p0-4/api.mjs:20:3)",
+        "    at async file:///D:/PartMeasure/scripts/p0-4/api.mjs:180:2"
+      ]
+    },
+    {
+      "check": "atomic-multi-file-publication-replay-and-no-overwrite",
+      "status": "PASS"
+    },
+    {
+      "check": "guest-management-denied-owner-isolation-and-project-file-scope",
+      "status": "PASS"
+    },
+    {
+      "check": "concurrent-publish-single-winner-and-new-version-retains-old",
+      "status": "PASS"
+    },
+    {
+      "check": "fresh-normal-session-restores-and-revocation-denies-existing-session-download",
+      "status": "PASS"
+    }
+  ]
+}

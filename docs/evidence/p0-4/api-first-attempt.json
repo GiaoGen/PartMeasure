@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-10-17T16:34:03.825Z",
+  "root": "http://127.0.0.1:3000",
+  "realService": true,
+  "synthetic": true,
+  "isolatedTaggedProjects": true,
+  "mailRegistration": false,
+  "results": [
+    {
+      "check": "normal-A-B-auth-and-independent-P04-projects",
+      "status": "FAIL",
+      "code": "HTTP_503_DEPENDENCY_UNAVAILABLE"
+    },
+    {
+      "check": "suite-prerequisite",
+      "status": "FAIL",
+      "code": "Error"
+    }
+  ]
+}

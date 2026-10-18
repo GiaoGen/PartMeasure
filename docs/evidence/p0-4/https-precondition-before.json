@@ -1,0 +1,10 @@
+{
+  "root": "https://partmeasure-staging-eosgztfn5-messup-s-projects.vercel.app",
+  "status": 412,
+  "businessCode": null,
+  "contentType": "text/plain; charset=utf-8",
+  "hasEtag": false,
+  "revisionAfter": 2,
+  "expectedDescriptionPersisted": true,
+  "requestIdPresent": false
+}

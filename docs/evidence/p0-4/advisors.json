@@ -1,0 +1,137 @@
+{
+  "checkedAt": "2026-10-18T05:58:12.518Z",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "security": {
+    "lints": [
+      {
+        "name": "auth_leaked_password_protection",
+        "title": "Leaked Password Protection Disabled",
+        "level": "WARN",
+        "facing": "EXTERNAL",
+        "categories": [
+          "SECURITY"
+        ],
+        "description": "Leaked password protection is currently disabled.",
+        "remediation": "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection",
+        "count": 1,
+        "findings": [
+          {
+            "detail": "Supabase Auth prevents the use of compromised passwords by checking against HaveIBeenPwned.org. Enable this feature to enhance security.",
+            "metadata": {
+              "type": "auth",
+              "entity": "Auth"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "performance": {
+    "lints": [
+      {
+        "name": "unused_index",
+        "title": "Unused Index",
+        "level": "INFO",
+        "facing": "EXTERNAL",
+        "categories": [
+          "PERFORMANCE"
+        ],
+        "description": "Detects if an index has never been used and may be a candidate for removal.",
+        "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+        "count": 10,
+        "findings": [
+          {
+            "detail": "Index \\`p0_lab_owner\\` on table \\`public.p0_lab_records\\` has not been used",
+            "metadata": {
+              "name": "p0_lab_records",
+              "type": "table",
+              "schema": "public"
+            },
+            "observed_at": "2026-10-18T05:58:07.731Z"
+          },
+          {
+            "detail": "Index \\`audit_project\\` on table \\`pm.audit_events\\` has not been used",
+            "metadata": {
+              "name": "audit_events",
+              "type": "table",
+              "schema": "pm"
+            },
+            "observed_at": "2026-10-18T05:58:07.731Z"
+          },
+          {
+            "detail": "Index \\`reviews_owner\\` on table \\`pm.issue_reviews\\` has not been used",
+            "metadata": {
+              "name": "issue_reviews",
+              "type": "table",
+              "schema": "pm"
+            },
+            "observed_at": "2026-10-18T05:58:07.731Z"
+          },
+          {
+            "detail": "Index \\`annotation_revisions_actor\\` on table \\`pm.annotation_revisions\\` has not been used",
+            "metadata": {
+              "name": "annotation_revisions",
+              "type": "table",
+              "schema": "pm"
+            },
+            "observed_at": "2026-10-18T05:58:07.731Z"
+          },
+          {
+            "detail": "Index \\`issues_actor\\` on table \\`pm.issues\\` has not been used",
+            "metadata": {
+              "name": "issues",
+              "type": "table",
+              "schema": "pm"
+            },
+            "observed_at": "2026-10-18T05:58:07.731Z"
+          },
+          {
+            "detail": "Index \\`deliveries_creator\\` on table \\`pm.deliveries\\` has not been used",
+            "metadata": {
+              "name": "deliveries",
+              "type": "table",
+              "schema": "pm"
+            },
+            "observed_at": "2026-10-18T05:58:07.731Z"
+          },
+          {
+            "detail": "Index \\`deliveries_publisher\\` on table \\`pm.deliveries\\` has not been used",
+            "metadata": {
+              "name": "deliveries",
+              "type": "table",
+              "schema": "pm"
+            },
+            "observed_at": "2026-10-18T05:58:07.731Z"
+          },
+          {
+            "detail": "Index \\`issues_annotation\\` on table \\`pm.issues\\` has not been used",
+            "metadata": {
+              "name": "issues",
+              "type": "table",
+              "schema": "pm"
+            },
+            "observed_at": "2026-10-18T05:58:07.731Z"
+          },
+          {
+            "detail": "Index \\`responses_owner\\` on table \\`pm.issue_responses\\` has not been used",
+            "metadata": {
+              "name": "issue_responses",
+              "type": "table",
+              "schema": "pm"
+            },
+            "observed_at": "2026-10-18T05:58:07.731Z"
+          },
+          {
+            "detail": "Index \\`responses_guest\\` on table \\`pm.issue_responses\\` has not been used",
+            "metadata": {
+              "name": "issue_responses",
+              "type": "table",
+              "schema": "pm"
+            },
+            "observed_at": "2026-10-18T05:58:07.731Z"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -22,9 +22,11 @@ export function getPool(worker = false) {
 		throw new AppError("UNSAFE_DATABASE_ROLE", 503);
 	const pool = worker ? workerPool : runtimePool;
 	if (pool) return pool;
-	const ca = process.env.DATABASE_CA_FILE
-		? readFileSync(process.env.DATABASE_CA_FILE, "utf8")
-		: undefined;
+	const ca =
+		process.env.DATABASE_CA_PEM ??
+		(process.env.DATABASE_CA_FILE
+			? readFileSync(process.env.DATABASE_CA_FILE, "utf8")
+			: undefined);
 	const created = new pg.Pool({
 		connectionString: connection.href,
 		max: 2,

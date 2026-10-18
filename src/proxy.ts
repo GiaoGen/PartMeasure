@@ -1,6 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
+import { appOrigin } from "./lib/server/origin";
 
 export async function proxy(request: NextRequest) {
 	const nonce = randomBytes(16).toString("base64");
@@ -23,7 +24,7 @@ export async function proxy(request: NextRequest) {
 				cookieOptions: {
 					httpOnly: true,
 					sameSite: "lax",
-					secure: process.env.APP_URL?.startsWith("https:") ?? false,
+					secure: appOrigin().startsWith("https:"),
 					path: "/",
 				},
 				cookies: {

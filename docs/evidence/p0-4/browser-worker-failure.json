@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-10-18T01:04:22.719Z",
+  "root": "http://127.0.0.1:3001",
+  "https": false,
+  "realAuthDatabaseStorage": true,
+  "physicalPhone": false,
+  "synthetic": true,
+  "downloadRetryFaultInjectionOnly": true,
+  "httpFailures": [],
+  "results": [
+    {
+      "check": "normal-password-login-resumes-saved-project-and-guest-session",
+      "status": "PASS"
+    },
+    {
+      "check": "guest-numeric-response-owner-confirmation-and-refresh-history",
+      "status": "PASS"
+    },
+    {
+      "check": "owner-private-multi-upload-draft-save-refresh-guest-invisible",
+      "status": "FAIL",
+      "code": "Error",
+      "location": "at async file:///D:/PartMeasure/scripts/p0-4/browser.mjs:306:4"
+    }
+  ]
+}

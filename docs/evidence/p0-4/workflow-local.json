@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-10-18T01:08:17.752Z",
+  "root": "http://127.0.0.1:3001",
+  "realService": true,
+  "httpFailures": [],
+  "https": false,
+  "mailRegistration": false,
+  "results": [
+    {
+      "check": "engineer-first-material-upload-normalized-and-fixed-request",
+      "status": "PASS"
+    },
+    {
+      "check": "photo-only-human-value-source-survives-delivery-module",
+      "status": "PASS"
+    },
+    {
+      "check": "unable-remeasure-numeric-resubmit-and-append-history",
+      "status": "PASS"
+    }
+  ]
+}

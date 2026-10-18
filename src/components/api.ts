@@ -29,6 +29,7 @@ const messages: Record<string, string> = {
 	UPLOAD_WINDOW_EXPIRED: "上传授权窗口已过期，请重新选择文件。",
 	HASH_OR_SIZE_MISMATCH: "上传内容校验失败，请重新上传。",
 	REVISION_CONFLICT: "项目已在别处更新，请刷新后重试。",
+	REVISION_REQUIRED: "页面缺少资料修订，请保留输入并重新载入。",
 	CSRF_INVALID: "页面安全凭据失效，请刷新。",
 	FORBIDDEN: "当前访问方式没有此操作权限。",
 	NOT_FOUND: "内容不存在或无权访问。",
@@ -51,6 +52,12 @@ const messages: Record<string, string> = {
 	ATTACHMENT_UNAVAILABLE: "附件不可用，请选择本项目中处理完成且可共享的文件。",
 	RESPONSE_CONFLICT: "最新回复已变化，请重新载入后审核。",
 	RESPONSE_LIMIT: "该任务已达到100轮回复上限，请由工程师新建请求。",
+	DELIVERY_FILE_UNAVAILABLE:
+		"成果附件不可用，请选择本项目中处理完成的工程师成果文件。",
+	DELIVERY_PUBLISHED:
+		"这份成果已经发布，不能覆盖。请重新载入查看，或准备新的成果集合。",
+	DELIVERY_FILES_REQUIRED: "请选择1～20个处理完成的成果附件，再发布。",
+	DELIVERY_DRAFT_LIMIT: "当前已有5份交付草稿，请先完成已有草稿。",
 };
 export const message = (code: string) =>
 	messages[code] ?? "操作未完成，请重试或联系工程师。";
@@ -72,7 +79,7 @@ export async function api<T>(
 		if (data !== undefined) headers["Content-Type"] = "application/json";
 	}
 	if (options.revision !== undefined)
-		headers["If-Match"] = `"${options.revision}"`;
+		headers["X-PM-Revision"] = `"${options.revision}"`;
 	const init: RequestInit = {
 		method,
 		headers,

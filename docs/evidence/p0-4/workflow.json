@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-10-18T06:00:10.079Z",
+  "root": "https://partmeasure-staging-em72unjso-messup-s-projects.vercel.app",
+  "realService": true,
+  "httpFailures": [],
+  "https": true,
+  "mailRegistration": false,
+  "results": [
+    {
+      "check": "engineer-first-material-upload-normalized-and-fixed-request",
+      "status": "PASS"
+    },
+    {
+      "check": "photo-only-human-value-source-survives-delivery-module",
+      "status": "PASS"
+    },
+    {
+      "check": "unable-remeasure-numeric-resubmit-and-append-history",
+      "status": "PASS"
+    }
+  ]
+}

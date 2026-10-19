@@ -1,30 +1,38 @@
 "use client";
-import { useState } from "react";
-import type { Annotation, CanonicalImage } from "@/lib/annotations";
-import { measurementSchema, methodLabel } from "@/lib/issues";
+import { useRef, useState } from "react";
+import {
+	type Annotation,
+	type AnnotationDraft,
+	typeLabel,
+} from "@/lib/annotations";
+import { methodLabel } from "@/lib/issues";
+import { prepareMeasurementReminder } from "./measurement-reminder";
 import { useIssueWrite } from "./use-issue-write";
 export function MeasurementCreate({
 	base,
 	fileId,
 	annotation,
-	image,
+	prepare,
+	disabled = false,
 	onCreated,
 	onInvalid,
 	onDirty,
 }: {
 	base: string;
 	fileId: string;
-	annotation: Annotation;
-	image: CanonicalImage;
+	annotation: AnnotationDraft;
+	prepare: () => Promise<Annotation | undefined>;
+	disabled?: boolean;
 	onCreated: () => void;
 	onInvalid: () => void;
 	onDirty: (dirty: boolean) => void;
 }) {
-	const [title, setTitle] = useState(annotation.metadata.name || "请补充测量"),
-		[targetInfo, setTargetInfo] = useState(""),
+	const [targetInfo, setTargetInfo] = useState(""),
 		[description, setDescription] = useState(""),
 		[method, setMethod] = useState<keyof typeof methodLabel>("unspecified");
 	const [created, setCreated] = useState(false);
+	const [preparing, setPreparing] = useState(false);
+	const preparingRef = useRef(false);
 	const write = useIssueWrite(
 		`${base}/issues`,
 		undefined,
@@ -35,10 +43,12 @@ export function MeasurementCreate({
 		onInvalid,
 		onDirty,
 	);
+	const title =
+		annotation.metadata.name || `${typeLabel(annotation.geometry)}测量`;
 	const draft = {
 		kind: "measurement" as const,
 		fileId,
-		annotationRef: { id: annotation.id, revision: annotation.revision },
+		annotationId: annotation.id,
 		title,
 		targetInfo,
 		description,
@@ -47,7 +57,7 @@ export function MeasurementCreate({
 	if (created)
 		return (
 			<section className="measurement-create">
-				<p role="status">测量请求已创建，可在上方任务列表中查看。</p>
+				<p role="status">测量提醒已发送。</p>
 				<button
 					type="button"
 					onClick={() => {
@@ -57,46 +67,41 @@ export function MeasurementCreate({
 						write.changed();
 					}}
 				>
-					新建另一条请求
+					另发一条提醒
 				</button>
 			</section>
 		);
 	return (
-		<details className="measurement-create">
-			<summary>创建测量请求</summary>
-			<p>
-				固定当前标注修订 #{annotation.revision} · 标准图 {image.width}×
-				{image.height}。后续编辑标注不会移动本请求的位置。
-			</p>
+		<details
+			className="measurement-create"
+			open={annotation.geometry.type !== "text"}
+		>
+			<summary>需要客户测量</summary>
 			<form
 				className="stack"
-				onSubmit={(e) => {
+				onSubmit={async (e) => {
 					e.preventDefault();
-					const parsed = measurementSchema.safeParse(draft);
-					if (!parsed.success) {
-						write.setError("请填写题目、目标信息，并检查长度。");
-						return;
+					if (preparingRef.current || disabled) return;
+					preparingRef.current = true;
+					setPreparing(true);
+					try {
+						const request = await prepareMeasurementReminder(draft, prepare);
+						await write.submit(request);
+					} catch (error) {
+						write.setError(
+							error instanceof Error ? error.message : "发送未完成，请重试。",
+						);
+					} finally {
+						preparingRef.current = false;
+						setPreparing(false);
 					}
-					void write.submit(parsed.data);
 				}}
 			>
-				<fieldset disabled={write.disabled}>
+				<fieldset disabled={write.disabled || disabled || preparing}>
 					<label>
-						请求题目
-						<input
-							required
-							maxLength={120}
-							value={title}
-							onChange={(e) => {
-								setTitle(e.target.value);
-								write.changed();
-							}}
-						/>
-					</label>
-					<label>
-						目标信息
+						测量要求
 						<textarea
-							aria-label="目标信息"
+							aria-label="测量要求"
 							required
 							maxLength={2000}
 							placeholder="例如：测量所标孔的内径，填写毫米或上传测量照片"
@@ -124,9 +129,9 @@ export function MeasurementCreate({
 						</select>
 					</label>
 					<label>
-						操作要求
+						补充说明（选填）
 						<textarea
-							aria-label="操作要求"
+							aria-label="补充说明（选填）"
 							maxLength={4000}
 							value={description}
 							onChange={(e) => {
@@ -136,12 +141,15 @@ export function MeasurementCreate({
 						/>
 					</label>
 				</fieldset>
-				<button type="submit" disabled={write.busy || write.conflict}>
-					{write.busy
-						? "创建中…"
+				<button
+					type="submit"
+					disabled={write.busy || write.conflict || disabled || preparing}
+				>
+					{write.busy || preparing
+						? "发送中…"
 						: write.blocked
-							? "重试创建请求"
-							: "保存测量请求"}
+							? "重试发送"
+							: "发送测量提醒"}
 				</button>
 				<p role="status">{write.status}</p>
 				{write.error ? (

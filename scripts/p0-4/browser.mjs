@@ -1,5 +1,6 @@
 // Normal UI, real app APIs, real private Storage. No auth bypass, traces or HAR.
 import { chromium, expect as baseExpect } from "@playwright/test";
+import { browserNetwork } from "../shared/browser-network.mjs";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import assert from "node:assert/strict";
@@ -11,14 +12,7 @@ const expect = baseExpect.configure({ timeout: 60000 }),
 await mkdir("docs/evidence/p0-4/screenshots", { recursive: true });
 const browser = await chromium.launch({
 	headless: true,
-	...(process.env.HTTPS_PROXY
-		? {
-				proxy: {
-					server: process.env.HTTPS_PROXY,
-					bypass: "localhost,127.0.0.1",
-				},
-			}
-		: {}),
+	...browserNetwork(),
 });
 const owner = await browser.newContext({
 		baseURL: root,

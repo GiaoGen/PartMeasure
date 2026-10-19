@@ -123,7 +123,7 @@ export async function detailIssue(
 			[projectId, id],
 		);
 		const attachments = await db.query(
-			'select a.response_id,f.id,f.filename,f.mime,f.byte_size as "byteSize" from pm.response_attachments a join pm.file_assets f on f.id=a.file_id and f.project_id=a.project_id where a.project_id=$1 and a.issue_id=$2 and f.deleted_at is null order by f.created_at,f.id',
+			`select a.response_id,f.id,f.filename,f.mime,f.byte_size as "byteSize",f.sha256 as "previewVersion",case when t.file_id is null then null else jsonb_build_object('version',t.sha256) end as thumbnail from pm.response_attachments a join pm.file_assets f on f.id=a.file_id and f.project_id=a.project_id left join pm.image_derivatives t on t.file_id=f.id and t.project_id=f.project_id and t.image_hash=f.sha256 and t.variant=640 where a.project_id=$1 and a.issue_id=$2 and f.deleted_at is null order by f.created_at,f.id`,
 			[projectId, id],
 		);
 		const reviews = await db.query<IssueReview>(
@@ -263,9 +263,12 @@ export async function respondIssue(
 					[projectId, id],
 				);
 				if (count.rows[0].n >= 100) throw new AppError("RESPONSE_LIMIT", 409);
-				const files = [];
-				for (const fileId of [...input.evidenceFileIds].sort())
-					files.push(await visibleFile(db, projectId, fileId));
+				const files = input.evidenceFileIds.length ? (await db.query(
+					`select f.id,f.filename,f.mime,f.byte_size as "byteSize",f.sha256 as "previewVersion",case when t.file_id is null then null else jsonb_build_object('version',t.sha256) end as thumbnail from pm.file_assets f left join pm.image_derivatives t on t.file_id=f.id and t.project_id=f.project_id and t.image_hash=f.sha256 and t.variant=640
+					 where f.project_id=$1 and f.id=any($2::uuid[]) and f.deleted_at is null and f.visibility='customer' and f.purpose='material'
+					 order by f.created_at,f.id`, [projectId, input.evidenceFileIds],
+				)).rows : [];
+				if (files.length !== input.evidenceFileIds.length) throw new AppError("ATTACHMENT_UNAVAILABLE", 422);
 				if (
 					input.kind === "photo" &&
 					!files.some((f) => f.mime === "image/webp")
@@ -283,7 +286,8 @@ export async function respondIssue(
 				if (actor.kind === "guest" && !guestId)
 					throw new AppError("LINK_UNAVAILABLE", 401);
 				const { rows } = await db.query(
-					"insert into pm.issue_responses(project_id,issue_id,issue_revision,kind,value,unit,body,author_type,owner_id,guest_session_id,guest_label) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) returning id",
+					`insert into pm.issue_responses(project_id,issue_id,issue_revision,kind,value,unit,body,author_type,owner_id,guest_session_id,guest_label) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+					 returning id,issue_revision as "issueRevision",kind,value,unit,body,author_type as "authorType",guest_label as "guestLabel",created_at as "createdAt"`,
 					[
 						projectId,
 						id,
@@ -299,17 +303,18 @@ export async function respondIssue(
 					],
 				);
 				const responseId = rows[0].id;
-				for (const file of files)
+				if (files.length)
 					await db.query(
-						"insert into pm.response_attachments(project_id,issue_id,response_id,file_id) values($1,$2,$3,$4)",
-						[projectId, id, responseId, file.id],
+						"insert into pm.response_attachments(project_id,issue_id,response_id,file_id) select $1,$2,$3,unnest($4::uuid[])",
+						[projectId, id, responseId, files.map(f => f.id)],
 					);
-				await db.query(
-					"update pm.issues set state='submitted',revision=revision+1,latest_response_id=$3,updated_at=now() where project_id=$1 and id=$2",
+				const updated = await db.query(
+					"update pm.issues set state='submitted',revision=revision+1,latest_response_id=$3,updated_at=now() where project_id=$1 and id=$2 returning updated_at as \"updatedAt\"",
 					[projectId, id, responseId],
 				);
 				await audit(db, actor, projectId, "issue.respond", responseId);
-				return { responseId, state: "submitted", revision: revision + 1 };
+				return { responseId, issueId: id, state: "submitted", revision: revision + 1,
+					updatedAt: updated.rows[0].updatedAt, response: { ...rows[0], attachments: files } };
 			},
 		);
 	});
@@ -344,7 +349,8 @@ export async function reviewIssue(
 				if (!response.rows[0]) throw new AppError("NOT_FOUND", 404);
 				validateReview(i.kind, response.rows[0], input);
 				const { rows } = await db.query(
-					"insert into pm.issue_reviews(project_id,issue_id,response_id,issue_revision,decision,value,unit,source,note,created_by) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) returning id",
+					`insert into pm.issue_reviews(project_id,issue_id,response_id,issue_revision,decision,value,unit,source,note,created_by) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+					 returning id,response_id as "responseId",issue_revision as "issueRevision",decision,value,unit,source,note,created_at as "createdAt"`,
 					[
 						projectId,
 						id,
@@ -358,8 +364,8 @@ export async function reviewIssue(
 						actor.id,
 					],
 				);
-				await db.query(
-					"update pm.issues set state=$3,revision=revision+1,updated_at=now() where project_id=$1 and id=$2",
+				const updated = await db.query(
+					"update pm.issues set state=$3,revision=revision+1,updated_at=now() where project_id=$1 and id=$2 returning updated_at as \"updatedAt\"",
 					[projectId, id, state],
 				);
 				await audit(
@@ -369,7 +375,8 @@ export async function reviewIssue(
 					`issue.${input.decision}`,
 					rows[0].id,
 				);
-				return { reviewId: rows[0].id, state, revision: revision + 1 };
+				return { reviewId: rows[0].id, issueId: id, state, revision: revision + 1,
+					updatedAt: updated.rows[0].updatedAt, review: rows[0] };
 			},
 		);
 	});

@@ -1,0 +1,28 @@
+{
+  "checkedAt": "2026-10-19T15:02:35.744Z",
+  "environment": "actual API module + local production Next + real isolated Supabase; process-direct, TUN/DNS not controlled",
+  "browserLaunched": false,
+  "mainlandValidated": false,
+  "results": [
+    {
+      "name": "actual-api-singleflight-and-default-memory-hit",
+      "status": "PASS"
+    },
+    {
+      "name": "actual-api-targeted-event-does-not-clear-unrelated-resource",
+      "status": "PASS"
+    },
+    {
+      "name": "revocation-denies-server-read-and-clears-previous-guest-cache",
+      "status": "PASS"
+    },
+    {
+      "name": "real-private-thumbnail-hit-keeps-auth-sql-and-avoids-storage-roundtrip",
+      "status": "PASS"
+    },
+    {
+      "name": "account-switch-rejects-owner-a-cache-and-warmed-private-thumbnail",
+      "status": "PASS"
+    }
+  ]
+}

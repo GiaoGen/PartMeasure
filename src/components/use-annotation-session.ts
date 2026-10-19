@@ -9,6 +9,7 @@ import {
 	validateAnnotation,
 } from "@/lib/annotations";
 import { api, ApiError, message } from "./api";
+import { useProjectUpdates } from "./project-live";
 type Operation = {
 	method: string;
 	url: string;
@@ -70,15 +71,16 @@ export function useAnnotationSession(
 		window.addEventListener("beforeunload", prevent);
 		return () => window.removeEventListener("beforeunload", prevent);
 	}, [dirty, saving, blocked]);
-	const load = useCallback(async () => {
+	const load = useCallback(async (force = false) => {
 		const run = ++loadRun.current;
-		setLoading(true);
+		if (force) setLoading(true);
 		setError("");
 		try {
 			const data = await api<AnnotationDocument>(
 				`${base}/files/${fileId}/annotations`,
 			);
 			if (run !== loadRun.current) return;
+			if (protectedDraft.current && !force) { setStatus("远程更新未覆盖当前草稿"); return; }
 			setDocument(data);
 			setHeads(data.items);
 			headsRef.current = data.items;
@@ -104,6 +106,13 @@ export function useAnnotationSession(
 			loadRun.current++;
 		};
 	}, [load]);
+ const protectedDraft = useRef(false); protectedDraft.current = dirty || saving || blocked;
+ useProjectUpdates(updates => {
+  if (!updates.some(e => e.kind === "resync" || (e.kind === "annotation.changed" && e.fileId === fileId))) return;
+  if (protectedDraft.current) setStatus("标注已有远程更新；当前草稿已保留，保存时检查修订冲突。");
+  else void load();
+ });
+
 	const change = (next: AnnotationDraft[], group = "") => {
 		if (guest || saving || blocked) return;
 		const previous = itemsRef.current;
@@ -258,6 +267,7 @@ export function useAnnotationSession(
 			}
 			setBlocked(false);
 			setStatus("已保存");
+			return headsRef.current;
 		} catch (e) {
 			setBlocked(true);
 			setStatus("保存未完成，草稿仍保留在本页");

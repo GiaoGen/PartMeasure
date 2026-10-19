@@ -1,0 +1,41 @@
+{
+  "environment": "disposable native PG; synthetic Auth; no Storage proof",
+  "results": [
+    {
+      "check": "scope-bound-cursors-and-owner-isolation",
+      "status": "PASS"
+    },
+    {
+      "check": "session-LISTEN-commit-notify-rollback-no-event",
+      "status": "PASS"
+    },
+    {
+      "check": "ordered-concurrent-events-and-reconnect-replay",
+      "status": "PASS"
+    },
+    {
+      "check": "private-draft-does-not-advance-Guest-or-leak-activity",
+      "status": "PASS"
+    },
+    {
+      "check": "retention-reset-and-oversized-catchup",
+      "status": "PASS"
+    },
+    {
+      "check": "browser-roles-no-outbox-or-derivative-grants",
+      "status": "PASS"
+    },
+    {
+      "check": "thumbnail-RLS-original-size-bound-and-immutability",
+      "status": "PASS"
+    },
+    {
+      "check": "actual-worker-retention-cleanup-advances-floor",
+      "status": "PASS"
+    },
+    {
+      "check": "revocation-rejects-replay-and-new-session-scope",
+      "status": "PASS"
+    }
+  ]
+}

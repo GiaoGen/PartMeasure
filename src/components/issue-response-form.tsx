@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
 	type IssueDetail,
+	type IssueWriteResult,
 	type ResponseInput,
 	type Evidence,
 	responseSchema,
@@ -20,7 +21,7 @@ export function IssueResponseForm({
 }: {
 	base: string;
 	issue: IssueDetail;
-	onSaved: () => void;
+	onSaved: (result: IssueWriteResult) => void;
 	onInvalid: () => void;
 	onDirty: (dirty: boolean) => void;
 	onReload: () => void;
@@ -48,7 +49,7 @@ export function IssueResponseForm({
 				const data = await api<{
 					items: Evidence[];
 					nextCursor: string | null;
-				}>(`${base}/files${next ? `?cursor=${next}` : ""}`);
+				}>(`${base}/files${next ? `?cursor=${next}` : ""}`, "GET", undefined, { cacheMs: 1000 });
 				if (run !== generation.current) return;
 				setFiles((old) => (next ? [...old, ...data.items] : data.items));
 				setCursor(data.nextCursor);
@@ -70,7 +71,7 @@ export function IssueResponseForm({
 		};
 	}, [loadFiles]);
 	const refreshFiles = useCallback(() => void loadFiles(), [loadFiles]);
-	const write = useIssueWrite(
+	const write = useIssueWrite<IssueWriteResult>(
 		`${base}/issues/${issue.id}/responses`,
 		issue.revision,
 		onSaved,

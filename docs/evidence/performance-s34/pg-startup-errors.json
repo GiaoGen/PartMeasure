@@ -1,0 +1,18 @@
+{
+  "scope": "SSLRequest only; no user/password/SQL sent",
+  "results": [
+    {
+      "C": "08P01",
+      "M": "(ESTARTUPMESSAGE) Invalid startup message: :bad_startup_payload",
+      "S": "FATAL"
+    },
+    {
+      "reply": 83,
+      "length": 1
+    },
+    {
+      "reply": 83,
+      "length": 1
+    }
+  ]
+}

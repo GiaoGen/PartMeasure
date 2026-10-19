@@ -45,26 +45,21 @@ export async function getDelivery(actor: Actor, projectId: string, id: string) {
 export async function listDeliveries(actor: Actor, projectId: string) {
 	return transaction(actor, async (db) => {
 		await access(db, actor, projectId, false, true);
-		const latest = (
-			await db.query(
-				"select id from pm.deliveries where project_id=$1 and state='published' order by version_no desc limit 1",
-				[projectId],
-			)
-		).rows[0];
-		const drafts =
-			actor.kind === "owner"
-				? (
-						await db.query(
-							"select id from pm.deliveries where project_id=$1 and state='draft' order by created_at,id limit 5",
-							[projectId],
-						)
-					).rows
-				: [];
+		const { rows } = await db.query<Delivery>(
+			`with chosen as (
+			 (select ${columns} from pm.deliveries where project_id=$1 and state='published' order by version_no desc limit 1)
+			 union all
+			 (select ${columns} from pm.deliveries where project_id=$1 and state='draft' and $2::boolean order by created_at,id limit 5)
+			) select chosen.*, coalesce((
+			 select jsonb_agg(jsonb_build_object('id',f.id,'filename',f.filename,'mime',f.mime,'byteSize',f.byte_size::text) order by a.position)
+			 from pm.delivery_files a join pm.file_assets f on f.project_id=a.project_id and f.id=a.file_id
+			 where a.project_id=$1 and a.delivery_id=chosen.id and a.selected
+			), '[]'::jsonb) as files from chosen order by "createdAt",id`,
+			[projectId, actor.kind === "owner"],
+		);
 		return {
-			published: latest ? await delivery(db, projectId, latest.id) : null,
-			drafts: await Promise.all(
-				drafts.map((r) => delivery(db, projectId, r.id)),
-			),
+			published: rows.find(row => row.state === "published") ?? null,
+			drafts: rows.filter(row => row.state === "draft"),
 		};
 	});
 }

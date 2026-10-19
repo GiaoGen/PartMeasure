@@ -1,0 +1,132 @@
+{
+  "checkedAt": "2026-10-19T08:06:15.219Z",
+  "networkMode": "native-direct-https-and-pg",
+  "mainlandPhoneValidated": false,
+  "vpnTunState": "not-controlled-or-verified",
+  "results": [
+    {
+      "name": "supabase_dns",
+      "elapsedMs": 6.2,
+      "families": [
+        4
+      ]
+    },
+    {
+      "sample": 1,
+      "name": "auth_settings",
+      "httpStatus": 200,
+      "bytes": 611,
+      "reusedConnection": false,
+      "elapsedMs": 530.1,
+      "phases": {
+        "dnsMs": 6,
+        "tcpMs": 7.2,
+        "tlsMs": 203.5,
+        "headersMs": 473.2
+      }
+    },
+    {
+      "sample": 1,
+      "name": "rest_schema",
+      "httpStatus": 401,
+      "bytes": 98,
+      "reusedConnection": true,
+      "elapsedMs": 190.7,
+      "phases": {
+        "headersMs": 190.5
+      }
+    },
+    {
+      "sample": 1,
+      "name": "storage_listing_without_user",
+      "httpStatus": 200,
+      "bytes": 2,
+      "reusedConnection": true,
+      "elapsedMs": 602.6,
+      "phases": {
+        "headersMs": 601.8
+      }
+    },
+    {
+      "sample": 2,
+      "name": "auth_settings",
+      "httpStatus": 200,
+      "bytes": 611,
+      "reusedConnection": true,
+      "elapsedMs": 289.7,
+      "phases": {
+        "headersMs": 289.4
+      }
+    },
+    {
+      "sample": 2,
+      "name": "rest_schema",
+      "httpStatus": 401,
+      "bytes": 98,
+      "reusedConnection": true,
+      "elapsedMs": 267,
+      "phases": {
+        "headersMs": 266.7
+      }
+    },
+    {
+      "sample": 2,
+      "name": "storage_listing_without_user",
+      "httpStatus": 200,
+      "bytes": 2,
+      "reusedConnection": true,
+      "elapsedMs": 371.8,
+      "phases": {
+        "headersMs": 371.7
+      }
+    },
+    {
+      "name": "storage_dedicated_origin",
+      "httpStatus": 200,
+      "bytes": 2,
+      "reusedConnection": false,
+      "elapsedMs": 455,
+      "phases": {
+        "dnsMs": 1.5,
+        "tcpMs": 2.2,
+        "tlsMs": 157.5,
+        "headersMs": 454.8
+      }
+    },
+    {
+      "name": "tus_signed_route_without_upload_credential",
+      "httpStatus": 404,
+      "bytes": 93,
+      "reusedConnection": true,
+      "elapsedMs": 564.4,
+      "phases": {
+        "headersMs": 564.2
+      }
+    },
+    {
+      "name": "existing_staging_login",
+      "httpStatus": 200,
+      "bytes": 6179,
+      "reusedConnection": false,
+      "elapsedMs": 3077.3,
+      "phases": {
+        "dnsMs": 2,
+        "tcpMs": 2.9,
+        "tlsMs": 314.5,
+        "headersMs": 2954.9
+      }
+    },
+    {
+      "name": "pg_dns",
+      "elapsedMs": 1.4,
+      "families": [
+        4
+      ]
+    },
+    {
+      "name": "pg",
+      "error": "REQUEST_FAILED",
+      "errorType": "Error"
+    }
+  ]
+}

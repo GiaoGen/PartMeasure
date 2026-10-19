@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import type Konva from "konva";
+import { privateImage, discardPrivateImage } from "./private-image-cache";
+import { useWorkspaceMark } from "./use-workspace-theme";
 import {
 	Stage,
 	Layer,
@@ -54,6 +56,9 @@ export default function AnnotationCanvas({
 	onSave,
 	onError,
 	onInvalid,
+	showNumbers = true,
+	canUndo = false,
+	canRedo = false,
 }: {
 	image: CanonicalImage;
 	src: string;
@@ -70,7 +75,11 @@ export default function AnnotationCanvas({
 	onSave: () => void;
 	onError: (text: string) => void;
 	onInvalid: () => void;
+	showNumbers?: boolean;
+	canUndo?: boolean;
+	canRedo?: boolean;
 }) {
+	const mark = useWorkspaceMark(guest);
 	const host = useRef<HTMLDivElement>(null),
 		stage = useRef<Konva.Stage>(null);
 	const [size, setSize] = useState({ width: 640, height: 480 }),
@@ -94,7 +103,7 @@ export default function AnnotationCanvas({
 	handlers.current = { onCreate, onError, onInvalid };
 	const canEdit = !guest && !disabled;
 	useEffect(() => {
-		const controller = new AbortController();
+		let lease: {url:string;release:()=>void}|undefined;
 		let objectUrl = "",
 			img: HTMLImageElement | null = null,
 			active = true;
@@ -102,13 +111,10 @@ export default function AnnotationCanvas({
 		setLoadError(false);
 		void (async () => {
 			try {
-				const r = await fetch(`${src}?retry=${attempt}`, {
-					cache: "no-store",
-					signal: controller.signal,
-				});
-				if (r.status === 401) handlers.current.onInvalid();
-				if (!r.ok) throw new Error("IMAGE_LOAD");
-				objectUrl = URL.createObjectURL(await r.blob());
+                if(attempt>0)discardPrivateImage(src,image.imageHash);
+                const value = await privateImage(src,image.imageHash);
+                if (!active) { value.release(); return; }
+                lease=value;objectUrl=value.url;
 				img = new window.Image();
 				img.onload = () => {
 					if (!active || !img) return;
@@ -134,15 +140,14 @@ export default function AnnotationCanvas({
 		})();
 		return () => {
 			active = false;
-			controller.abort();
 			if (img) {
 				img.onload = null;
 				img.onerror = null;
 				img.src = "";
 			}
-			if (objectUrl) URL.revokeObjectURL(objectUrl);
+			lease?.release();
 		};
-	}, [src, image.width, image.height, attempt]);
+	}, [src, image.width, image.height, image.imageHash, attempt]);
 	useEffect(() => {
 		if (!host.current) return;
 		const observer = new ResizeObserver(([entry]) => {
@@ -191,7 +196,10 @@ export default function AnnotationCanvas({
 		drawing.current = null;
 		panning.current = null;
 		setDraft(null);
-		if (d && !multi.current) handlers.current.onCreate(asGeometry(d));
+		if (d && !multi.current) {
+			handlers.current.onCreate(asGeometry(d));
+			setTool("select");
+		}
 	}
 	const finishRef = useRef(finish);
 	finishRef.current = finish;
@@ -204,20 +212,22 @@ export default function AnnotationCanvas({
 		const p = stage.current?.getPointerPosition();
 		return p ? fromScreen(p, image.width, image.height, viewRef.current) : null;
 	}
-	function begin() {
+	function begin(event?: Konva.KonvaEventObject<MouseEvent>) {
 		host.current?.focus({ preventScroll: true });
 		if (multi.current || !bitmap) return;
 		const p = stage.current?.getPointerPosition();
 		if (!p) return;
-		if (guest || tool === "pan" || space) {
+		if (
+			guest ||
+			tool === "select" ||
+			tool === "pan" ||
+			space ||
+			(event && event.evt.button !== 0)
+		) {
 			panning.current = { start: p, view: viewRef.current };
 			return;
 		}
 		if (!canEdit) return;
-		if (tool === "select") {
-			onSelect(null);
-			return;
-		}
 		const normalized = pointer();
 		if (!normalized || !inside(normalized)) return;
 		drawing.current = { tool, from: normalized, to: normalized };
@@ -290,10 +300,11 @@ export default function AnnotationCanvas({
 		event: Konva.KonvaEventObject<MouseEvent | TouchEvent>,
 		id: string,
 	) {
-		if ((tool === "select" && !space) || guest) {
+		if ((!space && !multi.current) || guest) {
 			onSelect(id);
 			host.current?.focus({ preventScroll: true });
-			if (!guest) event.cancelBubble = true;
+			event.cancelBubble = true;
+			if (!guest) setTool("select");
 		}
 	}
 	const w = image.width,
@@ -302,8 +313,8 @@ export default function AnnotationCanvas({
 	function render(item: AnnotationDraft, preview = false) {
 		const g = item.geometry,
 			chosen = !preview && selected === item.id,
-			editing = canEdit && tool === "select" && !space && !preview,
-			stroke = chosen ? "#073c9c" : "#175cd3",
+			editing = canEdit && chosen && !space && !preview,
+			stroke = chosen ? "#273444" : mark,
 			lineWidth = (chosen ? 3 : 2) / s;
 		const p =
 			g.type === "line" ? g.from : g.type === "circle" ? g.center : g.at;
@@ -366,7 +377,7 @@ export default function AnnotationCanvas({
 					x={0}
 					y={0}
 					draggable={editing}
-					listening={!preview && (guest || tool === "select")}
+					listening={!preview}
 					onMouseDown={(e) => select(e, item.id)}
 					onTouchStart={(e) => select(e, item.id)}
 					dragBoundFunc={(pos) => {
@@ -408,6 +419,24 @@ export default function AnnotationCanvas({
 						/>
 					) : null}
 					{shape}
+					{!preview && showNumbers ? (
+						<Group
+							x={Math.max(14 / s, Math.min(w - 14 / s, p.x * w))}
+							y={Math.max(14 / s, p.y * h - 18 / s)}
+							listening={false}
+						>
+							<Circle radius={11 / s} fill={stroke} />
+							<Text
+								x={-11 / s}
+								y={-7 / s}
+								width={22 / s}
+								align="center"
+								text={String(items.findIndex((i) => i.id === item.id) + 1)}
+								fontSize={13 / s}
+								fill="white"
+							/>
+						</Group>
+					) : null}
 					{label && g.type !== "text" ? (
 						<Text
 							x={p.x * w + 9 / s}
@@ -430,7 +459,7 @@ export default function AnnotationCanvas({
 						y={point.y * h}
 						radius={6 / s}
 						fill="white"
-						stroke="#073c9c"
+						stroke={mark}
 						strokeWidth={2 / s}
 						draggable
 						onMouseDown={(e) => {
@@ -479,14 +508,14 @@ export default function AnnotationCanvas({
 					role="toolbar"
 					aria-label="标注工具"
 				>
-					{(Object.keys(names) as Tool[]).map((value) => (
+					{(["line", "circle", "point", "text"] as Tool[]).map((value) => (
 						<button
 							key={value}
 							type="button"
 							disabled={disabled}
 							aria-pressed={tool === value}
 							onClick={() => {
-								setTool(value);
+								setTool(tool === value ? "select" : value);
 								drawing.current = null;
 								setDraft(null);
 							}}
@@ -494,59 +523,22 @@ export default function AnnotationCanvas({
 							{names[value]}
 						</button>
 					))}
+					<button
+						type="button"
+						disabled={disabled || !canUndo}
+						onClick={onUndo}
+					>
+						撤销
+					</button>
+					<button
+						type="button"
+						disabled={disabled || !canRedo}
+						onClick={onRedo}
+					>
+						重做
+					</button>
 				</div>
-			) : (
-				<p className="muted">只读标注 · 可缩放、平移并选择查看说明</p>
-			)}
-			<div className="actions canvas-zoom">
-				<button
-					type="button"
-					onClick={() =>
-						setView((v) =>
-							zoomView(
-								v,
-								{ x: size.width / 2, y: size.height / 2 },
-								v.scale / 1.25,
-							),
-						)
-					}
-				>
-					缩小
-				</button>
-				<output aria-label="图片缩放比例">{Math.round(s * 100)}%</output>
-				<button
-					type="button"
-					onClick={() =>
-						setView((v) =>
-							zoomView(
-								v,
-								{ x: size.width / 2, y: size.height / 2 },
-								v.scale * 1.25,
-							),
-						)
-					}
-				>
-					放大
-				</button>
-				<button
-					type="button"
-					onClick={() => setView(fitView(w, h, size.width, size.height))}
-				>
-					适应视口
-				</button>
-				<button
-					type="button"
-					onClick={() =>
-						setView({
-							scale: 1,
-							x: (size.width - w) / 2,
-							y: (size.height - h) / 2,
-						})
-					}
-				>
-					原始像素
-				</button>
-			</div>
+			) : null}
 			<div
 				ref={host}
 				className="annotation-viewport"
@@ -639,6 +631,15 @@ export default function AnnotationCanvas({
 					width={size.width}
 					height={size.height}
 					onMouseDown={begin}
+					onContextMenu={(e) => e.evt.preventDefault()}
+					onDblClick={(e) => {
+						if (e.target === e.target.getStage())
+							setView(fitView(w, h, size.width, size.height));
+					}}
+					onDblTap={(e) => {
+						if (e.target === e.target.getStage())
+							setView(fitView(w, h, size.width, size.height));
+					}}
 					onMouseMove={move}
 					onMouseUp={finish}
 					onTouchStart={() => {
@@ -696,8 +697,8 @@ export default function AnnotationCanvas({
 			</div>
 			<p className="canvas-help">
 				{guest
-					? "双指缩放；单指在图内平移，画布外正常滚动。"
-					: `${names[tool]}：${tool === "line" || tool === "circle" ? "在图片上按住拖动绘制" : tool === "point" || tool === "text" ? "点击放置" : tool === "pan" ? "拖动图片" : "拖动标注；选中线端或圆边控制点可修改"}。聚焦画布后：空格平移，方向键微调，Delete删除，Ctrl/⌘ Z撤销，Shift Z重做，S保存。`}
+					? "双指缩放 · 单指平移"
+					: "滚轮缩放 · 空格拖动平移 · 双击空白复位"}
 			</p>
 		</div>
 	);

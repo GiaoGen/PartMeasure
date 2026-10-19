@@ -1,0 +1,41 @@
+{
+  "scope": "no credentials sent; developer route; not mainland verification",
+  "results": [
+    {
+      "sample": 1,
+      "port": 6543,
+      "length": 85,
+      "prefixHex": "4500000054433038503031004d2845535441525455504d45"
+    },
+    {
+      "sample": 1,
+      "port": 5432,
+      "length": 85,
+      "prefixHex": "4500000054433038503031004d2845535441525455504d45"
+    },
+    {
+      "sample": 2,
+      "port": 6543,
+      "length": 1,
+      "prefixHex": "53"
+    },
+    {
+      "sample": 2,
+      "port": 5432,
+      "length": 1,
+      "prefixHex": "53"
+    },
+    {
+      "sample": 3,
+      "port": 6543,
+      "length": 1,
+      "prefixHex": "53"
+    },
+    {
+      "sample": 3,
+      "port": 5432,
+      "length": 85,
+      "prefixHex": "4500000054433038503031004d2845535441525455504d45"
+    }
+  ]
+}

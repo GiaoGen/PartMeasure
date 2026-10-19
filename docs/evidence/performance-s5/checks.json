@@ -1,0 +1,55 @@
+{
+  "checkedAt": "2026-10-19T15:17:49.244Z",
+  "lint": {
+    "status": "PASS",
+    "files": 207
+  },
+  "typecheck": {
+    "status": "PASS"
+  },
+  "unit": {
+    "status": "PASS",
+    "files": 25,
+    "tests": 140
+  },
+  "build": {
+    "status": "PASS",
+    "framework": "Next.js 16.4.2 webpack"
+  },
+  "native": {
+    "status": "PASS",
+    "checks": 9,
+    "scope": "disposable native PG; local Auth/Storage stand-ins only"
+  },
+  "actualApiClient": {
+    "status": "PASS",
+    "checks": 5,
+    "evidence": "client.json",
+    "scope": "real isolated DB/Auth/Storage, no browser"
+  },
+  "evidenceMetadata": {
+    "status": "PASS",
+    "checks": 1,
+    "evidence": "evidence-metadata.json",
+    "scope": "normal password + read-only existing reply"
+  },
+  "browserE2E": {
+    "status": "NOT_RUN",
+    "reason": "current instructions prohibit starting browser/E2E"
+  },
+  "mainlandPhone": {
+    "status": "PENDING_EXTERNAL"
+  },
+  "vercelDeploy": {
+    "status": "NOT_UPDATED"
+  },
+  "remoteDDL": {
+    "status": "NOT_PERFORMED"
+  },
+  "git": {
+    "branch": "P0",
+    "committed": false,
+    "pushed": false,
+    "reason": "preexisting mixed frontend/performance work preserved"
+  }
+}

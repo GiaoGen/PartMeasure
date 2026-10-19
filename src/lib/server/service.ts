@@ -8,6 +8,7 @@ import { appOrigin } from "./origin";
 import { folderForOwner } from "./folder-service";
 import { queryProjects } from "./project-query";
 import type { ProjectFilters } from "../project-folders";
+import { eventCursor } from "./event-cursor";
 
 export type Project = {
 	id: string;
@@ -110,7 +111,9 @@ export async function projectDetail(actor: Actor, id: string) {
 		const { project } = await access(db, actor, id, false, true);
 		const data = publicProject(project);
 		const { rows } = await db.query(
-			'select id,expires_at as "expiresAt",revoked_at as "revokedAt" from pm.share_links where project_id=$1 order by created_at desc limit 1',
+			`select c.${actor.kind === "owner" ? "owner_seq" : "guest_seq"}::text as sequence,
+             (select jsonb_build_object('id',id,'expiresAt',expires_at,'revokedAt',revoked_at) from pm.share_links where project_id=$1 order by created_at desc limit 1) as share
+             from pm.project_event_cursors c where project_id=$1`,
 			[id],
 		);
 		return {
@@ -121,7 +124,8 @@ export async function projectDetail(actor: Actor, id: string) {
 						folder: await folderForOwner(db, actor.id, project.folder_id),
 					}
 				: {}),
-			share: actor.kind === "owner" ? (rows[0] ?? null) : null,
+			share: actor.kind === "owner" ? (rows[0]?.share ?? null) : null,
+			syncCursor: eventCursor(actor, id, rows[0]?.sequence ?? "0"),
 		};
 	});
 }
@@ -302,7 +306,7 @@ export async function reserve(
 					} else return { id: duplicate.rows[0].id as string, duplicate: true };
 				}
 				const { rows } = await db.query(
-					`select p.used_bytes+coalesce((select sum(reserved_bytes) from pm.upload_reservations where project_id=p.id and state not in ('ready','cleaned')),0) as project_bytes,
+					`select p.used_bytes+coalesce((select sum(reserved_bytes) from pm.upload_reservations where project_id=p.id and state not in ('ready','cleaned')),0)+coalesce((select sum(reserved_bytes) from pm.thumbnail_jobs where project_id=p.id),0) as project_bytes,
    (select used_bytes+reserved_bytes from pm.owner_usage where owner_id=p.owner_id) as account_bytes,
    coalesce((select sum(byte_size) from pm.upload_reservations where project_id=p.id and created_at>=date_trunc('day',now())),0) as daily_bytes,
    (select count(*) from pm.upload_reservations where project_id=p.id and state in ('reserved','queued','processing')) as pending,
@@ -464,6 +468,7 @@ export async function files(
 		const { rows } = await db.query(
 			`select id,filename,mime,extension,byte_size as "byteSize",width,height,uploader_type as "uploaderType",created_at as "createdAt",
 			 case when mime='image/webp' and purpose='material' then sha256||':n'||normalization_version::text else null end as "previewVersion",
+			 (select jsonb_build_object('version',d.sha256,'width',d.width,'height',d.height) from pm.image_derivatives d where d.file_id=pm.file_assets.id and d.variant=640) as thumbnail,
 			 case when mime='image/webp' and purpose='material' then (
 			 select jsonb_build_object('version',md5(coalesce(string_agg(a.id::text||':'||a.revision::text||':'||(a.deleted_at is not null)::text,',' order by a.id),'')),
 			 'count',count(*) filter(where a.deleted_at is null)) from pm.annotations a where a.project_id=pm.file_assets.project_id and a.file_id=pm.file_assets.id
@@ -482,16 +487,22 @@ export async function fileForRead(
 	id: string,
 	fileId: string,
 	original = false,
+	variant: number | null = null,
 ) {
 	return transaction(actor, async (db) => {
 		await access(db, actor, id, false, true);
 		if (original && actor.kind !== "owner")
 			throw new AppError("FORBIDDEN", 403);
 		const { rows } = await db.query(
-			"select * from pm.file_assets f where id=$1 and project_id=$2 and deleted_at is null and ($3::boolean or (visibility='customer' and (purpose='material' or exists(select 1 from pm.delivery_files a join pm.deliveries d on d.id=a.delivery_id and d.project_id=a.project_id where a.file_id=f.id and a.project_id=f.project_id and a.selected and d.state='published'))))",
-			[fileId, id, actor.kind === "owner"],
+			"select f.*,t.storage_key as thumbnail_key,t.byte_size as thumbnail_bytes,t.sha256 as thumbnail_hash from pm.file_assets f left join pm.image_derivatives t on t.file_id=f.id and t.project_id=f.project_id and t.image_hash=f.sha256 and t.variant=$4 where f.id=$1 and f.project_id=$2 and f.deleted_at is null and ($3::boolean or (f.visibility='customer' and (f.purpose='material' or exists(select 1 from pm.delivery_files a join pm.deliveries d on d.id=a.delivery_id and d.project_id=a.project_id where a.file_id=f.id and a.project_id=f.project_id and a.selected and d.state='published'))))",
+			[fileId, id, actor.kind === "owner",variant],
 		);
 		if (!rows[0]) throw new AppError("NOT_FOUND", 404);
+		if (variant !== null) {
+			if (original || rows[0].purpose !== "material" || ![320,640].includes(variant)) throw new AppError("INVALID_INPUT",422);
+			if (!rows[0].thumbnail_key) throw new AppError("IMAGE_NOT_READY",409);
+			return {...rows[0],storage_key:rows[0].thumbnail_key,byte_size:rows[0].thumbnail_bytes,sha256:rows[0].thumbnail_hash};
+		}
 		return rows[0];
 	});
 }

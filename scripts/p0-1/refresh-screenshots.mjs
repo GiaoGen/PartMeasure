@@ -1,9 +1,9 @@
 // Re-capture the two workspace views after copy/size formatting changes only.
 import {readFile,writeFile} from 'node:fs/promises';
 import {chromium,devices} from '@playwright/test';
+import {browserNetwork} from '../shared/browser-network.mjs';
 const fixture=JSON.parse(await readFile('tmp/p0-1/business-fixtures.json','utf8'));
-const proxy=process.env.HTTPS_PROXY?{server:process.env.HTTPS_PROXY,bypass:'127.0.0.1,localhost'}:undefined;
-const browser=await chromium.launch(proxy?{proxy}:{}),results=[];
+const browser=await chromium.launch(browserNetwork()),results=[];
 try{
  for(const actor of ['owner','guest']){
   const context=await browser.newContext(actor==='owner'?{viewport:{width:1440,height:1000},storageState:'tmp/p0-1/owner-A.json'}:{...devices['Pixel 7']});

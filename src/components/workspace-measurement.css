@@ -1,0 +1,385 @@
+/* Contextual photo workspace. The editor session also owns this right pane. */
+.workspace-redesign {
+	color: #273444;
+}
+.workspace-redesign button,
+.workspace-redesign .button {
+	background-color: var(--workspace-card);
+	color: #273444;
+	border-color: var(--workspace-line);
+}
+.workspace-redesign button:hover:not(:disabled),
+.workspace-redesign .button:hover {
+	background-color: var(--workspace-soft);
+}
+.workspace-redesign button:disabled {
+	color: #63758b;
+	cursor: not-allowed;
+}
+.workspace-redesign .workspace-project-trigger,
+.workspace-redesign .workspace-home {
+	background-color: var(--workspace-page);
+}
+.workspace-redesign .workspace-upload-trigger,
+.workspace-redesign .measurement-create button[type="submit"],
+.workspace-redesign .issue-response-form button[type="submit"],
+.workspace-redesign .issue-review-form button[type="submit"] {
+	background-color: var(--workspace-action);
+	color: #ffffff;
+}
+.workspace-redesign .workspace-upload-trigger:hover,
+.workspace-redesign .measurement-create button[type="submit"]:hover {
+	background-color: var(--workspace-mark);
+}
+.workspace-redesign .annotation-toolbar [aria-pressed="true"],
+.workspace-redesign .annotation-list [aria-pressed="true"] {
+	background-color: var(--workspace-action);
+	color: #ffffff;
+	border-color: var(--workspace-action);
+}
+.workspace-redesign .workspace-inbox-toggle {
+	color: var(--workspace-action);
+}
+.workspace-gallery {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 18px;
+}
+.annotated-thumbnail {
+	display: block;
+	position: relative;
+	width: 100%;
+	aspect-ratio: 1.35;
+	overflow: hidden;
+	background-color: var(--workspace-soft);
+}
+.workspace-asset .annotated-thumbnail img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	aspect-ratio: auto;
+	background-color: var(--workspace-soft);
+}
+.thumbnail-annotations {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+}
+.thumbnail-state {
+	position: absolute;
+	bottom: 8px;
+	left: 8px;
+	right: 8px;
+	padding: 5px 8px;
+	font-size: 12px;
+	background-color: var(--workspace-card);
+	border-radius: 10px;
+}
+.workspace-file-menu {
+	position: relative;
+	flex-shrink: 0;
+}
+.workspace-file-menu summary {
+	list-style: none;
+	border-radius: 14px;
+	min-height: 44px;
+	min-width: 44px;
+	display: grid;
+	place-items: center;
+	background-color: var(--workspace-card);
+	cursor: pointer;
+}
+.workspace-file-menu-items {
+	position: absolute;
+	right: 0;
+	top: calc(100% + 7px);
+	z-index: 5;
+	width: 175px;
+	padding: 8px;
+	border-radius: 22px;
+	border: 1px solid var(--workspace-line);
+	background-color: var(--workspace-card);
+	display: grid;
+	gap: 5px;
+	animation: workspace-popover-enter calc(200ms * var(--workspace-motion, 1))
+		ease;
+}
+.workspace-file-menu-items .button,
+.workspace-file-menu-items button {
+	width: 100%;
+	justify-content: flex-start;
+	text-align: left;
+}
+.workspace-file-detail .detail-heading {
+	gap: 12px;
+}
+.workspace-context-content h2,
+.workspace-context-content h3 {
+	font-size: 16px;
+	margin-top: 0;
+}
+.workspace-deliveries > div > h2 {
+	font-size: 18px;
+	margin-top: 0;
+}
+.workspace-file-detail .detail-heading h2 {
+	margin: 0;
+	font-size: 14px;
+}
+.workspace-file-detail .annotation-editor {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+.workspace-file-detail .editor-status {
+	order: 2;
+	border: 0;
+	font-size: 12px;
+	color: #526171;
+}
+.workspace-redesign .annotation-viewport {
+	border: 0;
+	border-radius: 26px;
+	background-color: var(--workspace-soft);
+	height: clamp(320px, 62dvh, 760px);
+}
+.workspace-redesign .annotation-toolbar {
+	margin-bottom: 16px;
+	gap: 7px;
+}
+.workspace-redesign .annotation-toolbar button {
+	font-size: 13px;
+	min-width: 58px;
+}
+.workspace-redesign .canvas-help {
+	font-size: 12px;
+	margin: 10px 0 0;
+	color: #526171;
+}
+.workspace-context-content {
+	min-width: 0;
+	animation: workspace-context-enter calc(220ms * var(--workspace-motion, 1))
+		ease;
+}
+.workspace-context-content .annotation-properties {
+	border: 0;
+	padding: 0;
+}
+.workspace-context-content .annotation-list {
+	max-height: 270px;
+	margin-bottom: 22px;
+}
+.workspace-context-content .annotation-list button {
+	display: flex;
+	justify-content: flex-start;
+	gap: 9px;
+	padding: 10px;
+	border: 0;
+}
+.workspace-context-content .annotation-number {
+	display: inline-grid;
+	place-items: center;
+	min-width: 25px;
+	height: 25px;
+	border-radius: 9px;
+	background-color: var(--workspace-panel);
+	color: #273444;
+}
+.workspace-context-content .engineering-fields {
+	margin: 18px 0;
+}
+.workspace-context-content .engineering-fields label,
+.workspace-context-content .stack label {
+	min-width: 0;
+}
+.workspace-context-content input,
+.workspace-context-content select,
+.workspace-context-content textarea {
+	width: 100%;
+	min-width: 0;
+	max-width: 100%;
+	background-color: var(--workspace-card);
+	border-color: var(--workspace-line);
+}
+.workspace-context-content .actions {
+	gap: 7px;
+	margin-bottom: 14px;
+}
+.workspace-context-content .actions button {
+	font-size: 12px;
+	padding: 8px 10px;
+}
+.workspace-context-content .annotation-edit-actions {
+	font-size: 12px;
+}
+.workspace-context-content details > summary {
+	cursor: pointer;
+	padding: 10px 0;
+	min-height: 40px;
+}
+.workspace-context-content details[open] > :not(summary) {
+	animation: workspace-context-enter calc(200ms * var(--workspace-motion, 1))
+		ease;
+}
+.workspace-context-content .measurement-create {
+	border-top: 1px solid var(--workspace-line);
+	padding-top: 10px;
+	margin-top: 20px;
+}
+.workspace-context-content .measurement-create fieldset {
+	border: 0;
+	padding: 0;
+	min-width: 0;
+	display: grid;
+	gap: 12px;
+}
+.workspace-context-content .measurement-create textarea {
+	min-height: 72px;
+}
+.workspace-context-content .measurement-create button[type="submit"] {
+	width: 100%;
+	min-height: 48px;
+	border-radius: 18px;
+}
+.workspace-context-content .issue-actions {
+	border: 0;
+	padding: 0;
+	min-width: 0;
+}
+.workspace-context-content .issue-history h3 {
+	display: none;
+}
+.workspace-context-content .file-issues {
+	border-top: 1px solid var(--workspace-line);
+	margin-top: 24px;
+	padding-top: 20px;
+}
+.workspace-context-content .issue-list li {
+	padding: 10px 0;
+	border-bottom: 1px solid var(--workspace-line);
+}
+.workspace-context-content .issue-list p {
+	margin: 7px 0;
+}
+.workspace-context-content .issue-list small {
+	font-size: 11px;
+}
+.workspace-context-content .issue-list strong {
+	font-weight: 500;
+	font-size: 13px;
+}
+.workspace-context-content .evidence-gallery {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+}
+.workspace-context-content .evidence-gallery img {
+	max-width: 100%;
+	height: auto;
+	border-radius: 18px;
+}
+.workspace-context-content .issue-history-disclosure {
+	margin-top: 20px;
+	border-top: 1px solid var(--workspace-line);
+}
+.workspace-deliveries .issue-response-form fieldset,
+.workspace-deliveries .issue-review-form fieldset {
+	min-width: 0;
+}
+.workspace-deliveries .issue-response-form .actions,
+.workspace-deliveries .issue-review-form .actions {
+	flex-wrap: wrap;
+}
+.workspace-redesign .target-revision {
+	font-size: 12px;
+	margin-bottom: 12px;
+	color: #526171;
+}
+.workspace-redesign .empty {
+	border: 0;
+	color: #526171;
+	background-color: inherit;
+	padding: 30px 0;
+}
+@keyframes workspace-context-enter {
+	from {
+		opacity: 0;
+		transform: translateY(5px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+@media (max-width: 700px) {
+	.workspace-gallery {
+		grid-template-columns: minmax(0, 1fr);
+	}
+	.workspace-deliveries[data-context-active="true"] {
+		margin-top: 14px;
+		min-height: 0;
+		padding: 22px 16px;
+	}
+	.workspace-materials:has(.workspace-file-detail:not([hidden])) {
+		min-height: 0;
+		padding-bottom: 20px;
+	}
+	.workspace-materials:has(.workspace-file-detail:not([hidden]))
+		.workspace-upload-dock {
+		display: none;
+	}
+	.workspace-redesign .annotation-toolbar {
+		gap: 5px;
+	}
+	.workspace-redesign .annotation-toolbar button {
+		padding: 10px;
+		font-size: 12px;
+		min-width: 0;
+	}
+	.workspace-context-content input,
+	.workspace-context-content select,
+	.workspace-context-content textarea {
+		font-size: 16px;
+	}
+}
+
+.workspace-panels {
+	opacity: 1;
+	transition: opacity calc(180ms * var(--workspace-motion, 1)) ease;
+}
+.workspace-panels[data-changing="true"] {
+	opacity: 0;
+}
+.workspace-redesign details::details-content {
+	opacity: 0;
+	transition:
+		opacity calc(180ms * var(--workspace-motion, 1)) ease,
+		content-visibility calc(180ms * var(--workspace-motion, 1)) allow-discrete;
+}
+.workspace-redesign details[open]::details-content {
+	opacity: 1;
+}
+.workspace-context-content .hole-properties label {
+	display: grid;
+	gap: 7px;
+	margin-bottom: 14px;
+}
+
+.workspace-materials:has(.workspace-file-detail:not([hidden]))
+	.workspace-upload-dock {
+	display: none;
+}
+.workspace-deliveries {
+	container-type: inline-size;
+}
+.workspace-context-content .response-choices [aria-pressed="true"] {
+	background-color: var(--workspace-action);
+	color: #ffffff;
+	border-color: var(--workspace-action);
+}
+@container (max-width: 260px) {
+	.workspace-context-content .numeric-entry {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}

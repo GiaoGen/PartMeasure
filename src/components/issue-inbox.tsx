@@ -1,149 +1,314 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { type IssueSummary, stateLabel } from "@/lib/issues";
 import { api, ApiError } from "./api";
+import { IssueDetail } from "./issue-detail";
+import { useProjectDialog } from "./projects-motion";
+import { WorkspaceSideTarget } from "./workspace-side-content";
+import { WorkspaceIcon } from "./workspace-ui";
+import { ownTask, taskInboxState } from "./task-inbox-state";
+import "./issue-inbox.css";
+
 export function IssueInbox({
 	base,
 	guest,
 	refreshKey,
-	onSelect,
-	onInitial,
 	onInvalid,
-	onBrowse,
+	onUpdated,
+	onDirty,
 }: {
 	base: string;
 	guest: boolean;
 	refreshKey: number;
-	onSelect: (id: string) => void;
-	onInitial?: (id: string) => void;
 	onInvalid: () => void;
-	onBrowse: () => void;
+	onUpdated: () => void;
+	onDirty: (dirty: boolean) => void;
 }) {
-	const [items, setItems] = useState<IssueSummary[]>([]),
-		[counts, setCounts] = useState<Record<string, number>>({}),
-		[cursor, setCursor] = useState<string | null>(null),
-		[loading, setLoading] = useState(true),
-		[error, setError] = useState("");
-	const first = useRef(true),
-		callbacks = useRef({ onInitial, onInvalid });
-	callbacks.current = { onInitial, onInvalid };
-	const run = useRef(0);
+	const popup = useProjectDialog();
+	const titleId = useId();
+	const [opened, setOpened] = useState(false);
+	const [selected, setSelected] = useState<string | null>(null);
+	const [items, setItems] = useState<IssueSummary[]>([]);
+	const [counts, setCounts] = useState<Record<string, number>>({});
+	const [cursor, setCursor] = useState<string | null>(null);
+	const [loading, setLoading] = useState(true);
+	const [loaded, setLoaded] = useState(false);
+	const [error, setError] = useState("");
+	const dirty = useRef(false);
+	const callbacks = useRef({ onInvalid, onDirty });
+	callbacks.current = { onInvalid, onDirty };
+	const request = useRef(false);
+	const generation = useRef(0);
+	const queued = useRef(false);
+	const reload = useRef<() => void>(() => {});
+	const handleDirty = useCallback((value: boolean) => {
+		dirty.current = value;
+		callbacks.current.onDirty(value);
+	}, []);
 	const load = useCallback(
 		async (next: string | null = null) => {
-			const current = ++run.current;
+			if (request.current) {
+				queued.current = true;
+				return;
+			}
+			request.current = true;
+			const run = generation.current;
 			setLoading(true);
 			try {
-				const result = await api<{
+				const data = await api<{
 					items: IssueSummary[];
 					counts: Record<string, number>;
 					nextCursor: string | null;
-				}>(`${base}/issues${next ? `?cursor=${next}` : ""}`);
-				if (current !== run.current) return;
-				setItems((old) => (next ? [...old, ...result.items] : result.items));
-				setCounts(result.counts);
-				setCursor(result.nextCursor);
+				}>(
+					`${base}/issues${next ? `?cursor=${encodeURIComponent(next)}` : ""}`,
+					"GET", undefined, { cacheMs: 1000 },
+				);
+				if (run !== generation.current) return;
+				setItems((old) =>
+					next
+						? [
+								...old,
+								...data.items.filter(
+									(item) => !old.some((previous) => previous.id === item.id),
+								),
+							]
+						: data.items,
+				);
+				setCounts(data.counts);
+				setCursor(data.nextCursor);
 				setError("");
-				if (first.current) {
-					first.current = false;
-					const target = result.items.find((i) =>
-						guest
-							? i.state === "awaiting_response" ||
-								i.state === "remeasure_requested"
-							: i.state === "submitted",
-					);
-					if (target) callbacks.current.onInitial?.(target.id);
-				}
+				setLoaded(true);
 			} catch (e) {
-				if (current !== run.current) return;
+				if (run !== generation.current) return;
 				if (e instanceof ApiError && e.status === 401)
 					callbacks.current.onInvalid();
 				setError(e instanceof Error ? e.message : "无法读取待办。");
 			} finally {
-				if (current === run.current) setLoading(false);
+				if (run === generation.current) {
+					request.current = false;
+					setLoading(false);
+					if (queued.current) {
+						queued.current = false;
+						reload.current();
+					}
+				}
 			}
 		},
-		[base, guest],
+		[base],
 	);
+	reload.current = () => {
+		void load();
+	};
 	useEffect(() => {
 		void refreshKey;
 		void load();
-		return () => {
-			run.current++;
-		};
 	}, [load, refreshKey]);
-	const priority = (i: IssueSummary) =>
-		guest
-			? i.state === "awaiting_response" || i.state === "remeasure_requested"
-				? 0
-				: i.state === "submitted"
-					? 1
-					: 2
-			: i.state === "submitted"
-				? 0
-				: i.state === "confirmed"
-					? 2
-					: 1;
-	return (
-		<section
-			className="issue-inbox"
-			aria-label={guest ? "客户待测汇总" : "工程师待审核汇总"}
-		>
-			<div className="detail-heading">
-				<h2>
-					{guest
-						? `待回复 ${(counts.awaiting_response ?? 0) + (counts.remeasure_requested ?? 0)} 项`
-						: `待审核 ${counts.submitted ?? 0} 项`}
-				</h2>
-				<div className="actions">
-					<button type="button" onClick={onBrowse}>
-						继续上传资料
-					</button>
-					<button type="button" disabled={loading} onClick={() => void load()}>
-						刷新任务
-					</button>
-				</div>
-			</div>
-			<p className="muted">
-				待回复 {counts.awaiting_response ?? 0} · 重测{" "}
-				{counts.remeasure_requested ?? 0} · 待审核 {counts.submitted ?? 0} ·
-				已确认 {counts.confirmed ?? 0}
-			</p>
-			{loading ? (
-				<p role="status">读取任务…</p>
-			) : !items.length ? (
-				<p>尚无测量请求或文件问题，可以继续上传资料。</p>
-			) : null}
-			{error ? (
-				<p role="alert" className="error">
-					{error}
-				</p>
-			) : null}
-			<details open={!guest}>
-				<summary>任务列表（当前 {items.length} 项）</summary>
-				<ul className="issue-inbox-list">
-					{[...items]
-						.sort((a, b) => priority(a) - priority(b))
-						.map((i) => (
-							<li key={i.id}>
-								<button type="button" onClick={() => onSelect(i.id)}>
-									<span>
-										{i.kind === "measurement" ? "测量" : "文件问题"} · {i.title}
-									</span>
-									<small>{stateLabel[i.state]}</small>
-								</button>
-							</li>
-						))}
+
+	useEffect(
+		() => () => {
+			generation.current++;
+			request.current = false;
+			queued.current = false;
+			callbacks.current.onDirty(false);
+		},
+		[],
+	);
+	useEffect(() => {
+		if (!opened) return;
+		const element = popup.ref.current;
+		const viewport = window.visualViewport;
+		const previousOverflow = document.body.style.overflow;
+		document.body.style.overflow = "hidden";
+		let frame = 0;
+		const update = () => {
+			element?.style.setProperty(
+				"--task-visible-height",
+				`${viewport?.height ?? window.innerHeight}px`,
+			);
+			element?.style.setProperty(
+				"--task-visible-top",
+				`${viewport?.offsetTop ?? 0}px`,
+			);
+		};
+		const schedule = () => {
+			cancelAnimationFrame(frame);
+			frame = requestAnimationFrame(update);
+		};
+		update();
+		viewport?.addEventListener("resize", schedule);
+		viewport?.addEventListener("scroll", schedule);
+		return () => {
+			cancelAnimationFrame(frame);
+			viewport?.removeEventListener("resize", schedule);
+			viewport?.removeEventListener("scroll", schedule);
+			document.body.style.overflow = previousOverflow;
+		};
+	}, [opened, popup.ref]);
+	useEffect(() => {
+		if (opened)
+			popup.ref.current
+				?.querySelector<HTMLButtonElement>(
+					selected
+						? '.task-inbox-heading button[aria-label="关闭待办"]'
+						: ".task-inbox-heading button:not(:disabled)",
+				)
+				?.focus();
+	}, [selected, opened, popup.ref]);
+	const backToList = () => {
+		if (
+			dirty.current &&
+			!window.confirm(
+				"有未保存或未确认的提交，仍要返回事项列表吗？已发出的请求可能仍完成。",
+			)
+		)
+			return;
+		setSelected(null);
+		void load();
+	};
+	function close() {
+		// Keep detail mounted: closing is not discarding its reply/review form.
+		popup.close(() => setOpened(false));
+	}
+	const badge = taskInboxState(counts, guest, !!error || !loaded);
+	const pending = items.filter((item) => item.state !== "confirmed");
+	const mine = pending.filter((item) => ownTask(item, guest));
+	const waiting = pending.filter((item) => !ownTask(item, guest));
+	function group(label: string, rows: IssueSummary[], count: number) {
+		if (!rows.length) return null;
+		return (
+			<section className="task-inbox-group" aria-label={label}>
+				<h3>
+					{label} · {count}
+				</h3>
+				<ul>
+					{rows.map((item) => (
+						<li key={item.id}>
+							<button type="button" onClick={() => setSelected(item.id)}>
+								<span>
+									<strong>{item.title}</strong>
+									<small>
+										{item.kind === "measurement" ? "测量提醒" : "文件问题"}
+									</small>
+								</span>
+								<small>{stateLabel[item.state]}</small>
+							</button>
+						</li>
+					))}
 				</ul>
-				{cursor ? (
-					<button
-						type="button"
-						disabled={loading}
-						onClick={() => void load(cursor)}
-					>
-						更多任务
-					</button>
+			</section>
+		);
+	}
+	return (
+		<div className="task-inbox">
+			<button
+				type="button"
+				className="task-inbox-fab"
+				data-tone={badge.tone}
+				aria-label={loading && !loaded ? "正在读取待办" : badge.label}
+				title={loading && !loaded ? "正在读取待办" : badge.label}
+				aria-haspopup="dialog"
+				aria-expanded={opened}
+				onClick={() => {
+					setOpened(true);
+					popup.open();
+					if (!selected) void load();
+				}}
+			>
+				<WorkspaceIcon kind="bell" />
+				{error ? (
+					<span className="task-inbox-badge" aria-hidden="true">
+						!
+					</span>
+				) : badge.own > 0 ? (
+					<span className="task-inbox-badge" aria-hidden="true">
+						{badge.own > 99 ? "99+" : badge.own}
+					</span>
 				) : null}
-			</details>
-		</section>
+			</button>
+			<span className="task-inbox-announcement" role="status">
+				{loaded ? badge.label : "正在读取待办"}
+			</span>
+			<dialog
+				ref={popup.ref}
+				className="task-inbox-dialog"
+				aria-labelledby={titleId}
+				onCancel={(event) => {
+					event.preventDefault();
+					close();
+				}}
+				onPointerDown={(event) => {
+					if (event.target !== event.currentTarget) return;
+					const rect = event.currentTarget.getBoundingClientRect();
+					if (
+						event.clientX < rect.left ||
+						event.clientX > rect.right ||
+						event.clientY < rect.top ||
+						event.clientY > rect.bottom
+					)
+						close();
+				}}
+			>
+				<header className="task-inbox-heading">
+					<h2 id={titleId}>待处理事项</h2>
+					<div>
+
+						<button type="button" onClick={close} aria-label="关闭待办">
+							<span aria-hidden="true">×</span>
+						</button>
+					</div>
+				</header>
+				<div className="task-inbox-list" hidden={!!selected}>
+					{loading ? <p role="status">读取待办…</p> : null}
+					{error ? (
+						<p className="error" role="alert">
+							{error}
+							<button type="button" onClick={() => void load()}>
+								重试
+							</button>
+						</p>
+					) : null}
+					{!loading && !error && loaded && badge.own + badge.waiting === 0 ? (
+						<div className="task-inbox-empty">
+							<WorkspaceIcon kind="check" />
+							<p>没有待处理事项</p>
+						</div>
+					) : null}
+					{group("待我处理", mine, badge.own)}
+					{group("等待对方", waiting, badge.waiting)}
+					{!loading &&
+					!error &&
+					loaded &&
+					badge.own + badge.waiting > 0 &&
+					!pending.length ? (
+						<p>待办尚未载入，请加载更多。</p>
+					) : null}
+					{cursor ? (
+						<button
+							type="button"
+							disabled={loading}
+							onClick={() => void load(cursor)}
+						>
+							加载更多事项
+						</button>
+					) : null}
+				</div>
+				<WorkspaceSideTarget value={null}>
+					{selected ? (
+						<IssueDetail
+							key={selected}
+							base={base}
+							id={selected}
+							guest={guest}
+							panelOnly
+							backLabel="全部事项"
+							onInvalid={onInvalid}
+							onUpdated={onUpdated}
+							onDirty={handleDirty}
+							onBack={backToList}
+						/>
+					) : null}
+				</WorkspaceSideTarget>
+			</dialog>
+		</div>
 	);
 }

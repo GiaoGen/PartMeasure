@@ -196,6 +196,8 @@ export type Evidence = {
 	filename: string;
 	mime: string;
 	byteSize: string;
+	previewVersion?: string;
+	thumbnail?: {version:string} | null;
 };
 export type IssueResponse = {
 	id: string;
@@ -224,3 +226,30 @@ export type IssueDetail = IssueSummary & {
 	responses: IssueResponse[];
 	reviews: IssueReview[];
 };
+
+/** Small authoritative delta, stored with the operation's existing idempotent result. */
+export type IssueWriteResult = {
+	issueId: string;
+	state: IssueState;
+	revision: number;
+	updatedAt: string;
+	response?: IssueResponse;
+	review?: IssueReview;
+};
+
+export function applyIssueWrite(issue: IssueDetail, result: IssueWriteResult): IssueDetail | null {
+	if (result.issueId !== issue.id) return null;
+	if (result.revision <= issue.revision) return issue;
+	if (result.revision !== issue.revision + 1 || !result.updatedAt) return null;
+	if (result.response?.issueRevision === issue.revision && result.state === "submitted") {
+		return { ...issue, state: result.state, revision: result.revision, updatedAt: result.updatedAt,
+			latestResponseId: result.response.id,
+			responses: [...issue.responses.filter(r => r.id !== result.response?.id), result.response] };
+	}
+	if (result.review?.issueRevision === issue.revision && result.review.responseId === issue.latestResponseId &&
+		result.state === (result.review.decision === "confirm" ? "confirmed" : "remeasure_requested")) {
+		return { ...issue, state: result.state, revision: result.revision, updatedAt: result.updatedAt,
+			reviews: [...issue.reviews.filter(r => r.id !== result.review?.id), result.review] };
+	}
+	return null;
+}

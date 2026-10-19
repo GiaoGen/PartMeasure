@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { AppError } from "../policy";
 import { digest, type Actor } from "./db";
 import { appOrigin } from "./origin";
+import { timed } from "./timing";
 export function authConfig() {
 	const url = process.env.NEXT_PUBLIC_SUPABASE_URL,
 		key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
@@ -35,7 +36,7 @@ export async function authClient() {
 }
 export async function owner(): Promise<Actor & { kind: "owner" }> {
 	const client = await authClient();
-	const { data, error } = await client.auth.getUser();
+	const { data, error } = await timed("auth", () => client.auth.getUser());
 	if (error) {
 		const transient =
 			error.name === "AuthRetryableFetchError" ||

@@ -1,3 +1,7 @@
+import { QueryCache } from "./query-cache";
+import { eventTags, mutationTags, queryPolicy } from "./cache-policy";
+import type { ProjectUpdate } from "@/lib/project-events";
+
 export class ApiError extends Error {
 	constructor(
 		public code: string,
@@ -8,14 +12,14 @@ export class ApiError extends Error {
 }
 const messages: Record<string, string> = {
 	AUTH_NOT_CONFIGURED: "认证服务尚未配置。",
+	AUTH_REQUIRED: "登录状态已变化，请重新进入项目。",
 	DATABASE_NOT_CONFIGURED: "数据库连接尚未配置。",
 	DEPENDENCY_UNAVAILABLE: "服务暂时不可用，请稍后重试。",
 	INVALID_CREDENTIALS: "邮箱或密码不正确，或邮箱尚未确认。",
 	OTP_INVALID_OR_EXPIRED: "验证码不正确或已过期。",
 	REGISTRATION_UNAVAILABLE: "暂时无法注册。请检查邮箱、密码或稍后重试。",
 	RATE_LIMITED: "操作较频繁，请稍后重试。",
-	UNSUPPORTED_FORMAT:
-		"不支持此格式。照片请使用 JPG、PNG 或 WebP，HEIC 请先转换。",
+	UNSUPPORTED_FORMAT: "不支持此格式。照片请使用 JPG、PNG 或 WebP，HEIC 请先转换。",
 	FILE_TOO_LARGE: "文件超过此格式的大小上限。",
 	QUOTA_EXCEEDED: "项目、账户或今日上传配额不足，请联系工程师。",
 	DUPLICATE_FILE: "项目中已有相同文件，无需重复上传。",
@@ -52,47 +56,192 @@ const messages: Record<string, string> = {
 	ATTACHMENT_UNAVAILABLE: "附件不可用，请选择本项目中处理完成且可共享的文件。",
 	RESPONSE_CONFLICT: "最新回复已变化，请重新载入后审核。",
 	RESPONSE_LIMIT: "该任务已达到100轮回复上限，请由工程师新建请求。",
-	DELIVERY_FILE_UNAVAILABLE:
-		"成果附件不可用，请选择本项目中处理完成的工程师成果文件。",
-	DELIVERY_PUBLISHED:
-		"这份成果已经发布，不能覆盖。请重新载入查看，或准备新的成果集合。",
+	DELIVERY_FILE_UNAVAILABLE: "成果附件不可用，请选择本项目中处理完成的工程师成果文件。",
+	DELIVERY_PUBLISHED: "这份成果已经发布，不能覆盖。请重新载入查看，或准备新的成果集合。",
 	DELIVERY_FILES_REQUIRED: "请选择1～20个处理完成的成果附件，再发布。",
 	DELIVERY_DRAFT_LIMIT: "当前已有5份交付草稿，请先完成已有草稿。",
 };
-export const message = (code: string) =>
-	messages[code] ?? "操作未完成，请重试或联系工程师。";
+export const message = (code: string) => messages[code] ?? "操作未完成，请重试或联系工程师。";
+const queries = new QueryCache();
+let identity = 0;
+let csrfToken: string | null = null;
+let csrfPending: Promise<string> | null = null;
+let channel: BroadcastChannel | undefined;
+let listening = false;
+const sessionListeners = new Set<() => void>();
+const requests = new Set<AbortController>();
+const projectListeners = new Set<(base: string, updates: ProjectUpdate[]) => void>();
+export function onProjectCacheInvalidated(
+	listener: (base: string, updates: ProjectUpdate[]) => void,
+) {
+	projectListeners.add(listener);
+	return () => {
+		projectListeners.delete(listener);
+	};
+}
+export function invalidateProjectQueries(base: string, updates: ProjectUpdate[]) {
+	queries.invalidate(eventTags(base, updates));
+	for (const listener of projectListeners) listener(base, updates);
+}
+export function onApiSessionCleared(listener: () => void) {
+	sessionListeners.add(listener);
+	return () => {
+		sessionListeners.delete(listener);
+	};
+}
+export const invalidateQueries = () => queries.clear();
+
+function resetSessionData() {
+	identity++;
+	for (const controller of requests) controller.abort();
+	requests.clear();
+	queries.clear();
+	for (const listener of sessionListeners) listener();
+}
+export function clearApiSession() {
+	resetSessionData();
+	csrfToken = null;
+	csrfPending = null;
+}
+
+function listenForSessionChanges() {
+	if (listening || typeof window === "undefined") return;
+	listening = true;
+	window.addEventListener("pagehide", clearApiSession);
+	window.addEventListener("focus", () => queries.clear());
+	document.addEventListener("visibilitychange", () => {
+		if (document.hidden) queries.clear();
+	});
+	if (typeof BroadcastChannel !== "undefined") {
+		channel = new BroadcastChannel("pm-session-invalidation");
+		channel.onmessage = clearApiSession;
+	}
+}
+
+async function csrfCredential(): Promise<string> {
+	if (csrfToken) return csrfToken;
+	if (csrfPending) return csrfPending;
+	const started = identity;
+	const pending = (async () => {
+		const res = await fetch("/api/csrf", {
+			cache: "no-store",
+			signal: AbortSignal.timeout(45000),
+		});
+		const json = await res.json();
+		if (!res.ok || !/^[A-Za-z0-9_-]{43}$/.test(json.data?.token ?? ""))
+			throw new ApiError("CSRF_INVALID", res.status >= 400 ? res.status : 503);
+		if (started !== identity) throw new ApiError("AUTH_REQUIRED", 401);
+		csrfToken = json.data.token;
+		return csrfToken as string;
+	})();
+	csrfPending = pending;
+	try {
+		return await pending;
+	} finally {
+		if (csrfPending === pending) csrfPending = null;
+	}
+}
+
 export async function api<T>(
 	url: string,
 	method = "GET",
 	data?: unknown,
-	options: { key?: string; revision?: number } = {},
+	options: { key?: string; revision?: number; cacheMs?: number; cacheVersion?: string } = {},
 ): Promise<T> {
+	listenForSessionChanges();
+	const ownerAuthAction = /^\/api\/auth\/(login|logout|verify|register)$/.test(url);
+	// Guest bootstrap replaces a project cookie in this tab. It must not log out an
+	// engineer workspace in another tab merely because a share link was opened.
+	if (ownerAuthAction || url === "/api/guest/session") clearApiSession();
+	if (ownerAuthAction) channel?.postMessage("invalidate");
+	const started = identity;
+	if (method !== "GET") queries.invalidate(mutationTags(url));
+	const policy = queryPolicy(url);
+	const execute = async () => {
+		const value = await request<T>(url, method, data, options, started);
+		if (
+			method === "GET" &&
+			/\/issues\/[^/?]+$/.test(url) &&
+			value &&
+			typeof value === "object"
+		) {
+			const detail = value as { responses?: { attachments?: { id: string }[] }[] };
+			const ids = new Set(
+				detail.responses?.flatMap((r) => r.attachments?.map((f) => f.id) ?? []) ?? [],
+			);
+			const base = policy.tags[0];
+			if (ids.size > 200) policy.tags.push(`${base}:evidence:all`);
+			else for (const id of ids) policy.tags.push(`${base}:evidence:${id}`);
+		}
+		return value;
+	};
+	return method === "GET"
+		? queries.read(
+				`${identity}\n${url}\n${options.cacheVersion ?? ""}`,
+				execute,
+				options.cacheMs ?? policy.ttl,
+				policy.tags,
+			)
+		: execute();
+}
+
+async function request<T>(
+	url: string,
+	method: string,
+	data: unknown,
+	options: { key?: string; revision?: number },
+	started: number,
+): Promise<T> {
+	if (started !== identity) throw new ApiError("AUTH_REQUIRED", 401);
 	const headers: Record<string, string> = {};
 	if (method !== "GET") {
-		const tokenResponse = await fetch("/api/csrf", {
-			cache: "no-store",
-			signal: AbortSignal.timeout(45000),
-		});
-		const token = await tokenResponse.json();
-		headers["x-csrf-token"] = token.data.token;
+		headers["x-csrf-token"] = await csrfCredential();
 		headers["Idempotency-Key"] = options.key ?? crypto.randomUUID();
 		if (data !== undefined) headers["Content-Type"] = "application/json";
 	}
-	if (options.revision !== undefined)
-		headers["X-PM-Revision"] = `"${options.revision}"`;
+	if (options.revision !== undefined) headers["X-PM-Revision"] = `"${options.revision}"`;
+	if (started !== identity) throw new ApiError("AUTH_REQUIRED", 401);
+	const controller = new AbortController();
+	requests.add(controller);
 	const init: RequestInit = {
 		method,
 		headers,
 		cache: "no-store",
-		signal: AbortSignal.timeout(45000),
+		signal: AbortSignal.any([controller.signal, AbortSignal.timeout(45000)]),
 	};
 	if (data !== undefined) init.body = JSON.stringify(data);
-	const res = await fetch(url, init);
-	const result = await res.json();
-	if (!res.ok)
-		throw new ApiError(
-			result.error?.code ?? "DEPENDENCY_UNAVAILABLE",
-			res.status,
-		);
-	return result.data as T;
+	try {
+		let res = await fetch(url, init);
+		let result = await res.json();
+		// CSRF rejects before the business handler. Retry only that explicit error, once,
+		// retaining the exact operation body and idempotency key; never retry unknown writes.
+		if (
+			method !== "GET" &&
+			res.status === 403 &&
+			result.error?.code === "CSRF_INVALID" &&
+			started === identity
+		) {
+			csrfToken = null;
+			headers["x-csrf-token"] = await csrfCredential();
+			res = await fetch(url, init);
+			result = await res.json();
+		}
+		if (started !== identity) throw new ApiError("AUTH_REQUIRED", 401);
+		if (res.status === 401) clearApiSession();
+		if (!res.ok) throw new ApiError(result.error?.code ?? "DEPENDENCY_UNAVAILABLE", res.status);
+		if (method !== "GET") queries.invalidate(mutationTags(url));
+		// Cookie changes are now committed: fence other tabs' requests that started
+		// between the preflight notification and the successful auth response too.
+		if (/^\/api\/auth\/(login|logout|verify)$/.test(url)) {
+			resetSessionData();
+			channel?.postMessage("invalidate");
+		}
+		return result.data as T;
+	} catch (e) {
+		if (started !== identity && !(e instanceof ApiError && e.status === 401))
+			throw new ApiError("AUTH_REQUIRED", 401);
+		throw e;
+	} finally {
+		requests.delete(controller);
+	}
 }

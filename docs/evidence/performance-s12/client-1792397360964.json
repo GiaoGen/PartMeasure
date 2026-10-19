@@ -1,0 +1,21 @@
+{
+  "checkedAt": "2026-10-19T08:09:20.964Z",
+  "realService": true,
+  "actualApiModule": true,
+  "browserLaunched": false,
+  "mainlandPhoneValidated": false,
+  "networkMode": "direct-process-no-http-proxy",
+  "counts": {
+    "csrf": 1,
+    "read": 0,
+    "write": 1
+  },
+  "results": [
+    {
+      "name": "dependent-client-checks",
+      "status": "FAIL",
+      "code": "DEPENDENCY_UNAVAILABLE",
+      "httpStatus": 503
+    }
+  ]
+}

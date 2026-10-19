@@ -1,0 +1,32 @@
+{
+  "checkedAt": "2026-10-19T07:53:26.974Z",
+  "networkMode": "direct-process-no-http-proxy",
+  "root": "http://127.0.0.1:3110",
+  "browserLaunched": false,
+  "realService": true,
+  "mainlandPhoneValidated": false,
+  "results": [
+    {
+      "name": "A_password_login",
+      "httpStatus": 503,
+      "elapsedMs": 306,
+      "timing": {
+        "pool": 278.3,
+        "app": 288.4,
+        "pool_count": 1
+      },
+      "error": "DEPENDENCY_UNAVAILABLE"
+    },
+    {
+      "name": "B_password_login",
+      "httpStatus": 503,
+      "elapsedMs": 440,
+      "timing": {
+        "pool": 421.8,
+        "app": 430.6,
+        "pool_count": 1
+      },
+      "error": "DEPENDENCY_UNAVAILABLE"
+    }
+  ]
+}

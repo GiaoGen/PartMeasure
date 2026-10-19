@@ -2,6 +2,7 @@
 import { useState } from "react";
 import {
 	type IssueDetail,
+	type IssueWriteResult,
 	type ReviewInput,
 	reviewSchema,
 	validateReview,
@@ -17,7 +18,7 @@ export function IssueReviewForm({
 }: {
 	base: string;
 	issue: IssueDetail;
-	onSaved: () => void;
+	onSaved: (result: IssueWriteResult) => void;
 	onInvalid: () => void;
 	onDirty: (dirty: boolean) => void;
 	onReload: () => void;
@@ -36,7 +37,7 @@ export function IssueReviewForm({
 		[value, setValue] = useState(response?.value ?? ""),
 		[unit, setUnit] = useState(response?.unit ?? "mm"),
 		[note, setNote] = useState("");
-	const write = useIssueWrite(
+	const write = useIssueWrite<IssueWriteResult>(
 		`${base}/issues/${issue.id}/review`,
 		issue.revision,
 		onSaved,
@@ -44,7 +45,7 @@ export function IssueReviewForm({
 		onDirty,
 	);
 	if (!response)
-		return <p role="alert">当前回复尚未载入，请刷新任务后审核。</p>;
+		return <p role="alert">当前回复尚未载入，请重试读取任务后审核。</p>;
 	const draft: ReviewInput = {
 		decision,
 		responseId: response.id,

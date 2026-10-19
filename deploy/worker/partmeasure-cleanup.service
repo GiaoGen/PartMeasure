@@ -1,0 +1,18 @@
+[Unit]
+Description=PartMeasure isolated orphan and event retention cleanup
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=partmeasure
+Group=partmeasure
+WorkingDirectory=/opt/partmeasure/current
+EnvironmentFile=/etc/partmeasure/worker.env
+ExecStart=/usr/bin/node --import tsx scripts/worker/supervise.ts --cleanup-only
+TimeoutStartSec=900
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+UMask=0077
+MemoryMax=1G

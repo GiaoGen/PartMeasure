@@ -35,6 +35,8 @@ import { deliveryDraftSchema } from "@/lib/deliveries";
 import * as deliveries from "@/lib/server/delivery-service";
 import { appOrigin } from "@/lib/server/origin";
 import { revisionFromHeaders } from "@/lib/revision";
+import { timed } from "@/lib/server/timing";
+import { projectChanges } from "@/lib/server/project-changes";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -69,7 +71,7 @@ async function handle(req: Request, context: Context) {
 			const action = s[1];
 			const client = await authClient();
 			if (action === "logout" && method === "POST") {
-				const { error } = await client.auth.signOut();
+				const { error } = await timed("auth", () => client.auth.signOut());
 				if (error) throw new AppError("AUTH_UNAVAILABLE", 503);
 				return response({ signedOut: true });
 			}
@@ -84,10 +86,10 @@ async function handle(req: Request, context: Context) {
 				await transaction(null, (db) =>
 					rate(db, `auth:${digest(input.email.toLowerCase())}`, 5, 600),
 				);
-				const result =
+				const result = await timed("auth", () =>
 					action === "register"
-						? await client.auth.signUp(input)
-						: await client.auth.signInWithPassword(input);
+						? client.auth.signUp(input)
+						: client.auth.signInWithPassword(input));
 				if (result.error)
 					throw new AppError(
 						action === "login"
@@ -115,10 +117,10 @@ async function handle(req: Request, context: Context) {
 				await transaction(null, (db) =>
 					rate(db, `verify:${digest(input.email.toLowerCase())}`, 10, 600),
 				);
-				const { error } = await client.auth.verifyOtp({
+				const { error } = await timed("auth", () => client.auth.verifyOtp({
 					...input,
 					type: "signup",
-				});
+				}));
 				if (error) throw new AppError("OTP_INVALID_OR_EXPIRED", 422);
 				return response({ verified: true });
 			}
@@ -179,7 +181,7 @@ async function handle(req: Request, context: Context) {
 						throw new AppError("FORBIDDEN", 403);
 					})()
 			: await owner();
-		const preflight = await transaction(actor, async (db) => {
+		const preflight = await timed("preflight", () => transaction(actor, async (db) => {
 			if (actor.kind === "guest") await rate(db, "guest:global", 600);
 			try {
 				if (actor.kind === "guest") {
@@ -199,7 +201,7 @@ async function handle(req: Request, context: Context) {
 				if (error instanceof AppError) return error;
 				throw error;
 			}
-		});
+		}));
 		if (preflight) throw preflight;
 		const cursor = url.searchParams.get("cursor");
 		if (
@@ -207,6 +209,8 @@ async function handle(req: Request, context: Context) {
 			(cursor !== null && (cursor.length === 0 || cursor.length > 512))
 		)
 			throw new AppError("INVALID_INPUT", 422);
+		if (projectId && parts[2] === "changes" && parts.length === 3 && method === "GET")
+			return response(await projectChanges(actor, projectId, cursor));
 		if (!projectId) {
 			if (method === "GET") {
 				for (const [key] of url.searchParams) {
@@ -326,7 +330,7 @@ async function handle(req: Request, context: Context) {
 						throw new AppError("NOT_FOUND", 404);
 					return fileResponse(
 						req,
-						await service.fileForRead(actor, projectId, fileId.data),
+						() => service.fileForRead(actor, projectId, fileId.data),
 					);
 				}
 			}
@@ -562,13 +566,16 @@ async function handle(req: Request, context: Context) {
 				(parts[4] === "download" || parts[4] === "preview")
 			) {
 				const original = url.searchParams.get("original") === "1";
-				const file = await service.fileForRead(
+				const variant = url.searchParams.get("variant");
+				if (variant !== null && (parts[4] !== "preview" || !["320","640"].includes(variant) || url.searchParams.getAll("variant").length !== 1)) throw new AppError("INVALID_INPUT",422);
+				const authorize = () => service.fileForRead(
 					actor,
 					projectId,
 					objectId,
 					original,
+					variant === null ? null : Number(variant),
 				);
-				return fileResponse(req, file, parts[4] === "preview", original);
+				return fileResponse(req, authorize, parts[4] === "preview", original);
 			}
 		}
 		throw new AppError("NOT_FOUND", 404);

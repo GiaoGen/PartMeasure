@@ -1,0 +1,10 @@
+{
+  "environment": "real isolated Supabase + Vercel test Preview HTTPS; no browser; process-direct; VPN/TUN not controlled",
+  "results": [
+    {
+      "name": "setup-or-dependency",
+      "status": "FAIL",
+      "code": "ASSERTION_OR_DEPENDENCY_FAILED"
+    }
+  ]
+}

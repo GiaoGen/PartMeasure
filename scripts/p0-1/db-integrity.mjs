@@ -225,7 +225,6 @@ try {
 			const child = spawn(
 				process.execPath,
 				[
-					"--use-env-proxy",
 					"--env-file=.env.local",
 					"--conditions=react-server",
 					"--import",

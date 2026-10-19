@@ -7,9 +7,11 @@ import {
 	versionLabel,
 } from "@/lib/deliveries";
 import { api, ApiError } from "./api";
+import { useProjectUpdates } from "./project-live";
 import { useIssueWrite } from "./use-issue-write";
 import { UploadQueue } from "./upload-queue";
 import { DeliveryDownload } from "./delivery-download";
+import "./delivery-section.css";
 const sizeLabel = (bytes: string) =>
 	Number(bytes) < 1024
 		? `${bytes} B`
@@ -26,39 +28,50 @@ export function DeliverySection({ base, guest, onInvalid, onDirty }: Props) {
 		[active, setActive] = useState<Delivery | null>(null),
 		[editing, setEditing] = useState(false),
 		[loading, setLoading] = useState(true),
+		[formVersion, setFormVersion] = useState(0),
 		[error, setError] = useState(""),
 		[notice, setNotice] = useState("");
 	const dirty = useRef(false),
+		loadRun = useRef(0),
 		callbacks = useRef({ onInvalid, onDirty });
 	callbacks.current = { onInvalid, onDirty };
 	const handleDirty = useCallback((value: boolean) => {
 		dirty.current = value;
 		callbacks.current.onDirty(value);
 	}, []);
-	const load = useCallback(async () => {
-		setLoading(true);
+	const load = useCallback(async (reset = false) => {
+		const run = ++loadRun.current;
+		if (reset) setLoading(true);
 		setError("");
 		try {
 			const data = await api<{
 				published: Delivery | null;
 				drafts: Delivery[];
 			}>(`${base}/deliveries`);
+			if (run !== loadRun.current) return;
 			setPublished(data.published);
 			setDrafts(data.drafts);
-			setActive(data.drafts[0] ?? null);
-			setEditing(!guest && (!data.published || data.drafts.length > 0));
+            if (!dirty.current) {
+              setActive(old => data.drafts.find(d => d.id === old?.id) ?? data.drafts[0] ?? null);
+              setEditing(!guest && (!data.published || data.drafts.length > 0));
+            } else setNotice("交付已在别处更新；当前输入已保留，保存时检查冲突。");
 		} catch (e) {
+			if (run !== loadRun.current) return;
 			if (e instanceof ApiError && e.status === 401)
 				callbacks.current.onInvalid();
 			setError(e instanceof Error ? e.message : "读取交付失败。");
 		} finally {
-			setLoading(false);
+			if (run === loadRun.current) setLoading(false);
 		}
 	}, [base, guest]);
 	useEffect(() => {
-		void load();
-		return () => callbacks.current.onDirty(false);
+		void load(true);
+		return () => { loadRun.current++; callbacks.current.onDirty(false); };
 	}, [load]);
+ useProjectUpdates(updates => {
+  if (updates.some(e => e.kind === "delivery.changed" || e.kind === "resync")) void load();
+ });
+
 	function allowLeave() {
 		return (
 			!dirty.current ||
@@ -66,14 +79,18 @@ export function DeliverySection({ base, guest, onInvalid, onDirty }: Props) {
 		);
 	}
 	function refresh() {
-		if (allowLeave()) void load();
+		if (allowLeave()) { dirty.current = false; setFormVersion(v => v + 1); void load(true); }
 	}
 	function saved(d: Delivery) {
+		loadRun.current++;
+		setLoading(false);
 		setNotice("交付草稿已保存，仅工程师可见。");
 		setActive(d);
 		setDrafts((old) => [d, ...old.filter((x) => x.id !== d.id)]);
 	}
 	function released(d: Delivery) {
+		loadRun.current++;
+		setLoading(false);
 		setNotice(`${versionLabel(d.versionNo ?? 1)} 已发布，客户可下载。`);
 		setPublished(d);
 		setDrafts((old) => old.filter((x) => x.id !== d.id));
@@ -82,12 +99,12 @@ export function DeliverySection({ base, guest, onInvalid, onDirty }: Props) {
 	}
 	return (
 		<section className="delivery-section" aria-label="成果交付">
-			<div className="detail-heading">
-				<h2>成果交付</h2>
-				<button type="button" disabled={loading} onClick={refresh}>
-					刷新交付
-				</button>
-			</div>
+			{guest || published || drafts.length > 0 ? (
+				<div className="detail-heading">
+					<h2>成果交付</h2>
+
+				</div>
+			) : null}
 			{loading ? <p role="status">读取交付与草稿…</p> : null}
 			{error ? (
 				<p role="alert" className="error">
@@ -98,12 +115,8 @@ export function DeliverySection({ base, guest, onInvalid, onDirty }: Props) {
 				</p>
 			) : null}
 			{notice ? <p role="status">{notice}</p> : null}
-			{!loading && !error && !published ? (
-				<p className="empty">
-					{guest
-						? "尚无交付，工程师发布后可在这里下载。"
-						: "尚未发布成果。上传成果附件，保存文件清单与说明后发布。"}
-				</p>
+			{guest && !loading && !error && !published ? (
+				<p className="empty">暂无交付</p>
 			) : null}
 			{published ? (
 				<section className="published-delivery" aria-label="已发布成果">
@@ -114,9 +127,9 @@ export function DeliverySection({ base, guest, onInvalid, onDirty }: Props) {
 							published.publishedAt ?? published.createdAt,
 						).toLocaleString("zh-CN")}
 					</p>
-					<p className="preserve-lines">
-						{published.description || "无额外说明。"}
-					</p>
+					{published.description ? (
+						<p className="preserve-lines">{published.description}</p>
+					) : null}
 					<ul className="delivery-file-list">
 						{published.files.map((file) => (
 							<li key={file.id}>
@@ -135,12 +148,9 @@ export function DeliverySection({ base, guest, onInvalid, onDirty }: Props) {
 							</li>
 						))}
 					</ul>
-					<p className="muted">
-						已发布内容不会被覆盖。这里只显示最新成果集合；完整历史管理、客户反馈与接受确认暂未开放。
-					</p>
 				</section>
 			) : null}
-			{!guest && !loading && !error ? (
+			{!guest && (!loading || editing) ? (
 				<>
 					{drafts.length > 1 ? (
 						<div className="actions">
@@ -173,7 +183,7 @@ export function DeliverySection({ base, guest, onInvalid, onDirty }: Props) {
 					) : null}
 					{editing ? (
 						<DeliveryEditor
-							key={`${active?.id ?? "new"}:${active?.revision ?? 0}`}
+							key={`${active?.id ?? "new"}:${active?.revision ?? 0}:${formVersion}`}
 							base={base}
 							draft={active}
 							onSaved={saved}
@@ -272,177 +282,180 @@ function DeliveryEditor({
 			generation.current++;
 		};
 	}, [loadFiles]);
+ useProjectUpdates(updates => { if (updates.some(e => e.kind === "file.changed" || e.kind === "resync")) void loadFiles(); });
+
 	const value = { description, fileIds: selected },
 		blocked = save.disabled || publish.disabled;
+	const availableFiles = [
+		...new Map(
+			[...(draft?.files ?? []), ...files].map((file) => [file.id, file]),
+		).values(),
+	];
+	// Preserve an existing text-only draft; new empty deliveries start with upload only.
+	const hasContent = availableFiles.length > 0 || !!draft?.description;
 	return (
 		<section className="delivery-editor" aria-label="交付草稿">
-			<h3>交付草稿{draft ? ` · 修订 ${draft.revision}` : ""}</h3>
-			<p>
-				草稿与未发布的成果附件仅工程师可见。上传完成后请选择本轮文件，再保存草稿。
-			</p>
 			<UploadQueue
 				base={base}
 				purpose="delivery"
+				compact
+				emptyHint={hasContent ? undefined : "上传文件，开始交付"}
 				onReady={refreshFiles}
 				onInvalid={onInvalid}
 			/>
-			<form
-				aria-label="保存交付草稿"
-				onSubmit={(e) => {
-					e.preventDefault();
-					const parsed = deliveryDraftSchema.safeParse(value);
-					if (!parsed.success) {
-						save.setError("说明最多4000字，成果文件最多20份且不能重复。");
-						return;
-					}
-					void save.submit(parsed.data);
-				}}
+			{fileError ? (
+				<p role="alert" className="error">
+					{fileError}
+					<button type="button" onClick={refreshFiles}>
+						重试
+					</button>
+				</p>
+			) : null}
+			<div
+				className="delivery-composer"
+				data-open={hasContent}
+				aria-hidden={!hasContent}
+				inert={!hasContent}
 			>
-				<fieldset disabled={blocked}>
-					<label>
-						交付说明
-						<textarea
-							aria-label="交付说明"
-							maxLength={4000}
-							value={description}
-							onChange={(e) => {
-								setDescription(e.target.value);
-								save.changed();
-							}}
-						/>
-					</label>
-					<h4>本轮成果文件（已选 {selected.length}/20）</h4>
-					{fileError ? (
-						<p role="alert" className="error">
-							{fileError}
-							<button type="button" onClick={refreshFiles}>
-								重试成果附件
-							</button>
-						</p>
-					) : null}
-					{!files.length && !fileError ? (
-						<p>暂无处理完成的成果文件，请先上传。</p>
-					) : null}
-					<div className="evidence-pick-list">
-						{[
-							...new Map(
-								[...(draft?.files ?? []), ...files].map((f) => [f.id, f]),
-							).values(),
-						].map((file) => (
-							<label key={file.id}>
-								<input
-									type="checkbox"
-									checked={selected.includes(file.id)}
-									disabled={
-										!selected.includes(file.id) && selected.length >= 20
-									}
+				<div className="delivery-composer-inner">
+					<form
+						aria-label="保存交付草稿"
+						onSubmit={(e) => {
+							e.preventDefault();
+							const parsed = deliveryDraftSchema.safeParse(value);
+							if (!parsed.success) {
+								save.setError("说明最多4000字，成果文件最多20份且不能重复。");
+								return;
+							}
+							void save.submit(parsed.data);
+						}}
+					>
+						<fieldset disabled={blocked}>
+							<label>
+								交付说明
+								<textarea
+									aria-label="交付说明"
+									maxLength={4000}
+									value={description}
 									onChange={(e) => {
-										setSelected((old) =>
-											e.target.checked
-												? [...old, file.id]
-												: old.filter((id) => id !== file.id),
-										);
+										setDescription(e.target.value);
 										save.changed();
 									}}
 								/>
-								{file.filename} · {sizeLabel(file.byteSize)}
 							</label>
-						))}
-					</div>
-					{cursor ? (
-						<button type="button" onClick={() => void loadFiles(cursor)}>
-							更多成果附件
+							<h4>成果文件 · {selected.length}/20</h4>
+							<div className="evidence-pick-list">
+								{availableFiles.map((file) => (
+									<label key={file.id}>
+										<input
+											type="checkbox"
+											checked={selected.includes(file.id)}
+											disabled={
+												!selected.includes(file.id) && selected.length >= 20
+											}
+											onChange={(e) => {
+												setSelected((old) =>
+													e.target.checked
+														? [...old, file.id]
+														: old.filter((id) => id !== file.id),
+												);
+												save.changed();
+											}}
+										/>
+										{file.filename} · {sizeLabel(file.byteSize)}
+									</label>
+								))}
+							</div>
+							{cursor ? (
+								<button type="button" onClick={() => void loadFiles(cursor)}>
+									更多成果附件
+								</button>
+							) : null}
+						</fieldset>
+						<button
+							type="submit"
+							disabled={
+								save.busy || save.conflict || publish.busy || publish.blocked
+							}
+						>
+							{save.busy
+								? "保存中…"
+								: save.blocked
+									? "重试保存草稿"
+									: "保存交付草稿"}
 						</button>
-					) : null}
-				</fieldset>
-				<button
-					type="submit"
-					disabled={
-						save.busy || save.conflict || publish.busy || publish.blocked
-					}
-				>
-					{save.busy
-						? "保存中…"
-						: save.blocked
-							? "重试保存草稿"
-							: "保存交付草稿"}
-				</button>
-			</form>
-			<p role="status">{save.status}</p>
-			{save.error ? (
-				<p role="alert" className="error">
-					{save.error}
-				</p>
-			) : null}
-			{draft ? (
-				<div className="delivery-publish">
-					<p>
-						发布前请核对已保存的 {draft.files.length}{" "}
-						份文件和说明；发布后不能覆盖。
-					</p>
-					<button
-						type="button"
-						className="primary"
-						disabled={
-							save.dirty ||
-							save.busy ||
-							save.blocked ||
-							publish.busy ||
-							publish.conflict ||
-							!draft.files.length
-						}
-						onClick={() => {
-							if (
-								publish.blocked ||
-								window.confirm(
-									`确认向客户发布以下成果？\n${draft.files.map((f) => f.filename).join("\n")}\n说明：${draft.description || "无"}\n发布后不能覆盖原集合。`,
-								)
-							)
-								void publish.submit({});
-						}}
-					>
-						{publish.busy
-							? "正在发布…"
-							: publish.blocked
-								? "重试发布成果"
-								: "确认发布成果"}
-					</button>
-					{save.dirty ? <p>有未保存修改，请先保存草稿。</p> : null}
-					<p role="status">{publish.status}</p>
-					{publish.error ? (
+					</form>
+					<p role="status">{save.status}</p>
+					{save.error ? (
 						<p role="alert" className="error">
-							{publish.error}
+							{save.error}
 						</p>
 					) : null}
+					{draft ? (
+						<div className="delivery-publish">
+							<button
+								type="button"
+								className="primary"
+								disabled={
+									save.dirty ||
+									save.busy ||
+									save.blocked ||
+									publish.busy ||
+									publish.conflict ||
+									!draft.files.length
+								}
+								onClick={() => {
+									if (
+										publish.blocked ||
+										window.confirm(
+											`确认向客户发布以下成果？\n${draft.files.map((f) => f.filename).join("\n")}\n说明：${draft.description || "无"}\n发布后不能覆盖原集合。`,
+										)
+									)
+										void publish.submit({});
+								}}
+							>
+								{publish.busy
+									? "正在发布…"
+									: publish.blocked
+										? "重试发布成果"
+										: "确认发布成果"}
+							</button>
+							{save.dirty ? <p>有未保存修改，请先保存草稿。</p> : null}
+							<p role="status">{publish.status}</p>
+							{publish.error ? (
+								<p role="alert" className="error">
+									{publish.error}
+								</p>
+							) : null}
+						</div>
+					) : null}
+					{save.blocked || publish.blocked ? (
+						<div className="save-recovery">
+							<p>
+								输入已保留；未知结果重试沿用原幂等键。冲突时复制草稿，再重新载入。
+							</p>
+							<button
+								type="button"
+								onClick={async () => {
+									try {
+										await navigator.clipboard.writeText(
+											JSON.stringify(value, null, 2),
+										);
+										save.setError("草稿已复制，请妥善保存。");
+									} catch {
+										save.setError("复制未完成，请保留本页。");
+									}
+								}}
+							>
+								复制交付草稿
+							</button>
+							<button type="button" onClick={onReload}>
+								重新载入交付
+							</button>
+						</div>
+					) : null}
 				</div>
-			) : (
-				<p>先保存草稿，再核对文件清单并发布。</p>
-			)}
-			{save.blocked || publish.blocked ? (
-				<div className="save-recovery">
-					<p>
-						输入已保留；未知结果重试沿用原幂等键。冲突时复制草稿，再重新载入。
-					</p>
-					<button
-						type="button"
-						onClick={async () => {
-							try {
-								await navigator.clipboard.writeText(
-									JSON.stringify(value, null, 2),
-								);
-								save.setError("草稿已复制，请妥善保存。");
-							} catch {
-								save.setError("复制未完成，请保留本页。");
-							}
-						}}
-					>
-						复制交付草稿
-					</button>
-					<button type="button" onClick={onReload}>
-						重新载入交付
-					</button>
-				</div>
-			) : null}
+			</div>
 		</section>
 	);
 }

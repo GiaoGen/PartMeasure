@@ -1,6 +1,7 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import assert from "node:assert/strict";
 import { chromium, devices } from "@playwright/test";
+import { browserNetwork } from "../shared/browser-network.mjs";
 import sharp from "sharp";
 import {randomUUID, randomBytes} from 'node:crypto';
 const baseURL = "http://127.0.0.1:3000",
@@ -9,12 +10,9 @@ await mkdir("docs/evidence/p0-1/screenshots", { recursive: true });
 const fixture = JSON.parse(
 	await readFile("tmp/p0-1/business-fixtures.json", "utf8"),
 );
-const proxy = process.env.HTTPS_PROXY
-	? { server: process.env.HTTPS_PROXY, bypass: "127.0.0.1,localhost" }
-	: undefined;
 const browser = await chromium.launch({
 	headless: true,
-	...(proxy ? { proxy } : {}),
+	...browserNetwork(),
 });
 const contexts = [];
 async function step(name, work) {

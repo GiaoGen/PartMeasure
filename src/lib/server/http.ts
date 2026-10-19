@@ -4,6 +4,8 @@ import { cookies } from "next/headers";
 import { z } from "zod";
 import { AppError } from "../policy";
 import { appOrigin } from "./origin";
+import { withRequestTiming } from "./timing";
+import { dependencyHint } from "./dependency-hint";
 export const uuid = z.uuid();
 export function sameOrigin(req: Request) {
 	const origin = req.headers.get("origin");
@@ -64,6 +66,9 @@ export const response = (data: unknown, status = 200) =>
 		},
 	);
 export async function endpoint(work: () => Promise<Response>) {
+	return withRequestTiming(() => runEndpoint(work));
+}
+async function runEndpoint(work: () => Promise<Response>) {
 	try {
 		return await work();
 	} catch (error) {
@@ -84,6 +89,7 @@ export async function endpoint(work: () => Promise<Response>) {
 				JSON.stringify({
 					event: "dependency_failed",
 					code: dependencyCode,
+					hint: dependencyHint(error),
 					sqlState:
 						sqlState && /^[0-9A-Z]{5}$/.test(sqlState) ? sqlState : undefined,
 					requestId,

@@ -1,0 +1,101 @@
+{
+  "checkedAt": "2026-10-19T07:38:17.599Z",
+  "networkMode": "native-direct-https-and-pg",
+  "mainlandPhoneValidated": false,
+  "vpnTunState": "not-controlled-or-verified",
+  "results": [
+    {
+      "name": "supabase_dns",
+      "elapsedMs": 6.4,
+      "families": [
+        4
+      ]
+    },
+    {
+      "sample": 1,
+      "name": "auth_settings",
+      "httpStatus": 200,
+      "bytes": 611,
+      "reusedConnection": false,
+      "elapsedMs": 562.8,
+      "phases": {
+        "dnsMs": 6.2,
+        "tcpMs": 7.8,
+        "tlsMs": 231.5,
+        "headersMs": 534.7
+      }
+    },
+    {
+      "sample": 1,
+      "name": "rest_schema",
+      "httpStatus": 401,
+      "bytes": 98,
+      "reusedConnection": true,
+      "elapsedMs": 488.9,
+      "phases": {
+        "headersMs": 488.7
+      }
+    },
+    {
+      "sample": 1,
+      "name": "storage_unauthorized_probe",
+      "httpStatus": 200,
+      "bytes": 2,
+      "reusedConnection": true,
+      "elapsedMs": 857.5,
+      "phases": {
+        "headersMs": 857.1
+      }
+    },
+    {
+      "sample": 2,
+      "name": "auth_settings",
+      "httpStatus": 200,
+      "bytes": 611,
+      "reusedConnection": true,
+      "elapsedMs": 340.7,
+      "phases": {
+        "headersMs": 340.5
+      }
+    },
+    {
+      "sample": 2,
+      "name": "rest_schema",
+      "httpStatus": 401,
+      "bytes": 98,
+      "reusedConnection": true,
+      "elapsedMs": 340.1,
+      "phases": {
+        "headersMs": 340
+      }
+    },
+    {
+      "sample": 2,
+      "name": "storage_unauthorized_probe",
+      "httpStatus": 200,
+      "bytes": 2,
+      "reusedConnection": true,
+      "elapsedMs": 634.4,
+      "phases": {
+        "headersMs": 634.1
+      }
+    },
+    {
+      "name": "existing_staging_login",
+      "httpStatus": 200,
+      "bytes": 6179,
+      "reusedConnection": false,
+      "elapsedMs": 3094.9,
+      "phases": {
+        "dnsMs": 3,
+        "tcpMs": 4.9,
+        "tlsMs": 299.2,
+        "headersMs": 3010.2
+      }
+    },
+    {
+      "name": "pg",
+      "error": "REQUEST_FAILED"
+    }
+  ]
+}

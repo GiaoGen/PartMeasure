@@ -1,0 +1,195 @@
+{
+  "checkedAt": "2026-10-19T07:59:09.739Z",
+  "networkMode": "direct-process-no-http-proxy",
+  "root": "http://127.0.0.1:3110",
+  "browserLaunched": false,
+  "realService": true,
+  "mainlandPhoneValidated": false,
+  "results": [
+    {
+      "name": "A_password_login",
+      "httpStatus": 200,
+      "elapsedMs": 4819,
+      "timing": {
+        "pool": 1319.2,
+        "sql": 2343.5,
+        "app": 4674.7,
+        "pool_count": 2,
+        "sql_count": 8
+      }
+    },
+    {
+      "name": "delivery_list_1",
+      "httpStatus": 200,
+      "elapsedMs": 3278,
+      "timing": {
+        "auth": 311.8,
+        "pool": 0.3,
+        "sql": 2957.2,
+        "preflight": 1380.3,
+        "app": 3271.4,
+        "auth_count": 1,
+        "pool_count": 2,
+        "sql_count": 9,
+        "preflight_count": 1
+      }
+    },
+    {
+      "name": "file_list_1",
+      "httpStatus": 200,
+      "elapsedMs": 3255,
+      "timing": {
+        "auth": 285.3,
+        "pool": 0.2,
+        "sql": 2961.3,
+        "preflight": 1040.4,
+        "app": 3248.2,
+        "auth_count": 1,
+        "pool_count": 2,
+        "sql_count": 9,
+        "preflight_count": 1
+      }
+    },
+    {
+      "name": "issue_list_1",
+      "httpStatus": 200,
+      "elapsedMs": 6147,
+      "timing": {
+        "auth": 758.4,
+        "pool": 0.2,
+        "sql": 5380.4,
+        "preflight": 2267.6,
+        "app": 6140.6,
+        "auth_count": 1,
+        "pool_count": 2,
+        "sql_count": 9,
+        "preflight_count": 1
+      }
+    },
+    {
+      "name": "delivery_list_2",
+      "httpStatus": 200,
+      "elapsedMs": 5965,
+      "timing": {
+        "auth": 1150.1,
+        "pool": 0.2,
+        "sql": 4804.2,
+        "preflight": 1473.4,
+        "app": 5956.5,
+        "auth_count": 1,
+        "pool_count": 2,
+        "sql_count": 9,
+        "preflight_count": 1
+      }
+    },
+    {
+      "name": "file_list_2",
+      "httpStatus": 200,
+      "elapsedMs": 4846,
+      "timing": {
+        "auth": 974.2,
+        "pool": 0.2,
+        "sql": 3864.8,
+        "preflight": 2196,
+        "app": 4840.2,
+        "auth_count": 1,
+        "pool_count": 2,
+        "sql_count": 9,
+        "preflight_count": 1
+      }
+    },
+    {
+      "name": "issue_list_2",
+      "httpStatus": 200,
+      "elapsedMs": 5162,
+      "timing": {
+        "auth": 361.3,
+        "pool": 0.2,
+        "sql": 4793.9,
+        "preflight": 2439.3,
+        "app": 5156.3,
+        "auth_count": 1,
+        "pool_count": 2,
+        "sql_count": 9,
+        "preflight_count": 1
+      }
+    },
+    {
+      "name": "delivery_list_3",
+      "httpStatus": 200,
+      "elapsedMs": 5138,
+      "timing": {
+        "auth": 808.5,
+        "pool": 0.2,
+        "sql": 4322.6,
+        "preflight": 2271.1,
+        "app": 5132.1,
+        "auth_count": 1,
+        "pool_count": 2,
+        "sql_count": 9,
+        "preflight_count": 1
+      }
+    },
+    {
+      "name": "file_list_3",
+      "httpStatus": 200,
+      "elapsedMs": 4792,
+      "timing": {
+        "auth": 897.6,
+        "pool": 0.2,
+        "sql": 3884.7,
+        "preflight": 1931.9,
+        "app": 4783.9,
+        "auth_count": 1,
+        "pool_count": 2,
+        "sql_count": 9,
+        "preflight_count": 1
+      }
+    },
+    {
+      "name": "issue_list_3",
+      "httpStatus": 200,
+      "elapsedMs": 3605,
+      "timing": {
+        "auth": 358.3,
+        "pool": 0.2,
+        "sql": 3240.8,
+        "preflight": 1375.6,
+        "app": 3600.3,
+        "auth_count": 1,
+        "pool_count": 2,
+        "sql_count": 9,
+        "preflight_count": 1
+      }
+    },
+    {
+      "name": "B_password_login",
+      "httpStatus": 200,
+      "elapsedMs": 4037,
+      "timing": {
+        "pool": 0.1,
+        "sql": 3166.3,
+        "app": 4027.7,
+        "pool_count": 2,
+        "sql_count": 8
+      }
+    },
+    {
+      "name": "B_cross_project_denied",
+      "httpStatus": 404,
+      "elapsedMs": 3347,
+      "timing": {
+        "auth": 381,
+        "pool": 0.2,
+        "sql": 2959.5,
+        "preflight": 1329,
+        "app": 3341.8,
+        "auth_count": 1,
+        "pool_count": 2,
+        "sql_count": 8,
+        "preflight_count": 1
+      },
+      "error": "NOT_FOUND"
+    }
+  ]
+}

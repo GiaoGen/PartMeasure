@@ -1,0 +1,30 @@
+[Unit]
+Description=PartMeasure isolated file worker
+After=network-online.target clamav-daemon.service
+Wants=network-online.target
+Requires=clamav-daemon.service
+StartLimitIntervalSec=900
+StartLimitBurst=10
+
+[Service]
+Type=simple
+User=partmeasure
+Group=partmeasure
+WorkingDirectory=/opt/partmeasure/current
+EnvironmentFile=/etc/partmeasure/worker.env
+ExecStart=/usr/bin/node --import tsx scripts/worker/supervise.ts
+Restart=on-failure
+RestartSec=30
+KillMode=mixed
+TimeoutStopSec=90
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+UMask=0077
+MemoryMax=2G
+CPUQuota=100%
+TasksMax=128
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,151 @@
+{
+  "checkedAt": "2026-10-19T08:07:25.807Z",
+  "networkMode": "native-direct-https-and-pg",
+  "mainlandPhoneValidated": false,
+  "vpnTunState": "not-controlled-or-verified",
+  "results": [
+    {
+      "name": "supabase_dns",
+      "elapsedMs": 7.4,
+      "families": [
+        4
+      ]
+    },
+    {
+      "sample": 1,
+      "name": "auth_settings",
+      "httpStatus": 200,
+      "bytes": 611,
+      "reusedConnection": false,
+      "elapsedMs": 1025.8,
+      "phases": {
+        "dnsMs": 6.7,
+        "tcpMs": 7.9,
+        "tlsMs": 391.6,
+        "headersMs": 1025.1
+      }
+    },
+    {
+      "sample": 1,
+      "name": "rest_schema",
+      "httpStatus": 401,
+      "bytes": 98,
+      "reusedConnection": true,
+      "elapsedMs": 560.4,
+      "phases": {
+        "headersMs": 560.2
+      }
+    },
+    {
+      "sample": 1,
+      "name": "storage_listing_without_user",
+      "httpStatus": 200,
+      "bytes": 2,
+      "reusedConnection": true,
+      "elapsedMs": 635.2,
+      "phases": {
+        "headersMs": 635
+      }
+    },
+    {
+      "sample": 2,
+      "name": "auth_settings",
+      "httpStatus": 200,
+      "bytes": 611,
+      "reusedConnection": true,
+      "elapsedMs": 417.4,
+      "phases": {
+        "headersMs": 416.9
+      }
+    },
+    {
+      "sample": 2,
+      "name": "rest_schema",
+      "httpStatus": 401,
+      "bytes": 98,
+      "reusedConnection": true,
+      "elapsedMs": 306.6,
+      "phases": {
+        "headersMs": 306.4
+      }
+    },
+    {
+      "sample": 2,
+      "name": "storage_listing_without_user",
+      "httpStatus": 200,
+      "bytes": 2,
+      "reusedConnection": true,
+      "elapsedMs": 444.1,
+      "phases": {
+        "headersMs": 443.9
+      }
+    },
+    {
+      "name": "storage_dedicated_origin",
+      "httpStatus": 200,
+      "bytes": 2,
+      "reusedConnection": false,
+      "elapsedMs": 788.6,
+      "phases": {
+        "dnsMs": 2.3,
+        "tcpMs": 3.5,
+        "tlsMs": 324.6,
+        "headersMs": 788.5
+      }
+    },
+    {
+      "name": "tus_signed_route_without_upload_credential",
+      "httpStatus": 404,
+      "bytes": 93,
+      "reusedConnection": true,
+      "elapsedMs": 600.1,
+      "phases": {
+        "headersMs": 599.9
+      }
+    },
+    {
+      "name": "existing_staging_login",
+      "httpStatus": 200,
+      "bytes": 6179,
+      "reusedConnection": false,
+      "elapsedMs": 1607.1,
+      "phases": {
+        "dnsMs": 25.7,
+        "tcpMs": 26.8,
+        "tlsMs": 425.2,
+        "headersMs": 1539.6
+      }
+    },
+    {
+      "name": "pg_starttls_no_credentials",
+      "elapsedMs": 1144.1,
+      "status": "TLS_VERIFIED"
+    },
+    {
+      "name": "pg_dns",
+      "elapsedMs": 1.6,
+      "families": [
+        4
+      ]
+    },
+    {
+      "name": "pg_connect",
+      "elapsedMs": 2621.2
+    },
+    {
+      "name": "pg_select_1",
+      "sample": 1,
+      "elapsedMs": 360.7
+    },
+    {
+      "name": "pg_select_1",
+      "sample": 2,
+      "elapsedMs": 350
+    },
+    {
+      "name": "pg_select_1",
+      "sample": 3,
+      "elapsedMs": 485.7
+    }
+  ]
+}

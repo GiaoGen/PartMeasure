@@ -1,6 +1,7 @@
 // Normal UI + real application APIs. Only the explicitly named failure-state check mocks one response.
 // No trace/HAR, tokens, cookies, passwords or raw browser errors are recorded.
 import { chromium, expect as baseExpect } from "@playwright/test";
+import { browserNetwork } from "../shared/browser-network.mjs";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import assert from "node:assert/strict";
 import { context, call, requireData, root } from "./helpers.mjs";
@@ -9,14 +10,7 @@ const fixture = JSON.parse(await readFile("tmp/p0-2/fixture.json", "utf8")),
 const expect = baseExpect.configure({ timeout: 45000 });
 const browser = await chromium.launch({
 	headless: true,
-	...(process.env.HTTPS_PROXY
-		? {
-				proxy: {
-					server: process.env.HTTPS_PROXY,
-					bypass: "localhost,127.0.0.1",
-				},
-			}
-		: {}),
+	...browserNetwork(),
 });
 const owner = await browser.newContext({
 		baseURL: root,

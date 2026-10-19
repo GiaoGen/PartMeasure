@@ -1,0 +1,84 @@
+{
+  "checkedAt": "2026-10-19T15:17:49.243Z",
+  "baseline": "previous reviewed S34 deployment manifest; not a Git commit",
+  "changedApplicationFiles": [
+    {
+      "path": "src/app/api/[...segments]/route.ts",
+      "beforeSha256": "f5af55853c4679e939066e63f9e9d48236b002e61953c48e008a2c9b4180dcb7",
+      "sha256": "125556521741e999f46acaf2aa4adb7f699e81b21febde4e7f26f3f3f431e8a7"
+    },
+    {
+      "path": "src/components/annotation-canvas.tsx",
+      "beforeSha256": "2bced8240ccfebee5b507cc1e822968c133d8aa64941b75498baeb8a819d67d5",
+      "sha256": "f768dc19266dfc9d9ae6a8834c2c9af593044c0a0ed599359355f634e1fffe3c"
+    },
+    {
+      "path": "src/components/api.ts",
+      "beforeSha256": "b77bd031fbca436a755415afc2ffcab818c296916a8046179efc248fdda22486",
+      "sha256": "94c8a6f3b047a120292404e6e615e10ff1a9e81a0cfc3e030694c4da5de402dd"
+    },
+    {
+      "path": "src/components/issue-detail.tsx",
+      "beforeSha256": "78cf0f93c23e444ec955c7005d21405b3a3e3a45958693d1814b0e4638334c4b",
+      "sha256": "5a65c02daa3220cddfe5355f9c0e73b876fed1ddc8aa3229cefa679e8f16b306"
+    },
+    {
+      "path": "src/components/private-image-cache.ts",
+      "beforeSha256": "fca928027efac1022b8b0d7c2eff4f558430a6bfd9b566a11f859fcd8ae88615",
+      "sha256": "20b97f291b4a83d995dde527efcf860c204c7f181efbf62a0009d902a8f5ef7a"
+    },
+    {
+      "path": "src/components/project-live.tsx",
+      "beforeSha256": "3021fde5a74824b5094c3a13cf8e0893676f05b9b77ae4accff21bbe44ce43b3",
+      "sha256": "90d5553cb7435e70c882519887ef9597840f204d5f8b86c6fa489ebdd32d11a9"
+    },
+    {
+      "path": "src/components/query-cache.ts",
+      "beforeSha256": "03da31b70475c4ff520202d87f8241225b0c6f5157002fd4bd8b7f66e705d1d0",
+      "sha256": "77336dd462d7066d814a80a1f8cc9e350653e8632c9b7ccdbef8e8a586188aa1"
+    },
+    {
+      "path": "src/lib/issues.ts",
+      "beforeSha256": "adc581bf279d03563314c030675668d1a7e0ff76fe0a4bd083345d5b6c7dd125",
+      "sha256": "3853f16e2ea63cba5b6b5dc0985b9f7192b683ec3614241d2506aa54d45c1905"
+    },
+    {
+      "path": "src/lib/server/file-response.ts",
+      "beforeSha256": "61d27d9dcef1a610f9b8642d3967bfcf4b44210bb8a9a85892e1094aad6a22f9",
+      "sha256": "7c993ff6e00aef861ba00488347e152b04425fddb45dbe5211a3c2b5431e0325"
+    },
+    {
+      "path": "src/lib/server/issue-service.ts",
+      "beforeSha256": "e345a809e17ab2cc5bac8dbc4b7d344ffb90d97d9c8436df887737c319a4d347",
+      "sha256": "bf3a33fbd9105ad9c2d91e4b0919374b906e46298d3bf86fd7df075537f76115"
+    },
+    {
+      "path": "src/lib/server/service.ts",
+      "beforeSha256": "4403b498a25fed0c0b275c7ab54ceccab46380e9d5479fcf8a2dcb0c5c49de56",
+      "sha256": "f15da843eaf68889fbd4dae10c8551bc12ae19fe1af85b018f2ae15633313edf"
+    }
+  ],
+  "scope": "other preexisting working-tree changes remain uncommitted; no env/tmp content",
+  "newApplicationFiles": [
+    {
+      "path": "src/components/cache-policy.ts",
+      "sha256": "033483b8f2eee6d9c16634cfd9883944622545f4e5a6d703115fe0f98fb22493"
+    },
+    {
+      "path": "src/components/evidence-preview.tsx",
+      "sha256": "747150aaecbeccae99d4b613d1f15c91cd9c560938680fb78d9bc1139cac088e"
+    },
+    {
+      "path": "src/components/image-memory.ts",
+      "sha256": "ede0caf8bb09250c315235d35cb54c00a32a912009ebf30dc108aaaba0d12fbf"
+    },
+    {
+      "path": "src/components/image-transfers.ts",
+      "sha256": "a2bc1806629c7d336fbf4de73c5a7db457e3776a512f61d097dea4ea5e19a937"
+    },
+    {
+      "path": "src/lib/server/thumbnail-cache.ts",
+      "sha256": "0c9285232a20bf5b8a249728d424a5d6f970ea640a39f386c15c6a412db8f291"
+    }
+  ]
+}

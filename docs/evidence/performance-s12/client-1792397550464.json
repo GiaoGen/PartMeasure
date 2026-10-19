@@ -1,0 +1,31 @@
+{
+  "checkedAt": "2026-10-19T08:12:30.464Z",
+  "realService": true,
+  "actualApiModule": true,
+  "browserLaunched": false,
+  "mainlandPhoneValidated": false,
+  "networkMode": "direct-process-no-http-proxy",
+  "counts": {
+    "csrf": 2,
+    "read": 3,
+    "write": 4
+  },
+  "results": [
+    {
+      "name": "one-csrf-fetch-for-login-and-following-write",
+      "status": "PASS"
+    },
+    {
+      "name": "simultaneous-real-reads-share-one-http-and-retained-read-adds-none",
+      "status": "PASS"
+    },
+    {
+      "name": "mutation-response-and-cache-invalidation",
+      "status": "PASS"
+    },
+    {
+      "name": "account-switch-cannot-reuse-owner-a-cache",
+      "status": "PASS"
+    }
+  ]
+}

@@ -1,0 +1,182 @@
+.workspace-redesign .thumbnail-browse,
+.workspace-redesign .thumbnail-annotation-hit {
+	position: absolute;
+	background: none;
+	border: 0;
+	padding: 0;
+	margin: 0;
+}
+.workspace-redesign .thumbnail-browse {
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+}
+.workspace-redesign .thumbnail-annotation-hit {
+	z-index: 2;
+	border-radius: 18px;
+}
+.workspace-redesign .thumbnail-browse:hover,
+.workspace-redesign .thumbnail-annotation-hit:hover {
+	background: none;
+}
+.workspace-redesign .thumbnail-annotation-hit:active {
+	transform: none;
+}
+.workspace-redesign .annotated-thumbnail > img {
+	pointer-events: none;
+}
+.workspace-redesign .annotation-editor[data-properties-only="true"],
+.workspace-redesign .issue-detail[data-panel-only="true"] {
+	display: contents;
+}
+.workspace-context-dialog {
+	grid-column: 2;
+	grid-row: 1;
+	position: relative;
+	inset: auto;
+	margin: 0;
+	width: 100%;
+	min-width: 0;
+	max-width: none;
+	max-height: none;
+	min-height: calc(100dvh - 126px);
+	padding: 22px;
+	border: 0;
+	border-radius: 28px;
+	color: #273444;
+	background-color: var(--workspace-soft);
+	overflow-wrap: anywhere;
+}
+.workspace-context-dialog[data-phase="open"] {
+	animation: workspace-context-enter calc(220ms * var(--workspace-motion, 1))
+		ease;
+}
+.workspace-context-dialog[data-phase="closing"] {
+	animation: workspace-popover-exit calc(180ms * var(--workspace-motion, 1))
+		ease forwards;
+	pointer-events: none;
+}
+.workspace-context-dialog::backdrop {
+	background-color: rgb(12 20 16 / 55%);
+	animation: workspace-popup-backdrop-in
+		calc(200ms * var(--workspace-motion, 1)) ease;
+}
+.workspace-context-dialog[data-phase="closing"]::backdrop {
+	animation: workspace-popover-exit calc(180ms * var(--workspace-motion, 1))
+		ease forwards;
+}
+.workspace-context-header {
+	display: none;
+}
+.workspace-context-content .editor-status {
+	border: 0;
+	font-size: 12px;
+	color: #526171;
+}
+.workspace-context-content p,
+.workspace-context-content label {
+	font-size: 13px;
+}
+.workspace-context-content .annotation-reminders {
+	border-top: 1px solid var(--workspace-line);
+	padding-top: 18px;
+	margin-top: 22px;
+}
+.workspace-context-content .issue-popup-main h2 {
+	font-size: 16px;
+}
+.workspace-context-content .issue-popup-main .detail-heading {
+	align-items: flex-start;
+	flex-wrap: wrap;
+}
+.workspace-context-content .issue-popup-main .annotation-viewport {
+	height: 240px;
+	min-height: 200px;
+}
+.workspace-context-content .issue-popup-main .issue-target {
+	margin-bottom: 20px;
+}
+.workspace-context-content .numeric-entry {
+	grid-template-columns: minmax(0, 1fr) 76px;
+}
+.workspace-context-content .photo-file-issues {
+	margin-top: 22px;
+}
+@keyframes workspace-popup-backdrop-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+@media (min-width: 701px) {
+	.workspace-deliveries[data-context-active="true"] {
+		display: none;
+	}
+}
+@media (max-width: 700px) {
+	.workspace-context-dialog {
+		position: fixed;
+		inset: auto 0 auto;
+		top: calc(
+			var(--context-visible-top, 0px) +
+			var(--context-visible-height, 100dvh) /
+			2
+		);
+		translate: 0 -50%;
+		margin: 0 auto;
+		width: min(440px, calc(100vw - 32px));
+		max-height: calc(var(--context-visible-height, 100dvh) - 32px);
+		min-height: 0;
+		padding: 22px;
+		border-radius: 30px;
+		background-color: var(--workspace-panel);
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		scrollbar-gutter: stable;
+	}
+	.workspace-context-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 14px;
+		margin-bottom: 18px;
+	}
+	.workspace-context-header h2 {
+		font-size: 16px;
+		margin: 0;
+	}
+	.workspace-context-header button {
+		min-width: 44px;
+		min-height: 44px;
+		border: 0;
+		font-size: 24px;
+	}
+	.workspace-context-content .annotation-properties > h3 {
+		display: none;
+	}
+	.workspace-context-content .annotation-list {
+		max-height: 140px;
+	}
+	.workspace-context-content input,
+	.workspace-context-content select,
+	.workspace-context-content textarea {
+		font-size: 16px;
+	}
+	.workspace-redesign .annotation-toolbar {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+	.workspace-redesign .annotation-toolbar button {
+		padding: 10px 6px;
+	}
+}
+
+.workspace-context-content .annotation-properties:not([hidden]),
+.workspace-context-content .issue-popup-main,
+.workspace-context-content .issue-actions {
+	animation: workspace-context-enter calc(200ms * var(--workspace-motion, 1))
+		ease;
+}

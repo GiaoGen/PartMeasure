@@ -1,0 +1,39 @@
+{
+  "environment": "real isolated Supabase + local production Next HTTP; no browser; direct developer network",
+  "results": [
+    {
+      "name": "Owner-and-Guest-real-SSE-initial-cursor",
+      "status": "FAIL",
+      "code": "ASSERTION_OR_DEPENDENCY_FAILED"
+    },
+    {
+      "name": "cross-Owner-stream-denied-and-Guest-management-denied",
+      "status": "FAIL",
+      "code": "ASSERTION_OR_DEPENDENCY_FAILED"
+    },
+    {
+      "name": "commit-notification-both-roles-no-refresh",
+      "status": "FAIL",
+      "code": "ASSERTION_OR_DEPENDENCY_FAILED"
+    },
+    {
+      "name": "Guest-private-draft-counter-unchanged",
+      "status": "PASS"
+    },
+    {
+      "name": "offline-catchup-and-replay-persistence",
+      "status": "FAIL",
+      "code": "ASSERTION_OR_DEPENDENCY_FAILED"
+    },
+    {
+      "name": "real-Guest-upload-scan-normalize-thumbnails-and-private-download",
+      "status": "FAIL",
+      "code": "HTTP_503_DEPENDENCY_UNAVAILABLE"
+    },
+    {
+      "name": "revoked-Guest-stream-unavailable-and-thumbnail-refused",
+      "status": "FAIL",
+      "code": "ASSERTION_OR_DEPENDENCY_FAILED"
+    }
+  ]
+}

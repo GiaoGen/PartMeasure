@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { Projects } from "@/components/projects";
+import { EntryShell } from "@/components/entry-shell";
 import { AppError } from "@/lib/policy";
 import { owner } from "@/lib/server/auth";
 import { listProjects } from "@/lib/server/service";
@@ -11,11 +12,17 @@ export default async function ProjectsPage() {
 	} catch (e) {
 		if (e instanceof AppError && e.status === 401) redirect("/login");
 		return (
-			<main className="page">
+			<EntryShell
+				eyebrow="项目访问"
+				title="稍后继续你的项目。"
+				description="资料、测量与交付，集中在同一个工作台。"
+			>
 				<h1>服务暂时不可用</h1>
 				<p>认证服务尚未就绪，请稍后重试。</p>
-				<a href="/login">返回登录</a>
-			</main>
+				<a className="button primary" href="/login">
+					返回登录
+				</a>
+			</EntryShell>
 		);
 	}
 	try {

@@ -95,11 +95,11 @@ export function EngineeringFields({
 							))}
 						</select>
 					</label>
-					<p className="muted">尺寸由人填写，留空不会从图片推算。</p>
 				</>
 			) : null}
 			{item.geometry.type === "circle" ? (
-				<>
+				<details className="hole-properties">
+					<summary>孔位属性（选填）</summary>
 					<label>
 						孔深（{item.metadata.unit}）
 						<input
@@ -144,7 +144,7 @@ export function EngineeringFields({
 							onChange={(e) => set("thread", e.target.value)}
 						/>
 					</label>
-				</>
+				</details>
 			) : null}
 			<label>
 				备注

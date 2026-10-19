@@ -1,0 +1,10 @@
+{
+  "environment": "real isolated Supabase + local production Next HTTP; no browser; process-direct; VPN/TUN not controlled",
+  "results": [
+    {
+      "name": "setup-or-dependency",
+      "status": "FAIL",
+      "code": "HTTP_503_DEPENDENCY_UNAVAILABLE"
+    }
+  ]
+}

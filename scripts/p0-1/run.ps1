@@ -1,15 +1,10 @@
-param([Parameter(Mandatory=$true)][ValidateSet('provision','dev','start','worker','auth-request','auth-verify','create-test-users','business-test','browser-test','tus-test','db-test')][string]$Action)
+param([Parameter(Mandatory=$true)][ValidateSet('provision','dev','start','worker','auth-request','auth-verify','create-test-users','business-test','browser-test','tus-test','db-test')][string]$Action,[ValidateSet('Direct','DiagnosticProxy')][string]$NetworkMode='Direct',[string]$ProxyUrl)
 $ErrorActionPreference='Stop'
 Set-Location -LiteralPath (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
-$taskOldHttp=$env:HTTP_PROXY
-$taskOldHttps=$env:HTTPS_PROXY
-$taskOldNoProxy=$env:NO_PROXY
+. (Join-Path $PSScriptRoot '../shared/network.ps1')
+$pmNetwork=Enter-PmNetwork -Mode $NetworkMode -ProxyUrl $ProxyUrl
 try {
-  $taskUri=[Uri]'https://rvysclscetfqicpnzlra.supabase.co'
-  $taskProxy=[System.Net.WebRequest]::DefaultWebProxy.GetProxy($taskUri)
-  if($taskProxy.Host -ne $taskUri.Host){$env:HTTPS_PROXY=$taskProxy.AbsoluteUri;$env:HTTP_PROXY=$taskProxy.AbsoluteUri}
-  $env:NO_PROXY='localhost,127.0.0.1,::1'
-  $taskArgs=@('--use-env-proxy','--dns-result-order=ipv4first')
+  $taskArgs=@('--dns-result-order=ipv4first')
   if($Action -eq 'provision'){ & node @taskArgs scripts/p0-1/provision.mjs }
   elseif($Action -eq 'dev'){ & node @taskArgs node_modules/next/dist/bin/next dev --webpack --hostname 127.0.0.1 }
   elseif($Action -eq 'start'){ & node @taskArgs node_modules/next/dist/bin/next start --hostname 127.0.0.1 }
@@ -22,5 +17,5 @@ try {
   elseif($Action -eq 'db-test'){ & node @taskArgs --env-file=.env.local scripts/p0-1/db-integrity.mjs }
   else { & node @taskArgs scripts/p0-1/business-test.mjs }
   $taskResult=$LASTEXITCODE
-}finally{$env:HTTP_PROXY=$taskOldHttp;$env:HTTPS_PROXY=$taskOldHttps;$env:NO_PROXY=$taskOldNoProxy}
+}finally{Exit-PmNetwork $pmNetwork}
 exit $taskResult

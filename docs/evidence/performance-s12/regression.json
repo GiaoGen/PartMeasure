@@ -1,0 +1,53 @@
+{
+  "checkedAt": "2026-10-19T08:03:04.806Z",
+  "realService": true,
+  "browserLaunched": false,
+  "networkMode": "direct-process-no-http-proxy",
+  "mainlandPhoneValidated": false,
+  "results": [
+    {
+      "name": "owner-isolation",
+      "status": "PASS"
+    },
+    {
+      "name": "new-test-project-draft-privacy-and-share-revocation",
+      "status": "PASS"
+    },
+    {
+      "name": "delivery-batch-equals-detail",
+      "status": "PASS"
+    },
+    {
+      "name": "existing-guest-session-normal-bootstrap",
+      "status": "PASS"
+    },
+    {
+      "name": "create-prefixed-measurement",
+      "status": "PASS"
+    },
+    {
+      "name": "annotation-filter-no-detail-fanout",
+      "status": "PASS"
+    },
+    {
+      "name": "cross-project-evidence-rejected-without-history-write",
+      "status": "PASS"
+    },
+    {
+      "name": "response-delta-idempotency-batch-evidence-and-restore",
+      "status": "PASS"
+    },
+    {
+      "name": "guest-review-denied",
+      "status": "PASS"
+    },
+    {
+      "name": "review-delta-idempotency-original-history-and-restore",
+      "status": "PASS"
+    },
+    {
+      "name": "private-image-range-preview-and-cross-project-denial",
+      "status": "PASS"
+    }
+  ]
+}

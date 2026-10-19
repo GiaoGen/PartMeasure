@@ -1,0 +1,67 @@
+{
+  "checkedAt": "2026-10-19T14:27:42.517Z",
+  "checks": {
+    "lint": {
+      "status": "PASS"
+    },
+    "typecheck": {
+      "status": "PASS"
+    },
+    "unit": {
+      "status": "PASS",
+      "files": 23,
+      "tests": 123
+    },
+    "build": {
+      "status": "PASS",
+      "framework": "Next.js 16.4.2 webpack"
+    },
+    "native": {
+      "status": "PASS",
+      "checks": 9,
+      "scope": "disposable native PG, local stand-ins only"
+    },
+    "images": {
+      "status": "PASS",
+      "checks": 18,
+      "scope": "actual child-process image processing"
+    },
+    "httpsRealtime": {
+      "status": "PASS",
+      "checks": 6,
+      "scope": "earlier marked HTTPS runs, not latest full run or UI paint"
+    },
+    "latestFullRun": {
+      "status": "FAIL",
+      "evidence": "live.json"
+    },
+    "e2e": {
+      "status": "NOT_RUN",
+      "reason": "current instruction prohibits browser/E2E"
+    },
+    "mainlandMobile": {
+      "status": "PENDING_EXTERNAL"
+    },
+    "cloudWorkerHosting": {
+      "status": "NOT_DEPLOYED"
+    }
+  },
+  "deployment": {
+    "id": "dpl_85KpgskuFtkjYHV5zieWMdF14g3v",
+    "url": "https://partmeasure-staging-la7ndk7wa-messup-s-projects.vercel.app",
+    "target": "staging",
+    "regions": [
+      "hnd1"
+    ],
+    "state": "READY",
+    "httpHealth": 200,
+    "observedFunctionRegion": "hnd1",
+    "healthIsNotBusinessEvidence": true
+  },
+  "git": {
+    "branch": "P0",
+    "committed": false,
+    "pushed": false,
+    "reason": "preexisting mixed frontend and performance work preserved"
+  }
+}

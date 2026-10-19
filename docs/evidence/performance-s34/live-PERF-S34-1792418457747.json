@@ -1,0 +1,40 @@
+{
+  "environment": "real isolated Supabase + Vercel test Preview HTTPS; no browser; process-direct; VPN/TUN not controlled",
+  "results": [
+    {
+      "name": "Owner-and-Guest-real-SSE-initial-cursor",
+      "status": "PASS"
+    },
+    {
+      "name": "cross-Owner-stream-denied-and-Guest-management-denied",
+      "status": "PASS"
+    },
+    {
+      "name": "write-start-to-both-event-metadata",
+      "status": "MEASUREMENT",
+      "milliseconds": 5912,
+      "scope": "developer direct; includes write; excludes UI paint"
+    },
+    {
+      "name": "commit-notification-both-roles-no-refresh",
+      "status": "PASS"
+    },
+    {
+      "name": "Guest-private-draft-counter-unchanged",
+      "status": "PASS"
+    },
+    {
+      "name": "offline-catchup-and-replay-persistence",
+      "status": "PASS"
+    },
+    {
+      "name": "real-Guest-upload-scan-normalize-thumbnails-and-private-download",
+      "status": "FAIL",
+      "code": "ASSERTION_OR_DEPENDENCY_FAILED"
+    },
+    {
+      "name": "revoked-Guest-stream-unavailable-and-thumbnail-refused",
+      "status": "PASS"
+    }
+  ]
+}

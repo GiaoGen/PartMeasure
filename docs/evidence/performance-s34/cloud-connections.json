@@ -1,0 +1,17 @@
+{
+  "network": "development-machine direct; VPN/TUN not controlled; not mainland mobile",
+  "project": "rvysclscetfqicpnzlra",
+  "results": [
+    {
+      "role": "partmeasure_runtime",
+      "status": "PASS",
+      "mode": "session-pooler-5432-verified-TLS"
+    },
+    {
+      "role": "partmeasure_worker",
+      "status": "FAIL",
+      "code": "CONNECT_FAILED",
+      "reason": "tls"
+    }
+  ]
+}

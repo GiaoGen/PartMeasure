@@ -3,6 +3,7 @@ import { createHash, randomBytes } from "node:crypto";
 import pg, { type PoolClient } from "pg";
 import { readFileSync } from "node:fs";
 import { AppError } from "../policy";
+import { observedClient, timed } from "./timing";
 export const digest = (value: string | Buffer) =>
 	createHash("sha256").update(value).digest("hex");
 export const token = () => randomBytes(32).toString("base64url");
@@ -46,7 +47,7 @@ async function oneTransaction<T>(
 	work: (db: PoolClient) => Promise<T>,
 	worker = false,
 ): Promise<T> {
-	const client = await getPool(worker).connect();
+	const client = observedClient(await timed("pool", () => getPool(worker).connect()));
 	let broken = false;
 	try {
 		await client.query("begin");

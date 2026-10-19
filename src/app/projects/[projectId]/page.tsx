@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { Workspace } from "@/components/workspace";
+import { EntryShell } from "@/components/entry-shell";
 import { AppError } from "@/lib/policy";
 import { owner } from "@/lib/server/auth";
 import { uuid } from "@/lib/server/http";
@@ -18,10 +19,16 @@ export default async function ProjectPage({
 	} catch (e) {
 		if (e instanceof AppError && e.status === 401) redirect("/login");
 		return (
-			<main className="page">
+			<EntryShell
+				eyebrow="项目访问"
+				title="稍后继续你的项目。"
+				description="资料、测量与交付，集中在同一个工作台。"
+			>
 				<h1>认证暂不可用</h1>
-				<a href="/projects">重试</a>
-			</main>
+				<a className="button primary" href="/projects">
+					重试
+				</a>
+			</EntryShell>
 		);
 	}
 	try {
@@ -29,11 +36,17 @@ export default async function ProjectPage({
 	} catch (e) {
 		if (e instanceof AppError && e.status === 404) notFound();
 		return (
-			<main className="page">
+			<EntryShell
+				eyebrow="项目访问"
+				title="稍后继续你的项目。"
+				description="资料、测量与交付，集中在同一个工作台。"
+			>
 				<h1>项目加载失败</h1>
 				<p>请稍后重试。</p>
-				<a href={`/projects/${projectId}`}>重新加载</a>
-			</main>
+				<a className="button primary" href={`/projects/${projectId}`}>
+					重新加载
+				</a>
+			</EntryShell>
 		);
 	}
 }

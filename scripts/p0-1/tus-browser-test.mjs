@@ -1,4 +1,5 @@
 import {request,chromium,devices} from '@playwright/test';
+import {browserNetwork} from '../shared/browser-network.mjs';
 import {randomUUID} from 'node:crypto';
 import {writeFile} from 'node:fs/promises';
 const root='http://127.0.0.1:3000',events=[];
@@ -9,7 +10,7 @@ let status='FAIL';
 try{
  const project=await post('/api/projects',{name:'TUS 真实浏览器验证',description:'7.5MB 二进制 STL 合成样本'});
  const link=await post(`/api/projects/${project.id}/share-links`,{});
- browser=await chromium.launch({...(process.env.HTTPS_PROXY?{proxy:{server:process.env.HTTPS_PROXY,bypass:'127.0.0.1,localhost'}}:{})});
+ browser=await chromium.launch(browserNetwork());
  const context=await browser.newContext({...devices['Pixel 7']});const page=await context.newPage();
  page.on('response',async r=>{if(r.url().includes('/upload/resumable')){const event={method:r.request().method(),status:r.status()};if(r.status()>=400){try{const body=await r.json();event.reason=String(body.message??body.error??'').replace(/https?:\/\/\S+/g,'[url]').replace(/[A-Za-z0-9_.-]{32,}/g,'[redacted]').slice(0,240);}catch{event.reason='NON_JSON_ERROR';}}events.push(event);process.stdout.write(`${JSON.stringify(event)}\n`);}});
  page.on('requestfailed',r=>{if(r.url().includes('/upload/resumable')){const error=r.failure()?.errorText??'';events.push({method:r.method(),networkError:/^net::[A-Z_]+$/.test(error)?error:'NETWORK_FAILED'});}});

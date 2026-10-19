@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-10-19T08:19:58.234Z",
+  "preexistingFiles": 56,
+  "unchanged": 50,
+  "authorizedChanged": [
+    "docs/realtime-performance-plan.md",
+    "src/components/annotated-thumbnail.tsx",
+    "src/components/annotation-reminders.tsx",
+    "src/components/issue-detail.tsx",
+    "src/components/issue-inbox.tsx",
+    "src/components/workspace.tsx"
+  ],
+  "unexpectedChanged": [],
+  "status": "PASS",
+  "backup": "ignored tmp/performance-s12/before"
+}

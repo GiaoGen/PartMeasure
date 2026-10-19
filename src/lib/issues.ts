@@ -178,6 +178,8 @@ export function validateReview(
 export type IssueSummary = {
 	id: string;
 	fileId: string;
+	/** Always supplied by the current API; optional for older clients/fixtures. */
+	annotationRef?: { id: string; revision: number } | null;
 	kind: "measurement" | "comment";
 	title: string;
 	description: string;

@@ -17,8 +17,9 @@ import {
 import type { AnnotationDraft } from "../annotations";
 import { type Actor, transaction, idempotent } from "./db";
 import { access, actorKey, audit } from "./service";
+import { cursorScope, cursorId, queryCursor } from "./query-cursor";
 
-const columns = `id,file_id as "fileId",kind,title,description,target_info as "targetInfo",measurement_method as "measurementMethod",state,revision,latest_response_id as "latestResponseId",created_at as "createdAt",updated_at as "updatedAt"`;
+const columns = `id,file_id as "fileId",kind,title,description,target_info as "targetInfo",measurement_method as "measurementMethod",state,revision,latest_response_id as "latestResponseId",created_at as "createdAt",updated_at as "updatedAt",case when annotation_id is null then null else jsonb_build_object('id',annotation_id,'revision',annotation_revision) end as "annotationRef"`;
 async function head(
 	db: PoolClient,
 	projectId: string,
@@ -54,7 +55,18 @@ export async function listIssues(
 	projectId: string,
 	cursor: string | null,
 	fileId: string | null = null,
+	annotationId: string | null = null,
 ) {
+	if (annotationId && !fileId) throw new AppError("INVALID_INPUT", 422);
+	const scope = cursorScope([
+		"issues-v1",
+		actorKey(actor),
+		projectId,
+		fileId,
+		annotationId,
+		"priority-created-desc",
+	]);
+	const anchor = cursorId(cursor, scope, !fileId && !annotationId);
 	return transaction(actor, async (db) => {
 		await access(db, actor, projectId, false, true);
 		if (fileId) await visibleFile(db, projectId, fileId);
@@ -62,24 +74,38 @@ export async function listIssues(
 			actor.kind === "guest"
 				? "case when state in ('awaiting_response','remeasure_requested') then 0 when state='submitted' then 1 else 2 end"
 				: "case when state='submitted' then 0 when state='confirmed' then 2 else 1 end";
-		const { rows } = await db.query<
-			IssueSummary & { priority: number; sort_at: Date }
-		>(
-			`with ranked as (select ${columns},created_at as sort_at,${rank} as priority from pm.issues where project_id=$1 and ($2::uuid is null or file_id=$2)) select * from ranked r where ($3::uuid is null or r.priority>(select priority from ranked where id=$3) or (r.priority=(select priority from ranked where id=$3) and (r.sort_at,r.id)<(select sort_at,id from ranked where id=$3))) order by priority,sort_at desc,id desc limit 31`,
-			[projectId, fileId, cursor],
+		const { rows } = await db.query<{
+			items: IssueSummary[];
+			counts: Record<string, number>;
+			filteredCounts: Record<string, number>;
+			anchorExists: boolean;
+		}>(
+			`with ranked as (select ${columns},file_id,annotation_id,created_at as sort_at,${rank} as priority from pm.issues where project_id=$1 and ($2::uuid is null or file_id=$2) and ($4::uuid is null or annotation_id=$4)),
+			 anchor as (select priority,sort_at,id from ranked where id=$3::uuid),
+			 page as (select * from ranked r where $3::uuid is null or r.priority>(select priority from anchor) or (r.priority=(select priority from anchor) and (r.sort_at,r.id)<(select sort_at,id from anchor)) order by priority,sort_at desc,id desc limit 31)
+			 select coalesce((select jsonb_agg(to_jsonb(p)-'priority'-'sort_at'-'file_id'-'annotation_id' order by priority,sort_at desc,id desc) from page p),'[]'::jsonb) as items,
+			 coalesce((select jsonb_object_agg(state,n) from (select state,count(*)::int n from pm.issues where project_id=$1 group by state) t),'{}'::jsonb) as counts,
+			 coalesce((select jsonb_object_agg(state,n) from (select state,count(*)::int n from ranked group by state) t),'{}'::jsonb) as "filteredCounts",
+			 exists(select 1 from anchor) as "anchorExists"`,
+			[projectId, fileId, anchor, annotationId],
 		);
-		const totals = await db.query(
-			"select state,count(*)::int as count from pm.issues where project_id=$1 group by state",
-			[projectId],
-		);
+		const result = rows[0];
+		if (!result) throw new AppError("DEPENDENCY_UNAVAILABLE", 503);
+		if (anchor && !result.anchorExists)
+			throw new AppError("CURSOR_INVALID", 422);
+		const next = result.items[29];
 		return {
-			items: rows.slice(0, 30).map(({ priority, sort_at, ...item }) => {
-				void priority;
-				void sort_at;
-				return item;
-			}),
-			nextCursor: rows.length > 30 ? rows[29]?.id : null,
-			counts: Object.fromEntries(totals.rows.map((r) => [r.state, r.count])),
+			items: result.items.slice(0, 30),
+			nextCursor:
+				result.items.length > 30 && next ? queryCursor(next.id, scope) : null,
+			counts: result.counts,
+			countScope: "project" as const,
+			filteredCounts: result.filteredCounts,
+			filterScope: annotationId
+				? ("annotation" as const)
+				: fileId
+					? ("file" as const)
+					: ("project" as const),
 		};
 	});
 }

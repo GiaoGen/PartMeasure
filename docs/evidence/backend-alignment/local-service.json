@@ -1,0 +1,48 @@
+{
+  "checkedAt": "2026-10-19T02:56:15.691Z",
+  "environment": "native disposable PostgreSQL 18 with strict TLS",
+  "authAndStorage": "LOCAL STAND-INS ONLY; not Supabase service verification",
+  "cloudMigrationApplied": false,
+  "results": [
+    {
+      "check": "folder-save-replay-normalized-duplicate-and-seven-colors",
+      "status": "PASS"
+    },
+    {
+      "check": "concurrent-same-key-one-result-different-key-one-duplicate",
+      "status": "PASS"
+    },
+    {
+      "check": "project-classification-atomic-idempotent-and-cross-owner-denied",
+      "status": "PASS"
+    },
+    {
+      "check": "server-search-beyond-first-page-literal-wildcards-and-count-scopes",
+      "status": "PASS"
+    },
+    {
+      "check": "query-bound-cursor-cross-owner-cross-filter-and-stale-anchor",
+      "status": "PASS"
+    },
+    {
+      "check": "Guest-private-folder-denial-and-project-metadata-redaction",
+      "status": "PASS"
+    },
+    {
+      "check": "database-composite-owner-FK-and-no-folder-delete-grant",
+      "status": "PASS"
+    },
+    {
+      "check": "annotation-summary-filtered-issues-pagination-and-fixed-revision",
+      "status": "PASS"
+    },
+    {
+      "check": "file-revision-summary-invalidation-hidden-annotation-and-Guest-history",
+      "status": "PASS"
+    },
+    {
+      "check": "revoked-session-cannot-read-summaries-or-query-issues",
+      "status": "PASS"
+    }
+  ]
+}

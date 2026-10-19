@@ -5,6 +5,9 @@ import { AppError, limits, uploadPolicy } from "../policy";
 import { type Actor, digest, idempotent, token, transaction } from "./db";
 import { effectiveFileLimit } from "./file-limits";
 import { appOrigin } from "./origin";
+import { folderForOwner } from "./folder-service";
+import { queryProjects } from "./project-query";
+import type { ProjectFilters } from "../project-folders";
 
 export type Project = {
 	id: string;
@@ -13,6 +16,7 @@ export type Project = {
 	revision: number;
 	owner_id: string;
 	created_at: string;
+	folder_id: string | null;
 };
 export const actorKey = (actor: Actor) =>
 	actor.kind === "owner" ? `owner:${actor.id}` : `guest:${actor.hash}`;
@@ -24,7 +28,7 @@ export async function access(
 	readOnly = false,
 ) {
 	const { rows } = await db.query<Project>(
-		`select id,name,description,revision,owner_id,created_at from pm.projects where id=$1 ${readOnly ? "for share" : "for update"}`,
+		`select id,name,description,revision,owner_id,created_at,folder_id from pm.projects where id=$1 ${readOnly ? "for share" : "for update"}`,
 		[projectId],
 	);
 	const project = rows[0];
@@ -66,39 +70,38 @@ export async function audit(
 		[projectId, actor.kind, action, objectId],
 	);
 }
-export async function listProjects(actor: Actor, cursor: string | null) {
-	if (actor.kind !== "owner") throw new AppError("FORBIDDEN", 403);
-	return transaction(actor, async (db) => {
-		const { rows } = await db.query<Project>(
-			`select id,name,description,revision,owner_id,created_at from pm.projects where owner_id=$1 and ($2::uuid is null or (created_at,id)<(select created_at,id from pm.projects where id=$2)) order by created_at desc,id desc limit 31`,
-			[actor.id, cursor],
-		);
-		return {
-			items: rows.slice(0, 30).map(publicProject),
-			nextCursor: rows.length > 30 ? rows[29]?.id : null,
-		};
-	});
+export async function listProjects(
+	actor: Actor,
+	cursor: string | null,
+	filters: ProjectFilters = { folderId: null, q: "" },
+) {
+	return queryProjects(actor, cursor, filters);
 }
 export async function createProject(
 	actor: Actor,
-	input: { name: string; description: string },
+	input: {
+		name: string;
+		description: string;
+		folderId?: string | null | undefined;
+	},
 	key: string,
 ) {
 	if (actor.kind !== "owner") throw new AppError("FORBIDDEN", 403);
 	return transaction(actor, (db) =>
 		idempotent(db, `${actorKey(actor)}:create`, key, input, async () => {
+			const folder = await folderForOwner(db, actor.id, input.folderId ?? null);
 			await db.query(
 				"insert into pm.owner_usage(owner_id) values($1) on conflict do nothing",
 				[actor.id],
 			);
 			const { rows } = await db.query<Project>(
-				"insert into pm.projects(owner_id,name,description) values($1,$2,$3) returning *",
-				[actor.id, input.name, input.description],
+				"insert into pm.projects(owner_id,name,description,folder_id) values($1,$2,$3,$4) returning *",
+				[actor.id, input.name, input.description, input.folderId ?? null],
 			);
 			const project = rows[0];
 			if (!project) throw new AppError("DEPENDENCY_UNAVAILABLE", 503);
 			await audit(db, actor, project.id, "project.create", project.id);
-			return publicProject(project);
+			return { ...publicProject(project), folderId: project.folder_id, folder };
 		}),
 	);
 }
@@ -112,6 +115,12 @@ export async function projectDetail(actor: Actor, id: string) {
 		);
 		return {
 			...data,
+			...(actor.kind === "owner"
+				? {
+						folderId: project.folder_id,
+						folder: await folderForOwner(db, actor.id, project.folder_id),
+					}
+				: {}),
 			share: actor.kind === "owner" ? (rows[0] ?? null) : null,
 		};
 	});
@@ -137,7 +146,11 @@ export async function editProject(
 				);
 				if (!rows[0]) throw new AppError("REVISION_CONFLICT", 409);
 				await audit(db, actor, id, "project.edit", id);
-				return publicProject(rows[0]);
+				return {
+					...publicProject(rows[0]),
+					folderId: rows[0].folder_id,
+					folder: await folderForOwner(db, rows[0].owner_id, rows[0].folder_id),
+				};
 			},
 		);
 	});
@@ -449,7 +462,12 @@ export async function files(
 	return transaction(actor, async (db) => {
 		await access(db, actor, id, false, true);
 		const { rows } = await db.query(
-			`select id,filename,mime,extension,byte_size as "byteSize",width,height,uploader_type as "uploaderType",created_at as "createdAt" from pm.file_assets
+			`select id,filename,mime,extension,byte_size as "byteSize",width,height,uploader_type as "uploaderType",created_at as "createdAt",
+			 case when mime='image/webp' and purpose='material' then sha256||':n'||normalization_version::text else null end as "previewVersion",
+			 case when mime='image/webp' and purpose='material' then (
+			 select jsonb_build_object('version',md5(coalesce(string_agg(a.id::text||':'||a.revision::text||':'||(a.deleted_at is not null)::text,',' order by a.id),'')),
+			 'count',count(*) filter(where a.deleted_at is null)) from pm.annotations a where a.project_id=pm.file_assets.project_id and a.file_id=pm.file_assets.id
+			 ) else null end as "annotationSummary" from pm.file_assets
    where project_id=$1 and deleted_at is null and ($2::boolean or visibility='customer') and purpose=$4 and ($3::uuid is null or (created_at,id)<(select created_at,id from pm.file_assets where id=$3 and project_id=$1)) order by created_at desc,id desc limit 31`,
 			[id, actor.kind === "owner", cursor, purpose],
 		);

@@ -1,0 +1,49 @@
+{
+  "checkedAt": "2026-10-19T03:13:03.801Z",
+  "checks": {
+    "lint": {
+      "status": "PASS",
+      "files": 158
+    },
+    "typecheck": {
+      "status": "PASS"
+    },
+    "unit": {
+      "status": "PASS",
+      "files": 14,
+      "tests": 83
+    },
+    "build": {
+      "status": "PASS",
+      "framework": "Next.js 16.4.2 webpack"
+    },
+    "api": {
+      "passed": 7,
+      "total": 7
+    },
+    "cloudDatabase": {
+      "passed": 7,
+      "total": 7
+    },
+    "localService": {
+      "passed": 10,
+      "total": 10
+    },
+    "imageProcess": {
+      "status": "PASS",
+      "width": 1200,
+      "height": 800,
+      "mime": "image/webp",
+      "normalizationVersion": 1
+    },
+    "e2e": {
+      "status": "NOT_RUN",
+      "reason": "User prohibition on opening browsers"
+    },
+    "physicalPhone": "PENDING",
+    "mainlandMobile": "PENDING",
+    "registrationOTP": "PENDING_USER_DEFERRED"
+  },
+  "cloudMigration": "20261019025932",
+  "frontendTemporaryStateReplacement": "NOT_IMPLEMENTED_IN_THIS_BACKEND_TASK"
+}

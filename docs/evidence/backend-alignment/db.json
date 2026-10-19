@@ -1,0 +1,51 @@
+{
+  "checkedAt": "2026-10-19T03:06:16.467Z",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "mutationScope": "rollback-only on ALIGN fixture",
+  "evidence": {
+    "migration": {
+      "version": "20261019025932",
+      "localSha256": "c55d0dfdb0af5dcfd68dc6f123e80623cfad79b55db744c5c4688f923c1ad03d",
+      "cloudSha256": "c55d0dfdb0af5dcfd68dc6f123e80623cfad79b55db744c5c4688f923c1ad03d"
+    },
+    "folderPlan": {
+      "type": "Limit",
+      "children": [
+        {
+          "type": "Index Only Scan",
+          "index": "projects_folder_owner_created"
+        }
+      ]
+    }
+  },
+  "results": [
+    {
+      "check": "migration-version-source-and-additive-schema-match",
+      "status": "PASS"
+    },
+    {
+      "check": "minimum-runtime-grants-and-no-browser-worker-access",
+      "status": "PASS"
+    },
+    {
+      "check": "owner-B-and-Guest-RLS-cannot-see-A-folders",
+      "status": "PASS"
+    },
+    {
+      "check": "cross-owner-project-folder-FK-rejects-and-rolls-back",
+      "status": "PASS"
+    },
+    {
+      "check": "Owner-folder-delete-and-update-are-not-granted",
+      "status": "PASS"
+    },
+    {
+      "check": "database-format-and-owner-checks-cannot-be-bypassed",
+      "status": "PASS"
+    },
+    {
+      "check": "folder-count-query-plan-and-existing-private-buckets",
+      "status": "PASS"
+    }
+  ]
+}

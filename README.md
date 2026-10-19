@@ -6,6 +6,8 @@
 
 [P0 缺失实现与验收缺口清单](docs/P0-4/06-p0-gaps.md)分别列出尚未落实的运行配置、已实现待验证项目、历史质量风险及不属于 P0 的后续能力，供收尾排期使用。
 
+2026-10-19 后端对齐：[授权与边界](docs/backend-alignment/00-scope.md)、[接口与前端接入契约](docs/backend-alignment/01-contracts.md)、[本轮验证](docs/backend-alignment/02-verification.md)。文件夹、分类搜索/计数、提醒关联与上传策略接口采用兼容增量；当前前端的临时分类/查询仍须按契约接入，不因后端就绪宣称页面全部完成。
+
 ## 运行
 
 需要 Node **24.15.0**（`.nvmrc`）、npm **11.12.1**。统一 npm；不用 pnpm/yarn，不修改全局 registry。依赖精确版本与 `package-lock.json` 一并管理。

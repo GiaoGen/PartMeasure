@@ -1,0 +1,39 @@
+{
+  "checkedAt": "2026-10-19T03:10:35.368Z",
+  "root": "http://127.0.0.1:3105",
+  "database": "Supabase rvysclscetfqicpnzlra",
+  "realPasswordLogin": true,
+  "browserLaunched": false,
+  "registrationOTP": "not tested",
+  "fixturePrefix": "ALIGN-1792379024924",
+  "results": [
+    {
+      "check": "real-password-auth-folder-save-replay-and-A-B-isolation",
+      "status": "PASS"
+    },
+    {
+      "check": "folder-boundary-validation-reserved-name-and-permission",
+      "status": "PASS"
+    },
+    {
+      "check": "create-classification-atomic-replay-detail-color-and-owner-denial",
+      "status": "PASS"
+    },
+    {
+      "check": "cloud-global-search-beyond-30-and-exact-counts",
+      "status": "PASS"
+    },
+    {
+      "check": "query-boundaries-and-upload-policy-effective-format-limits",
+      "status": "PASS"
+    },
+    {
+      "check": "real-Guest-no-private-classification-management-and-revocation",
+      "status": "PASS"
+    },
+    {
+      "check": "existing-cloud-material-summaries-and-annotation-filter-read-only",
+      "status": "PASS"
+    }
+  ]
+}

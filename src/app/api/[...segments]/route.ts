@@ -1,6 +1,14 @@
 import { cookies } from "next/headers";
 import { z } from "zod";
-import { AppError, projectInput, uploadInput } from "@/lib/policy";
+import {
+	AppError,
+	projectInput,
+	projectCreateInput,
+	uploadInput,
+	uploadPolicyDto,
+} from "@/lib/policy";
+import { folderInput, projectFiltersSchema } from "@/lib/project-folders";
+import * as folders from "@/lib/server/folder-service";
 import { authClient, guest, owner } from "@/lib/server/auth";
 import { digest, rate, token, transaction } from "@/lib/server/db";
 import {
@@ -55,7 +63,7 @@ async function handle(req: Request, context: Context) {
 		}
 		if (method !== "GET") await csrf(req);
 		if (s.join("/") === "upload-policy" && method === "GET")
-			return response({ maxFileBytes: effectiveFileLimit() });
+			return response(uploadPolicyDto(effectiveFileLimit()));
 		if (s[0] === "auth") {
 			// Email hashes only; never store passwords or OTP in application DB/logs.
 			const action = s[1];
@@ -134,6 +142,30 @@ async function handle(req: Request, context: Context) {
 			});
 			return response({ projectId: result.projectId });
 		}
+		if (s[0] === "guest" && s[1] === "project-folders")
+			throw new AppError("FORBIDDEN", 403);
+		if (s[0] === "project-folders") {
+			const actor = await owner();
+			await transaction(actor, (db) =>
+				rate(
+					db,
+					`${service.actorKey(actor)}:${method === "GET" ? "read" : "write"}`,
+					method === "GET" ? 120 : 60,
+				),
+			);
+			if (s.length !== 1) throw new AppError("NOT_FOUND", 404);
+			if (method === "GET") return response(await folders.listFolders(actor));
+			if (method === "POST")
+				return response(
+					await folders.createFolder(
+						actor,
+						await body(req, folderInput),
+						idemKey(req),
+					),
+					201,
+				);
+			throw new AppError("METHOD_NOT_ALLOWED", 405);
+		}
 		const isGuest = s[0] === "guest";
 		const parts = isGuest ? s.slice(1) : s;
 		if (parts[0] !== "projects") throw new AppError("NOT_FOUND", 404);
@@ -170,16 +202,39 @@ async function handle(req: Request, context: Context) {
 		});
 		if (preflight) throw preflight;
 		const cursor = url.searchParams.get("cursor");
-		if (cursor && !uuid.safeParse(cursor).success)
+		if (
+			url.searchParams.getAll("cursor").length > 1 ||
+			(cursor !== null && (cursor.length === 0 || cursor.length > 512))
+		)
 			throw new AppError("INVALID_INPUT", 422);
 		if (!projectId) {
-			if (method === "GET")
-				return response(await service.listProjects(actor, cursor));
+			if (method === "GET") {
+				for (const [key] of url.searchParams) {
+					if (
+						!["cursor", "q", "folderId", "sort"].includes(key) ||
+						url.searchParams.getAll(key).length !== 1
+					)
+						throw new AppError("INVALID_INPUT", 422);
+				}
+				if (
+					url.searchParams.has("sort") &&
+					url.searchParams.get("sort") !== "created-desc"
+				)
+					throw new AppError("INVALID_INPUT", 422);
+				const filters = projectFiltersSchema.safeParse({
+					q: url.searchParams.get("q") ?? "",
+					folderId: url.searchParams.get("folderId"),
+				});
+				if (!filters.success) throw new AppError("INVALID_INPUT", 422);
+				return response(
+					await service.listProjects(actor, cursor, filters.data),
+				);
+			}
 			if (method === "POST")
 				return response(
 					await service.createProject(
 						actor,
-						await body(req, projectInput),
+						await body(req, projectCreateInput),
 						idemKey(req),
 					),
 					201,
@@ -338,6 +393,8 @@ async function handle(req: Request, context: Context) {
 			}
 		}
 		if (resource === "issues") {
+			if (method === "GET" && !objectId && url.searchParams.has("annotationId"))
+				throw new AppError("INVALID_INPUT", 422);
 			if (
 				actor.kind === "guest" &&
 				method !== "GET" &&
@@ -473,12 +530,28 @@ async function handle(req: Request, context: Context) {
 				return response(
 					await annotations.annotations(actor, projectId, objectId),
 				);
-			if (objectId && parts[4] === "issues" && method === "GET")
+			if (objectId && parts[4] === "issues" && method === "GET") {
+				const annotationId = url.searchParams.get("annotationId");
+				if (
+					(annotationId !== null && !uuid.safeParse(annotationId).success) ||
+					url.searchParams.getAll("annotationId").length > 1
+				)
+					throw new AppError("INVALID_INPUT", 422);
 				return response(
-					await issues.listIssues(actor, projectId, cursor, objectId),
+					await issues.listIssues(
+						actor,
+						projectId,
+						cursor,
+						objectId,
+						annotationId,
+					),
 				);
-			if (method === "GET" && !objectId)
+			}
+			if (method === "GET" && !objectId) {
+				if (cursor && !uuid.safeParse(cursor).success)
+					throw new AppError("INVALID_INPUT", 422);
 				return response(await service.files(actor, projectId, cursor, purpose));
+			}
 			if (method === "DELETE" && objectId)
 				return response(
 					await service.deleteFile(actor, projectId, objectId, idemKey(req)),

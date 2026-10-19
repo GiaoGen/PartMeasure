@@ -1,5 +1,6 @@
 import { stat } from "node:fs/promises";
 import sharp from "sharp";
+import { limits } from "../../src/lib/policy";
 const [source, target] = process.argv.slice(2);
 if (!source || !target) process.exit(2);
 sharp.cache({ memory: 16, files: 0, items: 8 });
@@ -9,7 +10,7 @@ const timer = setInterval(() => {
 }, 100);
 try {
 	const image = sharp(source, {
-		limitInputPixels: 40_000_000,
+		limitInputPixels: limits.imagePixels,
 		failOn: "warning",
 		pages: 1,
 	});
@@ -24,7 +25,7 @@ try {
 		.toColourspace("srgb")
 		.webp({ lossless: true })
 		.toFile(target);
-	if ((await stat(target)).size > 80 * 1024 * 1024)
+	if ((await stat(target)).size > limits.derivative)
 		throw new Error("DERIVATIVE_LIMIT");
 	process.stdout.write(
 		JSON.stringify({

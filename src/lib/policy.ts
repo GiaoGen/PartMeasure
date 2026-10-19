@@ -7,6 +7,7 @@ export const limits = {
 	daily: 500 * MiB,
 	derivative: 80 * MiB,
 	batch: 20,
+	imagePixels: 40_000_000,
 };
 export const extensions = [
 	"jpg",
@@ -30,6 +31,10 @@ export const projectInput = z
 		description: z.string().max(4000).default(""),
 	})
 	.strict();
+// Existing PATCH semantics stay unchanged; classification is set on creation.
+export const projectCreateInput = projectInput.extend({
+	folderId: z.uuid().nullable().optional(),
+});
 export const uploadInput = z
 	.object({
 		filename: z
@@ -62,23 +67,52 @@ export class AppError extends Error {
 		super(code);
 	}
 }
-export function uploadPolicy(filename: string, bytes: number, mime: string) {
-	const ext = filename.split(".").pop()?.toLowerCase() ?? "";
-	if (!extensions.includes(ext as (typeof extensions)[number]))
-		throw new AppError("UNSUPPORTED_FORMAT", 415);
-	const max = imageExtensions.has(ext)
+export const declaredMimeTypes: Readonly<Record<string, readonly string[]>> = {
+	jpg: ["image/jpeg"],
+	jpeg: ["image/jpeg"],
+	png: ["image/png"],
+	webp: ["image/webp"],
+	pdf: ["application/pdf"],
+};
+export function formatFileLimit(ext: string) {
+	return imageExtensions.has(ext)
 		? 20 * MiB
 		: ext === "pdf"
 			? 50 * MiB
 			: 100 * MiB;
-	if (bytes > max) throw new AppError("FILE_TOO_LARGE", 413);
-	const known: Record<string, string[]> = {
-		jpg: ["image/jpeg"],
-		jpeg: ["image/jpeg"],
-		png: ["image/png"],
-		webp: ["image/webp"],
-		pdf: ["application/pdf"],
+}
+export function uploadPolicyDto(maxFileBytes: number) {
+	return {
+		version: 1,
+		maxFileBytes,
+		formats: extensions.map((extension) => ({
+			extension,
+			maxFileBytes: Math.min(formatFileLimit(extension), maxFileBytes),
+			declaredMimeTypes: declaredMimeTypes[extension] ?? null,
+		})),
+		maxBatchFiles: limits.batch,
+		maxImagePixels: limits.imagePixels,
+		budgets: {
+			projectBytes: limits.project,
+			accountBytes: limits.account,
+			dailySourceBytes: limits.daily,
+			imageDerivativeReserveBytes: limits.derivative,
+		},
+		transport: { tusThresholdBytes: 6 * MiB, tusChunkBytes: 6 * MiB },
+		processing: {
+			required: true,
+			imageFormat: "image/webp",
+			normalizationVersion: 1,
+		},
 	};
+}
+export function uploadPolicy(filename: string, bytes: number, mime: string) {
+	const ext = filename.split(".").pop()?.toLowerCase() ?? "";
+	if (!extensions.includes(ext as (typeof extensions)[number]))
+		throw new AppError("UNSUPPORTED_FORMAT", 415);
+	const max = formatFileLimit(ext);
+	if (bytes > max) throw new AppError("FILE_TOO_LARGE", 413);
+	const known = declaredMimeTypes;
 	if (known[ext] && mime && !known[ext]?.includes(mime))
 		throw new AppError("MIME_MISMATCH", 415);
 	return {

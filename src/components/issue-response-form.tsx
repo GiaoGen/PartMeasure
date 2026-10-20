@@ -1,6 +1,12 @@
 "use client";
 import { unitsForField, displayUnit } from "@/lib/annotation-collaboration";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+	type ReactNode,
+} from "react";
 import {
 	type IssueDetail,
 	type IssueWriteResult,
@@ -9,7 +15,7 @@ import {
 	responseSchema,
 } from "@/lib/issues";
 import { api, ApiError } from "./api";
-import { UploadQueue } from "./upload-queue";
+import { UploadQueue, type ReadyUpload } from "./upload-queue";
 import { useIssueWrite } from "./use-issue-write";
 
 export function IssueResponseForm({
@@ -19,6 +25,8 @@ export function IssueResponseForm({
 	onInvalid,
 	onDirty,
 	onReload,
+	compact = false,
+	extraContent,
 }: {
 	base: string;
 	issue: IssueDetail;
@@ -26,6 +34,8 @@ export function IssueResponseForm({
 	onInvalid: () => void;
 	onDirty: (dirty: boolean) => void;
 	onReload: () => void;
+	compact?: boolean;
+	extraContent?: ReactNode;
 }) {
 	const [kind, setKind] = useState<ResponseInput["kind"]>(
 			issue.kind === "comment" ? "text" : "numeric",
@@ -43,6 +53,10 @@ export function IssueResponseForm({
 		[cursor, setCursor] = useState<string | null>(null),
 		[fileError, setFileError] = useState(""),
 		[filesLoading, setFilesLoading] = useState(false);
+	const [extrasOpen, setExtrasOpen] = useState(false),
+		[evidenceOpen, setEvidenceOpen] = useState(false),
+		[evidenceMounted, setEvidenceMounted] = useState(false);
+	const uploaded = useRef(new Set<string>());
 	const invalidRef = useRef(onInvalid),
 		generation = useRef(0);
 	invalidRef.current = onInvalid;
@@ -72,18 +86,36 @@ export function IssueResponseForm({
 		[base],
 	);
 	useEffect(() => {
-		void loadFiles();
+		if (!compact) void loadFiles();
 		return () => {
 			generation.current++;
 		};
-	}, [loadFiles]);
-	const refreshFiles = useCallback(() => void loadFiles(), [loadFiles]);
+	}, [loadFiles, compact]);
+
 	const write = useIssueWrite<IssueWriteResult>(
 		`${base}/issues/${issue.id}/responses`,
 		issue.revision,
 		onSaved,
 		onInvalid,
 		onDirty,
+	);
+	const refreshFiles = useCallback(
+		(file?: ReadyUpload) => {
+			if (!compact) {
+				void loadFiles();
+				return;
+			}
+			if (!file || uploaded.current.has(file.id)) return;
+			uploaded.current.add(file.id);
+			setFiles((old) =>
+				old.some((f) => f.id === file.id) ? old : [...old, file],
+			);
+			setSelected((old) =>
+				old.includes(file.id) || old.length >= 10 ? old : [...old, file.id],
+			);
+			write.changed();
+		},
+		[compact, loadFiles, write.changed],
 	);
 	const draft = {
 		kind,
@@ -94,9 +126,16 @@ export function IssueResponseForm({
 	};
 	const evidence = (
 		<section aria-label="本次回复证据" className="response-evidence">
-			<UploadQueue base={base} onReady={refreshFiles} onInvalid={onInvalid} />
+			<UploadQueue
+				base={base}
+				onReady={refreshFiles}
+				onInvalid={onInvalid}
+				localOnly={compact}
+			/>
 			<p>
-				上传完成后勾选本次证据；资料上传不等于回复已提交。最多10份，照片回复至少含一张图片。
+				{compact
+					? "上传完成后自动加入本次回复，最多10份；提交后工程师才能收到回复。"
+					: "上传完成后勾选本次证据；资料上传不等于回复已提交。最多10份，照片回复至少含一张图片。"}
 			</p>
 			{filesLoading ? <p role="status">读取可用附件…</p> : null}
 			{fileError ? (
@@ -139,14 +178,81 @@ export function IssueResponseForm({
 			) : null}
 		</section>
 	);
+	const extras = (
+		<>
+			<details
+				open={evidenceOpen || kind === "photo"}
+				onToggle={(e) => {
+					setEvidenceOpen(e.currentTarget.open);
+					if (e.currentTarget.open) setEvidenceMounted(true);
+				}}
+			>
+				<summary>照片与附件</summary>
+				{!compact || evidenceMounted || evidenceOpen || kind === "photo"
+					? evidence
+					: null}
+			</details>
+			<label>
+				{kind === "unable" ? "无法测量的原因" : "补充说明（选填）"}
+				<textarea
+					aria-label="回复说明"
+					required={kind === "unable"}
+					maxLength={4000}
+					value={body}
+					onChange={(e) => {
+						setBody(e.target.value);
+						write.changed();
+					}}
+				/>
+			</label>
+			<fieldset className="response-choices" aria-label="其他回复方式">
+				{(
+					[
+						["photo", "仅传照片"],
+						["unable", "无法测量"],
+					] as const
+				).map(([type, text]) => (
+					<button
+						type="button"
+						key={type}
+						aria-pressed={kind === type}
+						onClick={() => {
+							setKind(kind === type ? "numeric" : type);
+							write.changed();
+						}}
+					>
+						{text}
+					</button>
+				))}
+			</fieldset>
+			<details>
+				<summary>称呼（选填）</summary>
+				<label>
+					你的称呼
+					<input
+						maxLength={80}
+						value={label}
+						onChange={(e) => {
+							setLabel(e.target.value);
+							write.changed();
+						}}
+					/>
+				</label>
+			</details>
+			{extraContent}
+		</>
+	);
+
 	return (
 		<form
-			className="issue-response-form stack"
+			className={`issue-response-form stack${compact ? " guest-measurement-form" : ""}`}
 			aria-label="提交回复"
+			noValidate={compact}
 			onSubmit={(e) => {
 				e.preventDefault();
 				const parsed = responseSchema.safeParse(draft);
 				if (!parsed.success) {
+					if (compact && kind !== "numeric") setExtrasOpen(true);
 					write.setError(
 						kind === "numeric"
 							? "请输入正十进制数和单位，不支持负值或科学计数法。"
@@ -159,9 +265,11 @@ export function IssueResponseForm({
 				void write.submit(parsed.data);
 			}}
 		>
-			<h3>{issue.kind === "comment" ? "回复文件问题" : "提交本次测量"}</h3>
+			{!compact ? (
+				<h3>{issue.kind === "comment" ? "回复文件问题" : "提交本次测量"}</h3>
+			) : null}
 			<fieldset disabled={write.disabled}>
-				{issue.kind === "measurement" ? (
+				{issue.kind === "measurement" && !compact ? (
 					<fieldset className="response-choices" aria-label="选择回复方式">
 						{(
 							[
@@ -184,12 +292,14 @@ export function IssueResponseForm({
 						))}
 					</fieldset>
 				) : null}
-				{kind === "numeric" ? (
+				{kind === "numeric" || compact ? (
 					<div className="numeric-entry">
 						<label>
-							测量数值
+							{compact ? "实测尺寸" : "测量数值"}
 							<input
-								required
+								required={kind === "numeric"}
+								disabled={compact && kind !== "numeric"}
+								placeholder="输入实测值"
 								inputMode="decimal"
 								value={value}
 								maxLength={24}
@@ -200,9 +310,10 @@ export function IssueResponseForm({
 							/>
 						</label>
 						<label>
-							测量单位
+							{compact ? <span className="sr-only">测量单位</span> : "测量单位"}
 							<select
 								value={unit}
+								disabled={compact && kind !== "numeric"}
 								onChange={(e) => {
 									setUnit(e.target.value);
 									write.changed();
@@ -217,46 +328,67 @@ export function IssueResponseForm({
 						</label>
 					</div>
 				) : null}
-				<label>
-					{kind === "unable"
-						? "无法测量的原因"
-						: kind === "text"
-							? "文字回复"
-							: "补充说明（可选）"}
-					<textarea
-						aria-label="回复说明"
-						required={kind === "unable" || kind === "text"}
-						maxLength={4000}
-						value={body}
-						onChange={(e) => {
-							setBody(e.target.value);
-							write.changed();
-						}}
-					/>
-				</label>
-				<label>
-					你的称呼（可选）
-					<input
-						maxLength={80}
-						value={label}
-						onChange={(e) => {
-							setLabel(e.target.value);
-							write.changed();
-						}}
-					/>
-				</label>
-				<p className="muted">称呼仅作显示，不代表已核验身份。</p>
-				<details open={kind === "photo"}>
-					<summary>添加测量照片或补充附件</summary>
-					{evidence}
-				</details>
+				{compact ? (
+					<details
+						className="guest-measurement-more"
+						open={extrasOpen}
+						onToggle={(e) => setExtrasOpen(e.currentTarget.open)}
+					>
+						<summary>
+							更多选项<span>照片 · 说明 · 记录</span>
+						</summary>
+						{extras}
+					</details>
+				) : (
+					<>
+						<label>
+							{kind === "unable"
+								? "无法测量的原因"
+								: kind === "text"
+									? "文字回复"
+									: "补充说明（可选）"}
+							<textarea
+								aria-label="回复说明"
+								required={kind === "unable" || kind === "text"}
+								maxLength={4000}
+								value={body}
+								onChange={(e) => {
+									setBody(e.target.value);
+									write.changed();
+								}}
+							/>
+						</label>
+						<label>
+							你的称呼（可选）
+							<input
+								maxLength={80}
+								value={label}
+								onChange={(e) => {
+									setLabel(e.target.value);
+									write.changed();
+								}}
+							/>
+						</label>
+						<p className="muted">称呼仅作显示，不代表已核验身份。</p>
+						<details open={kind === "photo"}>
+							<summary>添加测量照片或补充附件</summary>
+							{evidence}
+						</details>
+					</>
+				)}
 			</fieldset>
 			<button type="submit" disabled={write.busy || write.conflict}>
 				{write.busy
 					? "正在提交回复…"
 					: write.blocked
 						? "重试提交回复"
-						: "提交回复"}
+						: compact
+							? kind === "photo"
+								? "提交照片"
+								: kind === "unable"
+									? "提交说明"
+									: "提交尺寸"
+							: "提交回复"}
 			</button>
 			<p role="status">{write.status}</p>
 			{write.error ? (

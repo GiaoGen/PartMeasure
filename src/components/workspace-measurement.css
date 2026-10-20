@@ -366,3 +366,36 @@
 .annotation-collaboration .issue-actions { position: static; padding: 0; border: 0; background: transparent; }
 .annotation-collaboration .detail-heading h2 { font-size: 1rem; }
 .annotation-collaboration .evidence-preview { max-width: 100%; }
+
+/* A single selected annotation owns this compact Guest reply surface. */
+.workspace-context-content .guest-annotation-heading { display: flex; align-items: center; gap: 10px; padding-right: 42px; margin-bottom: 18px; }
+.workspace-context-content .guest-annotation-heading h3 { flex: 1; min-width: 0; font-size: 20px; font-weight: 600; margin: 0; overflow-wrap: anywhere; }
+.workspace-context-content .guest-annotation-dot { display: inline-block; width: 8px; height: 8px; margin-right: 9px; border-radius: 50%; vertical-align: middle; }
+.workspace-context-content .guest-annotation-note-button { display: inline-flex; align-items: center; justify-content: center; width: 44px; min-width: 44px; height: 44px; padding: 0; border: 0; background: transparent; }
+.workspace-context-content .guest-annotation-note-button span { display: grid; place-items: center; width: 20px; height: 20px; border: 1.5px solid currentColor; border-radius: 50%; font-weight: 600; font-size: 13px; }
+.workspace-context-content .guest-annotation-note-button[aria-expanded="true"] { color: var(--workspace-action); }
+.workspace-context-content .guest-annotation-note { border-left: 2px solid var(--workspace-action); padding-left: 12px; margin: -4px 0 20px; }
+.workspace-context-content .guest-annotation-note p { margin: 5px 0 0; }
+.workspace-context-content .guest-annotation-guidance { display: grid; gap: 12px; margin-bottom: 22px; }
+.workspace-context-content .guest-annotation-guidance small, .workspace-context-content .guest-annotation-note small { color: #627080; font-size: 12px; }
+.workspace-context-content .guest-annotation-guidance p { margin: 4px 0 0; }
+.workspace-context-content .guest-measurement-form fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.workspace-context-content .guest-measurement-form > fieldset { display: grid; gap: 20px; }
+.workspace-context-content .guest-measurement-form .numeric-entry { display: grid; grid-template-columns: minmax(0, 1fr) 86px; gap: 10px; align-items: end; }
+.workspace-context-content .guest-measurement-form .numeric-entry label { margin: 0; }
+.workspace-context-content .guest-measurement-form .numeric-entry input { font-size: 21px; height: 52px; border-radius: 10px; }
+.workspace-context-content .guest-measurement-form .numeric-entry select { height: 52px; border-radius: 10px; }
+.workspace-context-content .guest-measurement-more { border-top: 1px solid var(--workspace-line); margin: 4px 0 0; }
+.workspace-context-content .guest-measurement-more > summary { display: flex; align-items: center; gap: 8px; list-style: none; }
+.workspace-context-content .guest-measurement-more > summary::-webkit-details-marker { display: none; }
+.workspace-context-content .guest-measurement-more > summary > span { flex: 1; color: #627080; font-size: 12px; }
+.workspace-context-content .guest-measurement-more > summary::after { content: ""; width: 7px; height: 7px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); margin: 0 4px 4px 8px; }
+.workspace-context-content .guest-measurement-more[open] > summary::after { transform: rotate(225deg); margin-bottom: 0; }
+.workspace-context-content .guest-annotation-panel .guest-measurement-more > :not(summary) { margin-top: 16px; }
+.workspace-context-content .guest-measurement-form > button[type="submit"] { width: 100%; min-height: 48px; background: var(--workspace-action); border-color: var(--workspace-action); color: #fff; border-radius: 11px; }
+.workspace-context-content .guest-measurement-form .response-choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.workspace-context-content .guest-annotation-panel .issue-history-disclosure { margin-top: 16px; }
+.workspace-context-content .guest-annotation-value { font-size: 20px; font-variant-numeric: tabular-nums; }
+.workspace-context-dialog[data-minimal-header="true"] .workspace-context-header { margin: 0; }
+.workspace-context-dialog[data-minimal-header="true"] .workspace-context-header h2 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.workspace-context-dialog[data-minimal-header="true"] .workspace-context-header > button { position: absolute; top: 22px; right: 14px; z-index: 1; }

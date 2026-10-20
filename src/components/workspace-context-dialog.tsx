@@ -22,12 +22,14 @@ export function WorkspaceContextDialog({
 	title,
 	onClose,
 	targetRef,
+	minimalHeader = false,
 }: {
 	active: boolean;
 	mobileOpen: boolean;
 	title: string;
 	onClose: () => void;
 	targetRef: (element: HTMLDivElement | null) => void;
+	minimalHeader?: boolean;
 }) {
 	const mobile = useSyncExternalStore(subscribe, snapshot, serverSnapshot);
 	const dialog = useRef<HTMLDialogElement>(null);
@@ -100,6 +102,7 @@ export function WorkspaceContextDialog({
 			ref={dialog}
 			className="workspace-context-dialog"
 			data-phase={phase}
+			data-minimal-header={minimalHeader}
 			aria-labelledby={titleId}
 			inert={phase === "closing"}
 			onCancel={(event) => {

@@ -924,6 +924,7 @@ function WorkspaceContent({
 						/>
 					) : null}
 					<WorkspaceContextDialog
+						minimalHeader={guest && !!popupSelection && !overlayIssue}
 						active={contextActive}
 						mobileOpen={mobilePanelOpen}
 						title={

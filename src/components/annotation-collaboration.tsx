@@ -10,6 +10,7 @@ export function AnnotationCollaboration({
 	fileId,
 	annotationId,
 	guest,
+	compact = false,
 	refreshKey,
 	onInvalid,
 	onUpdated,
@@ -19,6 +20,7 @@ export function AnnotationCollaboration({
 	fileId: string;
 	annotationId: string;
 	guest: boolean;
+	compact?: boolean;
 	refreshKey: number;
 	onInvalid: () => void;
 	onUpdated: () => void;
@@ -120,6 +122,7 @@ export function AnnotationCollaboration({
 				id={item.id}
 				guest={guest}
 				inline
+				compact={compact}
 				onInvalid={onInvalid}
 				onUpdated={updated}
 				onBack={() => {}}
@@ -142,7 +145,9 @@ export function AnnotationCollaboration({
 				<p role="status">
 					{history.length
 						? "当前没有待补充项。"
-						: "无需补充；缺少尺寸的测量标注保存后会自动提示。"}
+						: compact
+							? "此标注无需补充尺寸。"
+							: "无需补充；缺少尺寸的测量标注保存后会自动提示。"}
 				</p>
 			) : null}
 			{active.map(render)}

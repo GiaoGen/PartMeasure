@@ -4,6 +4,7 @@ import { api, message } from "./api";
 import { useProjectUpdates } from "./project-live";
 import { fileHash } from "./file-hash";
 import { WorkspaceIcon, useWorkspaceDisclosure } from "./workspace-ui";
+export type ReadyUpload = {id:string;filename:string;mime:string;byteSize:string};
 type Item = {
 	id: string;
 	file: File;
@@ -38,14 +39,16 @@ export function UploadQueue({
 	floating = false,
 	compact = false,
 	emptyHint,
+ localOnly=false,
 }: {
 	base: string;
-	onReady: () => void;
+	onReady: (file?:ReadyUpload) => void;
 	onInvalid: () => void;
 	purpose?: "material" | "delivery";
 	floating?: boolean;
 	compact?: boolean;
 	emptyHint?: string | undefined;
+ localOnly?:boolean;
 }) {
 	const picker = useRef<HTMLInputElement>(null),
 		camera = useRef<HTMLInputElement>(null),
@@ -91,6 +94,7 @@ export function UploadQueue({
 	invalidRef.current = onInvalid;
 	const recoverRef = useRef<() => void>(() => {});
 	useEffect(() => {
+		if(localOnly) return;
 		let active = true,
 			busy = false;
 		async function recover() {
@@ -112,7 +116,10 @@ export function UploadQueue({
         recoverRef.current = () => { void recover(); };
         void recover();
         return () => { active = false; recoverRef.current = () => {}; };
-	}, [base, purpose]);
+	}, [base, purpose, localOnly]);
+ function notifyReady(item:Item,id=item.reservationId) {
+  if(id)readyRef.current({id,filename:item.file.name,mime:item.file.type,byteSize:String(item.file.size)});
+ }
 	const update = useCallback(
 		(id: string, changes: Partial<Item>) =>
 			setItems((old) =>
@@ -127,15 +134,15 @@ export function UploadQueue({
     recoverRef.current();
     for (const item of itemsRef.current.filter(i => i.state === "processing" && i.reservationId)) {
      void api<{state: string;errorCode: string|null}>(`${base}/uploads/${item.reservationId}`).then(r => {
-      if (r.state === "ready") update(item.id, {state: "ready", error: ""});
+      if (r.state === "ready") { update(item.id, {state: "ready", error: ""}); notifyReady(item); }
       else if (["rejected","cleaned"].includes(r.state)) update(item.id, {state:"failed",terminal:true,error:message(r.errorCode ?? "FILE_REJECTED")});
      }).catch(e => { if (e.status === 401) invalidRef.current(); });
     }
    }
    if (e.kind !== "upload.changed") continue;
-   if (e.state === "ready") readyRef.current();
    const item = itemsRef.current.find(i => i.reservationId === e.entityId);
-   if (item && e.state === "ready") update(item.id, {state:"ready",error:""});
+   if(e.state === "ready" && !item)readyRef.current();
+   if (item && e.state === "ready") { update(item.id, {state:"ready",error:""}); notifyReady(item); }
    else if (item && ["rejected","cleaned"].includes(e.state ?? "")) update(item.id, {state:"failed",terminal:true,error:"文件处理未完成，请重试或联系工程师。"});
    if (e.state === "ready" || e.state === "cleaned") setTracked(old => old.filter(x => x.id !== e.entityId));
    else if (e.state) { const state=e.state; setTracked(old => old.map(x => x.id === e.entityId ? {...x,state} : x)); }
@@ -168,7 +175,7 @@ export function UploadQueue({
 				update(item.id, { state: "processing", error: "" });
 				await api(`${base}/uploads/${item.reservationId}/complete`, "POST", {}, { key: item.completeKey });
 				update(item.id, { state: "ready", error: "" });
-				readyRef.current();
+ notifyReady(item);
 				return;
 			}
 			const hash = await fileHash(item.file);
@@ -248,7 +255,7 @@ export function UploadQueue({
 				{ key: item.completeKey },
 			);
 			update(item.id, { state: "ready", progress: 100, error: "" });
-			readyRef.current();
+ notifyReady(item,reservation.id);
 		} catch (e) {
 			update(item.id, {
 				state: "failed",

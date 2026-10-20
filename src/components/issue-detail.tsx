@@ -39,6 +39,7 @@ export function IssueDetail({
 	onBack,
 	panelOnly = false,
 	inline = false,
+	compact = false,
 	onOpenProperties,
 	backLabel,
 }: {
@@ -51,6 +52,7 @@ export function IssueDetail({
 	onBack: () => void;
 	panelOnly?: boolean;
 	inline?: boolean;
+	compact?: boolean;
 	onOpenProperties?: () => void;
 	backLabel?: string;
 }) {
@@ -60,6 +62,7 @@ export function IssueDetail({
 		[formVersion, setFormVersion] = useState(0),
 		[canvasError, setCanvasError] = useState("");
 	const [targetExpanded, setTargetExpanded] = useState(false);
+	const [historyExpanded, setHistoryExpanded] = useState(false);
 	const [committedPending, setCommittedPending] = useState(false),
 		[savedNotice, setSavedNotice] = useState("");
 	const generation = useRef(0),
@@ -187,6 +190,153 @@ export function IssueDetail({
 		!issue.closedAt &&
 		(issue.state === "awaiting_response" ||
 			issue.state === "remeasure_requested");
+	const historyContent = (
+		<details
+			className="issue-history-disclosure"
+			open={compact ? undefined : inline ? false : issue.state === "submitted"}
+			onToggle={(e) => setHistoryExpanded(e.currentTarget.open)}
+		>
+			<summary>回复与审核历史</summary>
+			{!compact || historyExpanded ? (
+				<section className="issue-history" aria-label="回复与审核历史">
+					<h3>回复与审核历史</h3>
+					{!events.length ? <p>尚无回复。</p> : null}
+					<ol>
+						{events.map((event) =>
+							event.type === "response" ? (
+								<li key={event.response.id}>
+									<h4>
+										{
+											{
+												numeric: "数值回复",
+												photo: "仅照片回复",
+												unable: "无法测量",
+												text: "文字回复",
+											}[event.response.kind]
+										}
+									</h4>
+									<small>
+										{new Date(event.at).toLocaleString("zh-CN")} ·{" "}
+										{event.response.authorType === "owner"
+											? "工程师"
+											: `客户${event.response.guestLabel ? `（自填称呼：${event.response.guestLabel}）` : ""}`}
+									</small>
+									{event.response.value ? (
+										<p>
+											原回复：{event.response.value}{" "}
+											{displayUnit(event.response.unit)}
+										</p>
+									) : null}
+									<p className="preserve-lines">{event.response.body}</p>
+									<ul className="evidence-gallery">
+										{event.response.attachments.map((file) => (
+											<li key={file.id}>
+												{file.mime.startsWith("image/") ? (
+													<a href={`${base}/files/${file.id}/download`}>
+														<EvidencePreview base={base} file={file} />
+													</a>
+												) : null}
+												<a href={`${base}/files/${file.id}/download`}>
+													{file.filename}
+												</a>
+												{file.mime.startsWith("image/") ? (
+													<p>
+														<a
+															href={`${base}/files/${file.id}/preview`}
+															target="_blank"
+															rel="noopener noreferrer"
+														>
+															查看原尺寸证据
+														</a>
+													</p>
+												) : null}
+											</li>
+										))}
+									</ul>
+								</li>
+							) : (
+								<li key={event.review.id}>
+									<h4>
+										{event.review.decision === "confirm"
+											? "工程师已确认"
+											: "工程师要求补充／重测"}
+									</h4>
+									<small>{new Date(event.at).toLocaleString("zh-CN")}</small>
+									{event.review.value ? (
+										<p>
+											确认值：{event.review.value}{" "}
+											{displayUnit(event.review.unit)}
+										</p>
+									) : null}
+									<p>
+										{event.review.source
+											? sourceLabel[event.review.source]
+											: ""}
+									</p>
+									<p className="preserve-lines">{event.review.note}</p>
+								</li>
+							),
+						)}
+					</ol>
+				</section>
+			) : null}
+		</details>
+	);
+	if (guest && compact && issue.kind === "measurement")
+		return (
+			<section className="guest-measurement" aria-label="当前标注的测量回复">
+				{savedNotice ? <p role="status">{savedNotice}</p> : null}
+				{error ? (
+					<p role="alert" className="error">
+						{error}
+						<button type="button" onClick={() => void load()}>
+							重试
+						</button>
+					</p>
+				) : null}
+				{issue.state === "remeasure_requested" && lastReview?.note ? (
+					<p role="status" className="remeasure-note">
+						请重新测量：{lastReview.note}
+					</p>
+				) : null}
+				{canReply && !committedPending ? (
+					<IssueResponseForm
+						key={`${issue.id}:${issue.revision}:${formVersion}`}
+						base={base}
+						issue={issue}
+						compact
+						extraContent={historyContent}
+						onSaved={saved}
+						onInvalid={onInvalid}
+						onDirty={handleDirty}
+						onReload={reload}
+					/>
+				) : (
+					<>
+						<p role="status">
+							{issue.closedAt
+								? issue.closureNote || "本项已结束，历史保留。"
+								: issue.state === "submitted"
+									? "已提交，等待工程师确认。"
+									: issue.state === "confirmed"
+										? "工程师已确认。"
+										: "正在确认提交结果…"}
+						</p>
+						{lastReview?.value ? (
+							<p className="guest-annotation-value">
+								{lastReview.value} {displayUnit(lastReview.unit)}
+							</p>
+						) : null}
+						<details className="guest-measurement-more">
+							<summary>
+								更多选项<span>本项记录</span>
+							</summary>
+							{historyContent}
+						</details>
+					</>
+				)}
+			</section>
+		);
 	const mainContent = (
 		<>
 			<div className="detail-heading">
@@ -399,93 +549,7 @@ export function IssueDetail({
 				</aside>
 			</WorkspaceSideContent>
 			<WorkspaceSideContent inline={inline}>
-				<details
-					className="issue-history-disclosure"
-					open={inline ? false : issue.state === "submitted"}
-				>
-					<summary>回复与审核历史</summary>
-					<section className="issue-history" aria-label="回复与审核历史">
-						<h3>回复与审核历史</h3>
-						{!events.length ? <p>尚无回复。</p> : null}
-						<ol>
-							{events.map((event) =>
-								event.type === "response" ? (
-									<li key={event.response.id}>
-										<h4>
-											{
-												{
-													numeric: "数值回复",
-													photo: "仅照片回复",
-													unable: "无法测量",
-													text: "文字回复",
-												}[event.response.kind]
-											}
-										</h4>
-										<small>
-											{new Date(event.at).toLocaleString("zh-CN")} ·{" "}
-											{event.response.authorType === "owner"
-												? "工程师"
-												: `客户${event.response.guestLabel ? `（自填称呼：${event.response.guestLabel}）` : ""}`}
-										</small>
-										{event.response.value ? (
-											<p>
-												原回复：{event.response.value}{" "}
-												{displayUnit(event.response.unit)}
-											</p>
-										) : null}
-										<p className="preserve-lines">{event.response.body}</p>
-										<ul className="evidence-gallery">
-											{event.response.attachments.map((file) => (
-												<li key={file.id}>
-													{file.mime.startsWith("image/") ? (
-														<a href={`${base}/files/${file.id}/download`}>
-															<EvidencePreview base={base} file={file} />
-														</a>
-													) : null}
-													<a href={`${base}/files/${file.id}/download`}>
-														{file.filename}
-													</a>
-													{file.mime.startsWith("image/") ? (
-														<p>
-															<a
-																href={`${base}/files/${file.id}/preview`}
-																target="_blank"
-																rel="noopener noreferrer"
-															>
-																查看原尺寸证据
-															</a>
-														</p>
-													) : null}
-												</li>
-											))}
-										</ul>
-									</li>
-								) : (
-									<li key={event.review.id}>
-										<h4>
-											{event.review.decision === "confirm"
-												? "工程师已确认"
-												: "工程师要求补充／重测"}
-										</h4>
-										<small>{new Date(event.at).toLocaleString("zh-CN")}</small>
-										{event.review.value ? (
-											<p>
-												确认值：{event.review.value}{" "}
-												{displayUnit(event.review.unit)}
-											</p>
-										) : null}
-										<p>
-											{event.review.source
-												? sourceLabel[event.review.source]
-												: ""}
-										</p>
-										<p className="preserve-lines">{event.review.note}</p>
-									</li>
-								),
-							)}
-						</ol>
-					</section>
-				</details>
+				{historyContent}
 			</WorkspaceSideContent>
 		</section>
 	);

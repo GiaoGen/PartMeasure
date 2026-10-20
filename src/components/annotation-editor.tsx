@@ -1,4 +1,5 @@
 "use client";
+import { GuestAnnotationPanel } from "./guest-annotation-panel";
 import { AnnotationIcon } from "./annotation-icon";
 import { annotationText } from "@/lib/annotation-presentation";
 import { measurementFieldLabel } from "@/lib/annotation-collaboration";
@@ -200,6 +201,29 @@ export function AnnotationEditor({
 						<AnnotationIcon kind="retry" />
 					</button>
 				</section>
+			</WorkspaceSideContent>
+		);
+	if (guest && propertiesOnly && initialAnnotationId)
+		return (
+			<WorkspaceSideContent>
+				{panelHidden ? null : selected ? (
+					<GuestAnnotationPanel
+						key={selected.id}
+						item={selected}
+						base={base}
+						fileId={fileId}
+						refreshKey={refreshKey + collaborationVersion}
+						onInvalid={onInvalid}
+						onDirty={onRequestDirty}
+						onUpdated={() => {
+							onIssueCreated();
+							onAnnotationsSaved?.();
+							if (!session.dirty && !session.blocked) void session.load();
+						}}
+					/>
+				) : (
+					<p role="status">{session.error || "正在读取所选标注…"}</p>
+				)}
 			</WorkspaceSideContent>
 		);
 	const { image } = session.document;

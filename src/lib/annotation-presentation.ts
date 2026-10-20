@@ -49,8 +49,7 @@ export function geometryPaths(
 ): string[] {
 	if (g.type === "line")
 		return [dimensionPath(pixel(g.from, w, h), pixel(g.to, w, h), scale)];
-	if (g.type === "text") return [];
-	if (g.type === "point") {
+	if (g.type === "point" || g.type === "text") {
 		const c = pixel(g.at, w, h),
 			r = 5 / scale;
 		return [
@@ -138,6 +137,31 @@ export function annotationText(item: AnnotationDraft) {
 				`${fields.length > 1 ? `${measurementFieldLabel(item, f)}：` : ""}${measurementText(item, f)}`,
 		)
 		.join(" · ");
+}
+// Photo overlays contain measured values only; details stay in the properties panel.
+export function photoDimensionText(item: AnnotationDraft) {
+	return requiredMeasurements({
+		...item,
+		metadata: {
+			...item.metadata,
+			measurementMode:
+				item.geometry.type === "point" ? item.metadata.measurementMode : "auto",
+		},
+	})
+		.filter((field) => !!item.metadata[field])
+		.map(
+			(field) =>
+				`${field === "holeDepth" ? "h" : field === "arcLength" ? "L" : ""}${measurementText(item, field)}`,
+		)
+		.join(" · ");
+}
+export function annotationColor(item: AnnotationDraft) {
+	if (item.collaboration?.pending) return "#dc2626";
+	if (item.collaboration?.submitted) return "#eab308";
+	if (item.collaboration) return "#16a34a";
+	return requiredMeasurements(item).some((field) => !item.metadata[field])
+		? "#dc2626"
+		: "#16a34a";
 }
 export function labelPosition(
 	g: Geometry,

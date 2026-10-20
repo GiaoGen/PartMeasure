@@ -1,6 +1,5 @@
 "use client";
 import {
-	anchor,
 	angleGeometry,
 	ellipseGeometry,
 	makeEllipse,
@@ -9,13 +8,14 @@ import {
 import {
 	geometryPaths,
 	labelPosition,
-	annotationText,
+	photoDimensionText,
+	annotationColor,
 } from "@/lib/annotation-presentation";
 import {
 	threePointGeometry,
 	dragHandleGeometry,
 } from "@/lib/annotation-interaction";
-import { annotationStatus } from "@/lib/annotation-collaboration";
+import { AnnotationIcon } from "./annotation-icon";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type Konva from "konva";
 import { privateImage, discardPrivateImage } from "./private-image-cache";
@@ -88,7 +88,6 @@ export default function AnnotationCanvas({
 	onSave,
 	onError,
 	onInvalid,
-	showNumbers = true,
 	canUndo = false,
 	canRedo = false,
 }: {
@@ -107,7 +106,6 @@ export default function AnnotationCanvas({
 	onSave: () => void;
 	onError: (text: string) => void;
 	onInvalid: () => void;
-	showNumbers?: boolean;
 	canUndo?: boolean;
 	canRedo?: boolean;
 }) {
@@ -463,7 +461,8 @@ export default function AnnotationCanvas({
 		event: Konva.KonvaEventObject<MouseEvent | TouchEvent>,
 		id: string,
 	) {
-		if (!guest && !space && !["select", "pan"].includes(tool)) return;
+		if (space || tool === "pan") return;
+		if (!guest && !["select", "pan"].includes(tool)) return;
 		if ((!space && !multi.current) || guest) {
 			onSelect(id);
 			host.current?.focus({ preventScroll: true });
@@ -481,12 +480,9 @@ export default function AnnotationCanvas({
 					: item.geometry,
 			chosen = !preview && selected === item.id,
 			editing = canEdit && chosen && !space && !preview,
-			stroke = chosen ? "#273444" : mark,
+			stroke = annotationColor(item),
 			lineWidth = (chosen ? 3 : 2) / s;
-		const p = anchor(g);
-		const label = [item.metadata.name, annotationText(item)]
-			.filter(Boolean)
-			.join(" · ");
+		const label = photoDimensionText(item);
 		const position = labelPosition(g, w, h, s);
 		const paths = geometryPaths(
 			g,
@@ -498,28 +494,18 @@ export default function AnnotationCanvas({
 			data,
 			role: ["outline", "detail", "secondary"][i] ?? "extra",
 		}));
-		const shape =
-			g.type === "text" ? (
-				<Text
-					x={g.at.x * w}
-					y={g.at.y * h}
-					text={g.text || "备注"}
-					fontSize={16 / s}
-					fill={stroke}
-					padding={3 / s}
-				/>
-			) : (
-				paths.map(({ data, role }) => (
-					<Path
-						key={role}
-						data={data}
-						stroke={stroke}
-						strokeWidth={lineWidth}
-						hitStrokeWidth={44 / s}
-						fill={g.type === "point" ? stroke : "transparent"}
-					/>
-				))
-			);
+
+		const shape = paths.map(({ data, role }) => (
+			<Path
+				key={role}
+				data={data}
+				stroke={stroke}
+				strokeWidth={lineWidth}
+				hitStrokeWidth={44 / s}
+				fill={g.type === "point" || g.type === "text" ? stroke : "transparent"}
+			/>
+		));
+
 		const handles: { key: string; point: Point }[] = [];
 		if (chosen && editing) {
 			if (g.type === "line")
@@ -624,7 +610,7 @@ export default function AnnotationCanvas({
 							onChange({ ...item, geometry: moveGeometry(g, dx, dy, w, h) });
 					}}
 				>
-					{g.type !== "text"
+					{paths.length
 						? paths.map(({ data, role }) => (
 								<Path
 									key={role}
@@ -636,31 +622,14 @@ export default function AnnotationCanvas({
 							))
 						: null}
 					{shape}
-					{!preview && showNumbers ? (
-						<Group
-							x={Math.max(14 / s, Math.min(w - 14 / s, p.x * w))}
-							y={Math.max(14 / s, p.y * h - 18 / s)}
-							listening={false}
-						>
-							<Circle radius={11 / s} fill={stroke} />
-							<Text
-								x={-11 / s}
-								y={-7 / s}
-								width={22 / s}
-								align="center"
-								text={String(items.findIndex((i) => i.id === item.id) + 1)}
-								fontSize={13 / s}
-								fill="white"
-							/>
-						</Group>
-					) : null}
+
 					{label && g.type !== "text" ? (
 						<Text
 							x={Math.max(0, Math.min(w - 180 / s, position.x - 90 / s))}
 							y={Math.max(0, Math.min(h - 42 / s, position.y - 14 / s))}
 							width={180 / s}
 							align="center"
-							text={`${label}${annotationStatus(item) ? ` · ${annotationStatus(item)}` : ""}`}
+							text={label}
 							fontSize={14 / s}
 							fill={stroke}
 							stroke="white"
@@ -681,7 +650,7 @@ export default function AnnotationCanvas({
 						radius={key === "rotate" ? 7 / s : 6 / s}
 						hitStrokeWidth={40 / s}
 						fill="white"
-						stroke={mark}
+						stroke={stroke}
 						strokeWidth={2 / s}
 						draggable
 						onMouseDown={(e) => {
@@ -742,74 +711,114 @@ export default function AnnotationCanvas({
 	}
 	return (
 		<div className="canvas-column">
-			{!guest ? (
-				<div
-					className="annotation-toolbar"
-					role="toolbar"
-					aria-label="标注工具"
-				>
-					{(["select", "line", "circle", "angle"] as Tool[]).map((value) => (
+			<div
+				className="annotation-toolbar"
+				role="toolbar"
+				aria-label="图片编辑工具"
+			>
+				{!guest ? (
+					<>
+						{(
+							[
+								"select",
+								"pan",
+								"line",
+								"circle",
+								"angle",
+								"arc",
+								"ellipse",
+								"point",
+								"text",
+							] as const
+						).map((value) => (
+							<button
+								key={value}
+								type="button"
+								className="annotation-icon-button"
+								disabled={disabled}
+								aria-pressed={tool === value}
+								aria-label={names[value]}
+								title={names[value]}
+								onClick={() => {
+									cancelControlDrag();
+									setTool(value);
+									drawing.current = null;
+									triplet.current = [];
+									setPartial([]);
+									setHover(null);
+									setDraft(null);
+								}}
+							>
+								<AnnotationIcon kind={value} />
+							</button>
+						))}
 						<button
-							key={value}
 							type="button"
-							disabled={disabled}
-							aria-pressed={tool === value}
-							onClick={() => {
-								setTool(value);
-								drawing.current = null;
-								triplet.current = [];
-								setPartial([]);
-								setHover(null);
-								setDraft(null);
-							}}
+							className="annotation-icon-button"
+							disabled={disabled || !canUndo}
+							aria-label="撤销"
+							title="撤销"
+							onClick={onUndo}
 						>
-							{names[value]}
+							<AnnotationIcon kind="undo" />
 						</button>
-					))}
-					<label className="more-annotation-tools">
-						更多
-						<select
-							aria-label="更多标注工具"
-							disabled={disabled}
-							value={
-								["arc", "ellipse", "point", "text"].includes(tool) ? tool : ""
-							}
-							onChange={(e) => {
-								setTool(e.target.value as Tool);
-								drawing.current = null;
-								triplet.current = [];
-								setPartial([]);
-								setHover(null);
-								setDraft(null);
-							}}
+						<button
+							type="button"
+							className="annotation-icon-button"
+							disabled={disabled || !canRedo}
+							aria-label="重做"
+							title="重做"
+							onClick={onRedo}
 						>
-							<option value="" disabled>
-								选择工具
-							</option>
-							{(["arc", "ellipse", "point", "text"] as Tool[]).map((value) => (
-								<option key={value} value={value}>
-									{names[value]}
-								</option>
-							))}
-						</select>
-					</label>
+							<AnnotationIcon kind="redo" />
+						</button>
+					</>
+				) : null}
+				<button
+					type="button"
+					className="annotation-icon-button"
+					aria-label="缩小"
+					title="缩小"
+					onClick={() =>
+						setView((v) =>
+							zoomView(
+								v,
+								{ x: size.width / 2, y: size.height / 2 },
+								v.scale / 1.2,
+							),
+						)
+					}
+				>
+					<AnnotationIcon kind="zoomOut" />
+				</button>
+				<button
+					type="button"
+					className="annotation-icon-button"
+					aria-label="放大"
+					title="放大"
+					onClick={() =>
+						setView((v) =>
+							zoomView(
+								v,
+								{ x: size.width / 2, y: size.height / 2 },
+								v.scale * 1.2,
+							),
+						)
+					}
+				>
+					<AnnotationIcon kind="zoomIn" />
+				</button>
+				<button
+					type="button"
+					className="annotation-icon-button"
+					aria-label="适应图片"
+					title="适应图片"
+					onClick={() => setView(fitView(w, h, size.width, size.height))}
+				>
+					<AnnotationIcon kind="fit" />
+				</button>
+			</div>
 
-					<button
-						type="button"
-						disabled={disabled || !canUndo}
-						onClick={onUndo}
-					>
-						撤销
-					</button>
-					<button
-						type="button"
-						disabled={disabled || !canRedo}
-						onClick={onRedo}
-					>
-						重做
-					</button>
-				</div>
-			) : null}
 			<div
 				ref={host}
 				className="annotation-viewport"
@@ -900,8 +909,14 @@ export default function AnnotationCanvas({
 						{loadError ? (
 							<>
 								<p role="alert">图片暂时无法载入。</p>
-								<button type="button" onClick={() => setAttempt((v) => v + 1)}>
-									重试图片
+								<button
+									className="annotation-icon-button"
+									aria-label="重试图片"
+									title="重试图片"
+									type="button"
+									onClick={() => setAttempt((v) => v + 1)}
+								>
+									<AnnotationIcon kind="retry" />
 								</button>
 							</>
 						) : (
@@ -1015,6 +1030,9 @@ export default function AnnotationCanvas({
 							]}{" "}
 					·{" "}
 					<button
+						className="annotation-icon-button"
+						aria-label="取消"
+						title="取消"
 						type="button"
 						onClick={() => {
 							triplet.current = [];
@@ -1024,7 +1042,7 @@ export default function AnnotationCanvas({
 							setTool("select");
 						}}
 					>
-						取消
+						<AnnotationIcon kind="close" />
 					</button>
 				</p>
 			) : null}

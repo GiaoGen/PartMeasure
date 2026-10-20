@@ -236,9 +236,22 @@ export function IssueDetail({
 						<Canvas
 							image={target.image}
 							src={`${base}/files/${issue.fileId}/preview`}
-							items={[target.annotation]}
+							items={[
+								{
+									...target.annotation,
+									collaboration: {
+										pending:
+											!issue.closedAt &&
+											(issue.state === "awaiting_response" ||
+												issue.state === "remeasure_requested")
+												? 1
+												: 0,
+										submitted:
+											!issue.closedAt && issue.state === "submitted" ? 1 : 0,
+									},
+								},
+							]}
 							selected={target.annotationRef.id}
-							showNumbers={false}
 							guest
 							disabled
 							onSelect={() => onOpenProperties?.()}

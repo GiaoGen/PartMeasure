@@ -1,4 +1,5 @@
 "use client";
+import { AnnotationIcon } from "./annotation-icon";
 import { annotationText } from "@/lib/annotation-presentation";
 import { measurementFieldLabel } from "@/lib/annotation-collaboration";
 import dynamic from "next/dynamic";
@@ -189,8 +190,14 @@ export function AnnotationEditor({
 					<p role="alert" className="error">
 						{session.error || "无法读取标注。"}
 					</p>
-					<button type="button" onClick={() => void session.load()}>
-						重试载入标注
+					<button
+						className="annotation-icon-button"
+						aria-label="重试载入标注"
+						title="重试载入标注"
+						type="button"
+						onClick={() => void session.load()}
+					>
+						<AnnotationIcon kind="retry" />
 					</button>
 				</section>
 			</WorkspaceSideContent>
@@ -289,8 +296,14 @@ export function AnnotationEditor({
 							{!guest && session.dirty && !session.saving ? " · 未保存" : ""}
 						</p>
 						{preview ? (
-							<button type="button" onClick={() => setPreview(null)}>
-								返回当前标注
+							<button
+								className="annotation-icon-button"
+								aria-label="返回当前标注"
+								title="返回当前标注"
+								type="button"
+								onClick={() => setPreview(null)}
+							>
+								<AnnotationIcon kind="back" />
 							</button>
 						) : null}
 						{session.error ? (
@@ -306,6 +319,9 @@ export function AnnotationEditor({
 										: "请求结果可能尚未确认；重试会沿用同一幂等键，编辑暂时暂停。"}
 								</p>
 								<button
+									className="annotation-icon-button"
+									aria-label="复制当前草稿"
+									title="复制当前草稿"
 									type="button"
 									onClick={async () => {
 										try {
@@ -326,9 +342,12 @@ export function AnnotationEditor({
 										}
 									}}
 								>
-									复制当前草稿
+									<AnnotationIcon kind="copy" />
 								</button>
 								<button
+									className="annotation-icon-button"
+									aria-label="重新载入已保存版本"
+									title="重新载入已保存版本"
 									type="button"
 									onClick={() => {
 										if (
@@ -337,7 +356,7 @@ export function AnnotationEditor({
 											void session.load(true);
 									}}
 								>
-									重新载入已保存版本
+									<AnnotationIcon kind="retry" />
 								</button>
 							</div>
 						) : null}
@@ -347,6 +366,21 @@ export function AnnotationEditor({
 					{!guest ? (
 						<div className="actions">
 							<button
+								className="annotation-icon-button"
+								aria-label={
+									session.saving
+										? "保存中"
+										: session.blocked
+											? "重试保存"
+											: "保存标注"
+								}
+								title={
+									session.saving
+										? "保存中"
+										: session.blocked
+											? "重试保存"
+											: "保存标注"
+								}
 								type="button"
 								disabled={
 									session.saving ||
@@ -356,11 +390,7 @@ export function AnnotationEditor({
 								}
 								onClick={() => void save()}
 							>
-								{session.saving
-									? "保存中…"
-									: session.blocked
-										? "重试保存"
-										: "保存标注"}
+								<AnnotationIcon kind="save" />
 							</button>
 						</div>
 					) : null}
@@ -451,14 +481,19 @@ export function AnnotationEditor({
 							{!guest && selected && !preview ? (
 								<div className="actions">
 									<button
+										aria-label="删除选中标注"
+										title="删除选中标注"
 										type="button"
-										className="danger"
+										className="annotation-icon-button danger"
 										disabled={editDisabled}
 										onClick={remove}
 									>
-										删除选中标注
+										<AnnotationIcon kind="delete" />
 									</button>
 									<button
+										className="annotation-icon-button"
+										aria-label="修订历史"
+										title="修订历史"
 										type="button"
 										disabled={
 											session.dirty ||
@@ -467,7 +502,7 @@ export function AnnotationEditor({
 										}
 										onClick={() => void loadHistory(selected.id)}
 									>
-										修订历史
+										<AnnotationIcon kind="history" />
 									</button>
 								</div>
 							) : null}
@@ -484,11 +519,14 @@ export function AnnotationEditor({
 									<p key={h.id}>
 										{h.metadata.name || typeLabel(h.geometry)}{" "}
 										<button
+											className="annotation-icon-button"
+											aria-label="查看修订"
+											title="查看修订"
 											type="button"
 											disabled={requestDirty || session.dirty || session.saving}
 											onClick={() => void loadHistory(h.id)}
 										>
-											查看修订
+											<AnnotationIcon kind="history" />
 										</button>
 									</p>
 								))}
@@ -517,11 +555,14 @@ export function AnnotationEditor({
 							</ol>
 							{before ? (
 								<button
+									className="annotation-icon-button"
+									aria-label="更早修订"
+									title="更早修订"
 									type="button"
 									disabled={historyLoading}
 									onClick={() => void loadHistory(historyId, before)}
 								>
-									更早修订
+									<AnnotationIcon kind="more" />
 								</button>
 							) : null}
 						</section>

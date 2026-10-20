@@ -1,8 +1,8 @@
 "use client";
-import { anchor } from "@/lib/geometry-extensions";
 import {
 	geometryPaths,
-	annotationText,
+	photoDimensionText,
+	annotationColor,
 	labelPosition,
 } from "@/lib/annotation-presentation";
 import { annotationStatus } from "@/lib/annotation-collaboration";
@@ -110,7 +110,6 @@ export function AnnotatedThumbnail({
 	const items = document?.items.filter((item) => !item.deleted) ?? [];
 	const w = document?.image.width ?? 1,
 		h = document?.image.height ?? 1;
-	const labelSize = Math.max(w, h) / 26;
 	return (
 		<span className="annotated-thumbnail" ref={host}>
 			{onBrowse ? (
@@ -138,14 +137,14 @@ export function AnnotatedThumbnail({
 					role="img"
 					aria-label={`${items.length} 个已保存标注`}
 				>
-					{items.map((item, index) => {
+					{items.map((item) => {
 						const g = item.geometry;
-						const p = anchor(g);
+						const color = annotationColor(item);
 						return (
 							<g key={item.id}>
 								<g
 									fill="none"
-									stroke="var(--workspace-mark)"
+									stroke={color}
 									strokeWidth="2.5"
 									vectorEffect="non-scaling-stroke"
 								>
@@ -164,13 +163,15 @@ export function AnnotatedThumbnail({
 												key={role}
 												d={data}
 												fill={
-													g.type === "point" ? "var(--workspace-mark)" : "none"
+													g.type === "point" || g.type === "text"
+														? color
+														: "none"
 												}
 												vectorEffect="non-scaling-stroke"
 											/>
 										))}
 								</g>
-								{g.type !== "text" && annotationText(item) ? (
+								{g.type !== "text" && photoDimensionText(item) ? (
 									<text
 										x={
 											labelPosition(g, w, h, Math.max(0.001, size.width / w)).x
@@ -180,44 +181,14 @@ export function AnnotatedThumbnail({
 										}
 										fontSize={12 / Math.max(0.001, size.width / w)}
 										textAnchor="middle"
-										fill="var(--workspace-mark)"
+										fill={color}
 										stroke="white"
 										strokeWidth={3 / Math.max(0.001, size.width / w)}
 										paintOrder="stroke"
 									>
-										{annotationText(item)}
+										{photoDimensionText(item)}
 									</text>
 								) : null}
-								{g.type === "text" ? (
-									<text
-										x={p.x * w}
-										y={p.y * h}
-										fontSize={labelSize}
-										fill="var(--workspace-mark)"
-										stroke="#fff"
-										strokeWidth={labelSize / 9}
-										paintOrder="stroke"
-									>
-										{g.text}
-									</text>
-								) : null}
-								<circle
-									cx={Math.max(labelSize, Math.min(w - labelSize, p.x * w))}
-									cy={Math.max(labelSize, p.y * h - labelSize)}
-									r={labelSize * 0.65}
-									fill="var(--workspace-mark)"
-								/>
-								<text
-									x={Math.max(labelSize, Math.min(w - labelSize, p.x * w))}
-									y={Math.max(labelSize, p.y * h - labelSize)}
-									textAnchor="middle"
-									dominantBaseline="central"
-									fontSize={labelSize * 0.8}
-									fill="#fff"
-								>
-									{index + 1}
-									{annotationStatus(item) ? "·" : ""}
-								</text>
 							</g>
 						);
 					})}

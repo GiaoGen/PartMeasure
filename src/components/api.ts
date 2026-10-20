@@ -39,6 +39,12 @@ const messages: Record<string, string> = {
 	ORIGIN_MISMATCH: "访问地址与服务端配置不一致，请使用配置的站点地址；重新登录或清缓存无法解决。",
 	FOLDER_NAME_EXISTS: "文件夹名称已存在，请换一个名称。",
 	FOLDER_LIMIT_REACHED: "文件夹数量已达到上限。",
+	PROCESSING_ACTIVE: "文件正在处理，请稍后查看；若中断，稍后可重试。",
+	PROCESSING_BUSY: "正在处理另一份文件，请稍后重试，无需重新上传。",
+	PROCESSING_EXPIRED: "上次文件处理已中断，可以继续处理，无需重新上传。",
+	PROCESSING_INTERRUPTED: "文件处理暂时中断，请重试，无需重新上传。",
+	UPLOAD_OBJECT_NOT_FOUND: "文件尚未传输完整，请重新选择同一文件继续。",
+	FILE_REJECTED: "文件未通过格式或内容校验，请检查文件后重新选择。",
 	NOT_FOUND: "内容不存在或无权访问。",
 	IMAGE_NOT_READY: "图片尚未完成标准化处理，无法标注。",
 	IMAGE_VERSION_CONFLICT: "图片版本已变化，请保留草稿并重新载入。",
@@ -210,7 +216,7 @@ async function request<T>(
 		method,
 		headers,
 		cache: "no-store",
-		signal: AbortSignal.any([controller.signal, AbortSignal.timeout(45000)]),
+		signal: AbortSignal.any([controller.signal, AbortSignal.timeout(/\/uploads\/[^/]+\/(complete|retry)$/.test(url) ? 75000 : 45000)]),
 	};
 	if (data !== undefined) init.body = JSON.stringify(data);
 	try {

@@ -1,5 +1,7 @@
 # 安全图片 Worker 托管运行说明（无 Docker）
 
+**2026-10-20 已退役，仅保留历史记录。当前上传在Next.js请求内处理，不再部署本目录unit或启动ClamAV。新说明见[轻量上传实施](../../docs/lightweight-upload.md)。** 下文是旧方案，不是当前操作步骤。
+
 本包仅面向已授权隔离项目 `rvysclscetfqicpnzlra`。当前交付的是 **Linux systemd 部署包**，尚无获授权主机/SSH 环境，未在 Linux 托管环境安装或完成重启、故障及资源耗尽演练。本机 Worker 消费真实云文件的结果不代表已云端常驻。
 
 ## 运行结构与前提

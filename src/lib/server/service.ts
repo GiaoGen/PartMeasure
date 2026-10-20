@@ -356,47 +356,21 @@ export async function reservation(
 	actor: Actor,
 	id: string,
 	reservationId: string,
-	complete = false,
-	key = "",
 ) {
 	return transaction(actor, async (db) => {
-		await access(db, actor, id, false, !complete);
+		await access(db, actor, id, false, true);
 		const { rows } = await db.query(
-			"select * from pm.upload_reservations where id=$1 and project_id=$2 for update",
+			"select * from pm.upload_reservations where id=$1 and project_id=$2",
 			[reservationId, id],
 		);
 		const r = rows[0];
 		if (!r || (r.actor_key !== actorKey(actor) && actor.kind !== "owner"))
 			throw new AppError("NOT_FOUND", 404);
-		if (complete) {
-			if (r.actor_key !== actorKey(actor)) throw new AppError("FORBIDDEN", 403);
-			await idempotent(
-				db,
-				`${id}:${actorKey(actor)}:complete`,
-				key,
-				{ reservationId },
-				async () => {
-					if (r.state === "rejected" || r.state === "cleaned")
-						throw new AppError("FILE_REJECTED", 422);
-					if (r.state === "reserved") {
-						await db.query(
-							"update pm.upload_reservations set state='queued' where id=$1",
-							[reservationId],
-						);
-						await db.query("insert into pm.jobs(reservation_id) values($1)", [
-							reservationId,
-						]);
-						r.state = "queued";
-						await audit(db, actor, id, "upload.complete", reservationId);
-					}
-					return { accepted: true };
-				},
-			);
-		}
+
 		return {
 			id: r.id as string,
 			state: r.state as string,
-			errorCode: r.error_code as string | null,
+			errorCode: (r.state === "processing" && (!r.processing_until || new Date(r.processing_until).getTime() < Date.now()) ? "PROCESSING_EXPIRED" : r.error_code) as string | null,
 			path: r.quarantine_key as string,
 			grantExpiresAt: r.grant_expires_at as string,
 			cleanupAfter: r.cleanup_after as string,
@@ -413,46 +387,10 @@ export async function listReservations(
 	return transaction(actor, async (db) => {
 		await access(db, actor, id, false, true);
 		const { rows } = await db.query(
-			"select id,filename,state,error_code as \"errorCode\" from pm.upload_reservations where project_id=$1 and ($2::boolean or actor_key=$3) and purpose=$4 and state not in ('ready','cleaned') and created_at>now()-interval '1 day' order by created_at desc limit 30",
+				"select id,filename,state,(actor_key=$3) as \"canProcess\",case when state='processing' and (processing_until is null or processing_until<now()) then 'PROCESSING_EXPIRED' else error_code end as \"errorCode\",coalesce(processing_until>now(),false) as \"processingActive\" from pm.upload_reservations where project_id=$1 and ($2::boolean or actor_key=$3) and purpose=$4 and state not in ('ready','cleaned') and created_at>now()-interval '1 day' order by created_at desc limit 30",
 			[id, actor.kind === "owner", actorKey(actor), purpose],
 		);
 		return { items: rows };
-	});
-}
-export async function retryProcessing(
-	actor: Actor,
-	id: string,
-	reservationId: string,
-	key: string,
-) {
-	return transaction(actor, async (db) => {
-		await access(db, actor, id);
-		const r = await db.query(
-			"select actor_key,state from pm.upload_reservations where id=$1 and project_id=$2 for update",
-			[reservationId, id],
-		);
-		if (!r.rows[0] || r.rows[0].actor_key !== actorKey(actor))
-			throw new AppError("NOT_FOUND", 404);
-		return idempotent(
-			db,
-			`${id}:${actorKey(actor)}:retry`,
-			key,
-			{ reservationId },
-			async () => {
-				if (!["queued", "processing"].includes(r.rows[0].state))
-					throw new AppError("INVALID_STATE", 409);
-				const updated = await db.query(
-					"update pm.jobs set attempts=0,next_at=now(),dead_at=null,error_code=null where reservation_id=$1 and done_at is null and (lease_until is null or lease_until<now()) returning id",
-					[reservationId],
-				);
-				if (!updated.rows[0]) throw new AppError("PROCESSING_ACTIVE", 409);
-				await db.query(
-					"update pm.upload_reservations set error_code=null where id=$1",
-					[reservationId],
-				);
-				return { accepted: true };
-			},
-		);
 	});
 }
 export async function files(

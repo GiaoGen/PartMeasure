@@ -1,0 +1,10 @@
+{
+  "checkedAt": "2026-10-20T05:45:13.242Z",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "version": "20261020052757",
+  "name": "lightweight_request_uploads",
+  "sha256": "8ca2c1cd649c6e14cef31268cccd7557407eb43b74bf954b37f195168b828624",
+  "status": "PASS",
+  "replay": false,
+  "scope": "isolated test migration only; no production or stand-ins"
+}

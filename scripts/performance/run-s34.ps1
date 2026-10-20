@@ -10,6 +10,7 @@ try{
  elseif($Action -eq 'start'){& node --env-file=.env.local --env-file=tmp/performance-s34/events.env node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3111}
  elseif($Action -eq 'live'){& node --env-file=.env.local --env-file=tmp/performance-s34/events.env --import tsx scripts/performance/live-s34.mjs}
  elseif($Action -eq 'images'){& node --import tsx scripts/performance/images-s34.mjs}
+ elseif($Action -in @('worker','backfill','cleanup')){ throw 'Legacy Worker retired. Use request-driven upload completion; no scanner/daemon is needed.' }
  else{
   $pmWorkerArgs=@('--env-file=.env.local','--env-file=tmp/performance-s34/events.env','--import','tsx','scripts/worker/supervise.ts')
   if($Action -eq 'cleanup'){$pmWorkerArgs+='--cleanup-only'}

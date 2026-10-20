@@ -1,5 +1,7 @@
 # PartMeasure · P0-4
 
+2026-10-20：已按轻量作品方向改为[请求内完成上传](docs/lightweight-upload.md)，**正常运行不需要独立Worker、ClamAV或另租处理服务器**。格式/大小/hash与权限校验保留，不进行病毒扫描；旧文件和标注坐标不改写。下方阶段报告中的Worker部署说明属于历史方案，不再作为运行前提。
+
 当前范围：在既有认证、文件、标注和测量审核基础上，新增私有交付草稿、多附件原子发布、不可覆盖成果集合和受控下载。用户已确认P0-3人工验收并授权P0-4，见 [阶段授权](docs/P0-4/00-authorization.md)。本轮停在P0-4验收，不自动进入P1/P2。数字OTP注册仍按此前决定待验证，正常测试账号密码登录不能代替注册通过。
 
 最新：[实现与契约](docs/P0-4/01-implementation.md)、[人工与大陆手机清单](docs/P0-4/02-manual-checklist.md)、[实际验证/已知问题](docs/P0-4/03-verification.md)、[P0总验收表](docs/P0-4/04-p0-exit-matrix.md)、[无Docker运行/测试部署](docs/P0-4/05-deployment-runbook.md)。[HTTPS staging入口](https://partmeasure-staging-em72unjso-messup-s-projects.vercel.app/login)已跑通真实闭环；P0-4实现与整个P0验收分别记录，真实手机/大陆网络和OTP未验证时不能宣称整个P0通过。
@@ -18,7 +20,7 @@ npm run dev
 # http://127.0.0.1:3000
 ```
 
-用 `Copy-Item .env.example .env.local` 创建本地配置；示例所有凭据均为空。正式流程需要受限 PostgreSQL runtime/worker 连接、CA、Auth 和服务端 Storage key，以及独立 ClamAV。不要提交 `.env.local`、数据库密码、分享令牌或服务端密钥。`GET /api/health` 只表示 liveness，database=not-probed，不能作为业务验收。
+用 `Copy-Item .env.example .env.local` 创建本地配置；示例所有凭据均为空。需要受限 PostgreSQL runtime连接、CA、Auth、服务端Storage key；现有SSE事件使用runtime的session连接`EVENT_DATABASE_URL`，不依赖上传消费者。已有本地配置保留即可，旧Worker/ClamAV变量不再使用。不要提交配置、密码、分享令牌或服务端密钥。`GET /api/health`只表示liveness，不能作为业务验收。先应用已授权隔离库的正式migration，再启动新代码；现有隔离库已应用轻量上传迁移。
 
 ```powershell
 npm run lint

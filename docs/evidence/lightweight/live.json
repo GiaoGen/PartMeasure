@@ -1,0 +1,37 @@
+{
+  "checkedAt": "2026-10-20T05:55:11.186Z",
+  "scope": "Local production Next + real isolated Auth/DB/private Storage; HTTP/SSE only",
+  "completionMilliseconds": 8402,
+  "results": [
+    {
+      "name": "normal-password-setup",
+      "status": "PASS",
+      "milliseconds": 18410
+    },
+    {
+      "name": "Guest-image-ready-without-worker-or-scanner-and-owner-SSE",
+      "status": "FAIL",
+      "code": "ASSERTION_OR_DEPENDENCY_FAILED"
+    },
+    {
+      "name": "refresh-recovery-and-complete-replay-create-one-asset",
+      "status": "PASS",
+      "milliseconds": 7106
+    },
+    {
+      "name": "Owner-PDF-is-ready-and-private-download-keeps-original-bytes",
+      "status": "PASS",
+      "milliseconds": 25294
+    },
+    {
+      "name": "disguised-and-oversized-files-rejected-without-blocking-valid-files",
+      "status": "PASS",
+      "milliseconds": 22779
+    },
+    {
+      "name": "B-isolation-Guest-delivery-denial-and-revoked-completion",
+      "status": "PASS",
+      "milliseconds": 24562
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "checkedAt": "2026-10-20T05:51:58.737Z",
+  "scope": "Disposable native PG: RLS/transactions only, no cloud Auth/Storage",
+  "results": [
+    {
+      "check": "runtime-claim-finalize-idempotency-quota-and-no-job-enqueued",
+      "status": "PASS"
+    },
+    {
+      "check": "Guest-finalize-and-role-isolation-with-project-edit-still-denied",
+      "status": "PASS"
+    },
+    {
+      "check": "active-claim-expiry-takeover-and-late-finalize-fence",
+      "status": "PASS"
+    },
+    {
+      "check": "legacy-queued-upload-takeover-with-history-retained",
+      "status": "PASS"
+    },
+    {
+      "check": "delivery-remains-private-until-atomic-publication",
+      "status": "PASS"
+    },
+    {
+      "check": "runtime-image-derivatives-and-insert-fence",
+      "status": "PASS"
+    },
+    {
+      "check": "revocation-during-processing-rejects-finalize-and-preserves-quota",
+      "status": "PASS"
+    }
+  ]
+}

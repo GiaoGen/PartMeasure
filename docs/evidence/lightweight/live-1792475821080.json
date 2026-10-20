@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-10-20T05:57:01.078Z",
+  "scope": "Local production Next + real isolated Auth/DB/private Storage; HTTP/SSE only",
+  "completionMilliseconds": 8866,
+  "results": [
+    {
+      "name": "normal-password-setup",
+      "status": "PASS",
+      "milliseconds": 21684
+    },
+    {
+      "name": "Guest-image-ready-without-worker-or-scanner-and-owner-SSE",
+      "status": "PASS",
+      "milliseconds": 38357
+    }
+  ]
+}

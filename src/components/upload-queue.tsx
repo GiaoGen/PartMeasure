@@ -27,6 +27,8 @@ type Tracked = {
 	filename: string;
 	state: string;
 	errorCode: string | null;
+	processingActive?: boolean;
+	canProcess?: boolean;
 };
 export function UploadQueue({
 	base,
@@ -147,6 +149,7 @@ export function UploadQueue({
 				key: crypto.randomUUID(),
 				completeKey: crypto.randomUUID(),
 				terminal: false,
+				progress: 0,
 			};
 			update(item.id, item);
 		}
@@ -161,6 +164,13 @@ export function UploadQueue({
 		running.current.add(item.id);
 		update(item.id, { state: "uploading", error: "" });
 		try {
+			if (item.reservationId && item.progress === 100 && !item.terminal) {
+				update(item.id, { state: "processing", error: "" });
+				await api(`${base}/uploads/${item.reservationId}/complete`, "POST", {}, { key: item.completeKey });
+				update(item.id, { state: "ready", error: "" });
+				readyRef.current();
+				return;
+			}
 			const hash = await fileHash(item.file);
 			const reservation = await api<{ id: string }>(
 				`${base}/uploads`,
@@ -230,17 +240,19 @@ export function UploadQueue({
 						xhr.send(item.file);
 					});
 			}
+			update(item.id, { state: "processing", progress: 100, error: "" });
 			await api(
 				`${base}/uploads/${reservation.id}/complete`,
 				"POST",
 				{},
 				{ key: item.completeKey },
 			);
-			update(item.id, { state: "processing", progress: 100, error: "" });
+			update(item.id, { state: "ready", progress: 100, error: "" });
+			readyRef.current();
 		} catch (e) {
 			update(item.id, {
 				state: "failed",
-				terminal: (e as { code?: string }).code === "UPLOAD_WINDOW_EXPIRED",
+				terminal: ["UPLOAD_WINDOW_EXPIRED", "FILE_REJECTED", "INVALID_IMAGE", "MAGIC_MISMATCH", "HASH_OR_SIZE_MISMATCH", "ZIP_UNSAFE"].includes((e as { code?: string }).code ?? ""),
 				error: e instanceof Error ? e.message : "上传失败，请重试。",
 			});
 			if ((e as { status?: number }).status === 401) invalidRef.current();
@@ -424,6 +436,7 @@ export function UploadQueue({
 					{error}
 				</p>
 			) : null}
+			<p className="muted">文件按格式和大小校验；图片自动校正方向。不进行病毒扫描。</p>
 			<ul className="queue" aria-live="polite">
 				{tracked
 					.filter((r) => !items.some((i) => i.reservationId === r.id))
@@ -435,23 +448,20 @@ export function UploadQueue({
 									? "传输尚未确认，请重新选择同一文件继续。"
 									: r.state === "rejected"
 										? "处理未完成，请重新选择文件。"
-										: "安全处理中，刷新后状态仍会保留。"}
+										: r.processingActive ? "正在校验文件/处理图片。" : r.canProcess === false ? "等待上传者继续处理已上传文件。" : "文件已上传，点击继续处理即可使用，无需重新上传。"}
 							</small>
 							{r.errorCode ? (
 								<p className="error">{message(r.errorCode)}</p>
 							) : null}
-							{r.errorCode &&
+							{r.canProcess !== false && !r.processingActive &&
 							(r.state === "queued" || r.state === "processing") ? (
 								<button
 									type="button"
 									onClick={async () => {
 										try {
 											await api(`${base}/uploads/${r.id}/retry`, "POST", {});
-											setTracked((old) =>
-												old.map((x) =>
-													x.id === r.id ? { ...x, errorCode: null } : x,
-												),
-											);
+											setTracked((old) => old.filter((x) => x.id !== r.id));
+											readyRef.current();
 											setError("");
 										} catch (e) {
 											if ((e as { status?: number }).status === 401)
@@ -464,7 +474,7 @@ export function UploadQueue({
 										}
 									}}
 								>
-									重试处理
+									继续处理
 								</button>
 							) : null}
 						</li>
@@ -486,7 +496,7 @@ export function UploadQueue({
 									{
 										waiting: "等待传输",
 										uploading: `传输 ${item.progress}%`,
-										processing: "传输完成 · 安全处理中",
+										processing: "传输完成 · 校验文件/处理图片",
 										ready:
 											purpose === "delivery"
 												? "已完成 · 仅工程师可见，发布后开放客户"
@@ -515,7 +525,7 @@ export function UploadQueue({
 										}
 									}}
 								>
-									重试安全处理
+									重试文件处理
 								</button>
 							) : null}
 							{item.state === "failed" ? (

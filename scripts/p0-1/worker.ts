@@ -13,6 +13,11 @@ import { getPool, transaction } from "../../src/lib/server/db";
 import { SessionNotifications } from "../../src/lib/server/session-notifications";
 import { privateBucket, quarantine, storage } from "../../src/lib/server/storage";
 
+// Archived SQL cleanup fixture only. Never start the former cloud consumer.
+if (process.env.PM_EVENTS_LOCAL !== "disposable-native-pg" ||
+	new URL(process.env.WORKER_DATABASE_URL ?? "http://invalid").hostname !== "127.0.0.1")
+	throw Error("WORKER_RETIRED_USE_REQUEST_UPLOADS");
+
 const workerTx = <T>(work: Parameters<typeof transaction<T>>[1]) =>
 	transaction(null, work, true);
 function leaseHeartbeat(table: "jobs" | "thumbnail_jobs", id: string, lease: string) {

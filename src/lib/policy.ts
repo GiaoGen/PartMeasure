@@ -83,7 +83,7 @@ export function formatFileLimit(ext: string) {
 }
 export function uploadPolicyDto(maxFileBytes: number) {
 	return {
-		version: 1,
+		version: 2,
 		maxFileBytes,
 		formats: extensions.map((extension) => ({
 			extension,
@@ -101,6 +101,9 @@ export function uploadPolicyDto(maxFileBytes: number) {
 		transport: { tusThresholdBytes: 6 * MiB, tusChunkBytes: 6 * MiB },
 		processing: {
 			required: true,
+			mode: "request",
+			validationPolicy: "format-only-v2",
+			virusScanning: false,
 			imageFormat: "image/webp",
 			normalizationVersion: 1,
 		},
@@ -154,7 +157,7 @@ export function sniff(bytes: Buffer, ext: string) {
 	if (!ok) throw new AppError("MAGIC_MISMATCH", 422);
 	if (ext === "zip") validateZip(bytes);
 }
-// Bounded central-directory inspection; never extract. ClamAV still scans all allowed content.
+// Bounded central-directory inspection only; never extract. This is not antivirus scanning.
 export function validateZip(bytes: Buffer) {
 	const end = bytes.lastIndexOf(Buffer.from("504b0506", "hex"));
 	if (

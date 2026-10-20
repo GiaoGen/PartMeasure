@@ -8,7 +8,7 @@ try {
   if($Action -eq 'provision'){ & node @taskArgs scripts/p0-1/provision.mjs }
   elseif($Action -eq 'dev'){ & node @taskArgs node_modules/next/dist/bin/next dev --webpack --hostname 127.0.0.1 }
   elseif($Action -eq 'start'){ & node @taskArgs node_modules/next/dist/bin/next start --hostname 127.0.0.1 }
-  elseif($Action -eq 'worker'){ & node @taskArgs --env-file=.env.local --conditions=react-server --import tsx scripts/p0-1/worker.ts }
+  elseif($Action -eq 'worker'){ throw 'Worker removed. Start the normal web app; uploads finish in HTTP requests.' }
   elseif($Action -eq 'auth-request'){ & node @taskArgs scripts/p0-1/auth-test.mjs request }
   elseif($Action -eq 'auth-verify'){ & node @taskArgs scripts/p0-1/auth-test.mjs verify }
   elseif($Action -eq 'create-test-users'){ & node @taskArgs scripts/p0-1/create-test-users.mjs }

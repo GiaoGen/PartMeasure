@@ -1,0 +1,83 @@
+{
+  "checkedAt": "2026-10-20T05:58:54.956Z",
+  "lint": "PASS",
+  "typecheck": "PASS",
+  "unit": {
+    "status": "PASS",
+    "files": 27,
+    "tests": 153
+  },
+  "build": "PASS",
+  "native": {
+    "status": "PASS",
+    "checks": 7
+  },
+  "images": {
+    "status": "PASS",
+    "checks": 18
+  },
+  "realService": {
+    "status": "PASS_ON_LATEST_PER_GROUP",
+    "groups": [
+      {
+        "name": "normal-password-setup",
+        "status": "PASS",
+        "milliseconds": 21684,
+        "evidence": "focused.json"
+      },
+      {
+        "name": "Guest-image-ready-without-worker-or-scanner-and-owner-SSE",
+        "status": "PASS",
+        "milliseconds": 38357,
+        "evidence": "focused.json"
+      },
+      {
+        "name": "refresh-recovery-and-complete-replay-create-one-asset",
+        "status": "PASS",
+        "milliseconds": 7106,
+        "evidence": "live.json"
+      },
+      {
+        "name": "Owner-PDF-is-ready-and-private-download-keeps-original-bytes",
+        "status": "PASS",
+        "milliseconds": 25294,
+        "evidence": "live.json"
+      },
+      {
+        "name": "disguised-and-oversized-files-rejected-without-blocking-valid-files",
+        "status": "PASS",
+        "milliseconds": 22779,
+        "evidence": "live.json"
+      },
+      {
+        "name": "B-isolation-Guest-delivery-denial-and-revoked-completion",
+        "status": "PASS",
+        "milliseconds": 24562,
+        "evidence": "live.json"
+      }
+    ],
+    "latestFullRun": "HAS_FAILURE",
+    "note": "Latest full run had an unclassified image/event failure; focused rerun passed. No claim of continuous stability or p95.",
+    "completionMilliseconds": 8866
+  },
+  "migration": {
+    "status": "PASS",
+    "projectRef": "rvysclscetfqicpnzlra",
+    "version": "20261020052757"
+  },
+  "securityAdvisor": {
+    "status": "WARN",
+    "code": "auth_leaked_password_protection",
+    "scope": "existing Auth setting; no new public table warning"
+  },
+  "browserE2E": "NOT_RUN",
+  "mainlandPhone": "PENDING_EXTERNAL",
+  "deployment": "NOT_PERFORMED",
+  "orphanCleanup": "MANUAL_MAINTENANCE_PENDING_NO_CRON",
+  "workerAndScanner": "NOT_STARTED",
+  "functionTrace": {
+    "status": "PASS",
+    "files": 17,
+    "sensitiveInclusions": 0
+  }
+}

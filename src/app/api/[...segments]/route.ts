@@ -37,6 +37,7 @@ import { appOrigin } from "@/lib/server/origin";
 import { revisionFromHeaders } from "@/lib/revision";
 import { timed } from "@/lib/server/timing";
 import { projectChanges } from "@/lib/server/project-changes";
+import { completeUpload } from "@/lib/server/complete-upload";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -476,27 +477,11 @@ async function handle(req: Request, context: Context) {
 				);
 			}
 			if (objectId) {
-				if (method === "POST" && parts[4] === "retry")
-					return response(
-						await service.retryProcessing(
-							actor,
-							projectId,
-							objectId,
-							idemKey(req),
-						),
-						202,
-					);
-				if (method === "POST" && parts[4] === "complete")
-					return response(
-						await service.reservation(
-							actor,
-							projectId,
-							objectId,
-							true,
-							idemKey(req),
-						),
-						202,
-					);
+				if (method === "POST" && ["retry", "complete"].includes(parts[4] ?? "") && !parts[5]) {
+					idemKey(req);
+					await body(req, z.object({}).strict());
+					return response(await completeUpload(actor, projectId, objectId, req.signal));
+				}
 				if (method === "GET" && !parts[4]) {
 					const { path: _path, ...state } = await service.reservation(
 						actor,

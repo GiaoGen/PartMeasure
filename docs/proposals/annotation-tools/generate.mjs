@@ -18,12 +18,12 @@ const samples = {
 		labels: [{x:290,y:81,key:0,prefix:"",pending:"长度待补"}],
 	},
 	angle: {
-		title: "角度", hint: "顶点 → 第一条边 → 第二条边；真实角度由人填写。", fields: ["角度"], unit: "°", values: ["45"],
+		title: "角度", hint: "第一端点 → 顶点 → 第二端点；真实角度由人填写。", fields: ["角度"], unit: "°", values: ["45"],
 		shape: `<path d="M145 215L145 192L335 12L350 30L175 205H490V225H145Z" fill="#e7ebef" stroke="#b4bec9" stroke-width="2"/>${line(160,200,455,200)}${line(160,200,310,50)}<path d="M240 200A80 80 0 0 0 216.569 143.431" fill="none" stroke="${blue}" stroke-width="2"/>${handle(160,200)}${handle(310,50)}${handle(455,200)}`,
 		labels: [{x:300,y:155,key:0,prefix:"α ",pending:"角度待补"}],
 	},
 	arc: {
-		title: "圆弧", hint: "起点 → 弧上中间点 → 终点；默认只要求补半径。", fields: ["半径"], unit: "mm", values: ["20"],
+		title: "圆弧", hint: "点击起点 → 弧上经过点 → 终点；默认只补半径。", fields: ["半径"], unit: "mm", values: ["20"],
 		shape: `<path d="M135 205A155 155 0 0 1 445 205" fill="none" stroke="#c1cad4" stroke-width="16"/><path d="M150 205A140 140 0 0 1 430 205" fill="none" stroke="${blue}" stroke-width="2.5"/>${line(290,205,389,106,'marker-end="url(#arrow)"')}${line(143,205,157,205)}${line(423,205,437,205)}${handle(150,205)}${handle(290,65)}${handle(430,205)}<circle cx="290" cy="205" r="2.5" fill="${muted}"/>`,
 		labels: [{x:384,y:145,key:0,prefix:"R",pending:"半径待补"}],
 	},

@@ -28,6 +28,10 @@ import {
 	confirmedMetadata,
 	validateMeasurementUnit,
 } from "../../src/lib/annotation-collaboration";
+import {
+	threePointGeometry,
+	dragHandleGeometry,
+} from "../../src/lib/annotation-interaction";
 const W = 1000,
 	H = 800;
 const angle: Geometry = {
@@ -55,6 +59,71 @@ const item = (geometry: Geometry): AnnotationDraft => ({
 	metadata: emptyMetadata(),
 });
 describe("extended manual geometry", () => {
+	it("uses the second clicked point as angle vertex and leaves arc points in click order", () => {
+		const a = { x: 0.25, y: 0.5 },
+			b = { x: 0.5, y: 0.5 },
+			c = { x: 0.5, y: 0.25 };
+		expect(threePointGeometry("angle", [a, b, c])).toMatchObject({
+			type: "angle",
+			from: a,
+			vertex: b,
+			to: c,
+		});
+		expect(threePointGeometry("arc", [arc.from, arc.via, arc.to])).toEqual(arc);
+		expect(
+			arcGeometry(
+				threePointGeometry("arc", [arc.from, arc.via, arc.to]) as typeof arc,
+				W,
+				H,
+			)?.radius,
+		).toBeCloseTo(200);
+	});
+	it("updates ellipse axis/rotation geometry from the original without mutating a saved target", () => {
+		const before = JSON.stringify(ellipse),
+			from = ellipseGeometry(ellipse, W, H);
+		const wider = dragHandleGeometry(
+			ellipse,
+			"axisB",
+			{ x: 0.5, y: 0.8 },
+			W,
+			H,
+		);
+		const rotated = dragHandleGeometry(
+			ellipse,
+			"rotate",
+			{ x: 0.7, y: 0.3 },
+			W,
+			H,
+		);
+		if (wider.type !== "ellipse" || rotated.type !== "ellipse")
+			throw Error("ellipse expected");
+		expect(ellipseGeometry(wider, W, H).rx).toBeGreaterThan(from.rx);
+		expect(ellipseGeometry(rotated, W, H).rotation).not.toBeCloseTo(
+			from.rotation,
+		);
+		expect(validExtendedGeometry(wider, W, H)).toBe(true);
+		expect(validExtendedGeometry(rotated, W, H)).toBe(true);
+		expect(JSON.stringify(ellipse)).toBe(before);
+	});
+	it("updates angle controls without deriving a real measurement value", () => {
+		const moved = dragHandleGeometry(
+			angle,
+			"vertex",
+			{ x: 0.45, y: 0.55 },
+			W,
+			H,
+		);
+		const display = dragHandleGeometry(
+			angle,
+			"arcScale",
+			{ x: 0.5, y: 0.4 },
+			W,
+			H,
+		);
+		expect(moved).toMatchObject({ vertex: { x: 0.45, y: 0.55 } });
+		expect(geometryTarget(display)).toEqual(geometryTarget(angle));
+		expect(validExtendedGeometry(moved, W, H)).toBe(true);
+	});
 	it("creates an ellipse along the complete dragged axis on non-square images", () => {
 		for (const [from, to] of [
 			[

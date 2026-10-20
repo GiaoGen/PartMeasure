@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-10-20T04:36:29.116Z",
+  "scope": "Local production Next + normal password + real isolated DB; no browser",
+  "results": [
+    {
+      "name": "localhost-origin-normal-password-login-folder-and-project-create",
+      "status": "FAIL",
+      "code": "DEPENDENCY_UNAVAILABLE",
+      "httpStatus": 503
+    },
+    {
+      "name": "fresh-normal-login-restores-folder-membership-and-server-rendered-page",
+      "status": "FAIL",
+      "code": "ERR_ASSERTION"
+    },
+    {
+      "name": "untrusted-origin-still-rejected-before-business-write",
+      "status": "PASS"
+    },
+    {
+      "name": "account-B-cannot-list-or-use-account-A-folder",
+      "status": "FAIL",
+      "code": "ERR_ASSERTION"
+    }
+  ]
+}

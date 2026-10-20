@@ -3,19 +3,14 @@ import { randomUUID, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { z } from "zod";
 import { AppError } from "../policy";
-import { appOrigin } from "./origin";
+import { appWriteOrigins } from "./origin";
+import { writeOriginAllowed } from "../request-origin";
 import { withRequestTiming } from "./timing";
 import { dependencyHint } from "./dependency-hint";
 export const uuid = z.uuid();
 export function sameOrigin(req: Request) {
-	const origin = req.headers.get("origin");
-	const expected = appOrigin();
-	if (
-		!expected ||
-		origin !== new URL(expected).origin ||
-		req.headers.get("sec-fetch-site") === "cross-site"
-	)
-		throw new AppError("FORBIDDEN", 403);
+	if (!writeOriginAllowed(req, appWriteOrigins(), !process.env.VERCEL && !process.env.VERCEL_ENV))
+		throw new AppError("ORIGIN_MISMATCH", 403);
 }
 export async function csrf(req: Request) {
 	sameOrigin(req);

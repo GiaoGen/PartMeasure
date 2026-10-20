@@ -2,6 +2,7 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { api } from "./api";
 import { searchProjects } from "./project-search";
+import type { FolderSummary } from "@/lib/project-folders";
 import { prefersReducedMotion, useProjectDialog } from "./projects-motion";
 import {
 	defaultProjectTheme,
@@ -22,6 +23,8 @@ export type ProjectView = {
 	description: string;
 	revision: number;
 	createdAt: string;
+	folderId?: string | null;
+	folder?: FolderSummary | null;
 	share?: { id: string; expiresAt: string; revokedAt: string | null } | null;
 };
 function ProjectIcon({
@@ -230,7 +233,7 @@ function FolderSidebar({
 				) : null}
 			</nav>
 			<footer className="projects-sidebar-footer">
-				<p>分类仅在当前页面暂存，刷新后重置。</p>
+				<p>文件夹仅对当前账号可见。</p>
 				<Logout />
 			</footer>
 		</>
@@ -240,10 +243,14 @@ export function Projects({
 	initial,
 	initialCursor,
 	initialError,
+	initialFolders,
+	initialFolderError,
 }: {
 	initial: ProjectView[];
 	initialCursor: string | null;
 	initialError: string;
+	initialFolders: Folder[];
+	initialFolderError: string;
 }) {
 	const [items, setItems] = useState(initial),
 		[cursor, setCursor] = useState(initialCursor),
@@ -254,10 +261,13 @@ export function Projects({
 	const [name, setName] = useState(""),
 		[description, setDescription] = useState(""),
 		[key, setKey] = useState("");
-	const [folders, setFolders] = useState<Folder[]>([]),
+	const [folders, setFolders] = useState<Folder[]>(initialFolders),
 		[selected, setSelected] = useState(""),
 		[projectFolder, setProjectFolder] = useState("");
-	const [assignments, setAssignments] = useState<Record<string, string>>({});
+	const [folderBusy, setFolderBusy] = useState(false);
+	const [folderLoadError, setFolderLoadError] = useState(initialFolderError);
+	const folderWrite = useRef(false);
+	const [folderKey, setFolderKey] = useState("");
 	const [folderName, setFolderName] = useState(""),
 		[folderError, setFolderError] = useState("");
 	const [folderDescription, setFolderDescription] = useState("");
@@ -278,7 +288,7 @@ export function Projects({
 	const lastPaint = useRef<string>(defaultProjectTheme.page);
 	const activeFolder = folders.find((folder) => folder.id === selected);
 	const classified = selected
-		? items.filter((project) => assignments[project.id] === selected)
+		? items.filter((project) => project.folderId === selected)
 		: items;
 	const visible = searchProjects(classified, query);
 	const searching = query.trim().length > 0;
@@ -406,18 +416,25 @@ export function Projects({
 		setFolderDescription("");
 		setFolderColor("blue");
 		setFolderError("");
+		setFolderKey("");
 		drawer.close(() => folderDialog.open());
 	}
 	async function load(replace = false) {
 		if (loading) return;
 		setLoading(true);
 		try {
-			const result = await api<{
+			const projectRequest = api<{
 				items: ProjectView[];
 				nextCursor: string | null;
 			}>(
 				`/api/projects${!replace && cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""}`,
 			);
+			const [result] = await Promise.all([
+				projectRequest,
+				api<{ items: Folder[] }>("/api/project-folders", "GET", undefined, { cacheMs: 0 })
+					.then((result) => { setFolders(result.items); setFolderLoadError(""); })
+					.catch((e: unknown) => setFolderLoadError(e instanceof Error ? e.message : "文件夹加载失败，请重试。")),
+			]);
 			setItems((old) =>
 				replace
 					? result.items
@@ -499,6 +516,7 @@ export function Projects({
 							</button>
 						</p>
 					) : null}
+					{folderLoadError ? <p className="error" role="alert">{folderLoadError} <button type="button" disabled={loading} onClick={() => void load(true)}>重新加载文件夹</button></p> : null}
 					<section aria-label="已有项目" aria-busy={loading}>
 						{visible.length === 0 ? (
 							<p className="empty">
@@ -518,7 +536,7 @@ export function Projects({
 											href={projectWorkspaceHref(
 												project.id,
 												folders.find(
-													(folder) => folder.id === assignments[project.id],
+													(folder) => folder.id === project.folderId,
 												)?.color,
 											)}
 										>
@@ -576,12 +594,13 @@ export function Projects({
 				ref={folderDialog.ref}
 				className="projects-dialog"
 				aria-labelledby="folder-dialog-title"
-				onPointerDown={(event) => folderDialog.backdrop(event)}
-				onCancel={(event) => folderDialog.cancel(event)}
+				onPointerDown={(event) => folderDialog.backdrop(event, folderBusy)}
+				onCancel={(event) => folderDialog.cancel(event, folderBusy)}
 			>
 				<form
-					onSubmit={(e) => {
+					onSubmit={async (e) => {
 						e.preventDefault();
+						if (folderWrite.current) return;
 						const value = folderName.trim();
 						if (!value) {
 							setFolderError("请填写文件夹名称。");
@@ -597,19 +616,23 @@ export function Projects({
 							setFolderError("文件夹名称已存在，请换一个名称。");
 							return;
 						}
-						const id = crypto.randomUUID();
-						folderDialog.close(() => {
-							setFolders((old) => [
-								...old,
-								{
-									id,
-									name: value,
-									description: folderDescription.trim(),
-									color: folderColor,
-								},
-							]);
-							chooseFolder(id, { x: 120, y: 170 }, folderColor);
-						});
+						folderWrite.current = true;
+						setFolderBusy(true);
+						setFolderError("");
+						const requestKey = folderKey || crypto.randomUUID();
+						setFolderKey(requestKey);
+						try {
+							const saved = await api<Folder>("/api/project-folders", "POST", {
+								name: value, description: folderDescription.trim(), color: folderColor,
+							}, { key: requestKey });
+							setFolders((old) => [...old.filter((folder) => folder.id !== saved.id), saved]);
+							folderDialog.close(() => chooseFolder(saved.id, { x: 120, y: 170 }, saved.color));
+						} catch (error) {
+							setFolderError(error instanceof Error ? error.message : "文件夹保存失败，请重试。");
+						} finally {
+							folderWrite.current = false;
+							setFolderBusy(false);
+						}
 					}}
 				>
 					<header>
@@ -618,11 +641,13 @@ export function Projects({
 							type="button"
 							className="projects-icon-button"
 							aria-label="关闭弹窗"
+							disabled={folderBusy}
 							onClick={() => folderDialog.close()}
 						>
 							×
 						</button>
 					</header>
+					<fieldset disabled={folderBusy}>
 					<label>
 						文件夹名称
 						<input
@@ -632,6 +657,7 @@ export function Projects({
 							onChange={(e) => {
 								setFolderName(e.target.value);
 								setFolderError("");
+								setFolderKey("");
 							}}
 							placeholder="例如：机械零件"
 						/>
@@ -641,7 +667,7 @@ export function Projects({
 						<textarea
 							maxLength={500}
 							value={folderDescription}
-							onChange={(event) => setFolderDescription(event.target.value)}
+							onChange={(event) => { setFolderDescription(event.target.value); setFolderKey(""); }}
 							placeholder="这个文件夹用于整理哪些项目？"
 						/>
 					</label>
@@ -654,7 +680,7 @@ export function Projects({
 									type="button"
 									className="projects-color-option"
 									aria-pressed={folderColor === color}
-									onClick={() => setFolderColor(color)}
+									onClick={() => { setFolderColor(color); setFolderKey(""); }}
 								>
 									<span
 										className="projects-color-dot"
@@ -666,8 +692,9 @@ export function Projects({
 							))}
 						</div>
 					</fieldset>
+					</fieldset>
 					<p className="muted projects-form-note">
-						分类仅在当前页面暂存，刷新后重置。
+						创建成功后保存到当前账号，刷新或重新登录仍可查看。
 					</p>
 					{folderError ? (
 						<p className="error" role="alert">
@@ -675,11 +702,11 @@ export function Projects({
 						</p>
 					) : null}
 					<div className="projects-dialog-actions">
-						<button type="button" onClick={() => folderDialog.close()}>
+						<button type="button" disabled={folderBusy} onClick={() => folderDialog.close()}>
 							取消
 						</button>
-						<button className="primary" type="submit">
-							创建文件夹
+						<button className="primary" type="submit" disabled={folderBusy}>
+							{folderBusy ? "保存中…" : "创建文件夹"}
 						</button>
 					</div>
 				</form>
@@ -707,7 +734,7 @@ export function Projects({
 							const project = await api<ProjectView>(
 								"/api/projects",
 								"POST",
-								{ name: name.trim(), description },
+								{ name: name.trim(), description, folderId: projectFolder || null },
 								{ key: requestKey },
 							);
 							createDialog.close(() => {
@@ -716,10 +743,6 @@ export function Projects({
 									project,
 									...old.filter((item) => item.id !== project.id),
 								]);
-								setAssignments((old) => ({
-									...old,
-									[project.id]: projectFolder,
-								}));
 								chooseFolder(
 									projectFolder,
 									{ x: window.innerWidth - 80, y: window.innerHeight - 56 },
@@ -779,7 +802,7 @@ export function Projects({
 								所属文件夹（可选）
 								<select
 									value={projectFolder}
-									onChange={(e) => setProjectFolder(e.target.value)}
+									onChange={(e) => { setProjectFolder(e.target.value); setKey(""); }}
 								>
 									<option value="">暂不分类</option>
 									{folders.map((folder) => (

@@ -4,6 +4,7 @@ import { EntryShell } from "@/components/entry-shell";
 import { AppError } from "@/lib/policy";
 import { owner } from "@/lib/server/auth";
 import { listProjects } from "@/lib/server/service";
+import { listFolders } from "@/lib/server/folder-service";
 export const dynamic = "force-dynamic";
 export default async function ProjectsPage() {
 	let actor: Awaited<ReturnType<typeof owner>>;
@@ -25,22 +26,14 @@ export default async function ProjectsPage() {
 			</EntryShell>
 		);
 	}
-	try {
-		const data = await listProjects(actor, null);
-		return (
-			<Projects
-				initial={data.items}
-				initialCursor={data.nextCursor ?? null}
-				initialError=""
-			/>
-		);
-	} catch {
-		return (
-			<Projects
-				initial={[]}
-				initialCursor={null}
-				initialError="数据库暂时不可用，请重试。"
-			/>
-		);
-	}
+	const [projects, folders] = await Promise.allSettled([
+		listProjects(actor, null), listFolders(actor),
+	]);
+	return <Projects
+		initial={projects.status === "fulfilled" ? projects.value.items : []}
+		initialCursor={projects.status === "fulfilled" ? projects.value.nextCursor ?? null : null}
+		initialError={projects.status === "fulfilled" ? "" : "数据库暂时不可用，请重试。"}
+		initialFolders={folders.status === "fulfilled" ? folders.value.items : []}
+		initialFolderError={folders.status === "fulfilled" ? "" : "文件夹加载失败，请重试。"}
+	/>;
 }

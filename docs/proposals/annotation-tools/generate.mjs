@@ -28,7 +28,7 @@ const samples = {
 		labels: [{x:384,y:145,key:0,prefix:"R",pending:"半径待补"}],
 	},
 	ellipse: {
-		title: "椭圆", hint: "贴合斜拍圆孔；默认人工孔径 Ø，可选长半轴 a。", fields: ["圆孔直径 Ø"], unit: "mm", values: ["40"],
+		title: "椭圆", hint: "拖轴定方向，再调垂直轴；默认孔径 Ø，可选半轴 a。", fields: ["圆孔直径 Ø"], unit: "mm", values: ["40"],
 		shape: `<ellipse cx="290" cy="145" rx="184" ry="78" transform="rotate(-20 290 145)" fill="#e7ebef" stroke="#bbc5cf" stroke-width="2"/><ellipse cx="290" cy="145" rx="176" ry="70" transform="rotate(-20 290 145)" fill="none" stroke="${blue}" stroke-width="2"/>`,
 		labels: [{x:290,y:145,key:0,prefix:"Ø",pending:"孔径待补"}],
 	},

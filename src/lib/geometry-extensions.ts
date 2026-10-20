@@ -181,20 +181,32 @@ export function makeEllipse(
 	to: Point,
 	w: number,
 	h: number,
-): Geometry {
+): Extract<Geometry, { type: "ellipse" }> {
 	const c = { x: (from.x + to.x) / 2, y: (from.y + to.y) / 2 },
-		rx = (Math.abs(to.x - from.x) * w) / 2,
-		ry = (Math.abs(to.y - from.y) * h) / 2;
+		ux = ((to.x - from.x) * w) / 2,
+		uy = ((to.y - from.y) * h) / 2,
+		r = Math.hypot(ux, uy),
+		nx = r ? -uy / r : 0,
+		ny = r ? ux / r : 1;
+	// The drag endpoints are the complete first axis. Keep the initial width in-image.
+	const ry = Math.min(
+		r / 2,
+		nx
+			? Math.sqrt(Math.max(0, (Math.min(c.x, 1 - c.x) * w) ** 2 - ux ** 2)) /
+					Math.abs(nx)
+			: Infinity,
+		ny
+			? Math.sqrt(Math.max(0, (Math.min(c.y, 1 - c.y) * h) ** 2 - uy ** 2)) /
+					Math.abs(ny)
+			: Infinity,
+	);
 	return {
 		type: "ellipse",
 		center: c,
-		axisA: {
-			x: c.x + (rx >= ry ? rx / w : 0),
-			y: c.y + (rx >= ry ? 0 : ry / h),
-		},
+		axisA: { ...to },
 		axisB: {
-			x: c.x + (rx >= ry ? 0 : -rx / w),
-			y: c.y + (rx >= ry ? ry / h : 0),
+			x: c.x + (nx * ry) / w,
+			y: c.y + (ny * ry) / h,
 		},
 	};
 }
@@ -213,8 +225,14 @@ export function editEllipse(
 		rx = e.rx,
 		ry = e.ry;
 	if (key === "rotate") rotation = Math.atan2(dy, dx) + Math.PI / 2;
-	else if (key === "axisA") rx = Math.max(ry, Math.hypot(dx, dy));
-	else ry = Math.min(rx, Math.hypot(dx, dy));
+	else if (key === "axisA")
+		rx = Math.abs(dx * Math.cos(rotation) + dy * Math.sin(rotation));
+	else ry = Math.abs(-dx * Math.sin(rotation) + dy * Math.cos(rotation));
+	// Storage keeps axisA as the major axis; the user's first axis need not stay longest.
+	if (ry > rx) {
+		[rx, ry] = [ry, rx];
+		rotation += Math.PI / 2;
+	}
 	return {
 		...g,
 		axisA: normalized(

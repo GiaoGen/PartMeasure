@@ -409,7 +409,13 @@ export default function AnnotationCanvas({
 			.filter(Boolean)
 			.join(" · ");
 		const position = labelPosition(g, w, h, s);
-		const paths = geometryPaths(g, w, h, s, editing).map((data, i) => ({
+		const paths = geometryPaths(
+			g,
+			w,
+			h,
+			s,
+			editing || (preview && g.type === "ellipse"),
+		).map((data, i) => ({
 			data,
 			role: ["outline", "detail", "secondary"][i] ?? "extra",
 		}));
@@ -928,7 +934,9 @@ export default function AnnotationCanvas({
 			<p className="canvas-help">
 				{guest
 					? "双指缩放 · 单指平移"
-					: "滚轮缩放 · 空格拖动平移 · 双击空白复位"}
+					: tool === "ellipse"
+						? "拖动确定一条轴的两端，松开后拖动垂直轴控制点调整宽度"
+						: "滚轮缩放 · 空格拖动平移 · 双击空白复位"}
 			</p>
 		</div>
 	);

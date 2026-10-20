@@ -11,6 +11,7 @@ import {
 } from "../../src/lib/annotations";
 import {
 	arcGeometry,
+	ellipseGeometry,
 	angleGeometry,
 	makeEllipse,
 	editEllipse,
@@ -54,6 +55,48 @@ const item = (geometry: Geometry): AnnotationDraft => ({
 	metadata: emptyMetadata(),
 });
 describe("extended manual geometry", () => {
+	it("creates an ellipse along the complete dragged axis on non-square images", () => {
+		for (const [from, to] of [
+			[
+				{ x: 0.3, y: 0.2 },
+				{ x: 0.7, y: 0.8 },
+			],
+			[
+				{ x: 0.7, y: 0.8 },
+				{ x: 0.3, y: 0.2 },
+			],
+			[
+				{ x: 0.2, y: 0.5 },
+				{ x: 0.8, y: 0.5 },
+			],
+			[
+				{ x: 0.5, y: 0.2 },
+				{ x: 0.5, y: 0.8 },
+			],
+			[
+				{ x: 0.01, y: 0.02 },
+				{ x: 0.5, y: 0.5 },
+			],
+		] as const) {
+			const g = makeEllipse(from, to, W, H),
+				e = ellipseGeometry(g, W, H);
+			expect(g.axisA).toEqual(to);
+			expect(2 * g.center.x - g.axisA.x).toBeCloseTo(from.x);
+			expect(2 * g.center.y - g.axisA.y).toBeCloseTo(from.y);
+			expect(e.u.x * e.v.x + e.u.y * e.v.y).toBeCloseTo(0);
+			expect(validExtendedGeometry(g, W, H)).toBe(true);
+		}
+	});
+	it("lets the perpendicular axis grow longer without changing the original axis length", () => {
+		const g = makeEllipse({ x: 0.4, y: 0.5 }, { x: 0.6, y: 0.5 }, W, H);
+		const wider = editEllipse(g, "axisB", { x: 0.5, y: 0.75 }, W, H);
+		expect(wider.type).toBe("ellipse");
+		if (wider.type !== "ellipse") throw Error("ellipse required");
+		const e = ellipseGeometry(wider, W, H);
+		expect(e.rx).toBeCloseTo(200);
+		expect(e.ry).toBeCloseTo(100);
+		expect(validExtendedGeometry(wider, W, H)).toBe(true);
+	});
 	it("omits degenerate preview arcs before the pointer has moved", () => {
 		expect(
 			geometryPaths(

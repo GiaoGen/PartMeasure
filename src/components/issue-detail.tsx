@@ -1,4 +1,8 @@
 "use client";
+import {
+	displayUnit,
+	measurementFieldLabel,
+} from "@/lib/annotation-collaboration";
 import dynamic from "next/dynamic";
 import { EvidencePreview } from "./evidence-preview";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -196,8 +200,11 @@ export function IssueDetail({
 			<p className="issue-state">
 				{issue.closedAt ? "已结束" : stateLabel[issue.state]} ·{" "}
 				{issue.kind === "measurement"
-					? issue.measurementField === "holeDepth"
-						? "孔深"
+					? issue.target && issue.measurementField
+						? measurementFieldLabel(
+								issue.target.annotation,
+								issue.measurementField,
+							)
 						: "尺寸补充"
 					: "文件级文字问题"}
 			</p>
@@ -306,7 +313,7 @@ export function IssueDetail({
 							<h3>{issue.kind === "measurement" ? "最终确认" : "处理结果"}</h3>
 							{lastReview?.value ? (
 								<p>
-									{lastReview.value} {lastReview.unit}
+									{lastReview.value} {displayUnit(lastReview.unit)}
 								</p>
 							) : null}
 							<p>{lastReview?.source ? sourceLabel[lastReview.source] : ""}</p>
@@ -334,7 +341,7 @@ export function IssueDetail({
 									<div key={r.id}>
 										<p>
 											{r.value
-												? `${r.value} ${r.unit}`
+												? `${r.value} ${displayUnit(r.unit)}`
 												: r.kind === "unable"
 													? "无法测量"
 													: "测量照片"}
@@ -409,7 +416,8 @@ export function IssueDetail({
 										</small>
 										{event.response.value ? (
 											<p>
-												原回复：{event.response.value} {event.response.unit}
+												原回复：{event.response.value}{" "}
+												{displayUnit(event.response.unit)}
 											</p>
 										) : null}
 										<p className="preserve-lines">{event.response.body}</p>
@@ -449,7 +457,8 @@ export function IssueDetail({
 										<small>{new Date(event.at).toLocaleString("zh-CN")}</small>
 										{event.review.value ? (
 											<p>
-												确认值：{event.review.value} {event.review.unit}
+												确认值：{event.review.value}{" "}
+												{displayUnit(event.review.unit)}
 											</p>
 										) : null}
 										<p>

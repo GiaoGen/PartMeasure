@@ -14,11 +14,16 @@ import {
 	validateResponse,
 	validateReview,
 } from "../issues";
-import type { AnnotationDraft } from "../annotations";
+import { type AnnotationDraft, validateAnnotation } from "../annotations";
 import { type Actor, transaction, idempotent } from "./db";
 import { access, actorKey, audit } from "./service";
 import { syncAnnotationMeasurements } from "./annotation-collaboration";
 import { isDeepStrictEqual } from "node:util";
+import { geometryTarget } from "../geometry-extensions";
+import {
+	confirmedMetadata,
+	validateMeasurementUnit,
+} from "../annotation-collaboration";
 import { cursorScope, cursorId, queryCursor } from "./query-cursor";
 
 const columns = `closed_at as "closedAt",closure_note as "closureNote",measurement_field as "measurementField",id,file_id as "fileId",kind,title,description,target_info as "targetInfo",measurement_method as "measurementMethod",state,revision,latest_response_id as "latestResponseId",created_at as "createdAt",updated_at as "updatedAt",case when annotation_id is null then null else jsonb_build_object('id',annotation_id,'revision',annotation_revision) end as "annotationRef"`;
@@ -261,6 +266,8 @@ export async function respondIssue(
 					throw new AppError("REVISION_CONFLICT", 409);
 				nextState(i.state, "respond");
 				validateResponse(i.kind, input);
+				if (input.kind === "numeric")
+					validateMeasurementUnit(i.measurementField, input.unit, input.value);
 				const count = await db.query(
 					"select count(*)::int as n from pm.issue_responses where project_id=$1 and issue_id=$2",
 					[projectId, id],
@@ -364,6 +371,12 @@ export async function reviewIssue(
 				);
 				if (!response.rows[0]) throw new AppError("NOT_FOUND", 404);
 				validateReview(i.kind, response.rows[0], input);
+				if (i.kind === "measurement" && input.decision === "confirm")
+					validateMeasurementUnit(
+						i.measurementField,
+						input.unit ?? "",
+						input.value ?? "",
+					);
 				const { rows } = await db.query(
 					`insert into pm.issue_reviews(project_id,issue_id,response_id,issue_revision,decision,value,unit,source,note,created_by) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
 					 returning id,response_id as "responseId",issue_revision as "issueRevision",decision,value,unit,source,note,created_at as "createdAt"`,
@@ -390,14 +403,19 @@ export async function reviewIssue(
 					i.annotation_id
 				) {
 					const found = await db.query(
-						"select * from pm.annotations where project_id=$1 and id=$2 for update",
+						"select a.*,f.width,f.height from pm.annotations a join pm.file_assets f on f.project_id=a.project_id and f.id=a.file_id where a.project_id=$1 and a.id=$2 for update of a",
 						[projectId, i.annotation_id],
 					);
 					const a = found.rows[0];
 					if (
 						!a ||
 						a.deleted_at ||
-						!isDeepStrictEqual(a.geometry, i.annotation_snapshot?.geometry) ||
+						!isDeepStrictEqual(
+							geometryTarget(a.geometry),
+							i.annotation_snapshot
+								? geometryTarget(i.annotation_snapshot.geometry)
+								: null,
+						) ||
 						(a.geometry.type === "circle" &&
 							a.metadata.circleMeasure !==
 								i.annotation_snapshot?.metadata.circleMeasure)
@@ -406,34 +424,22 @@ export async function reviewIssue(
 					if (
 						a.geometry.type === "line" ||
 						a.geometry.type === "circle" ||
+						a.geometry.type === "angle" ||
+						a.geometry.type === "arc" ||
+						a.geometry.type === "ellipse" ||
 						(a.geometry.type === "point" &&
 							a.metadata.measurementMode === "required")
 					) {
 						const field = i.measurementField ?? "dimension";
-						const metadata = {
-							...a.metadata,
-							[field]: input.value,
-							unit: input.unit,
-						};
-						const other = field === "dimension" ? "holeDepth" : "dimension";
-						if (a.metadata[other] && a.metadata.unit !== input.unit) {
-							const mm: Record<string, number> = {
-								mm: 1,
-								cm: 10,
-								m: 1000,
-								in: 25.4,
-							};
-							const converted =
-								(Number(a.metadata[other]) * (mm[a.metadata.unit] ?? 1)) /
-								(mm[input.unit ?? "mm"] ?? 1);
-							if (
-								!Number.isFinite(converted) ||
-								converted < 0.000001 ||
-								converted >= 1e9
-							)
-								throw new AppError("INVALID_ENGINEERING_FIELDS", 422);
-							metadata[other] = converted.toFixed(6).replace(/\.?0+$/, "");
-						}
+						const metadata = confirmedMetadata(
+							a,
+							field,
+							input.value ?? "",
+							input.unit ?? "",
+						);
+						validateAnnotation(a.geometry, metadata, a.width, a.height);
+						if (a.revision >= 10000)
+							throw new AppError("ANNOTATION_REVISION_LIMIT", 409);
 						const changed = await db.query(
 							"update pm.annotations set metadata=$3,revision=revision+1,updated_at=now() where project_id=$1 and id=$2 returning *",
 							[projectId, a.id, JSON.stringify(metadata)],

@@ -1,0 +1,38 @@
+{
+  "checkedAt": "2026-10-20T09:14:00.947Z",
+  "scope": "Disposable native PostgreSQL: SQL/transactions/RLS only, no cloud Auth/Storage/browser evidence",
+  "results": [
+    {
+      "check": "SQL-and-TS-geometry-validation-agree-on-non-square-images",
+      "status": "PASS"
+    },
+    {
+      "check": "angle-auto-request-rejects-length-units-and-confirmation-writes-degrees",
+      "status": "PASS"
+    },
+    {
+      "check": "ellipse-default-diameter-and-optional-major-semiaxis",
+      "status": "PASS"
+    },
+    {
+      "check": "arc-radius-length-and-angle-have-independent-immutable-confirmations",
+      "status": "PASS"
+    },
+    {
+      "check": "display-radius-keeps-request-but-target-changes-close-old-snapshot",
+      "status": "PASS"
+    },
+    {
+      "check": "new-types-save-reload-history-and-Guest-owner-isolation",
+      "status": "PASS"
+    },
+    {
+      "check": "SQL-also-rejects-unit-forgery-and-old-circle-schema-remains-valid",
+      "status": "PASS"
+    },
+    {
+      "check": "revocation-denies-new-types-too",
+      "status": "PASS"
+    }
+  ]
+}

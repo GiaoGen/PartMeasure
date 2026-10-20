@@ -1,4 +1,18 @@
 "use client";
+import {
+	anchor,
+	angleGeometry,
+	ellipseGeometry,
+	editEllipse,
+	makeEllipse,
+	normalized,
+	pixel,
+} from "@/lib/geometry-extensions";
+import {
+	geometryPaths,
+	labelPosition,
+	annotationText,
+} from "@/lib/annotation-presentation";
 import { annotationStatus } from "@/lib/annotation-collaboration";
 import { useEffect, useRef, useState } from "react";
 import type Konva from "konva";
@@ -12,6 +26,7 @@ import {
 	Line,
 	Circle,
 	Text,
+	Path,
 } from "react-konva";
 import {
 	type AnnotationDraft,
@@ -27,7 +42,16 @@ import {
 	moveGeometry,
 	zoomView,
 } from "@/lib/annotations";
-type Tool = "select" | "line" | "circle" | "point" | "text" | "pan";
+type Tool =
+	| "select"
+	| "line"
+	| "circle"
+	| "point"
+	| "text"
+	| "pan"
+	| "angle"
+	| "arc"
+	| "ellipse";
 type Draw = { tool: Tool; from: Point; to: Point };
 const names: Record<Tool, string> = {
 	select: "选择",
@@ -36,6 +60,9 @@ const names: Record<Tool, string> = {
 	point: "点位",
 	text: "文字",
 	pan: "平移",
+	angle: "角度",
+	arc: "圆弧",
+	ellipse: "椭圆",
 };
 const clamp = (p: Point): Point => ({
 	x: Math.max(0, Math.min(1, p.x)),
@@ -94,6 +121,9 @@ export default function AnnotationCanvas({
 		[tool, setTool] = useState<Tool>("select"),
 		[space, setSpace] = useState(false),
 		[draft, setDraft] = useState<Geometry | null>(null);
+	const triplet = useRef<Point[]>([]);
+	const [partial, setPartial] = useState<Point[]>([]);
+	const [hover, setHover] = useState<Point | null>(null);
 	const drawing = useRef<Draw | null>(null),
 		panning = useRef<{ start: Point; view: View } | null>(null),
 		pinch = useRef<{ distance: number; center: Point; view: View } | null>(
@@ -104,7 +134,7 @@ export default function AnnotationCanvas({
 	handlers.current = { onCreate, onError, onInvalid };
 	const canEdit = !guest && !disabled;
 	useEffect(() => {
-		let lease: {url:string;release:()=>void}|undefined;
+		let lease: { url: string; release: () => void } | undefined;
 		let objectUrl = "",
 			img: HTMLImageElement | null = null,
 			active = true;
@@ -112,10 +142,14 @@ export default function AnnotationCanvas({
 		setLoadError(false);
 		void (async () => {
 			try {
-                if(attempt>0)discardPrivateImage(src,image.imageHash);
-                const value = await privateImage(src,image.imageHash);
-                if (!active) { value.release(); return; }
-                lease=value;objectUrl=value.url;
+				if (attempt > 0) discardPrivateImage(src, image.imageHash);
+				const value = await privateImage(src, image.imageHash);
+				if (!active) {
+					value.release();
+					return;
+				}
+				lease = value;
+				objectUrl = value.url;
 				img = new window.Image();
 				img.onload = () => {
 					if (!active || !img) return;
@@ -187,6 +221,8 @@ export default function AnnotationCanvas({
 	}, [image.width, image.height]);
 	function asGeometry(d: Draw): Geometry {
 		if (d.tool === "line") return { type: "line", from: d.from, to: d.to };
+		if (d.tool === "ellipse")
+			return makeEllipse(d.from, d.to, image.width, image.height);
 		if (d.tool === "circle")
 			return makeCircle(d.from, d.to, image.width, image.height);
 		if (d.tool === "text") return { type: "text", at: d.from, text: "备注" };
@@ -231,6 +267,35 @@ export default function AnnotationCanvas({
 		if (!canEdit) return;
 		const normalized = pointer();
 		if (!normalized || !inside(normalized)) return;
+		if (tool === "angle" || tool === "arc") {
+			const points = [...triplet.current, normalized];
+			if (points.length === 3) {
+				const [a, b, c] = points;
+				if (a && b && c)
+					handlers.current.onCreate(
+						tool === "angle"
+							? {
+									type: "angle",
+									vertex: a,
+									from: b,
+									to: c,
+									reflex: false,
+									arcScale: 0.35,
+								}
+							: { type: "arc", from: a, via: b, to: c },
+					);
+				triplet.current = [];
+				setPartial([]);
+				setHover(null);
+				setDraft(null);
+				setTool("select");
+			} else {
+				triplet.current = points;
+				setPartial(points);
+				setDraft(null);
+			}
+			return;
+		}
 		drawing.current = { tool, from: normalized, to: normalized };
 		setDraft(asGeometry(drawing.current));
 	}
@@ -247,6 +312,24 @@ export default function AnnotationCanvas({
 			return;
 		}
 		const point = pointer();
+		if (point && triplet.current.length) {
+			const q = clamp(point);
+			setHover(q);
+			const [a, b] = triplet.current;
+			if (a && b)
+				setDraft(
+					tool === "angle"
+						? {
+								type: "angle",
+								vertex: a,
+								from: b,
+								to: q,
+								reflex: false,
+								arcScale: 0.35,
+							}
+						: { type: "arc", from: a, via: b, to: q },
+				);
+		}
 		if (drawing.current && point) {
 			drawing.current.to = clamp(point);
 			setDraft(asGeometry(drawing.current));
@@ -257,6 +340,9 @@ export default function AnnotationCanvas({
 		event.preventDefault();
 		event.stopPropagation();
 		multi.current = true;
+		triplet.current = [];
+		setPartial([]);
+		setHover(null);
 		drawing.current = null;
 		panning.current = null;
 		setDraft(null);
@@ -301,6 +387,7 @@ export default function AnnotationCanvas({
 		event: Konva.KonvaEventObject<MouseEvent | TouchEvent>,
 		id: string,
 	) {
+		if (!guest && !space && !["select", "pan"].includes(tool)) return;
 		if ((!space && !multi.current) || guest) {
 			onSelect(id);
 			host.current?.focus({ preventScroll: true });
@@ -317,36 +404,17 @@ export default function AnnotationCanvas({
 			editing = canEdit && chosen && !space && !preview,
 			stroke = chosen ? "#273444" : mark,
 			lineWidth = (chosen ? 3 : 2) / s;
-		const p =
-			g.type === "line" ? g.from : g.type === "circle" ? g.center : g.at;
-		const label = item.metadata.name || (g.type === "text" ? g.text : "");
+		const p = anchor(g);
+		const label = [item.metadata.name, annotationText(item)]
+			.filter(Boolean)
+			.join(" · ");
+		const position = labelPosition(g, w, h, s);
+		const paths = geometryPaths(g, w, h, s, editing).map((data, i) => ({
+			data,
+			role: ["outline", "detail", "secondary"][i] ?? "extra",
+		}));
 		const shape =
-			g.type === "line" ? (
-				<Line
-					points={[g.from.x * w, g.from.y * h, g.to.x * w, g.to.y * h]}
-					stroke={stroke}
-					strokeWidth={lineWidth}
-					hitStrokeWidth={16 / s}
-				/>
-			) : g.type === "circle" ? (
-				<Circle
-					x={g.center.x * w}
-					y={g.center.y * h}
-					radius={g.radiusX * w}
-					stroke={stroke}
-					strokeWidth={lineWidth}
-					hitStrokeWidth={16 / s}
-				/>
-			) : g.type === "point" ? (
-				<Circle
-					x={g.at.x * w}
-					y={g.at.y * h}
-					radius={5 / s}
-					fill={stroke}
-					stroke="white"
-					strokeWidth={1 / s}
-				/>
-			) : (
+			g.type === "text" ? (
 				<Text
 					x={g.at.x * w}
 					y={g.at.y * h}
@@ -355,23 +423,77 @@ export default function AnnotationCanvas({
 					fill={stroke}
 					padding={3 / s}
 				/>
+			) : (
+				paths.map(({ data, role }) => (
+					<Path
+						key={role}
+						data={data}
+						stroke={stroke}
+						strokeWidth={lineWidth}
+						hitStrokeWidth={44 / s}
+						fill={g.type === "point" ? stroke : "transparent"}
+					/>
+				))
 			);
-		const handles =
-			chosen && editing
-				? g.type === "line"
-					? [
-							{ key: "from", point: g.from },
-							{ key: "to", point: g.to },
-						]
-					: g.type === "circle"
-						? [
-								{
-									key: "radius",
-									point: { x: g.center.x + g.radiusX, y: g.center.y },
-								},
-							]
-						: []
-				: [];
+		const handles: { key: string; point: Point }[] = [];
+		if (chosen && editing) {
+			if (g.type === "line")
+				handles.push(
+					{ key: "from", point: g.from },
+					{ key: "to", point: g.to },
+				);
+			if (g.type === "circle")
+				handles.push({
+					key: "radius",
+					point: { x: g.center.x + g.radiusX, y: g.center.y },
+				});
+			if (g.type === "arc")
+				handles.push(
+					{ key: "from", point: g.from },
+					{ key: "via", point: g.via },
+					{ key: "to", point: g.to },
+				);
+			if (g.type === "angle") {
+				handles.push(
+					{ key: "vertex", point: g.vertex },
+					{ key: "from", point: g.from },
+					{ key: "to", point: g.to },
+				);
+				const v = angleGeometry(g, w, h),
+					t = v.start + v.sweep / 2;
+				handles.push({
+					key: "arcScale",
+					point: normalized(
+						{
+							x: v.center.x + v.radius * Math.cos(t),
+							y: v.center.y + v.radius * Math.sin(t),
+						},
+						w,
+						h,
+					),
+				});
+			}
+			if (g.type === "ellipse") {
+				const e = ellipseGeometry(g, w, h),
+					r = e.ry + 28 / s;
+				handles.push(
+					{ key: "center", point: g.center },
+					{ key: "axisA", point: g.axisA },
+					{ key: "axisB", point: g.axisB },
+					{
+						key: "rotate",
+						point: normalized(
+							{
+								x: e.center.x + r * Math.sin(e.rotation),
+								y: e.center.y - r * Math.cos(e.rotation),
+							},
+							w,
+							h,
+						),
+					},
+				);
+			}
+		}
 		return (
 			<Group key={item.id}>
 				<Group
@@ -382,7 +504,7 @@ export default function AnnotationCanvas({
 					onMouseDown={(e) => select(e, item.id)}
 					onTouchStart={(e) => select(e, item.id)}
 					dragBoundFunc={(pos) => {
-						const b = bounds(g),
+						const b = bounds(g, w, h),
 							dx = Math.max(
 								-b.left,
 								Math.min(1 - b.right, (pos.x - view.x) / (s * w)),
@@ -399,26 +521,20 @@ export default function AnnotationCanvas({
 							dy = node.y() / h;
 						node.position({ x: 0, y: 0 });
 						if (!multi.current)
-							onChange({ ...item, geometry: moveGeometry(g, dx, dy) });
+							onChange({ ...item, geometry: moveGeometry(g, dx, dy, w, h) });
 					}}
 				>
-					{g.type === "line" ? (
-						<Line
-							points={[g.from.x * w, g.from.y * h, g.to.x * w, g.to.y * h]}
-							stroke="white"
-							strokeWidth={lineWidth + 2 / s}
-							listening={false}
-						/>
-					) : g.type === "circle" ? (
-						<Circle
-							x={g.center.x * w}
-							y={g.center.y * h}
-							radius={g.radiusX * w}
-							stroke="white"
-							strokeWidth={lineWidth + 2 / s}
-							listening={false}
-						/>
-					) : null}
+					{g.type !== "text"
+						? paths.map(({ data, role }) => (
+								<Path
+									key={role}
+									data={data}
+									stroke="white"
+									strokeWidth={lineWidth + 2 / s}
+									listening={false}
+								/>
+							))
+						: null}
 					{shape}
 					{!preview && showNumbers ? (
 						<Group
@@ -440,16 +556,20 @@ export default function AnnotationCanvas({
 					) : null}
 					{label && g.type !== "text" ? (
 						<Text
-							x={p.x * w + 9 / s}
-							y={p.y * h - 22 / s}
-							text={`${label}${item.metadata.dimension ? ` · ${item.metadata.dimension} ${item.metadata.unit}` : ""}${annotationStatus(item) ? ` · ${annotationStatus(item)}` : ""}`}
+							x={Math.max(0, Math.min(w - 180 / s, position.x - 90 / s))}
+							y={Math.max(0, Math.min(h - 42 / s, position.y - 14 / s))}
+							width={180 / s}
+							align="center"
+							text={`${label}${annotationStatus(item) ? ` · ${annotationStatus(item)}` : ""}`}
 							fontSize={14 / s}
 							fill={stroke}
 							stroke="white"
 							strokeWidth={2 / s}
 							fillAfterStrokeEnabled
 							padding={3 / s}
-							listening={false}
+							listening={!preview}
+							onMouseDown={(e) => select(e, item.id)}
+							onTouchStart={(e) => select(e, item.id)}
 						/>
 					) : null}
 				</Group>
@@ -458,7 +578,8 @@ export default function AnnotationCanvas({
 						key={`${item.id}-${key}`}
 						x={point.x * w}
 						y={point.y * h}
-						radius={6 / s}
+						radius={key === "rotate" ? 7 / s : 6 / s}
+						hitStrokeWidth={40 / s}
 						fill="white"
 						stroke={mark}
 						strokeWidth={2 / s}
@@ -482,19 +603,45 @@ export default function AnnotationCanvas({
 								x: e.target.x() / w,
 								y: e.target.y() / h,
 							});
+							e.target.position({ x: point.x * w, y: point.y * h });
+							let geometry: Geometry = g;
 							if (g.type === "line")
-								onChange({
-									...item,
-									geometry: {
-										...g,
-										...(key === "from" ? { from: endPoint } : { to: endPoint }),
-									},
-								});
+								geometry = {
+									...g,
+									...(key === "from" ? { from: endPoint } : { to: endPoint }),
+								};
 							else if (g.type === "circle")
-								onChange({
-									...item,
-									geometry: makeCircle(g.center, endPoint, w, h),
-								});
+								geometry = makeCircle(g.center, endPoint, w, h);
+							else if (g.type === "arc") geometry = { ...g, [key]: endPoint };
+							else if (g.type === "angle") {
+								if (key === "arcScale") {
+									const v = angleGeometry(g, w, h),
+										q = pixel(endPoint, w, h);
+									geometry = {
+										...g,
+										arcScale: Math.max(
+											0.1,
+											Math.min(
+												0.85,
+												((g.arcScale ?? 0.35) *
+													Math.hypot(q.x - v.center.x, q.y - v.center.y)) /
+													Math.max(v.radius, 0.001),
+											),
+										),
+									};
+								} else geometry = { ...g, [key]: endPoint };
+							} else if (g.type === "ellipse")
+								geometry =
+									key === "center"
+										? moveGeometry(
+												g,
+												endPoint.x - g.center.x,
+												endPoint.y - g.center.y,
+												w,
+												h,
+											)
+										: editEllipse(g, key, endPoint, w, h);
+							onChange({ ...item, geometry });
 						}}
 					/>
 				))}
@@ -509,21 +656,52 @@ export default function AnnotationCanvas({
 					role="toolbar"
 					aria-label="标注工具"
 				>
-					{(["line", "circle", "point", "text"] as Tool[]).map((value) => (
+					{(["select", "line", "circle", "angle"] as Tool[]).map((value) => (
 						<button
 							key={value}
 							type="button"
 							disabled={disabled}
 							aria-pressed={tool === value}
 							onClick={() => {
-								setTool(tool === value ? "select" : value);
+								setTool(value);
 								drawing.current = null;
+								triplet.current = [];
+								setPartial([]);
+								setHover(null);
 								setDraft(null);
 							}}
 						>
 							{names[value]}
 						</button>
 					))}
+					<label className="more-annotation-tools">
+						更多
+						<select
+							aria-label="更多标注工具"
+							disabled={disabled}
+							value={
+								["arc", "ellipse", "point", "text"].includes(tool) ? tool : ""
+							}
+							onChange={(e) => {
+								setTool(e.target.value as Tool);
+								drawing.current = null;
+								triplet.current = [];
+								setPartial([]);
+								setHover(null);
+								setDraft(null);
+							}}
+						>
+							<option value="" disabled>
+								选择工具
+							</option>
+							{(["arc", "ellipse", "point", "text"] as Tool[]).map((value) => (
+								<option key={value} value={value}>
+									{names[value]}
+								</option>
+							))}
+						</select>
+					</label>
+
 					<button
 						type="button"
 						disabled={disabled || !canUndo}
@@ -569,6 +747,9 @@ export default function AnnotationCanvas({
 					}
 					if (e.key === "Escape") {
 						drawing.current = null;
+						triplet.current = [];
+						setPartial([]);
+						setHover(null);
 						setDraft(null);
 						setTool("select");
 						onSelect(null);
@@ -607,6 +788,8 @@ export default function AnnotationCanvas({
 										: e.key === "ArrowDown"
 											? step / h
 											: 0,
+									w,
+									h,
 								),
 							});
 						}
@@ -672,6 +855,30 @@ export default function AnnotationCanvas({
 								/>
 							) : null}
 							{bitmap ? items.map((i) => render(i)) : null}
+							{partial.length && hover && !draft ? (
+								<Line
+									points={[...partial, hover].flatMap((p) => [
+										p.x * w,
+										p.y * h,
+									])}
+									stroke={mark}
+									strokeWidth={2 / s}
+									dash={[5 / s, 4 / s]}
+									listening={false}
+								/>
+							) : null}
+							{partial.map((point, index) => (
+								<Circle
+									key={index === 0 ? "first" : "second"}
+									x={point.x * w}
+									y={point.y * h}
+									radius={4 / s}
+									fill="white"
+									stroke={mark}
+									strokeWidth={2 / s}
+									listening={false}
+								/>
+							))}
 							{draft && bitmap
 								? render(
 										{
@@ -696,6 +903,28 @@ export default function AnnotationCanvas({
 					</Layer>
 				</Stage>
 			</div>
+			{!guest && ["angle", "arc"].includes(tool) ? (
+				<p role="status">
+					{tool === "angle"
+						? ["点选顶点", "点选第一条边", "点选第二条边"][partial.length]
+						: ["点选弧起点", "点选弧上的中间点", "点选终点"][
+								partial.length
+							]}{" "}
+					·{" "}
+					<button
+						type="button"
+						onClick={() => {
+							triplet.current = [];
+							setPartial([]);
+							setHover(null);
+							setDraft(null);
+							setTool("select");
+						}}
+					>
+						取消
+					</button>
+				</p>
+			) : null}
 			<p className="canvas-help">
 				{guest
 					? "双指缩放 · 单指平移"

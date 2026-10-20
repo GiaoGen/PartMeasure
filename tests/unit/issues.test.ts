@@ -49,7 +49,7 @@ describe("P0-3 workflow invariants", () => {
 			{ state: "confirmed" },
 			{ ownerId: "forged" },
 			{ source: "pixels" },
-			{ unit: "deg" },
+			{ unit: "rad" },
 		])
 			expect(responseSchema.safeParse({ ...valid, ...extra }).success).toBe(
 				false,

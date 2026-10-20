@@ -4,6 +4,10 @@ import {
 	type EngineeringMetadata,
 	typeLabel,
 } from "@/lib/annotations";
+import {
+	requiredMeasurements,
+	measurementFieldLabel,
+} from "@/lib/annotation-collaboration";
 import { methodLabel } from "@/lib/issues";
 export function EngineeringFields({
 	item,
@@ -84,50 +88,127 @@ export function EngineeringFields({
 					</select>
 				</label>
 			) : null}
-			{item.geometry.type === "line" ||
-			item.geometry.type === "circle" ||
-			(item.geometry.type === "point" &&
-				item.metadata.measurementMode === "required") ? (
-				<>
-					{item.geometry.type === "circle" ? (
-						<label>
-							尺寸含义
-							<select
-								value={item.metadata.circleMeasure}
-								onChange={(e) => set("circleMeasure", e.target.value)}
-							>
-								<option value="diameter">直径</option>
-								<option value="radius">半径</option>
-							</select>
+			{item.geometry.type === "ellipse" ? (
+				<label>
+					尺寸含义
+					<select
+						value={item.metadata.ellipseMeasure ?? "diameter"}
+						onChange={(e) => set("ellipseMeasure", e.target.value)}
+					>
+						<option value="diameter">圆孔直径 Ø（默认）</option>
+						<option value="majorRadius">长半轴 a</option>
+					</select>
+					<small>椭圆用于贴合照片轮廓，孔径由人填写。</small>
+				</label>
+			) : null}
+			{item.geometry.type === "angle" ? (
+				<label>
+					<input
+						type="checkbox"
+						checked={item.geometry.reflex}
+						onChange={(e) => {
+							if (item.geometry.type === "angle")
+								onChange(
+									{
+										...item,
+										geometry: { ...item.geometry, reflex: e.target.checked },
+									},
+									`${item.id}:reflex`,
+								);
+						}}
+					/>
+					取反角（仅改变测量位置含义，不计算真实角度）
+				</label>
+			) : null}
+			{item.geometry.type === "arc" ? (
+				<fieldset>
+					<legend>需要补充什么</legend>
+					{(["radius", "arcLength", "angle"] as const).map((q) => (
+						<label key={q}>
+							<input
+								type="checkbox"
+								checked={(item.metadata.arcQuantities ?? ["radius"]).includes(
+									q,
+								)}
+								disabled={
+									(item.metadata.arcQuantities ?? ["radius"]).length === 1 &&
+									(item.metadata.arcQuantities ?? ["radius"]).includes(q)
+								}
+								onChange={(e) => {
+									const old = item.metadata.arcQuantities ?? ["radius"];
+									onChange(
+										{
+											...item,
+											metadata: {
+												...item.metadata,
+												arcQuantities: e.target.checked
+													? [...old, q]
+													: old.filter((v) => v !== q),
+											},
+										},
+										`${item.id}:arcQuantities`,
+									);
+								}}
+							/>
+							{q === "radius" ? "半径" : q === "arcLength" ? "弧长" : "圆心角"}
 						</label>
-					) : null}
-					<label>
-						人工尺寸
+					))}
+				</fieldset>
+			) : null}
+			{item.geometry.type === "circle" ? (
+				<label>
+					尺寸含义
+					<select
+						value={item.metadata.circleMeasure}
+						onChange={(e) => set("circleMeasure", e.target.value)}
+					>
+						<option value="diameter">直径</option>
+						<option value="radius">半径</option>
+					</select>
+				</label>
+			) : null}
+			{requiredMeasurements({
+				...item,
+				metadata: {
+					...item.metadata,
+					measurementMode:
+						item.geometry.type === "point"
+							? item.metadata.measurementMode
+							: "auto",
+				},
+			})
+				.filter((field) => field !== "holeDepth")
+				.map((field) => (
+					<label key={field}>
+						人工{measurementFieldLabel(item, field)}
+						{field === "angleValue" ? "（°）" : ""}
 						<input
 							inputMode="decimal"
+							maxLength={24}
 							placeholder="留空则自动提示客户补充"
-							value={item.metadata.dimension}
+							value={item.metadata[field] ?? ""}
 							onChange={(e) => {
 								if (
 									e.target.value === "" ||
 									/^(?:0|[1-9]\d{0,8})(?:\.\d{0,6})?$/.test(e.target.value)
 								)
-									set("dimension", e.target.value);
+									set(field, e.target.value);
 							}}
 						/>
 					</label>
-					<label>
-						单位
-						<select
-							value={item.metadata.unit}
-							onChange={(e) => set("unit", e.target.value)}
-						>
-							{["mm", "cm", "m", "in"].map((unit) => (
-								<option key={unit}>{unit}</option>
-							))}
-						</select>
-					</label>
-				</>
+				))}
+			{item.geometry.type !== "text" && item.geometry.type !== "angle" ? (
+				<label>
+					长度单位
+					<select
+						value={item.metadata.unit}
+						onChange={(e) => set("unit", e.target.value)}
+					>
+						{["mm", "cm", "m", "in"].map((unit) => (
+							<option key={unit}>{unit}</option>
+						))}
+					</select>
+				</label>
 			) : null}
 			{item.geometry.type === "circle" ? (
 				<details className="hole-properties">

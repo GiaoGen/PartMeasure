@@ -1,4 +1,10 @@
 "use client";
+import { anchor } from "@/lib/geometry-extensions";
+import {
+	geometryPaths,
+	annotationText,
+	labelPosition,
+} from "@/lib/annotation-presentation";
 import { annotationStatus } from "@/lib/annotation-collaboration";
 import { useEffect, useRef, useState } from "react";
 import type { AnnotationDocument } from "@/lib/annotations";
@@ -22,7 +28,10 @@ export function AnnotatedThumbnail({
 	fileId: string;
 	name: string;
 	refreshKey: number;
-	thumbnail?: {version:string;width:number;height:number}|null|undefined;
+	thumbnail?:
+		| { version: string; width: number; height: number }
+		| null
+		| undefined;
 	annotationVersion?: string | undefined;
 	annotationCount?: number | undefined;
 	onInvalid: () => void;
@@ -46,7 +55,7 @@ export function AnnotatedThumbnail({
 	const [visible, setVisible] = useState(false);
 	const [document, setDocument] = useState<AnnotationDocument | null>(null);
 	const [failed, setFailed] = useState(false);
-	const [imageReady,setImageReady] = useState(false);
+	const [imageReady, setImageReady] = useState(false);
 	useEffect(() => {
 		if (!host.current) return;
 		const observer = new IntersectionObserver(
@@ -66,9 +75,15 @@ export function AnnotatedThumbnail({
 			return;
 		}
 		let active = true;
-		void api<AnnotationDocument>(`${base}/files/${fileId}/annotations`, "GET", undefined, {
-			cacheMs: 5000, cacheVersion: `${annotationVersion ?? "unknown"}:${refreshKey}`,
-		})
+		void api<AnnotationDocument>(
+			`${base}/files/${fileId}/annotations`,
+			"GET",
+			undefined,
+			{
+				cacheMs: 5000,
+				cacheVersion: `${annotationVersion ?? "unknown"}:${refreshKey}`,
+			},
+		)
 			.then((data) => {
 				if (active) {
 					setDocument(data);
@@ -83,7 +98,15 @@ export function AnnotatedThumbnail({
 		return () => {
 			active = false;
 		};
-	}, [base, fileId, visible, refreshKey, annotationVersion, annotationCount, onInvalid]);
+	}, [
+		base,
+		fileId,
+		visible,
+		refreshKey,
+		annotationVersion,
+		annotationCount,
+		onInvalid,
+	]);
 	const items = document?.items.filter((item) => !item.deleted) ?? [];
 	const w = document?.image.width ?? 1,
 		h = document?.image.height ?? 1;
@@ -98,7 +121,16 @@ export function AnnotatedThumbnail({
 					aria-label={`打开 ${name}`}
 				/>
 			) : null}
-			<MaterialThumbnail src={visible && thumbnail ? `${base}/files/${fileId}/preview?variant=640` : undefined} version={thumbnail?.version} name={name} onReady={setImageReady} />
+			<MaterialThumbnail
+				src={
+					visible && thumbnail
+						? `${base}/files/${fileId}/preview?variant=640`
+						: undefined
+				}
+				version={thumbnail?.version}
+				name={name}
+				onReady={setImageReady}
+			/>
 			{document && imageReady ? (
 				<svg
 					className="thumbnail-annotations"
@@ -108,12 +140,7 @@ export function AnnotatedThumbnail({
 				>
 					{items.map((item, index) => {
 						const g = item.geometry;
-						const p =
-							g.type === "line"
-								? g.from
-								: g.type === "circle"
-									? g.center
-									: g.at;
+						const p = anchor(g);
 						return (
 							<g key={item.id}>
 								<g
@@ -122,33 +149,45 @@ export function AnnotatedThumbnail({
 									strokeWidth="2.5"
 									vectorEffect="non-scaling-stroke"
 								>
-									{g.type === "line" ? (
-										<line
-											x1={g.from.x * w}
-											y1={g.from.y * h}
-											x2={g.to.x * w}
-											y2={g.to.y * h}
-											vectorEffect="non-scaling-stroke"
-										/>
-									) : null}
-									{g.type === "circle" ? (
-										<ellipse
-											cx={g.center.x * w}
-											cy={g.center.y * h}
-											rx={g.radiusX * w}
-											ry={g.radiusY * h}
-											vectorEffect="non-scaling-stroke"
-										/>
-									) : null}
-									{g.type === "point" ? (
-										<circle
-											cx={g.at.x * w}
-											cy={g.at.y * h}
-											r={labelSize / 5}
-											fill="var(--workspace-mark)"
-										/>
-									) : null}
+									{geometryPaths(
+										g,
+										w,
+										h,
+										Math.max(0.001, Math.min(size.width / w, size.height / h)),
+									)
+										.map((data, i) => ({
+											data,
+											role: ["outline", "detail", "secondary"][i] ?? "extra",
+										}))
+										.map(({ data, role }) => (
+											<path
+												key={role}
+												d={data}
+												fill={
+													g.type === "point" ? "var(--workspace-mark)" : "none"
+												}
+												vectorEffect="non-scaling-stroke"
+											/>
+										))}
 								</g>
+								{g.type !== "text" && annotationText(item) ? (
+									<text
+										x={
+											labelPosition(g, w, h, Math.max(0.001, size.width / w)).x
+										}
+										y={
+											labelPosition(g, w, h, Math.max(0.001, size.width / w)).y
+										}
+										fontSize={12 / Math.max(0.001, size.width / w)}
+										textAnchor="middle"
+										fill="var(--workspace-mark)"
+										stroke="white"
+										strokeWidth={3 / Math.max(0.001, size.width / w)}
+										paintOrder="stroke"
+									>
+										{annotationText(item)}
+									</text>
+								) : null}
 								{g.type === "text" ? (
 									<text
 										x={p.x * w}
@@ -176,7 +215,8 @@ export function AnnotatedThumbnail({
 									fontSize={labelSize * 0.8}
 									fill="#fff"
 								>
-									{index + 1}{annotationStatus(item) ? "·" : ""}
+									{index + 1}
+									{annotationStatus(item) ? "·" : ""}
 								</text>
 							</g>
 						);

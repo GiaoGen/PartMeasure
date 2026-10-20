@@ -1,4 +1,6 @@
 "use client";
+import { annotationText } from "@/lib/annotation-presentation";
+import { measurementFieldLabel } from "@/lib/annotation-collaboration";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -375,9 +377,7 @@ export function AnnotationEditor({
 								>
 									<span className="annotation-number">{index + 1}</span>
 									{item.metadata.name || typeLabel(item.geometry)}
-									{item.metadata.dimension
-										? ` · ${item.metadata.dimension} ${item.metadata.unit}`
-										: ""}
+									{annotationText(item) ? ` · ${annotationText(item)}` : ""}
 								</button>
 							</li>
 						))}
@@ -397,15 +397,15 @@ export function AnnotationEditor({
 									{detail.geometry.type === "text" ? (
 										<p>{detail.geometry.text}</p>
 									) : null}
-									{detail.metadata.dimension ? (
+									{detail.metadata.dimension &&
+									!(
+										detail.geometry.type === "ellipse" &&
+										detail.metadata.ellipseMeasure === "majorRadius"
+									) ? (
 										<p>
 											人工
-											{detail.geometry.type === "circle"
-												? detail.metadata.circleMeasure === "diameter"
-													? "直径"
-													: "半径"
-												: "尺寸"}
-											：{detail.metadata.dimension} {detail.metadata.unit}
+											{measurementFieldLabel(detail, "dimension")}：
+											{detail.metadata.dimension} {detail.metadata.unit}
 										</p>
 									) : null}
 									{detail.metadata.holeDepth ? (
@@ -431,6 +431,20 @@ export function AnnotationEditor({
 									{detail.metadata.thread ? (
 										<p>螺纹：{detail.metadata.thread}</p>
 									) : null}
+									{(["angleValue", "arcLength", "majorRadius"] as const)
+										.filter(
+											(field) =>
+												!!detail.metadata[field] &&
+												(field !== "majorRadius" ||
+													detail.metadata.ellipseMeasure === "majorRadius"),
+										)
+										.map((field) => (
+											<p key={field}>
+												{measurementFieldLabel(detail, field)}：
+												{detail.metadata[field]}{" "}
+												{field === "angleValue" ? "°" : detail.metadata.unit}
+											</p>
+										))}
 									<p>{detail.metadata.notes}</p>
 								</div>
 							)}

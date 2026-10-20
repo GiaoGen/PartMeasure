@@ -1,0 +1,10 @@
+{
+  "checkedAt": "2026-10-20T09:15:26.864Z",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "version": "20261020085909",
+  "name": "extended_annotation_tools",
+  "sha256": "3fd32974b9802d69d152e761cbab425ec7c733f4ce25b35462ef47dde837877b",
+  "status": "PASS",
+  "replay": false,
+  "scope": "isolated test migration only; no production or stand-ins"
+}

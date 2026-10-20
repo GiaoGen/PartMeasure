@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { AppError } from "./policy";
+import { extendedBounds, validExtendedGeometry } from "./geometry-extensions";
 export type Point = { x: number; y: number };
 const point = z
 	.object({
@@ -8,6 +9,27 @@ const point = z
 	})
 	.strict();
 export const geometrySchema = z.discriminatedUnion("type", [
+	z
+		.object({
+			type: z.literal("angle"),
+			vertex: point,
+			from: point,
+			to: point,
+			reflex: z.boolean(),
+			arcScale: z.number().min(0.1).max(0.85).optional(),
+		})
+		.strict(),
+	z
+		.object({ type: z.literal("arc"), from: point, via: point, to: point })
+		.strict(),
+	z
+		.object({
+			type: z.literal("ellipse"),
+			center: point,
+			axisA: point,
+			axisB: point,
+		})
+		.strict(),
 	z.object({ type: z.literal("line"), from: point, to: point }).strict(),
 	z
 		.object({
@@ -55,8 +77,20 @@ export const metadataSchema = z
 		notes: z.string().max(2000),
 		measurementMode: z.enum(["auto", "required", "none"]).optional(),
 		requireHoleDepth: z.boolean().optional(),
-		measurementMethod: z.enum(["outside", "inside", "depth", "other", "unspecified"]).optional(),
+		measurementMethod: z
+			.enum(["outside", "inside", "depth", "other", "unspecified"])
+			.optional(),
 		measurementInstructions: z.string().max(2000).optional(),
+		angleValue: decimal.refine((v) => !v || Number(v) < 360).optional(),
+		arcLength: decimal.optional(),
+		ellipseMeasure: z.enum(["diameter", "majorRadius"]).optional(),
+		majorRadius: decimal.optional(),
+		arcQuantities: z
+			.array(z.enum(["radius", "arcLength", "angle"]))
+			.min(1)
+			.max(3)
+			.refine((v) => new Set(v).size === v.length)
+			.optional(),
 	})
 	.strict();
 export type Geometry = z.infer<typeof geometrySchema>;
@@ -69,6 +103,7 @@ export type AnnotationDraft = {
 	metadata: EngineeringMetadata;
 };
 export type Annotation = AnnotationDraft & {
+	schemaVersion?: 1 | 2;
 	revision: number;
 	deleted: boolean;
 	createdAt: string;
@@ -142,6 +177,8 @@ export function validateAnnotation(
 		) < 0.5
 	)
 		throw new AppError("INVALID_GEOMETRY", 422);
+	if (!validExtendedGeometry(geometry, width, height))
+		throw new AppError("INVALID_GEOMETRY", 422);
 	if (geometry.type === "circle") {
 		const { center: c, radiusX: rx, radiusY: ry } = geometry;
 		if (
@@ -155,8 +192,22 @@ export function validateAnnotation(
 			throw new AppError("INVALID_GEOMETRY", 422);
 	} else if (metadata.holeDepth || metadata.holeType || metadata.thread)
 		throw new AppError("INVALID_ENGINEERING_FIELDS", 422);
+	if (geometry.type === "angle" && metadata.dimension)
+		throw new AppError("INVALID_ENGINEERING_FIELDS", 422);
 	if (
-		(geometry.type === "text" || (geometry.type === "point" && metadata.measurementMode !== "required")) &&
+		(metadata.angleValue &&
+			geometry.type !== "angle" &&
+			geometry.type !== "arc") ||
+		(metadata.arcLength && geometry.type !== "arc") ||
+		(metadata.majorRadius && geometry.type !== "ellipse") ||
+		(metadata.arcQuantities && geometry.type !== "arc") ||
+		(metadata.ellipseMeasure && geometry.type !== "ellipse") ||
+		(metadata.requireHoleDepth && geometry.type !== "circle")
+	)
+		throw new AppError("INVALID_ENGINEERING_FIELDS", 422);
+	if (
+		(geometry.type === "text" ||
+			(geometry.type === "point" && metadata.measurementMode !== "required")) &&
 		metadata.dimension
 	)
 		throw new AppError("INVALID_ENGINEERING_FIELDS", 422);
@@ -202,7 +253,9 @@ export const inside = (p: Point) =>
 	p.x <= 1 &&
 	p.y >= 0 &&
 	p.y <= 1;
-export function bounds(g: Geometry) {
+export function bounds(g: Geometry, w = 1, h = 1) {
+	const extra = extendedBounds(g, w, h);
+	if (extra) return extra;
 	if (g.type === "circle")
 		return {
 			left: g.center.x - g.radiusX,
@@ -210,7 +263,7 @@ export function bounds(g: Geometry) {
 			top: g.center.y - g.radiusY,
 			bottom: g.center.y + g.radiusY,
 		};
-	const ps = g.type === "line" ? [g.from, g.to] : [g.at];
+	const ps = g.type === "line" ? [g.from, g.to] : "at" in g ? [g.at] : [];
 	return {
 		left: Math.min(...ps.map((p) => p.x)),
 		right: Math.max(...ps.map((p) => p.x)),
@@ -218,13 +271,30 @@ export function bounds(g: Geometry) {
 		bottom: Math.max(...ps.map((p) => p.y)),
 	};
 }
-export function moveGeometry(g: Geometry, dx: number, dy: number): Geometry {
-	const b = bounds(g),
+export function moveGeometry(
+	g: Geometry,
+	dx: number,
+	dy: number,
+	w = 1,
+	h = 1,
+): Geometry {
+	const b = bounds(g, w, h),
 		x = Math.max(-b.left, Math.min(1 - b.right, dx)),
 		y = Math.max(-b.top, Math.min(1 - b.bottom, dy));
 	const move = (p: Point) => ({ x: p.x + x, y: p.y + y });
 	if (g.type === "line") return { ...g, from: move(g.from), to: move(g.to) };
 	if (g.type === "circle") return { ...g, center: move(g.center) };
+	if (g.type === "arc")
+		return { ...g, from: move(g.from), via: move(g.via), to: move(g.to) };
+	if (g.type === "angle")
+		return { ...g, vertex: move(g.vertex), from: move(g.from), to: move(g.to) };
+	if (g.type === "ellipse")
+		return {
+			...g,
+			center: move(g.center),
+			axisA: move(g.axisA),
+			axisB: move(g.axisB),
+		};
 	return { ...g, at: move(g.at) };
 }
 export function makeCircle(
@@ -256,6 +326,12 @@ export function sameContent(a: unknown, b: unknown): boolean {
 	return JSON.stringify(stable(a)) === JSON.stringify(stable(b));
 }
 export const typeLabel = (g: Geometry) =>
-	({ line: "线段", circle: "圆 / 孔位", point: "点位", text: "文字备注" })[
-		g.type
-	];
+	({
+		line: "线段",
+		circle: "圆 / 孔位",
+		point: "点位",
+		text: "文字备注",
+		angle: "角度",
+		arc: "圆弧",
+		ellipse: "椭圆",
+	})[g.type];

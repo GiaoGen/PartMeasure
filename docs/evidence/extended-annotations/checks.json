@@ -1,0 +1,48 @@
+{
+  "checkedAt": "2026-10-20T09:24:36.145Z",
+  "checks": [
+    {
+      "command": "npm run lint",
+      "status": "PASS",
+      "files": 235,
+      "warnings": 0
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "PASS"
+    },
+    {
+      "command": "npm test",
+      "status": "PASS",
+      "testFiles": 28,
+      "tests": 165
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS",
+      "note": "Final build includes degenerate circle/ellipse/angle preview guards."
+    },
+    {
+      "command": "powershell -NoProfile -File scripts/extended-annotations/check-local.ps1",
+      "status": "PASS",
+      "groups": 8
+    },
+    {
+      "command": "powershell -NoProfile -File scripts/extended-annotations/run.ps1 -Action live",
+      "status": "PASS",
+      "groups": 5,
+      "note": "Real isolated services, local application HTTP; grouped timings are multi-step elapsed times, not individual action latency."
+    },
+    {
+      "command": "npm run test:e2e",
+      "status": "NOT_RUN",
+      "reason": "User/repository explicitly disallow starting browser/E2E for this task."
+    }
+  ],
+  "manual": [
+    "Canvas appearance and interaction",
+    "Real phone touch",
+    "Mainland mobile network"
+  ],
+  "productionDeployment": "NOT_RUN"
+}

@@ -463,6 +463,10 @@ small {
 	flex-wrap: wrap;
 	gap: 6px;
 }
+.more-annotation-tools {
+ display: flex; align-items: center; gap: 6px; margin: 0;
+}
+.more-annotation-tools select { min-height: 44px; width: auto; margin: 0; }
 .annotation-toolbar button,
 .canvas-zoom button {
 	min-height: 44px;

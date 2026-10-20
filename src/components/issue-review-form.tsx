@@ -1,4 +1,5 @@
 "use client";
+import { unitsForField, displayUnit } from "@/lib/annotation-collaboration";
 import { useState } from "react";
 import {
 	type IssueDetail,
@@ -35,7 +36,10 @@ export function IssueReviewForm({
 						: "owner_manual",
 		),
 		[value, setValue] = useState(response?.value ?? ""),
-		[unit, setUnit] = useState(response?.unit ?? "mm"),
+		[unit, setUnit] = useState(
+			response?.unit ??
+				(issue.measurementField === "angleValue" ? "deg" : "mm"),
+		),
 		[note, setNote] = useState("");
 	const write = useIssueWrite<IssueWriteResult>(
 		`${base}/issues/${issue.id}/review`,
@@ -148,8 +152,10 @@ export function IssueReviewForm({
 										write.changed();
 									}}
 								>
-									{["mm", "cm", "m", "in"].map((u) => (
-										<option key={u}>{u}</option>
+									{unitsForField(issue.measurementField).map((u) => (
+										<option key={u} value={u}>
+											{displayUnit(u)}
+										</option>
 									))}
 								</select>
 							</label>

@@ -1,4 +1,5 @@
 "use client";
+import { unitsForField, displayUnit } from "@/lib/annotation-collaboration";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
 	type IssueDetail,
@@ -30,7 +31,11 @@ export function IssueResponseForm({
 			issue.kind === "comment" ? "text" : "numeric",
 		),
 		[value, setValue] = useState(""),
-		[unit, setUnit] = useState<string>(issue.target?.annotation.metadata.unit ?? "mm"),
+		[unit, setUnit] = useState<string>(
+			issue.measurementField === "angleValue"
+				? "deg"
+				: (issue.target?.annotation.metadata.unit ?? "mm"),
+		),
 		[body, setBody] = useState(""),
 		[label, setLabel] = useState(""),
 		[selected, setSelected] = useState<string[]>([]);
@@ -49,7 +54,9 @@ export function IssueResponseForm({
 				const data = await api<{
 					items: Evidence[];
 					nextCursor: string | null;
-				}>(`${base}/files${next ? `?cursor=${next}` : ""}`, "GET", undefined, { cacheMs: 1000 });
+				}>(`${base}/files${next ? `?cursor=${next}` : ""}`, "GET", undefined, {
+					cacheMs: 1000,
+				});
 				if (run !== generation.current) return;
 				setFiles((old) => (next ? [...old, ...data.items] : data.items));
 				setCursor(data.nextCursor);
@@ -201,8 +208,10 @@ export function IssueResponseForm({
 									write.changed();
 								}}
 							>
-								{["mm", "cm", "m", "in"].map((u) => (
-									<option key={u}>{u}</option>
+								{unitsForField(issue.measurementField).map((u) => (
+									<option key={u} value={u}>
+										{displayUnit(u)}
+									</option>
 								))}
 							</select>
 						</label>

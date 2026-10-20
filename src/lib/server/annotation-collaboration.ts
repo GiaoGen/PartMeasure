@@ -1,5 +1,6 @@
 import "server-only";
 import { isDeepStrictEqual } from "node:util";
+import { geometryTarget } from "../geometry-extensions";
 import type { PoolClient } from "pg";
 import type { Annotation } from "../annotations";
 import {
@@ -31,7 +32,10 @@ export async function syncAnnotationMeasurements(
 		const field: MeasurementField = issue.measurement_field ?? "dimension";
 		const snapshot = issue.annotation_snapshot;
 		const sameTarget =
-			isDeepStrictEqual(snapshot?.geometry, item.geometry) &&
+			isDeepStrictEqual(
+				snapshot?.geometry ? geometryTarget(snapshot.geometry) : null,
+				geometryTarget(item.geometry),
+			) &&
 			(field !== "dimension" ||
 				item.geometry.type !== "circle" ||
 				snapshot?.metadata.circleMeasure === item.metadata.circleMeasure) &&

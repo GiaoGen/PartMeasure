@@ -1,4 +1,4 @@
-import type { Geometry } from "../lib/annotations";
+import { bounds, type Geometry } from "../lib/annotations";
 
 // Match object-fit: contain, including letterboxing around portrait images.
 export function annotationHitRegion(
@@ -9,6 +9,16 @@ export function annotationHitRegion(
 	const scale = Math.min(box.width / image.width, box.height / image.height);
 	const offsetX = (box.width - image.width * scale) / 2;
 	const offsetY = (box.height - image.height * scale) / 2;
+	if (["angle", "arc", "ellipse"].includes(geometry.type)) {
+		const b = bounds(geometry, image.width, image.height);
+		return {
+			left: offsetX + ((b.left + b.right) * image.width * scale) / 2,
+			top: offsetY + ((b.top + b.bottom) * image.height * scale) / 2,
+			width: Math.max(44, (b.right - b.left) * image.width * scale),
+			height: Math.max(44, (b.bottom - b.top) * image.height * scale),
+			transform: "translate(-50%, -50%)",
+		};
+	}
 	const anchor =
 		geometry.type === "line"
 			? {
@@ -17,7 +27,9 @@ export function annotationHitRegion(
 				}
 			: geometry.type === "circle"
 				? geometry.center
-				: geometry.at;
+				: "at" in geometry
+					? geometry.at
+					: { x: 0, y: 0 };
 	const width =
 		geometry.type === "line"
 			? Math.hypot(

@@ -15,6 +15,7 @@ import { type Actor, transaction, idempotent } from "./db";
 import { access, actorKey, audit } from "./service";
 import { syncAnnotationMeasurements } from "./annotation-collaboration";
 type Row = {
+	schema_version?: 1 | 2;
 	collaboration?: Annotation["collaboration"];
 	id: string;
 	geometry: Annotation["geometry"];
@@ -27,6 +28,7 @@ type Row = {
 	image_hash: string;
 };
 const dto = (r: Row): Annotation => ({
+	schemaVersion: r.schema_version ?? 1,
 	...(r.collaboration ? { collaboration: r.collaboration } : {}),
 	id: r.id,
 	geometry: r.geometry,
@@ -115,7 +117,7 @@ export async function createAnnotation(
 				);
 				if (count.rows[0].n >= 200) throw new AppError("ANNOTATION_LIMIT", 409);
 				const { rows } = await db.query<Row>(
-					"insert into pm.annotations(id,project_id,file_id,image_hash,normalization_version,geometry,metadata,revision) values($1,$2,$3,$4,1,$5,$6,1) returning *",
+					"insert into pm.annotations(id,project_id,file_id,image_hash,normalization_version,geometry,metadata,revision,schema_version) values($1,$2,$3,$4,1,$5,$6,1,$7) returning *",
 					[
 						input.id,
 						projectId,
@@ -123,10 +125,17 @@ export async function createAnnotation(
 						input.imageHash,
 						JSON.stringify(input.geometry),
 						JSON.stringify(input.metadata),
+						["angle", "arc", "ellipse"].includes(input.geometry.type) ? 2 : 1,
 					],
 				);
 				await audit(db, actor, projectId, "annotation.create", input.id);
-				await syncAnnotationMeasurements(db, actor, projectId, input.fileId, dto(rows[0] as Row));
+				await syncAnnotationMeasurements(
+					db,
+					actor,
+					projectId,
+					input.fileId,
+					dto(rows[0] as Row),
+				);
 				return dto(rows[0] as Row);
 			},
 		);
@@ -160,6 +169,8 @@ export async function changeAnnotation(
 					throw new AppError("REVISION_CONFLICT", 409);
 				if (input && f.sha256 !== input.imageHash)
 					throw new AppError("IMAGE_VERSION_CONFLICT", 409);
+				if (input && old.geometry.type !== input.geometry.type)
+					throw new AppError("INVALID_GEOMETRY", 422);
 				if (input)
 					validateAnnotation(input.geometry, input.metadata, f.width, f.height);
 				if (old.revision >= 10000)
@@ -181,7 +192,13 @@ export async function changeAnnotation(
 					input ? "annotation.edit" : "annotation.hide",
 					id,
 				);
-				await syncAnnotationMeasurements(db, actor, projectId, old.file_id, dto(next.rows[0] as Row));
+				await syncAnnotationMeasurements(
+					db,
+					actor,
+					projectId,
+					old.file_id,
+					dto(next.rows[0] as Row),
+				);
 				return dto(next.rows[0] as Row);
 			},
 		);

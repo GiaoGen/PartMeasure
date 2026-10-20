@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { AppError } from "./policy";
 import type { AnnotationDraft, CanonicalImage } from "./annotations";
+import type { MeasurementField } from "./annotation-collaboration";
 
 export const states = [
 	"awaiting_response",
@@ -22,7 +23,7 @@ export const methodLabel = {
 	other: "其他",
 	unspecified: "不指定",
 };
-export const unitSchema = z.enum(["mm", "cm", "m", "in"]);
+export const unitSchema = z.enum(["mm", "cm", "m", "in", "deg"]);
 export const valueSchema = z
 	.string()
 	.max(24)
@@ -178,7 +179,7 @@ export function validateReview(
 export type IssueSummary = {
 	closedAt?: string | null;
 	closureNote?: string;
-	measurementField?: "dimension" | "holeDepth" | null;
+	measurementField?: MeasurementField | null;
 	id: string;
 	fileId: string;
 	/** Always supplied by the current API; optional for older clients/fixtures. */
@@ -200,7 +201,7 @@ export type Evidence = {
 	mime: string;
 	byteSize: string;
 	previewVersion?: string;
-	thumbnail?: {version:string} | null;
+	thumbnail?: { version: string } | null;
 };
 export type IssueResponse = {
 	id: string;
@@ -240,19 +241,47 @@ export type IssueWriteResult = {
 	review?: IssueReview;
 };
 
-export function applyIssueWrite(issue: IssueDetail, result: IssueWriteResult): IssueDetail | null {
+export function applyIssueWrite(
+	issue: IssueDetail,
+	result: IssueWriteResult,
+): IssueDetail | null {
 	if (result.issueId !== issue.id) return null;
 	if (result.revision <= issue.revision) return issue;
 	if (result.revision !== issue.revision + 1 || !result.updatedAt) return null;
-	if (result.response?.issueRevision === issue.revision && result.state === "submitted") {
-		return { ...issue, state: result.state, revision: result.revision, updatedAt: result.updatedAt,
+	if (
+		result.response?.issueRevision === issue.revision &&
+		result.state === "submitted"
+	) {
+		return {
+			...issue,
+			state: result.state,
+			revision: result.revision,
+			updatedAt: result.updatedAt,
 			latestResponseId: result.response.id,
-			responses: [...issue.responses.filter(r => r.id !== result.response?.id), result.response] };
+			responses: [
+				...issue.responses.filter((r) => r.id !== result.response?.id),
+				result.response,
+			],
+		};
 	}
-	if (result.review?.issueRevision === issue.revision && result.review.responseId === issue.latestResponseId &&
-		result.state === (result.review.decision === "confirm" ? "confirmed" : "remeasure_requested")) {
-		return { ...issue, state: result.state, revision: result.revision, updatedAt: result.updatedAt,
-			reviews: [...issue.reviews.filter(r => r.id !== result.review?.id), result.review] };
+	if (
+		result.review?.issueRevision === issue.revision &&
+		result.review.responseId === issue.latestResponseId &&
+		result.state ===
+			(result.review.decision === "confirm"
+				? "confirmed"
+				: "remeasure_requested")
+	) {
+		return {
+			...issue,
+			state: result.state,
+			revision: result.revision,
+			updatedAt: result.updatedAt,
+			reviews: [
+				...issue.reviews.filter((r) => r.id !== result.review?.id),
+				result.review,
+			],
+		};
 	}
 	return null;
 }

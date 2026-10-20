@@ -1,0 +1,31 @@
+{
+  "checkedAt": "2026-10-20T09:20:30.351Z",
+  "scope": "Local production Next HTTP with real isolated Supabase Auth/DB/private Storage; no browser/phone/network acceptance",
+  "results": [
+    {
+      "name": "normal-password-two-owners-Guest-session-and-real-private-photo",
+      "status": "PASS",
+      "milliseconds": 43623
+    },
+    {
+      "name": "ellipse-diameter-default-persist-reply-confirm-and-optional-semiaxis",
+      "status": "PASS",
+      "milliseconds": 41477
+    },
+    {
+      "name": "angle-degrees-display-only-adjustment-fixed-snapshot-and-conflict",
+      "status": "PASS",
+      "milliseconds": 35479
+    },
+    {
+      "name": "arc-separate-radius-length-angle-and-old-line-compatibility",
+      "status": "PASS",
+      "milliseconds": 45329
+    },
+    {
+      "name": "Owner-isolation-Guest-mutation-review-denied-and-revocation",
+      "status": "PASS",
+      "milliseconds": 9722
+    }
+  ]
+}

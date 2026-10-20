@@ -1,0 +1,10 @@
+{
+  "checkedAt": "2026-10-20T07:51:18.595Z",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "version": "20261020073647",
+  "name": "annotation_collaboration",
+  "sha256": "58236d265a7066fede628a437ae0f720d79f33eb0543e3c049f135198577c18b",
+  "status": "PASS",
+  "replay": false,
+  "scope": "isolated test migration only; no production or stand-ins"
+}

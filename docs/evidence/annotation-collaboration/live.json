@@ -1,0 +1,41 @@
+{
+  "checkedAt": "2026-10-20T07:58:13.977Z",
+  "scope": "Local production Next HTTP with real isolated Supabase Auth/DB/private Storage; no browser/phone/network acceptance",
+  "results": [
+    {
+      "name": "normal-password-two-owners-Guest-session-and-real-private-photo",
+      "status": "PASS",
+      "milliseconds": 48568
+    },
+    {
+      "name": "saving-line-opens-pending-without-publish-and-refresh-restores-it",
+      "status": "PASS",
+      "milliseconds": 22799
+    },
+    {
+      "name": "numeric-submit-review-writeback-and-fixed-history",
+      "status": "PASS",
+      "milliseconds": 23602
+    },
+    {
+      "name": "photo-unable-remeasure-and-manual-confirmation-preserve-originals",
+      "status": "PASS",
+      "milliseconds": 35102
+    },
+    {
+      "name": "direct-fill-and-description-only-remove-pending-closed-write-denied",
+      "status": "PASS",
+      "milliseconds": 37794
+    },
+    {
+      "name": "diameter-depth-split-and-snapshot-replacement-rejects-old-review",
+      "status": "PASS",
+      "milliseconds": 34922
+    },
+    {
+      "name": "Owner-isolation-Guest-edit-review-forbidden-and-revoked-link-denied",
+      "status": "PASS",
+      "milliseconds": 13559
+    }
+  ]
+}

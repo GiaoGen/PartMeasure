@@ -1,4 +1,5 @@
 "use client";
+import { annotationStatus } from "@/lib/annotation-collaboration";
 import { useEffect, useRef, useState } from "react";
 import type { AnnotationDocument } from "@/lib/annotations";
 import { api, ApiError } from "./api";
@@ -175,7 +176,7 @@ export function AnnotatedThumbnail({
 									fontSize={labelSize * 0.8}
 									fill="#fff"
 								>
-									{index + 1}
+									{index + 1}{annotationStatus(item) ? "·" : ""}
 								</text>
 							</g>
 						);
@@ -190,7 +191,7 @@ export function AnnotatedThumbnail({
 							className="thumbnail-annotation-hit"
 							data-annotation-id={item.id}
 							style={annotationHitRegion(item.geometry, document.image, size)}
-							aria-label={`查看标注 ${index + 1}：${item.metadata.name || "图片标注"}`}
+							aria-label={`查看标注 ${index + 1}：${item.metadata.name || "图片标注"}${annotationStatus(item) ? ` · ${annotationStatus(item)}` : ""}`}
 							onClick={() => onAnnotation(item.id)}
 						/>
 					))

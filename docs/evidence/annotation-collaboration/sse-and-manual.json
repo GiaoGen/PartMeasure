@@ -1,0 +1,6 @@
+{
+  "checkedAt": "2026-10-20T08:01:51.911Z",
+  "status": "PASS",
+  "scope": "real app HTTP SSE delivered committed annotation change; manual inputs prepared, browser delivery/visual experience unverified",
+  "groupedMilliseconds": 9245
+}

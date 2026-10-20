@@ -370,7 +370,7 @@ function WorkspaceContent({
 	}, [load]);
  useProjectUpdates(updates => {
   if (updates.some(e => e.kind === "file.changed" || e.kind === "resync")) void load();
-  for (const event of updates) if (event.kind === "annotation.changed" && event.fileId) annotationsSaved(event.fileId);
+  for (const event of updates) if ((event.kind === "annotation.changed" || event.kind === "issue.changed") && event.fileId) annotationsSaved(event.fileId);
   if (updates.some(e => e.kind === "issue.changed" || e.kind === "resync")) issueUpdated();
   if (updates.some(e => e.kind === "project.changed" || e.kind === "access.changed" || e.kind === "resync")) {
    void api<ProjectView>(base).then(data => {
@@ -673,6 +673,7 @@ function WorkspaceContent({
 							onInvalid={onInvalid}
 							onUpdated={issueUpdated}
 							onDirty={onInboxDirty}
+                            onOpenAnnotation={(fileId, annotationId) => { const file = assets.find(f => f.id === fileId); if (!file) return false; openThumbnailAnnotation(file, annotationId); return true; }}
 						/>
 						<div hidden={!!selected || !!selectedIssue}>
 							{loading ? (
@@ -836,13 +837,6 @@ function WorkspaceContent({
 											onAnnotationsSaved={() => annotationsSaved(selected.id)}
 											onOpenIssue={openPhotoIssue}
 											onOpenProperties={openProperties}
-											onInitialIssue={(id) => {
-												if (
-													mobilePanelOpen &&
-													window.matchMedia("(max-width: 700px)").matches
-												)
-													openPhotoIssue(id);
-											}}
 											initialAnnotationId={initialAnnotation}
 											panelHidden={!!overlayIssue}
 										/>
@@ -879,7 +873,7 @@ function WorkspaceContent({
 						aria-label={
 							contextActive
 								? guest
-									? "测量提醒与回复"
+									? "标注与属性"
 									: "标注与属性"
 								: "交付与版本"
 						}
@@ -934,9 +928,9 @@ function WorkspaceContent({
 						mobileOpen={mobilePanelOpen}
 						title={
 							guest
-								? "测量提醒与回复"
+								? "标注与属性"
 								: overlayIssue || selectedIssue
-									? "测量审核"
+									? "标注与属性"
 									: "标注与属性"
 						}
 						onClose={() => setMobilePanelOpen(false)}

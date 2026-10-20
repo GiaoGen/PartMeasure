@@ -1,4 +1,5 @@
 "use client";
+import { annotationStatus } from "@/lib/annotation-collaboration";
 import { useEffect, useRef, useState } from "react";
 import type Konva from "konva";
 import { privateImage, discardPrivateImage } from "./private-image-cache";
@@ -441,7 +442,7 @@ export default function AnnotationCanvas({
 						<Text
 							x={p.x * w + 9 / s}
 							y={p.y * h - 22 / s}
-							text={`${label}${item.metadata.dimension ? ` · ${item.metadata.dimension} ${item.metadata.unit}` : ""}`}
+							text={`${label}${item.metadata.dimension ? ` · ${item.metadata.dimension} ${item.metadata.unit}` : ""}${annotationStatus(item) ? ` · ${annotationStatus(item)}` : ""}`}
 							fontSize={14 / s}
 							fill={stroke}
 							stroke="white"

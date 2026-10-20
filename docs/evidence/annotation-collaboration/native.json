@@ -1,0 +1,50 @@
+{
+  "checkedAt": "2026-10-20T08:02:12.164Z",
+  "scope": "Disposable native PostgreSQL: transactions/RLS; no real Auth/Storage/browser evidence",
+  "results": [
+    {
+      "check": "save-automatically-opens-one-item-and-idempotent-replay",
+      "status": "PASS"
+    },
+    {
+      "check": "numeric-review-writes-human-value-and-revision-in-same-transaction",
+      "status": "PASS"
+    },
+    {
+      "check": "direct-fill-closes-pending-and-closed-reply-is-rejected",
+      "status": "PASS"
+    },
+    {
+      "check": "description-only-point-text-and-prefilled-have-no-pending-items",
+      "status": "PASS"
+    },
+    {
+      "check": "hole-diameter-and-depth-are-independent-and-units-stay-physical",
+      "status": "PASS"
+    },
+    {
+      "check": "unable-remeasure-photo-manual-review-appends-history",
+      "status": "PASS"
+    },
+    {
+      "check": "geometry-change-closes-old-snapshot-and-stale-review-cannot-apply",
+      "status": "PASS"
+    },
+    {
+      "check": "revision-conflict-double-submit-and-role-isolation",
+      "status": "PASS"
+    },
+    {
+      "check": "legacy-locator-request-review-does-not-write-invalid-point-dimension",
+      "status": "PASS"
+    },
+    {
+      "check": "concurrent-different-submissions-commit-one-append-only-response",
+      "status": "PASS"
+    },
+    {
+      "check": "revocation-removes-access-to-integrated-attributes",
+      "status": "PASS"
+    }
+  ]
+}

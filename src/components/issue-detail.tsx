@@ -34,6 +34,7 @@ export function IssueDetail({
 	onDirty,
 	onBack,
 	panelOnly = false,
+	inline = false,
 	onOpenProperties,
 	backLabel,
 }: {
@@ -45,6 +46,7 @@ export function IssueDetail({
 	onDirty: (dirty: boolean) => void;
 	onBack: () => void;
 	panelOnly?: boolean;
+	inline?: boolean;
 	onOpenProperties?: () => void;
 	backLabel?: string;
 }) {
@@ -72,9 +74,17 @@ export function IssueDetail({
 			const run = ++generation.current;
 			if (reset) setLoading(true);
 			try {
-				const data = await api<Detail>(`${base}/issues/${id}`, "GET", undefined, { cacheMs: reset ? 0 : 1000 });
+				const data = await api<Detail>(
+					`${base}/issues/${id}`,
+					"GET",
+					undefined,
+					{ cacheMs: reset ? 0 : 1000 },
+				);
 				if (run !== generation.current) return;
-				if (dirty.current && !reset) { setSavedNotice("对方已更新；当前输入已保留，提交时检查修订冲突。"); return; }
+				if (dirty.current && !reset) {
+					setSavedNotice("对方已更新；当前输入已保留，提交时检查修订冲突。");
+					return;
+				}
 				setIssue(data);
 				setCommittedPending(false);
 				setError("");
@@ -92,13 +102,27 @@ export function IssueDetail({
 	);
 	useEffect(() => {
 		void load(true);
-        return () => { generation.current++; };
+		return () => {
+			generation.current++;
+		};
 	}, [load]);
- useProjectUpdates(updates => {
-  if (!updates.some(e => e.kind === "resync" || (e.kind === "issue.changed" && e.entityId === id) || (e.kind === "file.changed" && issue?.responses.some(r=>r.attachments.some(f=>f.id===e.fileId))))) return;
-  if (dirty.current) setSavedNotice("对方已更新；当前输入已保留，提交时检查修订冲突。");
-  else void load();
- });
+	useProjectUpdates((updates) => {
+		if (
+			!updates.some(
+				(e) =>
+					e.kind === "resync" ||
+					(e.kind === "issue.changed" && e.entityId === id) ||
+					(e.kind === "file.changed" &&
+						issue?.responses.some((r) =>
+							r.attachments.some((f) => f.id === e.fileId),
+						)),
+			)
+		)
+			return;
+		if (dirty.current)
+			setSavedNotice("对方已更新；当前输入已保留，提交时检查修订冲突。");
+		else void load();
+	});
 
 	function reload() {
 		void load(true);
@@ -108,7 +132,7 @@ export function IssueDetail({
 		if (updated) {
 			generation.current++;
 			setIssue(updated);
-			setFormVersion(v => v + 1);
+			setFormVersion((v) => v + 1);
 			setCommittedPending(false);
 			setSavedNotice("本次提交已保存。");
 			setError("");
@@ -124,13 +148,13 @@ export function IssueDetail({
 	}
 	if (loading)
 		return (
-			<WorkspaceSideContent>
+			<WorkspaceSideContent inline={inline}>
 				<p role="status">读取测量位置、回复与审核历史…</p>
 			</WorkspaceSideContent>
 		);
 	if (!issue)
 		return (
-			<WorkspaceSideContent>
+			<WorkspaceSideContent inline={inline}>
 				<div>
 					<p role="alert" className="error">
 						{error || "任务暂时不可用。"}
@@ -156,25 +180,28 @@ export function IssueDetail({
 		})),
 	].sort((a, b) => a.at.localeCompare(b.at));
 	const canReply =
-		issue.state === "awaiting_response" ||
-		issue.state === "remeasure_requested";
+		!issue.closedAt &&
+		(issue.state === "awaiting_response" ||
+			issue.state === "remeasure_requested");
 	const mainContent = (
 		<>
 			<div className="detail-heading">
 				<h2>{issue.title}</h2>
-				<button type="button" onClick={onBack}>
-					{backLabel ?? (panelOnly ? "返回标注" : "返回资料")}
-				</button>
+				{!inline ? (
+					<button type="button" onClick={onBack}>
+						{backLabel ?? (panelOnly ? "返回标注" : "返回资料")}
+					</button>
+				) : null}
 			</div>
 			<p className="issue-state">
-				{stateLabel[issue.state]} ·{" "}
-				{issue.kind === "measurement" ? "测量提醒" : "文件级文字问题"}
+				{issue.closedAt ? "已结束" : stateLabel[issue.state]} ·{" "}
+				{issue.kind === "measurement"
+					? issue.measurementField === "holeDepth"
+						? "孔深"
+						: "尺寸补充"
+					: "文件级文字问题"}
 			</p>
-			{savedNotice ? (
-				<p role="status">
-					{savedNotice}
-				</p>
-			) : null}
+			{savedNotice ? <p role="status">{savedNotice}</p> : null}
 			{error ? (
 				<p role="alert" className="error">
 					{error}
@@ -185,17 +212,19 @@ export function IssueDetail({
 			) : null}
 			<details
 				className="issue-target"
-				open={!panelOnly || targetExpanded}
+				open={inline ? targetExpanded : !panelOnly || targetExpanded}
 				onToggle={(event) => setTargetExpanded(event.currentTarget.open)}
 			>
 				<summary>测量位置与要求</summary>
 				<h3>{target ? "测哪里" : "对应文件"}</h3>
 				<p>{issue.targetInfo || issue.file.filename}</p>
-				{target && (!panelOnly || targetExpanded) ? (
+				{target && ((!panelOnly && !inline) || targetExpanded) ? (
 					<>
 						<details className="target-revision">
 							<summary>测量位置记录</summary>
-							<p>修订 #{target.annotationRef.revision}，保留发送时的位置。</p>
+							<p>
+								修订 #{target.annotationRef.revision}，保留本次补充对应的位置。
+							</p>
 						</details>
 						<Canvas
 							image={target.image}
@@ -232,23 +261,28 @@ export function IssueDetail({
 	);
 	return (
 		<section
-			className="issue-detail"
+			className={`issue-detail${inline ? " inline-collaboration" : ""}`}
 			data-panel-only={panelOnly}
 			aria-label="任务详情"
 		>
 			{panelOnly ? (
-				<WorkspaceSideContent>
+				<WorkspaceSideContent inline={inline}>
 					<div className="issue-popup-main">{mainContent}</div>
 				</WorkspaceSideContent>
 			) : (
 				<div className="issue-main">{mainContent}</div>
 			)}
-			<WorkspaceSideContent>
+			<WorkspaceSideContent inline={inline}>
 				<aside className="issue-actions">
 					{panelOnly && issue.targetInfo ? (
 						<p className="preserve-lines">{issue.targetInfo}</p>
 					) : null}
-					<h2>{guest ? "测量提醒与回复" : "测量审核"}</h2>
+					{!inline ? (
+						<h2>{issue.kind === "measurement" ? "标注与属性" : "文件问题"}</h2>
+					) : null}
+					{issue.closedAt ? (
+						<p role="status">{issue.closureNote}，原回复及证据已保留。</p>
+					) : null}
 					<h3>{issue.kind === "measurement" ? "怎么测" : "问题说明"}</h3>
 					{issue.kind === "measurement" ? (
 						<p>建议使用：{methodLabel[issue.measurementMethod]}</p>
@@ -291,7 +325,41 @@ export function IssueDetail({
 							onReload={reload}
 						/>
 					) : null}
-					{!guest && issue.state === "submitted" && !committedPending ? (
+					{!guest && !issue.closedAt && issue.state === "submitted" ? (
+						<section aria-label="客户本次提交">
+							<h3>客户本次提交</h3>
+							{issue.responses
+								.filter((r) => r.id === issue.latestResponseId)
+								.map((r) => (
+									<div key={r.id}>
+										<p>
+											{r.value
+												? `${r.value} ${r.unit}`
+												: r.kind === "unable"
+													? "无法测量"
+													: "测量照片"}
+										</p>
+										<p className="preserve-lines">{r.body}</p>
+										{r.attachments.map((file) => (
+											<a
+												key={file.id}
+												href={`${base}/files/${file.id}/download`}
+											>
+												{file.mime.startsWith("image/") ? (
+													<EvidencePreview base={base} file={file} />
+												) : (
+													file.filename
+												)}
+											</a>
+										))}
+									</div>
+								))}
+						</section>
+					) : null}
+					{!guest &&
+					!issue.closedAt &&
+					issue.state === "submitted" &&
+					!committedPending ? (
 						<IssueReviewForm
 							key={`${issue.id}:${issue.revision}:${formVersion}`}
 							base={base}
@@ -310,10 +378,10 @@ export function IssueDetail({
 					) : null}
 				</aside>
 			</WorkspaceSideContent>
-			<WorkspaceSideContent>
+			<WorkspaceSideContent inline={inline}>
 				<details
 					className="issue-history-disclosure"
-					open={issue.state === "submitted"}
+					open={inline ? false : issue.state === "submitted"}
 				>
 					<summary>回复与审核历史</summary>
 					<section className="issue-history" aria-label="回复与审核历史">

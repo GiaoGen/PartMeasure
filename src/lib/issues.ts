@@ -10,10 +10,10 @@ export const states = [
 ] as const;
 export type IssueState = (typeof states)[number];
 export const stateLabel: Record<IssueState, string> = {
-	awaiting_response: "待回复",
-	submitted: "待工程师审核",
+	awaiting_response: "待补充",
+	submitted: "待工程师确认",
 	confirmed: "已确认",
-	remeasure_requested: "要求重测",
+	remeasure_requested: "待重新补充",
 };
 export const methodLabel = {
 	outside: "外测量爪",
@@ -176,6 +176,9 @@ export function validateReview(
 		throw new AppError("CONFIRMATION_SOURCE_REQUIRED", 422);
 }
 export type IssueSummary = {
+	closedAt?: string | null;
+	closureNote?: string;
+	measurementField?: "dimension" | "holeDepth" | null;
 	id: string;
 	fileId: string;
 	/** Always supplied by the current API; optional for older clients/fixtures. */

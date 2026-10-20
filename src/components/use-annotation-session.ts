@@ -27,6 +27,7 @@ export function useAnnotationSession(
 	guest: boolean,
 	onInvalid: () => void,
 	onDirty: (dirty: boolean) => void,
+	externalDirty = false,
 ) {
 	const [document, setDocument] = useState<AnnotationDocument | null>(null),
 		[items, setItems] = useState<AnnotationDraft[]>([]),
@@ -87,7 +88,7 @@ export function useAnnotationSession(
 			setItems(data.items.filter((i) => !i.deleted));
 			setPast([]);
 			setFuture([]);
-			setSelected(null);
+			setSelected(previous => !force && data.items.some(i => i.id === previous && !i.deleted) ? previous : null);
 			pending.current.clear();
 			setBlocked(false);
 			setConflict(false);
@@ -106,9 +107,9 @@ export function useAnnotationSession(
 			loadRun.current++;
 		};
 	}, [load]);
- const protectedDraft = useRef(false); protectedDraft.current = dirty || saving || blocked;
+ const protectedDraft = useRef(false); protectedDraft.current = dirty || saving || blocked || externalDirty;
  useProjectUpdates(updates => {
-  if (!updates.some(e => e.kind === "resync" || (e.kind === "annotation.changed" && e.fileId === fileId))) return;
+  if (!updates.some(e => e.kind === "resync" || ((e.kind === "annotation.changed" || e.kind === "issue.changed") && e.fileId === fileId))) return;
   if (protectedDraft.current) setStatus("标注已有远程更新；当前草稿已保留，保存时检查修订冲突。");
   else void load();
  });

@@ -57,6 +57,7 @@ const messages: Record<string, string> = {
 	DATABASE_TIMEOUT: "读取资料超时，请稍后重试。",
 	DATABASE_CAPACITY: "数据库连接暂时繁忙，请稍后重试。",
 	DEPENDENCY_TIMEOUT: "服务连接超时，请重试。",
+	CLOSED_MEASUREMENT: "该项已由工程师结束，输入已保留，请查看最新标注。",
 	INVALID_STATE: "任务状态已变化，当前不能执行此操作，请重新载入。",
 	INVALID_RESPONSE_KIND: "回复方式与任务类型不一致。",
 	INVALID_REVIEW: "请核对审核决定、最终值与说明。",

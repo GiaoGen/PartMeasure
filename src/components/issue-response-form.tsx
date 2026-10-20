@@ -30,7 +30,7 @@ export function IssueResponseForm({
 			issue.kind === "comment" ? "text" : "numeric",
 		),
 		[value, setValue] = useState(""),
-		[unit, setUnit] = useState("mm"),
+		[unit, setUnit] = useState<string>(issue.target?.annotation.metadata.unit ?? "mm"),
 		[body, setBody] = useState(""),
 		[label, setLabel] = useState(""),
 		[selected, setSelected] = useState<string[]>([]);

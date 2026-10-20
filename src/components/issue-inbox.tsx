@@ -16,6 +16,7 @@ export function IssueInbox({
 	onInvalid,
 	onUpdated,
 	onDirty,
+	onOpenAnnotation,
 }: {
 	base: string;
 	guest: boolean;
@@ -23,6 +24,7 @@ export function IssueInbox({
 	onInvalid: () => void;
 	onUpdated: () => void;
 	onDirty: (dirty: boolean) => void;
+	onOpenAnnotation?: (fileId: string, annotationId: string) => boolean;
 }) {
 	const popup = useProjectDialog();
 	const titleId = useId();
@@ -183,11 +185,11 @@ export function IssueInbox({
 				<ul>
 					{rows.map((item) => (
 						<li key={item.id}>
-							<button type="button" onClick={() => setSelected(item.id)}>
+							<button type="button" onClick={() => { if (item.kind === "measurement" && item.annotationRef && onOpenAnnotation?.(item.fileId, item.annotationRef.id)) close(); else setSelected(item.id); }}>
 								<span>
 									<strong>{item.title}</strong>
 									<small>
-										{item.kind === "measurement" ? "测量提醒" : "文件问题"}
+										{item.kind === "measurement" ? "标注补充" : "文件问题"}
 									</small>
 								</span>
 								<small>{stateLabel[item.state]}</small>

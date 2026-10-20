@@ -17,9 +17,11 @@ import {
 import type { AnnotationDraft } from "../annotations";
 import { type Actor, transaction, idempotent } from "./db";
 import { access, actorKey, audit } from "./service";
+import { syncAnnotationMeasurements } from "./annotation-collaboration";
+import { isDeepStrictEqual } from "node:util";
 import { cursorScope, cursorId, queryCursor } from "./query-cursor";
 
-const columns = `id,file_id as "fileId",kind,title,description,target_info as "targetInfo",measurement_method as "measurementMethod",state,revision,latest_response_id as "latestResponseId",created_at as "createdAt",updated_at as "updatedAt",case when annotation_id is null then null else jsonb_build_object('id',annotation_id,'revision',annotation_revision) end as "annotationRef"`;
+const columns = `closed_at as "closedAt",closure_note as "closureNote",measurement_field as "measurementField",id,file_id as "fileId",kind,title,description,target_info as "targetInfo",measurement_method as "measurementMethod",state,revision,latest_response_id as "latestResponseId",created_at as "createdAt",updated_at as "updatedAt",case when annotation_id is null then null else jsonb_build_object('id',annotation_id,'revision',annotation_revision) end as "annotationRef"`;
 async function head(
 	db: PoolClient,
 	projectId: string,
@@ -80,12 +82,12 @@ export async function listIssues(
 			filteredCounts: Record<string, number>;
 			anchorExists: boolean;
 		}>(
-			`with ranked as (select ${columns},file_id,annotation_id,created_at as sort_at,${rank} as priority from pm.issues where project_id=$1 and ($2::uuid is null or file_id=$2) and ($4::uuid is null or annotation_id=$4)),
+			`with ranked as (select ${columns},file_id,annotation_id,created_at as sort_at,case when closed_at is not null then 3 else ${rank} end as priority from pm.issues where project_id=$1 and (closed_at is null or $4::uuid is not null) and ($2::uuid is null or file_id=$2) and ($4::uuid is null or annotation_id=$4)),
 			 anchor as (select priority,sort_at,id from ranked where id=$3::uuid),
 			 page as (select * from ranked r where $3::uuid is null or r.priority>(select priority from anchor) or (r.priority=(select priority from anchor) and (r.sort_at,r.id)<(select sort_at,id from anchor)) order by priority,sort_at desc,id desc limit 31)
 			 select coalesce((select jsonb_agg(to_jsonb(p)-'priority'-'sort_at'-'file_id'-'annotation_id' order by priority,sort_at desc,id desc) from page p),'[]'::jsonb) as items,
-			 coalesce((select jsonb_object_agg(state,n) from (select state,count(*)::int n from pm.issues where project_id=$1 group by state) t),'{}'::jsonb) as counts,
-			 coalesce((select jsonb_object_agg(state,n) from (select state,count(*)::int n from ranked group by state) t),'{}'::jsonb) as "filteredCounts",
+			 coalesce((select jsonb_object_agg(state,n) from (select state,count(*)::int n from pm.issues where project_id=$1 and closed_at is null group by state) t),'{}'::jsonb) as counts,
+			 coalesce((select jsonb_object_agg(state,n) from (select state,count(*)::int n from ranked where "closedAt" is null group by state) t),'{}'::jsonb) as "filteredCounts",
 			 exists(select 1 from anchor) as "anchorExists"`,
 			[projectId, fileId, anchor, annotationId],
 		);
@@ -254,6 +256,7 @@ export async function respondIssue(
 			{ id, input, revision },
 			async () => {
 				const i = await head(db, projectId, id, true);
+				if (i.closedAt) throw new AppError("CLOSED_MEASUREMENT", 409);
 				if (i.revision !== revision)
 					throw new AppError("REVISION_CONFLICT", 409);
 				nextState(i.state, "respond");
@@ -263,12 +266,18 @@ export async function respondIssue(
 					[projectId, id],
 				);
 				if (count.rows[0].n >= 100) throw new AppError("RESPONSE_LIMIT", 409);
-				const files = input.evidenceFileIds.length ? (await db.query(
-					`select f.id,f.filename,f.mime,f.byte_size as "byteSize",f.sha256 as "previewVersion",case when t.file_id is null then null else jsonb_build_object('version',t.sha256) end as thumbnail from pm.file_assets f left join pm.image_derivatives t on t.file_id=f.id and t.project_id=f.project_id and t.image_hash=f.sha256 and t.variant=640
+				const files = input.evidenceFileIds.length
+					? (
+							await db.query(
+								`select f.id,f.filename,f.mime,f.byte_size as "byteSize",f.sha256 as "previewVersion",case when t.file_id is null then null else jsonb_build_object('version',t.sha256) end as thumbnail from pm.file_assets f left join pm.image_derivatives t on t.file_id=f.id and t.project_id=f.project_id and t.image_hash=f.sha256 and t.variant=640
 					 where f.project_id=$1 and f.id=any($2::uuid[]) and f.deleted_at is null and f.visibility='customer' and f.purpose='material'
-					 order by f.created_at,f.id`, [projectId, input.evidenceFileIds],
-				)).rows : [];
-				if (files.length !== input.evidenceFileIds.length) throw new AppError("ATTACHMENT_UNAVAILABLE", 422);
+					 order by f.created_at,f.id`,
+								[projectId, input.evidenceFileIds],
+							)
+						).rows
+					: [];
+				if (files.length !== input.evidenceFileIds.length)
+					throw new AppError("ATTACHMENT_UNAVAILABLE", 422);
 				if (
 					input.kind === "photo" &&
 					!files.some((f) => f.mime === "image/webp")
@@ -306,15 +315,21 @@ export async function respondIssue(
 				if (files.length)
 					await db.query(
 						"insert into pm.response_attachments(project_id,issue_id,response_id,file_id) select $1,$2,$3,unnest($4::uuid[])",
-						[projectId, id, responseId, files.map(f => f.id)],
+						[projectId, id, responseId, files.map((f) => f.id)],
 					);
 				const updated = await db.query(
 					"update pm.issues set state='submitted',revision=revision+1,latest_response_id=$3,updated_at=now() where project_id=$1 and id=$2 returning updated_at as \"updatedAt\"",
 					[projectId, id, responseId],
 				);
 				await audit(db, actor, projectId, "issue.respond", responseId);
-				return { responseId, issueId: id, state: "submitted", revision: revision + 1,
-					updatedAt: updated.rows[0].updatedAt, response: { ...rows[0], attachments: files } };
+				return {
+					responseId,
+					issueId: id,
+					state: "submitted",
+					revision: revision + 1,
+					updatedAt: updated.rows[0].updatedAt,
+					response: { ...rows[0], attachments: files },
+				};
 			},
 		);
 	});
@@ -337,6 +352,7 @@ export async function reviewIssue(
 			{ id, input, revision },
 			async () => {
 				const i = await head(db, projectId, id, true);
+				if (i.closedAt) throw new AppError("CLOSED_MEASUREMENT", 409);
 				if (i.revision !== revision)
 					throw new AppError("REVISION_CONFLICT", 409);
 				const state = nextState(i.state, input.decision);
@@ -365,9 +381,76 @@ export async function reviewIssue(
 					],
 				);
 				const updated = await db.query(
-					"update pm.issues set state=$3,revision=revision+1,updated_at=now() where project_id=$1 and id=$2 returning updated_at as \"updatedAt\"",
+					'update pm.issues set state=$3,revision=revision+1,updated_at=now() where project_id=$1 and id=$2 returning updated_at as "updatedAt"',
 					[projectId, id, state],
 				);
+				if (
+					input.decision === "confirm" &&
+					i.kind === "measurement" &&
+					i.annotation_id
+				) {
+					const found = await db.query(
+						"select * from pm.annotations where project_id=$1 and id=$2 for update",
+						[projectId, i.annotation_id],
+					);
+					const a = found.rows[0];
+					if (
+						!a ||
+						a.deleted_at ||
+						!isDeepStrictEqual(a.geometry, i.annotation_snapshot?.geometry) ||
+						(a.geometry.type === "circle" &&
+							a.metadata.circleMeasure !==
+								i.annotation_snapshot?.metadata.circleMeasure)
+					)
+						throw new AppError("REVISION_CONFLICT", 409);
+					if (
+						a.geometry.type === "line" ||
+						a.geometry.type === "circle" ||
+						(a.geometry.type === "point" &&
+							a.metadata.measurementMode === "required")
+					) {
+						const field = i.measurementField ?? "dimension";
+						const metadata = {
+							...a.metadata,
+							[field]: input.value,
+							unit: input.unit,
+						};
+						const other = field === "dimension" ? "holeDepth" : "dimension";
+						if (a.metadata[other] && a.metadata.unit !== input.unit) {
+							const mm: Record<string, number> = {
+								mm: 1,
+								cm: 10,
+								m: 1000,
+								in: 25.4,
+							};
+							const converted =
+								(Number(a.metadata[other]) * (mm[a.metadata.unit] ?? 1)) /
+								(mm[input.unit ?? "mm"] ?? 1);
+							if (
+								!Number.isFinite(converted) ||
+								converted < 0.000001 ||
+								converted >= 1e9
+							)
+								throw new AppError("INVALID_ENGINEERING_FIELDS", 422);
+							metadata[other] = converted.toFixed(6).replace(/\.?0+$/, "");
+						}
+						const changed = await db.query(
+							"update pm.annotations set metadata=$3,revision=revision+1,updated_at=now() where project_id=$1 and id=$2 returning *",
+							[projectId, a.id, JSON.stringify(metadata)],
+						);
+						await syncAnnotationMeasurements(db, actor, projectId, a.file_id, {
+							...changed.rows[0],
+							deleted: false,
+						});
+						await audit(
+							db,
+							actor,
+							projectId,
+							"annotation.confirmation-value",
+							a.id,
+						);
+					}
+				}
 				await audit(
 					db,
 					actor,
@@ -375,8 +458,14 @@ export async function reviewIssue(
 					`issue.${input.decision}`,
 					rows[0].id,
 				);
-				return { reviewId: rows[0].id, issueId: id, state, revision: revision + 1,
-					updatedAt: updated.rows[0].updatedAt, review: rows[0] };
+				return {
+					reviewId: rows[0].id,
+					issueId: id,
+					state,
+					revision: revision + 1,
+					updatedAt: updated.rows[0].updatedAt,
+					review: rows[0],
+				};
 			},
 		);
 	});

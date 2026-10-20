@@ -23,6 +23,7 @@ export function queryPolicy(url: string) {
 			);
 	} else tags.push(`${base}:${parts[0]}`);
 	if (parts[0] === "issues") tags.push(`${base}:issues:all`);
+	if (parts[0] === "files" && parts[2] === "issues") tags.push(`${base}:issues:file:${parts[1]}`, `${base}:issues:all`);
 	if (parts[0] === "files" && parts[2] === "annotations") tags.push(`${base}:annotations:all`);
 	return { tags, ttl: ["changes", "events", "uploads"].includes(parts[0] ?? "") ? 0 : 3000 };
 }
@@ -54,6 +55,7 @@ export function eventTags(base: string, updates: ProjectUpdate[]) {
 				if (e.fileId) tags.add(`${base}:annotations:${e.fileId}`);
 				break;
 			case "issue.changed":
+				if (e.fileId) tags.add(`${base}:annotations:${e.fileId}`);
 				tags.add(`${base}:issue:${e.entityId}`);
 				tags.add(`${base}:issues:list`);
 				if (e.fileId) tags.add(`${base}:issues:file:${e.fileId}`);
@@ -74,8 +76,8 @@ export function mutationTags(url: string) {
 		base = policy.tags[0];
 	if (!base?.match(/^\/api\/(?:guest\/)?projects\//)) return policy.tags;
 	const path = new URL(url, "http://cache.invalid").pathname.slice(base.length);
-	if (path.startsWith("/issues")) return [`${base}:issues:all`];
-	if (path.startsWith("/annotations")) return [`${base}:annotations:all`, `${base}:files`];
+	if (path.startsWith("/issues")) return path.endsWith("/review") ? [`${base}:issues:all`, `${base}:annotations:all`, `${base}:files`] : [`${base}:issues:all`];
+	if (path.startsWith("/annotations")) return [`${base}:annotations:all`, `${base}:files`, `${base}:issues:all`];
 	if (path.startsWith("/share-links")) return [base];
 	if (!path) return [`${base}:project`, "projects:list"];
 	return policy.tags.slice(1);

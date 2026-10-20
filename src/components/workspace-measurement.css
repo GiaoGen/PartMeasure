@@ -21,14 +21,12 @@
 	background-color: var(--workspace-page);
 }
 .workspace-redesign .workspace-upload-trigger,
-.workspace-redesign .measurement-create button[type="submit"],
 .workspace-redesign .issue-response-form button[type="submit"],
 .workspace-redesign .issue-review-form button[type="submit"] {
 	background-color: var(--workspace-action);
 	color: #ffffff;
 }
-.workspace-redesign .workspace-upload-trigger:hover,
-.workspace-redesign .measurement-create button[type="submit"]:hover {
+.workspace-redesign .workspace-upload-trigger:hover {
 	background-color: var(--workspace-mark);
 }
 .workspace-redesign .annotation-toolbar [aria-pressed="true"],
@@ -223,26 +221,6 @@
 	animation: workspace-context-enter calc(200ms * var(--workspace-motion, 1))
 		ease;
 }
-.workspace-context-content .measurement-create {
-	border-top: 1px solid var(--workspace-line);
-	padding-top: 10px;
-	margin-top: 20px;
-}
-.workspace-context-content .measurement-create fieldset {
-	border: 0;
-	padding: 0;
-	min-width: 0;
-	display: grid;
-	gap: 12px;
-}
-.workspace-context-content .measurement-create textarea {
-	min-height: 72px;
-}
-.workspace-context-content .measurement-create button[type="submit"] {
-	width: 100%;
-	min-height: 48px;
-	border-radius: 18px;
-}
 .workspace-context-content .issue-actions {
 	border: 0;
 	padding: 0;
@@ -383,3 +361,8 @@
 		grid-template-columns: minmax(0, 1fr);
 	}
 }
+
+.annotation-collaboration .inline-collaboration { display: block; padding-block: 12px; border-top: 1px solid var(--workspace-border, #d8dde3); }
+.annotation-collaboration .issue-actions { position: static; padding: 0; border: 0; background: transparent; }
+.annotation-collaboration .detail-heading h2 { font-size: 1rem; }
+.annotation-collaboration .evidence-preview { max-width: 100%; }

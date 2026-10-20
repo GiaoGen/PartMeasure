@@ -13,7 +13,9 @@ import {
 import { AppError } from "../policy";
 import { type Actor, transaction, idempotent } from "./db";
 import { access, actorKey, audit } from "./service";
+import { syncAnnotationMeasurements } from "./annotation-collaboration";
 type Row = {
+	collaboration?: Annotation["collaboration"];
 	id: string;
 	geometry: Annotation["geometry"];
 	metadata: Annotation["metadata"];
@@ -25,6 +27,7 @@ type Row = {
 	image_hash: string;
 };
 const dto = (r: Row): Annotation => ({
+	...(r.collaboration ? { collaboration: r.collaboration } : {}),
 	id: r.id,
 	geometry: r.geometry,
 	metadata: r.metadata,
@@ -71,7 +74,10 @@ export async function annotations(
 		await access(db, actor, projectId, false, true);
 		const f = await target(db, projectId, fileId, true);
 		const { rows } = await db.query<Row>(
-			"select * from pm.annotations where project_id=$1 and file_id=$2 and ($3::boolean or deleted_at is null) order by created_at,id",
+			`select a.*,jsonb_build_object('pending',c.pending,'submitted',c.submitted) as collaboration from pm.annotations a
+			 left join lateral (select count(*) filter(where state in ('awaiting_response','remeasure_requested'))::int pending,
+			 count(*) filter(where state='submitted')::int submitted from pm.issues i where i.project_id=a.project_id and i.file_id=a.file_id and i.annotation_id=a.id and i.closed_at is null) c on true
+			 where a.project_id=$1 and a.file_id=$2 and ($3::boolean or a.deleted_at is null) order by a.created_at,a.id`,
 			[projectId, fileId, actor.kind === "owner"],
 		);
 		const image: CanonicalImage = {
@@ -120,6 +126,7 @@ export async function createAnnotation(
 					],
 				);
 				await audit(db, actor, projectId, "annotation.create", input.id);
+				await syncAnnotationMeasurements(db, actor, projectId, input.fileId, dto(rows[0] as Row));
 				return dto(rows[0] as Row);
 			},
 		);
@@ -174,6 +181,7 @@ export async function changeAnnotation(
 					input ? "annotation.edit" : "annotation.hide",
 					id,
 				);
+				await syncAnnotationMeasurements(db, actor, projectId, old.file_id, dto(next.rows[0] as Row));
 				return dto(next.rows[0] as Row);
 			},
 		);

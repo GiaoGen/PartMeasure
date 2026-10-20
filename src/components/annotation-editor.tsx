@@ -13,9 +13,9 @@ import { api, ApiError, message } from "./api";
 import { useAnnotationSession } from "./use-annotation-session";
 import { EngineeringFields } from "./engineering-fields";
 import { WorkspaceSideContent } from "./workspace-side-content";
-import { AnnotationReminders } from "./annotation-reminders";
+import { AnnotationCollaboration } from "./annotation-collaboration";
 import { FileIssues } from "./file-issues";
-import { MeasurementCreate } from "./measurement-create";
+
 const Canvas = dynamic(() => import("./annotation-canvas"), {
 	ssr: false,
 	loading: () => <p role="status">载入画布…</p>,
@@ -41,7 +41,6 @@ export function AnnotationEditor({
 	propertiesOnly = false,
 	panelHidden = false,
 	onOpenProperties,
-	onInitialIssue,
 }: {
 	base: string;
 	fileId: string;
@@ -56,11 +55,10 @@ export function AnnotationEditor({
 	propertiesOnly?: boolean;
 	panelHidden?: boolean;
 	onOpenProperties?: () => boolean;
-	onInitialIssue?: (id: string) => void;
 }) {
 	const changes = useRef({ annotation: false, request: false, comment: false });
 	const [requestDirty, setRequestDirty] = useState(false);
-	const [remindersMounted, setRemindersMounted] = useState(guest);
+	const [collaborationVersion, setCollaborationVersion] = useState(0);
 	const [fileIssuesMounted, setFileIssuesMounted] = useState(false);
 	const onAnnotationDirty = useCallback(
 		(dirty: boolean) => {
@@ -90,6 +88,7 @@ export function AnnotationEditor({
 		guest,
 		onInvalid,
 		onAnnotationDirty,
+		requestDirty,
 	);
 	const initialSelection = useRef("");
 	useEffect(() => {
@@ -122,14 +121,18 @@ export function AnnotationEditor({
 		session.saving || session.blocked || !!preview || requestDirty;
 	async function save() {
 		const heads = await session.save();
-		if (heads) onAnnotationsSaved?.();
+		if (heads) {
+			onAnnotationsSaved?.();
+			onIssueCreated();
+			setCollaborationVersion((v) => v + 1);
+		}
 		return heads;
 	}
 	function select(id: string | null) {
 		if (
 			id !== session.selected &&
 			changes.current.request &&
-			!window.confirm("测量提醒尚未发送，切换标注会放弃输入。继续？")
+			!window.confirm("有未提交的补充内容，切换标注会放弃输入。继续？")
 		)
 			return;
 		if (id && onOpenProperties?.() === false) return;
@@ -144,7 +147,7 @@ export function AnnotationEditor({
 		if (guest || editDisabled || !selected) return;
 		if (
 			changes.current.request &&
-			!window.confirm("测量提醒尚未发送，删除标注会放弃请求输入。继续？")
+			!window.confirm("有未提交的补充内容，删除标注会放弃输入。继续？")
 		)
 			return;
 		session.change(session.items.filter((i) => i.id !== selected.id));
@@ -329,7 +332,7 @@ export function AnnotationEditor({
 										if (
 											window.confirm("重新载入将放弃本页未保存的修改，继续？")
 										)
-												void session.load(true);
+											void session.load(true);
 									}}
 								>
 									重新载入已保存版本
@@ -338,7 +341,7 @@ export function AnnotationEditor({
 						) : null}
 						<p role="status">{notice}</p>
 					</div>
-					<h3>{guest ? "测量提醒与回复" : "标注与属性"}</h3>
+					<h3>标注与属性</h3>
 					{!guest ? (
 						<div className="actions">
 							<button
@@ -454,24 +457,6 @@ export function AnnotationEditor({
 									</button>
 								</div>
 							) : null}
-							{!guest && selected && !preview ? (
-								<MeasurementCreate
-									key={selected.id}
-									base={base}
-									fileId={fileId}
-									annotation={selected}
-									prepare={async () => {
-										const heads = await save();
-										return heads?.find(
-											(h) => h.id === selected.id && !h.deleted,
-										);
-									}}
-									onCreated={onIssueCreated}
-									onInvalid={onInvalid}
-									onDirty={onRequestDirty}
-									disabled={session.saving || session.conflict || !!preview}
-								/>
-							) : null}
 						</>
 					) : null}
 					{!guest && session.heads.some((h) => h.deleted) ? (
@@ -527,27 +512,27 @@ export function AnnotationEditor({
 							) : null}
 						</section>
 					) : null}
-					<details
-						className="photo-reminders"
-						open={guest}
-						onToggle={(event) => {
-							if (event.currentTarget.open) setRemindersMounted(true);
-						}}
-					>
-						<summary>相关测量提醒</summary>{" "}
-						{selected && remindersMounted ? (
-							<AnnotationReminders
+					{selected && !preview ? (
+						session.heads.some((h) => h.id === selected.id && !h.deleted) ? (
+							<AnnotationCollaboration
 								key={selected.id}
 								base={base}
 								fileId={fileId}
 								annotationId={selected.id}
-								refreshKey={refreshKey}
-								onOpen={onOpenIssue}
-								onInitial={guest ? onInitialIssue : undefined}
+								guest={guest}
+								refreshKey={refreshKey + collaborationVersion}
 								onInvalid={onInvalid}
+								onUpdated={() => {
+									onIssueCreated();
+									onAnnotationsSaved?.();
+									if (!session.dirty && !session.blocked) void session.load();
+								}}
+								onDirty={onRequestDirty}
 							/>
-						) : null}
-					</details>
+						) : (
+							<p>保存标注后，缺少尺寸会自动提示客户补充。</p>
+						)
+					) : null}
 					<details
 						className="photo-file-issues"
 						onToggle={(event) => {

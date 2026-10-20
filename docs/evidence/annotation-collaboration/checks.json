@@ -1,0 +1,33 @@
+{
+  "scope": "Local lint/strict types/unit tests/production build; no browser or phone",
+  "checkedAt": "2026-10-20T08:04:36.3513683Z",
+  "results": [
+    {
+      "status": "PASS",
+      "command": "npm run lint",
+      "milliseconds": null,
+      "exitCode": 0,
+      "previousExitCode": 1,
+      "rerunAt": "2026-10-20T08:05:12.197Z",
+      "note": "Final standalone lint rerun passed after removing an unused script variable."
+    },
+    {
+      "status": "PASS",
+      "command": "npm run typecheck",
+      "milliseconds": 4084,
+      "exitCode": 0
+    },
+    {
+      "status": "PASS",
+      "command": "npm run test",
+      "milliseconds": 2020,
+      "exitCode": 0
+    },
+    {
+      "status": "PASS",
+      "command": "npm run build",
+      "milliseconds": 24572,
+      "exitCode": 0
+    }
+  ]
+}

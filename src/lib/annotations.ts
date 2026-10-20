@@ -53,11 +53,17 @@ export const metadataSchema = z
 		]),
 		thread: z.string().max(80),
 		notes: z.string().max(2000),
+		measurementMode: z.enum(["auto", "required", "none"]).optional(),
+		requireHoleDepth: z.boolean().optional(),
+		measurementMethod: z.enum(["outside", "inside", "depth", "other", "unspecified"]).optional(),
+		measurementInstructions: z.string().max(2000).optional(),
 	})
 	.strict();
 export type Geometry = z.infer<typeof geometrySchema>;
 export type EngineeringMetadata = z.infer<typeof metadataSchema>;
 export type AnnotationDraft = {
+	/** Read-only server summary, never part of an annotation write. */
+	collaboration?: { pending: number; submitted: number };
 	id: string;
 	geometry: Geometry;
 	metadata: EngineeringMetadata;
@@ -150,7 +156,7 @@ export function validateAnnotation(
 	} else if (metadata.holeDepth || metadata.holeType || metadata.thread)
 		throw new AppError("INVALID_ENGINEERING_FIELDS", 422);
 	if (
-		(geometry.type === "point" || geometry.type === "text") &&
+		(geometry.type === "text" || (geometry.type === "point" && metadata.measurementMode !== "required")) &&
 		metadata.dimension
 	)
 		throw new AppError("INVALID_ENGINEERING_FIELDS", 422);

@@ -4,6 +4,7 @@ import {
 	type EngineeringMetadata,
 	typeLabel,
 } from "@/lib/annotations";
+import { methodLabel } from "@/lib/issues";
 export function EngineeringFields({
 	item,
 	disabled,
@@ -17,7 +18,18 @@ export function EngineeringFields({
 }) {
 	const set = (key: keyof EngineeringMetadata, value: string) =>
 		onChange(
-			{ ...item, metadata: { ...item.metadata, [key]: value } },
+			{
+				...item,
+				metadata: {
+					...item.metadata,
+					[key]: value,
+					...(key === "measurementMode" &&
+					item.geometry.type === "point" &&
+					value !== "required"
+						? { dimension: "" }
+						: {}),
+				},
+			},
 			`${item.id}:${key}`,
 		);
 	return (
@@ -55,7 +67,27 @@ export function EngineeringFields({
 					/>
 				</label>
 			) : null}
-			{item.geometry.type === "line" || item.geometry.type === "circle" ? (
+			{item.geometry.type !== "text" ? (
+				<label>
+					标注用途
+					<select
+						value={item.metadata.measurementMode ?? "auto"}
+						onChange={(e) => set("measurementMode", e.target.value)}
+					>
+						<option value="auto">
+							{item.geometry.type === "point" ? "位置说明" : "补齐尺寸"}
+						</option>
+						{item.geometry.type === "point" ? (
+							<option value="required">需要补充尺寸</option>
+						) : null}
+						<option value="none">仅说明，无需补充</option>
+					</select>
+				</label>
+			) : null}
+			{item.geometry.type === "line" ||
+			item.geometry.type === "circle" ||
+			(item.geometry.type === "point" &&
+				item.metadata.measurementMode === "required") ? (
 				<>
 					{item.geometry.type === "circle" ? (
 						<label>
@@ -73,7 +105,7 @@ export function EngineeringFields({
 						人工尺寸
 						<input
 							inputMode="decimal"
-							placeholder="可留空"
+							placeholder="留空则自动提示客户补充"
 							value={item.metadata.dimension}
 							onChange={(e) => {
 								if (
@@ -100,6 +132,25 @@ export function EngineeringFields({
 			{item.geometry.type === "circle" ? (
 				<details className="hole-properties">
 					<summary>孔位属性（选填）</summary>
+					<label>
+						<input
+							type="checkbox"
+							checked={item.metadata.requireHoleDepth ?? false}
+							onChange={(e) =>
+								onChange(
+									{
+										...item,
+										metadata: {
+											...item.metadata,
+											requireHoleDepth: e.target.checked,
+										},
+									},
+									`${item.id}:requireHoleDepth`,
+								)
+							}
+						/>
+						需要补齐孔深
+					</label>
 					<label>
 						孔深（{item.metadata.unit}）
 						<input
@@ -155,6 +206,33 @@ export function EngineeringFields({
 					onChange={(e) => set("notes", e.target.value)}
 				/>
 			</label>
+			{item.geometry.type !== "text" &&
+			item.metadata.measurementMode !== "none" ? (
+				<>
+					<label>
+						测量说明（选填）
+						<textarea
+							maxLength={2000}
+							value={item.metadata.measurementInstructions ?? ""}
+							placeholder="例如：测量两端外侧距离"
+							onChange={(e) => set("measurementInstructions", e.target.value)}
+						/>
+					</label>
+					<label>
+						建议测量方式
+						<select
+							value={item.metadata.measurementMethod ?? "unspecified"}
+							onChange={(e) => set("measurementMethod", e.target.value)}
+						>
+							{Object.entries(methodLabel).map(([key, label]) => (
+								<option key={key} value={key}>
+									{label}
+								</option>
+							))}
+						</select>
+					</label>
+				</>
+			) : null}
 		</fieldset>
 	);
 }

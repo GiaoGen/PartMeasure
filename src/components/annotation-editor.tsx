@@ -480,7 +480,7 @@ export function AnnotationEditor({
 					{detail ? (
 						!guest ? (
 							<EngineeringFields
-								key={detail.id}
+								key={`properties:${detail.id}`}
 								number={shown.findIndex((item) => item.id === detail.id) + 1}
 								item={detail}
 								disabled={editDisabled}
@@ -548,7 +548,7 @@ export function AnnotationEditor({
 					{selected && !preview ? (
 						session.heads.some((h) => h.id === selected.id && !h.deleted) ? (
 							<AnnotationCollaboration
-								key={selected.id}
+								key={`collaboration:${selected.id}`}
 								base={base}
 								fileId={fileId}
 								annotationId={selected.id}

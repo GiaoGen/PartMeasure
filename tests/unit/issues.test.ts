@@ -14,7 +14,6 @@ describe("P0-3 workflow invariants", () => {
 		const permitted: Record<string, string> = {
 			"awaiting_response:respond": "submitted",
 			"remeasure_requested:respond": "submitted",
-			"submitted:confirm": "confirmed",
 			"submitted:remeasure": "remeasure_requested",
 		};
 		for (const state of states)

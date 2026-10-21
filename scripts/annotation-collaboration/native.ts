@@ -169,8 +169,9 @@ try {
 			assert.equal((await list(line)).items.length, 1);
 		},
 	);
+
 	await check(
-		"numeric-review-writes-human-value-and-revision-in-same-transaction",
+		"numeric-submission-is-complete-and-visible-without-engineer-confirmation",
 		async () => {
 			const item = present((await list(line)).items[0]);
 			const reply = await issues.respondIssue(
@@ -181,28 +182,44 @@ try {
 				item.revision,
 				randomUUID(),
 			);
-			await issues.reviewIssue(
-				A,
-				project.id,
-				item.id,
-				{
-					decision: "confirm",
-					responseId: reply.responseId,
-					value: "12.5",
-					unit: "mm",
-					source: "customer_numeric",
-					note: "",
-				},
-				reply.revision,
-				randomUUID(),
-			);
 			const doc = await annotations.annotations(G, project.id, fileId);
 			line = present(doc.items.find((a) => a.id === line.id));
-			assert.equal(line.metadata.dimension, "12.5");
-			assert.ok(line.revision > 2);
-			assert.equal(present((await list(line)).items[0]).state, "confirmed");
+			assert.equal(line.metadata.dimension, "");
+			assert.equal(line.collaboration?.values?.dimension?.value, "12.5");
+			assert.equal(line.collaboration?.pending, 0);
+			assert.equal(line.collaboration?.submitted, 1);
+			assert.equal(line.collaboration?.remeasure, 0);
+			assert.equal(present((await list(line)).items[0]).state, "submitted");
+			const detail = await issues.detailIssue(G, project.id, item.id);
+			assert.equal(detail.responses.length, 1);
+			assert.equal(detail.reviews.length, 0);
+			await rejects(
+				issues.reviewIssue(
+					A,
+					project.id,
+					item.id,
+					{
+						decision: "confirm",
+						responseId: reply.responseId,
+						value: "12.5",
+						unit: "mm",
+						source: "customer_numeric",
+						note: "",
+					},
+					reply.revision,
+					randomUUID(),
+				),
+				"INVALID_STATE",
+			);
+			line = await update(line, { name: "Renamed after reply" });
+			const reload = present(
+				(await annotations.annotations(A, project.id, fileId)).items.find(
+					(a) => a.id === line.id,
+				),
+			);
+			assert.equal(reload.collaboration?.values?.dimension?.value, "12.5");
 			assert.equal(
-				(await issues.detailIssue(G, project.id, item.id)).responses.length,
+				(await list(line)).items.filter((i) => !i.closedAt).length,
 				1,
 			);
 		},
@@ -247,8 +264,9 @@ try {
 				assert.equal((await list(a)).items.length, 0);
 		},
 	);
+
 	await check(
-		"hole-diameter-and-depth-are-independent-and-units-stay-physical",
+		"hole-diameter-and-depth-preserve-independent-customer-units",
 		async () => {
 			const a = await create(
 				{ requireHoleDepth: true, dimension: "25.4", unit: "mm" },
@@ -259,29 +277,14 @@ try {
 					radiusY: 0.125,
 				},
 			);
-			const item = present((await list(a)).items[0]);
-			assert.equal(item.measurementField, "holeDepth");
-			const r = await issues.respondIssue(
+			const i = present((await list(a)).items[0]);
+			assert.equal(i.measurementField, "holeDepth");
+			await issues.respondIssue(
 				G,
 				project.id,
-				item.id,
+				i.id,
 				{ ...response, value: "2", unit: "in" },
-				item.revision,
-				randomUUID(),
-			);
-			await issues.reviewIssue(
-				A,
-				project.id,
-				item.id,
-				{
-					decision: "confirm",
-					responseId: r.responseId,
-					value: "2",
-					unit: "in",
-					source: "customer_numeric",
-					note: "",
-				},
-				r.revision,
+				i.revision,
 				randomUUID(),
 			);
 			const saved = present(
@@ -289,15 +292,19 @@ try {
 					(i) => i.id === a.id,
 				),
 			);
-			assert.equal(saved.metadata.dimension, "1");
-			assert.equal(saved.metadata.holeDepth, "2");
-			assert.equal(saved.metadata.unit, "in");
+			assert.equal(saved.metadata.dimension, "25.4");
+			assert.equal(saved.metadata.unit, "mm");
+			assert.deepEqual(saved.collaboration?.values?.holeDepth, {
+				value: "2",
+				unit: "in",
+			});
 		},
 	);
+
 	await check(
-		"unable-remeasure-photo-manual-review-appends-history",
+		"unable-completes-then-owner-remeasure-and-photo-append-history",
 		async () => {
-			const a = await create();
+			let a = await create();
 			const i = present((await list(a)).items[0]);
 			const first = await issues.respondIssue(
 				G,
@@ -312,6 +319,13 @@ try {
 				i.revision,
 				randomUUID(),
 			);
+			let doc = present(
+				(await annotations.annotations(G, project.id, fileId)).items.find(
+					(x) => x.id === a.id,
+				),
+			);
+			assert.equal(doc.collaboration?.submitted, 1);
+			assert.equal(doc.collaboration?.remeasure, 0);
 			const redo = await issues.reviewIssue(
 				A,
 				project.id,
@@ -327,6 +341,13 @@ try {
 				first.revision,
 				randomUUID(),
 			);
+			doc = present(
+				(await annotations.annotations(G, project.id, fileId)).items.find(
+					(x) => x.id === a.id,
+				),
+			);
+			assert.equal(doc.collaboration?.remeasure, 1);
+			assert.equal(doc.collaboration?.pending, 0);
 			const photo = await issues.respondIssue(
 				G,
 				project.id,
@@ -335,25 +356,26 @@ try {
 				redo.revision,
 				randomUUID(),
 			);
-			await issues.reviewIssue(
-				A,
-				project.id,
-				i.id,
-				{
-					decision: "confirm",
-					responseId: photo.responseId,
-					value: "15",
-					unit: "mm",
-					source: "owner_from_photo",
-					note: "read by engineer",
-				},
-				photo.revision,
-				randomUUID(),
-			);
+			assert.equal(photo.state, "submitted");
 			const detail = await issues.detailIssue(G, project.id, i.id);
 			assert.equal(detail.responses.length, 2);
-			assert.equal(detail.reviews.length, 2);
-			assert.equal(detail.target?.annotation.metadata.dimension, "");
+			assert.equal(detail.reviews.length, 1);
+			doc = present(
+				(await annotations.annotations(G, project.id, fileId)).items.find(
+					(x) => x.id === a.id,
+				),
+			);
+			assert.equal(doc.collaboration?.remeasure, 0);
+			assert.equal(doc.collaboration?.submitted, 1);
+			a = await update(a, {
+				dimension: "15",
+				notes: "read by engineer from customer photo",
+			});
+			assert.equal(
+				(await issues.detailIssue(G, project.id, i.id)).responses.length,
+				2,
+			);
+			assert.equal(a.metadata.dimension, "15");
 		},
 	);
 	await check(
@@ -481,8 +503,9 @@ try {
 			);
 		},
 	);
+
 	await check(
-		"legacy-locator-request-review-does-not-write-invalid-point-dimension",
+		"locator-reply-does-not-write-invalid-point-dimension",
 		async () => {
 			const point = await create({}, { type: "point", at: { x: 0.2, y: 0.2 } });
 			const i = await issues.createMeasurement(
@@ -499,7 +522,7 @@ try {
 				},
 				randomUUID(),
 			);
-			const r = await issues.respondIssue(
+			await issues.respondIssue(
 				G,
 				project.id,
 				i.id,
@@ -507,30 +530,16 @@ try {
 				i.revision,
 				randomUUID(),
 			);
-			await issues.reviewIssue(
-				A,
-				project.id,
-				i.id,
-				{
-					decision: "confirm",
-					responseId: r.responseId,
-					value: "12.5",
-					unit: "mm",
-					source: "customer_numeric",
-					note: "",
-				},
-				r.revision,
-				randomUUID(),
-			);
-			assert.equal(
+			const saved = present(
 				(await annotations.annotations(G, project.id, fileId)).items.find(
 					(a) => a.id === point.id,
-				)?.metadata.dimension,
-				"",
+				),
 			);
+			assert.equal(saved.metadata.dimension, "");
+			assert.deepEqual(saved.collaboration?.values, {});
 			assert.equal(
 				(await issues.detailIssue(G, project.id, i.id)).state,
-				"confirmed",
+				"submitted",
 			);
 		},
 	);

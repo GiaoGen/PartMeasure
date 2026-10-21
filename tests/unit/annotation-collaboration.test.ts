@@ -18,6 +18,7 @@ import {
 	mutationTags,
 } from "../../src/components/cache-policy";
 import { EngineeringFields } from "../../src/components/engineering-fields";
+import { annotationColor, photoDimensionText } from "../../src/lib/annotation-presentation";
 const line: AnnotationDraft = {
 	id: "11111111-1111-4111-8111-111111111111",
 	geometry: { type: "line", from: { x: 0.1, y: 0.1 }, to: { x: 0.6, y: 0.1 } },
@@ -25,13 +26,27 @@ const line: AnnotationDraft = {
 };
 const base = "/api/guest/projects/p";
 describe("annotation-first collaboration", () => {
-	it("uses authoritative pending/review summaries instead of repeatedly asking submitted customers", () => {
+	it("uses yellow only for an explicit remeasure, red for initial missing values, green after any reply", () => {
+		expect(annotationColor(line)).toBe("#dc2626");
+		expect(annotationColor({...line, collaboration:{pending:1, submitted:0}})).toBe("#dc2626");
+		expect(annotationColor({...line, collaboration:{pending:0, submitted:1}})).toBe("#16a34a");
+		expect(annotationColor({...line, collaboration:{pending:0, submitted:0, remeasure:1}})).toBe("#eab308");
+		expect(annotationStatus({...line, collaboration:{pending:0, submitted:0, remeasure:1}})).toBe("待重新补充");
+	});
+	it("shows customer values in their original units without changing engineer metadata or inventing dimensions for photos", () => {
+		const replied = {...line, collaboration:{pending:0, submitted:1, values:{dimension:{value:"2",unit:"in"}}}};
+		expect(photoDimensionText(replied)).toBe("2 in");
+		expect(replied.metadata.dimension).toBe("");
+		expect(photoDimensionText({...replied, metadata:{...line.metadata, dimension:"50", unit:"mm"}})).toBe("50 mm");
+		expect(photoDimensionText({...line, collaboration:{pending:0, submitted:1}})).toBe("");
+	});
+	it("uses authoritative pending/completed summaries instead of repeatedly asking submitted customers", () => {
 		expect(
 			annotationStatus({
 				...line,
 				collaboration: { pending: 0, submitted: 1 },
 			}),
-		).toBe("待确认");
+		).toBe("已补充");
 		expect(
 			annotationStatus({
 				...line,
@@ -152,7 +167,7 @@ describe("annotation-first collaboration", () => {
 		expect(mutationTags(`${base}/issues/i/review`)).toContain(
 			`${base}:annotations:all`,
 		);
-		expect(mutationTags(`${base}/issues/i/responses`)).not.toContain(
+		expect(mutationTags(`${base}/issues/i/responses`)).toContain(
 			`${base}:annotations:all`,
 		);
 	});

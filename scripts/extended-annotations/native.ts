@@ -164,21 +164,7 @@ try {
 			i.revision,
 			randomUUID(),
 		);
-		return issues.reviewIssue(
-			A,
-			project.id,
-			i.id,
-			{
-				decision: "confirm",
-				responseId: r.responseId,
-				value,
-				unit,
-				source: "customer_numeric",
-				note: "",
-			},
-			r.revision,
-			randomUUID(),
-		);
+		return r;
 	}
 	await check(
 		"SQL-and-TS-geometry-validation-agree-on-non-square-images",
@@ -214,7 +200,7 @@ try {
 		},
 	);
 	await check(
-		"angle-auto-request-rejects-length-units-and-confirmation-writes-degrees",
+		"angle-submission-validates-units-and-displays-degrees-without-confirmation",
 		async () => {
 			const a = await create(angle);
 			assert.equal(a.schemaVersion, 2);
@@ -244,7 +230,7 @@ try {
 					(row) => row.id === a.id,
 				),
 			);
-			assert.equal(saved.metadata.angleValue, "45");
+			assert.equal(saved.collaboration?.values?.angleValue?.value, "45");
 			assert.equal(saved.metadata.unit, "mm");
 			assert.equal(
 				(await issues.detailIssue(G, project.id, i.id)).target?.annotation
@@ -266,7 +252,7 @@ try {
 					(row) => row.id === a.id,
 				),
 			);
-			assert.equal(saved.metadata.dimension, "20");
+			assert.equal(saved.collaboration?.values?.dimension?.value, "20");
 			saved = await update(saved, ellipse, {
 				...saved.metadata,
 				ellipseMeasure: "majorRadius",
@@ -283,13 +269,13 @@ try {
 					(row) => row.id === a.id,
 				),
 			);
-			assert.equal(saved.metadata.majorRadius, "1");
-			assert.equal(saved.metadata.dimension, "2");
-			assert.equal(saved.metadata.unit, "cm");
+			assert.equal(saved.collaboration?.values?.majorRadius?.value, "1");
+			assert.equal(saved.metadata.dimension, "");
+			assert.equal(saved.collaboration?.values?.majorRadius?.unit, "cm");
 		},
 	);
 	await check(
-		"arc-radius-length-and-angle-have-independent-immutable-confirmations",
+		"arc-radius-length-and-angle-have-independent-immutable-replies",
 		async () => {
 			const a = await create(arc, {
 					arcQuantities: ["radius", "arcLength", "angle"],
@@ -311,9 +297,9 @@ try {
 					(row) => row.id === a.id,
 				),
 			);
-			assert.equal(saved.metadata.dimension, "20");
-			assert.equal(saved.metadata.arcLength, "55");
-			assert.equal(saved.metadata.angleValue, "180");
+			assert.equal(saved.collaboration?.values?.dimension?.value, "20");
+			assert.equal(saved.collaboration?.values?.arcLength?.value, "55");
+			assert.equal(saved.collaboration?.values?.angleValue?.value, "180");
 			assert.equal(saved.collaboration?.pending, 0);
 		},
 	);

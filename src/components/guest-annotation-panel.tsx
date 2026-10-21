@@ -86,6 +86,7 @@ export function GuestAnnotationPanel({
 			) : null}
 			{photoDimensionText(item) &&
 			!item.collaboration?.pending &&
+			!item.collaboration?.remeasure &&
 			!item.collaboration?.submitted ? (
 				<p className="guest-annotation-value">{photoDimensionText(item)}</p>
 			) : null}

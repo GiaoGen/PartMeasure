@@ -12,7 +12,7 @@ export const states = [
 export type IssueState = (typeof states)[number];
 export const stateLabel: Record<IssueState, string> = {
 	awaiting_response: "待补充",
-	submitted: "待工程师确认",
+	submitted: "已补充",
 	confirmed: "已确认",
 	remeasure_requested: "待重新补充",
 };
@@ -114,8 +114,8 @@ export function nextState(
 		(state === "awaiting_response" || state === "remeasure_requested")
 	)
 		return "submitted";
-	if (state === "submitted" && action !== "respond")
-		return action === "confirm" ? "confirmed" : "remeasure_requested";
+	if (state === "submitted" && action === "remeasure")
+		return "remeasure_requested";
 	throw new AppError("INVALID_STATE", 409);
 }
 export function validateResponse(

@@ -1,4 +1,7 @@
 import "server-only";
+import { isDeepStrictEqual } from "node:util";
+import { geometryTarget } from "../geometry-extensions";
+import { requiredMeasurements } from "../annotation-collaboration";
 import type { PoolClient } from "pg";
 import type { z } from "zod";
 import {
@@ -17,6 +20,12 @@ import { syncAnnotationMeasurements } from "./annotation-collaboration";
 type Row = {
 	schema_version?: 1 | 2;
 	collaboration?: Annotation["collaboration"];
+	measurement_responses?: {
+		field: import("../annotation-collaboration").MeasurementField;
+		value: string;
+		unit: string;
+		snapshot: Pick<Annotation, "geometry" | "metadata">;
+	}[];
 	id: string;
 	geometry: Annotation["geometry"];
 	metadata: Annotation["metadata"];
@@ -29,7 +38,35 @@ type Row = {
 };
 const dto = (r: Row): Annotation => ({
 	schemaVersion: r.schema_version ?? 1,
-	...(r.collaboration ? { collaboration: r.collaboration } : {}),
+	...(r.collaboration
+		? {
+				collaboration: {
+					...r.collaboration,
+					values: Object.fromEntries(
+						(r.measurement_responses ?? [])
+							.filter(
+								(reply) =>
+									requiredMeasurements({
+										id: r.id,
+										geometry: r.geometry,
+										metadata: r.metadata,
+									}).includes(reply.field) &&
+									isDeepStrictEqual(
+										geometryTarget(r.geometry),
+										geometryTarget(reply.snapshot.geometry),
+									) &&
+									(r.geometry.type !== "circle" ||
+										r.metadata.circleMeasure ===
+											reply.snapshot.metadata.circleMeasure),
+							)
+							.map((reply) => [
+								reply.field,
+								{ value: reply.value, unit: reply.unit },
+							]),
+					),
+				},
+			}
+		: {}),
 	id: r.id,
 	geometry: r.geometry,
 	metadata: r.metadata,
@@ -76,9 +113,13 @@ export async function annotations(
 		await access(db, actor, projectId, false, true);
 		const f = await target(db, projectId, fileId, true);
 		const { rows } = await db.query<Row>(
-			`select a.*,jsonb_build_object('pending',c.pending,'submitted',c.submitted) as collaboration from pm.annotations a
-			 left join lateral (select count(*) filter(where state in ('awaiting_response','remeasure_requested'))::int pending,
-			 count(*) filter(where state='submitted')::int submitted from pm.issues i where i.project_id=a.project_id and i.file_id=a.file_id and i.annotation_id=a.id and i.closed_at is null) c on true
+			`select a.*,jsonb_build_object('pending',c.pending,'submitted',c.submitted,'remeasure',c.remeasure) as collaboration,c.measurement_responses from pm.annotations a
+			 left join lateral (select count(*) filter(where i.state='awaiting_response')::int pending,
+			 count(*) filter(where i.state='remeasure_requested')::int remeasure,
+			 count(*) filter(where i.state='submitted')::int submitted,
+			 coalesce(jsonb_agg(jsonb_build_object('field',coalesce(i.measurement_field,'dimension'),'value',r.value,'unit',r.unit,'snapshot',i.annotation_snapshot) order by i.created_at,i.id) filter(where i.state='submitted' and r.kind='numeric'),'[]'::jsonb) measurement_responses
+			 from pm.issues i left join pm.issue_responses r on r.project_id=i.project_id and r.issue_id=i.id and r.id=i.latest_response_id
+			 where i.project_id=a.project_id and i.file_id=a.file_id and i.annotation_id=a.id and i.closed_at is null) c on true
 			 where a.project_id=$1 and a.file_id=$2 and ($3::boolean or a.deleted_at is null) order by a.created_at,a.id`,
 			[projectId, fileId, actor.kind === "owner"],
 		);

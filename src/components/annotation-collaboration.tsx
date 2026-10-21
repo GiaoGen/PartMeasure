@@ -131,7 +131,7 @@ export function AnnotationCollaboration({
 		);
 	};
 	return (
-		<section className="annotation-collaboration" aria-label="标注补充与确认">
+		<section className="annotation-collaboration" aria-label="标注补充与记录">
 			{loading && !items.length ? <p role="status">读取补充状态…</p> : null}
 			{error ? (
 				<p role="alert">

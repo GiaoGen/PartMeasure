@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-20T08:02:12.164Z",
+  "checkedAt": "2026-10-21T06:38:58.131Z",
   "scope": "Disposable native PostgreSQL: transactions/RLS; no real Auth/Storage/browser evidence",
   "results": [
     {
@@ -7,7 +7,7 @@
       "status": "PASS"
     },
     {
-      "check": "numeric-review-writes-human-value-and-revision-in-same-transaction",
+      "check": "numeric-submission-is-complete-and-visible-without-engineer-confirmation",
       "status": "PASS"
     },
     {
@@ -19,11 +19,11 @@
       "status": "PASS"
     },
     {
-      "check": "hole-diameter-and-depth-are-independent-and-units-stay-physical",
+      "check": "hole-diameter-and-depth-preserve-independent-customer-units",
       "status": "PASS"
     },
     {
-      "check": "unable-remeasure-photo-manual-review-appends-history",
+      "check": "unable-completes-then-owner-remeasure-and-photo-append-history",
       "status": "PASS"
     },
     {
@@ -35,7 +35,7 @@
       "status": "PASS"
     },
     {
-      "check": "legacy-locator-request-review-does-not-write-invalid-point-dimension",
+      "check": "locator-reply-does-not-write-invalid-point-dimension",
       "status": "PASS"
     },
     {

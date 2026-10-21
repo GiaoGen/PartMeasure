@@ -2,7 +2,7 @@ import type { IssueState, IssueSummary } from "../lib/issues";
 export function ownTask(item: Pick<IssueSummary, "state">, guest: boolean) {
 	return guest
 		? item.state === "awaiting_response" || item.state === "remeasure_requested"
-		: item.state === "submitted";
+		: false;
 }
 export function taskInboxState(
 	counts: Partial<Record<IssueState, number>>,
@@ -11,9 +11,8 @@ export function taskInboxState(
 ) {
 	const replying =
 		(counts.awaiting_response ?? 0) + (counts.remeasure_requested ?? 0);
-	const reviewing = counts.submitted ?? 0;
-	const own = guest ? replying : reviewing;
-	const waiting = guest ? reviewing : replying;
+	const own = guest ? replying : 0;
+	const waiting = guest ? 0 : replying;
 	return {
 		own,
 		waiting,

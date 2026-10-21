@@ -1,6 +1,7 @@
 "use client";
 import {
 	angleGeometry,
+	anchor,
 	ellipseGeometry,
 	makeEllipse,
 	normalized,
@@ -90,6 +91,7 @@ export default function AnnotationCanvas({
 	onInvalid,
 	canUndo = false,
 	canRedo = false,
+	showNumbers = false,
 }: {
 	image: CanonicalImage;
 	src: string;
@@ -108,6 +110,7 @@ export default function AnnotationCanvas({
 	onInvalid: () => void;
 	canUndo?: boolean;
 	canRedo?: boolean;
+	showNumbers?: boolean;
 }) {
 	const mark = useWorkspaceMark(guest);
 	const canEdit = !guest && !disabled;
@@ -484,6 +487,13 @@ export default function AnnotationCanvas({
 			lineWidth = (chosen ? 3 : 2) / s;
 		const label = photoDimensionText(item);
 		const position = labelPosition(g, w, h, s);
+		const number =
+			showNumbers && !preview
+				? items.findIndex((i) => i.id === item.id) + 1
+				: 0;
+		const at = anchor(g);
+		const badgeX = Math.max(14 / s, Math.min(w - 14 / s, at.x * w - 18 / s));
+		const badgeY = Math.max(14 / s, Math.min(h - 14 / s, at.y * h + 18 / s));
 		const paths = geometryPaths(
 			g,
 			w,
@@ -622,6 +632,25 @@ export default function AnnotationCanvas({
 							))
 						: null}
 					{shape}
+					{number > 0 ? (
+						<Group x={badgeX} y={badgeY} listening={false}>
+							<Circle
+								radius={12 / s}
+								fill="white"
+								stroke={stroke}
+								strokeWidth={1.5 / s}
+							/>
+							<Text
+								x={-12 / s}
+								y={-6 / s}
+								width={24 / s}
+								align="center"
+								text={String(number)}
+								fontSize={12 / s}
+								fill={stroke}
+							/>
+						</Group>
+					) : null}
 
 					{label && g.type !== "text" ? (
 						<Text

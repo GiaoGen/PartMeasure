@@ -156,7 +156,7 @@ export function IssueDetail({
 	if (loading)
 		return (
 			<WorkspaceSideContent inline={inline}>
-				<p role="status">读取测量位置、回复与审核历史…</p>
+				<p role="status">读取测量位置、回复与补测历史…</p>
 			</WorkspaceSideContent>
 		);
 	if (!issue)
@@ -172,6 +172,9 @@ export function IssueDetail({
 				</div>
 			</WorkspaceSideContent>
 		);
+	const latestResponse = issue.responses.find(
+		(r) => r.id === issue.latestResponseId,
+	);
 	const target = issue.target,
 		lastReview = issue.reviews.at(-1);
 	const events = [
@@ -196,10 +199,10 @@ export function IssueDetail({
 			open={compact ? undefined : inline ? false : issue.state === "submitted"}
 			onToggle={(e) => setHistoryExpanded(e.currentTarget.open)}
 		>
-			<summary>回复与审核历史</summary>
+			<summary>回复与补测历史</summary>
 			{!compact || historyExpanded ? (
-				<section className="issue-history" aria-label="回复与审核历史">
-					<h3>回复与审核历史</h3>
+				<section className="issue-history" aria-label="回复与补测历史">
+					<h3>回复与补测历史</h3>
 					{!events.length ? <p>尚无回复。</p> : null}
 					<ol>
 						{events.map((event) =>
@@ -317,14 +320,15 @@ export function IssueDetail({
 							{issue.closedAt
 								? issue.closureNote || "本项已结束，历史保留。"
 								: issue.state === "submitted"
-									? "已提交，等待工程师确认。"
+									? "已补充，无需工程师确认。"
 									: issue.state === "confirmed"
 										? "工程师已确认。"
 										: "正在确认提交结果…"}
 						</p>
-						{lastReview?.value ? (
+						{latestResponse?.value || lastReview?.value ? (
 							<p className="guest-annotation-value">
-								{lastReview.value} {displayUnit(lastReview.unit)}
+								{latestResponse?.value ?? lastReview?.value}{" "}
+								{displayUnit(latestResponse?.unit ?? lastReview?.unit ?? null)}
 							</p>
 						) : null}
 						<details className="guest-measurement-more">
@@ -391,9 +395,11 @@ export function IssueDetail({
 									...target.annotation,
 									collaboration: {
 										pending:
-											!issue.closedAt &&
-											(issue.state === "awaiting_response" ||
-												issue.state === "remeasure_requested")
+											!issue.closedAt && issue.state === "awaiting_response"
+												? 1
+												: 0,
+										remeasure:
+											!issue.closedAt && issue.state === "remeasure_requested"
 												? 1
 												: 0,
 										submitted:
@@ -467,8 +473,8 @@ export function IssueDetail({
 					{issue.state === "submitted" ? (
 						<p role="status">
 							{guest
-								? "已提交，等待工程师审核。"
-								: "核对回复后确认或要求重新测量。"}
+								? "已补充，无需工程师确认。"
+								: "客户已补充。如有问题，可要求补测。"}
 						</p>
 					) : null}
 					{issue.state === "confirmed" ? (

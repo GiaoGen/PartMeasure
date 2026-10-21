@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-20T09:14:00.947Z",
+  "checkedAt": "2026-10-21T06:39:52.684Z",
   "scope": "Disposable native PostgreSQL: SQL/transactions/RLS only, no cloud Auth/Storage/browser evidence",
   "results": [
     {
@@ -7,7 +7,7 @@
       "status": "PASS"
     },
     {
-      "check": "angle-auto-request-rejects-length-units-and-confirmation-writes-degrees",
+      "check": "angle-submission-validates-units-and-displays-degrees-without-confirmation",
       "status": "PASS"
     },
     {
@@ -15,7 +15,7 @@
       "status": "PASS"
     },
     {
-      "check": "arc-radius-length-and-angle-have-independent-immutable-confirmations",
+      "check": "arc-radius-length-and-angle-have-independent-immutable-replies",
       "status": "PASS"
     },
     {

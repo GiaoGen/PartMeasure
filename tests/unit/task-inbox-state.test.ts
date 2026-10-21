@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { ownTask, taskInboxState } from "../../src/components/task-inbox-state";
 
 describe("task inbox role and status", () => {
-	it("counts owner reviews and guest replies independently of loaded pages", () => {
+	it("counts guest replies without an engineer confirmation queue", () => {
 		const counts = {
 			awaiting_response: 31,
 			remeasure_requested: 2,
@@ -10,13 +10,13 @@ describe("task inbox role and status", () => {
 			confirmed: 100,
 		};
 		expect(taskInboxState(counts, false)).toMatchObject({
-			own: 5,
+			own: 0,
 			waiting: 33,
-			tone: "action",
+			tone: "waiting",
 		});
 		expect(taskInboxState(counts, true)).toMatchObject({
 			own: 33,
-			waiting: 5,
+			waiting: 0,
 			tone: "action",
 		});
 	});
@@ -36,11 +36,11 @@ describe("task inbox role and status", () => {
 			taskInboxState({ awaiting_response: 2, remeasure_requested: 1 }, false),
 		).toMatchObject({ own: 0, waiting: 3, tone: "waiting" });
 	});
-	it("uses waiting color when the guest only awaits review", () => {
+	it("treats customer submissions as complete", () => {
 		expect(taskInboxState({ submitted: 2 }, true)).toMatchObject({
 			own: 0,
-			waiting: 2,
-			tone: "waiting",
+			waiting: 0,
+			tone: "idle",
 		});
 	});
 	it("never calls failed or not-yet-loaded counts an all-clear", () => {
@@ -49,7 +49,7 @@ describe("task inbox role and status", () => {
 			label: "待办状态暂不可用",
 		});
 		expect(taskInboxState({ submitted: 2 }, false, true)).toMatchObject({
-			own: 2,
+			own: 0,
 			tone: "unknown",
 		});
 	});
@@ -60,8 +60,8 @@ describe("task inbox role and status", () => {
 			expect(ownTask({ state }, false)).toBe(false);
 		},
 	);
-	it("gives submitted to the owner, and confirmed to neither role", () => {
-		expect(ownTask({ state: "submitted" }, false)).toBe(true);
+	it("gives completed submissions to neither role", () => {
+		expect(ownTask({ state: "submitted" }, false)).toBe(false);
 		expect(ownTask({ state: "submitted" }, true)).toBe(false);
 		for (const guest of [false, true])
 			expect(ownTask({ state: "confirmed" }, guest)).toBe(false);

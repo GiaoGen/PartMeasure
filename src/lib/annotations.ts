@@ -97,7 +97,18 @@ export type Geometry = z.infer<typeof geometrySchema>;
 export type EngineeringMetadata = z.infer<typeof metadataSchema>;
 export type AnnotationDraft = {
 	/** Read-only server summary, never part of an annotation write. */
-	collaboration?: { pending: number; submitted: number };
+	collaboration?: {
+		pending: number;
+		submitted: number;
+		remeasure?: number;
+		/** Read-only customer replies; never written into Owner engineering metadata. */
+		values?: Partial<
+			Record<
+				import("./annotation-collaboration").MeasurementField,
+				{ value: string; unit: string }
+			>
+		>;
+	};
 	id: string;
 	geometry: Geometry;
 	metadata: EngineeringMetadata;

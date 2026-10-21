@@ -101,7 +101,8 @@ export function measurementText(
 	item: AnnotationDraft,
 	field: MeasurementField,
 ) {
-	const value = item.metadata[field],
+	const reply = item.collaboration?.values?.[field];
+	const value = item.metadata[field] || reply?.value,
 		g = item.geometry;
 	if (!value) return `${measurementFieldLabel(item, field)}待补`;
 	const prefix =
@@ -118,7 +119,7 @@ export function measurementText(
 			: field === "majorRadius"
 				? "a"
 				: "";
-	return `${prefix}${value}${field === "angleValue" ? "°" : ` ${item.metadata.unit}`}`;
+	return `${prefix}${value}${field === "angleValue" ? "°" : ` ${item.metadata[field] ? item.metadata.unit : reply?.unit}`}`;
 }
 export function annotationText(item: AnnotationDraft) {
 	const required = requiredMeasurements(item);
@@ -131,7 +132,12 @@ export function annotationText(item: AnnotationDraft) {
 		},
 	});
 	return fields
-		.filter((f) => !!item.metadata[f] || required.includes(f))
+		.filter(
+			(f) =>
+				!!item.metadata[f] ||
+				!!item.collaboration?.values?.[f] ||
+				required.includes(f),
+		)
 		.map(
 			(f) =>
 				`${fields.length > 1 ? `${measurementFieldLabel(item, f)}：` : ""}${measurementText(item, f)}`,
@@ -148,7 +154,10 @@ export function photoDimensionText(item: AnnotationDraft) {
 				item.geometry.type === "point" ? item.metadata.measurementMode : "auto",
 		},
 	})
-		.filter((field) => !!item.metadata[field])
+		.filter(
+			(field) =>
+				!!item.metadata[field] || !!item.collaboration?.values?.[field],
+		)
 		.map(
 			(field) =>
 				`${field === "holeDepth" ? "h" : field === "arcLength" ? "L" : ""}${measurementText(item, field)}`,
@@ -156,8 +165,8 @@ export function photoDimensionText(item: AnnotationDraft) {
 		.join(" · ");
 }
 export function annotationColor(item: AnnotationDraft) {
+	if (item.collaboration?.remeasure) return "#eab308";
 	if (item.collaboration?.pending) return "#dc2626";
-	if (item.collaboration?.submitted) return "#eab308";
 	if (item.collaboration) return "#16a34a";
 	return requiredMeasurements(item).some((field) => !item.metadata[field])
 		? "#dc2626"

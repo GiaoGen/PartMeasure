@@ -76,7 +76,7 @@ export function mutationTags(url: string) {
 		base = policy.tags[0];
 	if (!base?.match(/^\/api\/(?:guest\/)?projects\//)) return policy.tags;
 	const path = new URL(url, "http://cache.invalid").pathname.slice(base.length);
-	if (path.startsWith("/issues")) return path.endsWith("/review") ? [`${base}:issues:all`, `${base}:annotations:all`, `${base}:files`] : [`${base}:issues:all`];
+	if (path.startsWith("/issues")) return [`${base}:issues:all`, `${base}:annotations:all`, `${base}:files`];
 	if (path.startsWith("/annotations")) return [`${base}:annotations:all`, `${base}:files`, `${base}:issues:all`];
 	if (path.startsWith("/share-links")) return [base];
 	if (!path) return [`${base}:project`, "projects:list"];

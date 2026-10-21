@@ -257,6 +257,7 @@ export function AnnotationEditor({
 		>
 			{!propertiesOnly ? (
 				<Canvas
+					showNumbers
 					image={image}
 					src={`${base}/files/${fileId}/preview`}
 					items={shown}

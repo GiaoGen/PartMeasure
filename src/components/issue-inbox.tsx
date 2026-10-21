@@ -63,7 +63,9 @@ export function IssueInbox({
 					nextCursor: string | null;
 				}>(
 					`${base}/issues${next ? `?cursor=${encodeURIComponent(next)}` : ""}`,
-					"GET", undefined, { cacheMs: 1000 },
+					"GET",
+					undefined,
+					{ cacheMs: 1000 },
 				);
 				if (run !== generation.current) return;
 				setItems((old) =>
@@ -172,7 +174,14 @@ export function IssueInbox({
 		popup.close(() => setOpened(false));
 	}
 	const badge = taskInboxState(counts, guest, !!error || !loaded);
-	const pending = items.filter((item) => item.state !== "confirmed");
+	const pending = items.filter(
+		(item) =>
+			item.state === "awaiting_response" ||
+			item.state === "remeasure_requested",
+	);
+	const completed = items.filter(
+		(item) => item.state === "submitted" || item.state === "confirmed",
+	);
 	const mine = pending.filter((item) => ownTask(item, guest));
 	const waiting = pending.filter((item) => !ownTask(item, guest));
 	function group(label: string, rows: IssueSummary[], count: number) {
@@ -185,7 +194,18 @@ export function IssueInbox({
 				<ul>
 					{rows.map((item) => (
 						<li key={item.id}>
-							<button type="button" onClick={() => { if (item.kind === "measurement" && item.annotationRef && onOpenAnnotation?.(item.fileId, item.annotationRef.id)) close(); else setSelected(item.id); }}>
+							<button
+								type="button"
+								onClick={() => {
+									if (
+										item.kind === "measurement" &&
+										item.annotationRef &&
+										onOpenAnnotation?.(item.fileId, item.annotationRef.id)
+									)
+										close();
+									else setSelected(item.id);
+								}}
+							>
 								<span>
 									<strong>{item.title}</strong>
 									<small>
@@ -253,7 +273,6 @@ export function IssueInbox({
 				<header className="task-inbox-heading">
 					<h2 id={titleId}>待处理事项</h2>
 					<div>
-
 						<button type="button" onClick={close} aria-label="关闭待办">
 							<span aria-hidden="true">×</span>
 						</button>
@@ -277,6 +296,12 @@ export function IssueInbox({
 					) : null}
 					{group("待我处理", mine, badge.own)}
 					{group("等待对方", waiting, badge.waiting)}
+					{completed.length ? (
+						<details>
+							<summary>已补充与历史</summary>
+							{group("已补充", completed, completed.length)}
+						</details>
+					) : null}
 					{!loading &&
 					!error &&
 					loaded &&

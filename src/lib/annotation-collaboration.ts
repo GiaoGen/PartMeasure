@@ -26,8 +26,9 @@ export function validateMeasurementUnit(
 		throw new AppError("INVALID_MEASUREMENT_UNIT", 422);
 }
 export function annotationStatus(item: AnnotationDraft) {
+	if (item.collaboration?.remeasure) return "待重新补充";
 	if (item.collaboration?.pending) return "待补充";
-	if (item.collaboration?.submitted) return "待确认";
+	if (item.collaboration?.submitted) return "已补充";
 	if (item.collaboration) return "";
 	return requiredMeasurements(item).some((field) => !item.metadata[field])
 		? "尺寸待完善"

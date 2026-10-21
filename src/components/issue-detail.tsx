@@ -201,6 +201,7 @@ export function IssueDetail({
 						aria-label="标准图片与当前标注"
 					>
 						<Canvas
+							showToolbar={false}
 							key={`${issue.fileId}:${target.annotationRef.id}:${target.annotationRef.revision}`}
 							image={target.image}
 							src={`${base}/files/${issue.fileId}/preview`}

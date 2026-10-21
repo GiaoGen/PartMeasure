@@ -57,6 +57,7 @@ export function AnnotatedThumbnail({
 	const [document, setDocument] = useState<AnnotationDocument | null>(null);
 	const [failed, setFailed] = useState(false);
 	const [imageReady, setImageReady] = useState(false);
+	const [highlighted, setHighlighted] = useState<string | null>(null);
 	useEffect(() => {
 		if (!host.current) return;
 		const observer = new IntersectionObserver(
@@ -144,7 +145,7 @@ export function AnnotatedThumbnail({
 						const scale = Math.max(0.001, size.width / w);
 						const position = labelPosition(g, w, h, scale);
 						return (
-							<g key={item.id}>
+							<g key={item.id} className="thumbnail-annotation" data-highlighted={highlighted === item.id}>
 								<g
 									fill="none"
 									stroke={color}
@@ -231,6 +232,10 @@ export function AnnotatedThumbnail({
 							style={annotationHitRegion(item.geometry, document.image, size)}
 							aria-label={`查看标注 ${index + 1}：${item.metadata.name || "图片标注"}${annotationStatus(item) ? ` · ${annotationStatus(item)}` : ""}`}
 							onClick={() => onAnnotation(item.id)}
+							onPointerEnter={event => { if (event.pointerType !== "touch") setHighlighted(item.id); }}
+							onPointerLeave={() => setHighlighted(null)}
+							onFocus={() => setHighlighted(item.id)}
+							onBlur={() => setHighlighted(null)}
 						/>
 					))
 				: null}

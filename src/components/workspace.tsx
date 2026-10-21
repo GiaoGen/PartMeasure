@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api, ApiError } from "./api";
+import { readSavedShare, saveShare, forgetSavedShare, savedShareEvent } from "./saved-share-links";
 import { ProjectLiveProvider, useProjectUpdates } from "./project-live";
 import type { ProjectView } from "./projects";
 import { WorkspaceIcon, useWorkspaceDisclosure } from "./workspace-ui";
@@ -321,6 +322,27 @@ function WorkspaceContent({
 	const [shareUrl, setShareUrl] = useState(""),
 		[shareMessage, setShareMessage] = useState(""),
 		[shareBusy, setShareBusy] = useState(false);
+	const currentShare = useRef<{ id: string; url: string } | null>(null);
+	const savedShareId = project.share?.id, savedShareExpiry = project.share?.expiresAt, savedShareRevoked = project.share?.revokedAt;
+	useEffect(() => {
+		if (guest) return;
+		let timer: ReturnType<typeof setTimeout> | undefined;
+		function restore() {
+			if (timer) clearTimeout(timer);
+			const metadata = savedShareId && savedShareExpiry ? { id: savedShareId, expiresAt: savedShareExpiry, revokedAt: savedShareRevoked ?? null } : null;
+			const remaining = Date.parse(savedShareExpiry ?? "") - Date.now();
+			const valid = remaining > 0 && !savedShareRevoked;
+			const remembered = currentShare.current;
+			setShareUrl(readSavedShare(project.id, metadata, window.location.origin) || (valid && remembered && remembered.id === savedShareId ? remembered.url : ""));
+			if (valid)
+				timer = setTimeout(restore, Math.min(remaining + 20, 2147483647));
+		}
+		const cleared = () => { currentShare.current = null; restore(); };
+		restore();
+		window.addEventListener("storage", cleared);
+		window.addEventListener(savedShareEvent, cleared);
+		return () => { if (timer) clearTimeout(timer); window.removeEventListener("storage", cleared); window.removeEventListener(savedShareEvent, cleared); };
+	}, [guest, project.id, savedShareId, savedShareExpiry, savedShareRevoked]);
 	const [name, setName] = useState(project.name),
 		[description, setDescription] = useState(project.description),
 		[saving, setSaving] = useState(false);
@@ -337,7 +359,9 @@ function WorkspaceContent({
 		setSelected(null);
 		setSelectedIssue(null);
 		setShareUrl("");
-	}, []);
+		currentShare.current = null;
+		forgetSavedShare(initial.id);
+	}, [initial.id]);
 	const failure = useCallback(
 		(e: unknown) => {
 			if (e instanceof ApiError && e.status === 401) {
@@ -400,9 +424,11 @@ function WorkspaceContent({
 				expiresAt: string;
 			}>(`${base}/share-links`, "POST", {});
 			setShareUrl(result.url ?? "");
+			currentShare.current = result.url ? { id: result.id, url: result.url } : null;
+			const retained = result.url ? saveShare(project.id, { id: result.id, expiresAt: result.expiresAt, revokedAt: null }, result.url) : false;
 			setShareMessage(
 				result.url
-					? "链接已生成，请立即复制。刷新后不再显示明文。"
+					? retained ? "链接已生成，本浏览器刷新后可继续复制，撤销或过期后移除。" : "链接已生成；浏览器未允许保存，请复制留存。"
 					: "请求已处理，请重新生成以获取新地址。",
 			);
 			setProject((old) => ({
@@ -489,8 +515,15 @@ function WorkspaceContent({
 								{project.description || "请上传零件照片或现有工程资料。"}
 							</p>
 							{!guest ? (
-								<details className="project-settings">
+								<details className="project-settings" onToggle={event => {
+									if (!event.currentTarget.open || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+									const content = event.currentTarget.querySelector<HTMLElement>(".project-settings-content");
+									if (!content) return;
+									const duration = 180 * Number(getComputedStyle(content).getPropertyValue("--workspace-motion") || 1);
+									content.animate([{ height: "0px" }, { height: `${content.scrollHeight}px` }], { duration, easing: "ease-out" });
+								}}>
 									<summary>编辑说明与分享</summary>
+									<div className="project-settings-content">
 									<form
 										className="stack"
 										onSubmit={async (e) => {
@@ -572,6 +605,8 @@ function WorkspaceContent({
 															"DELETE",
 														);
 														setShareUrl("");
+														currentShare.current = null;
+														forgetSavedShare(project.id);
 														setProject((old) => ({
 															...old,
 															share: old.share
@@ -595,11 +630,11 @@ function WorkspaceContent({
 									</div>
 									{shareUrl ? (
 										<label>
-											新分享地址
+											分享地址
 											<input
 												readOnly
 												value={shareUrl}
-												aria-label="新分享地址"
+												aria-label="分享地址"
 											/>
 											<button
 												type="button"
@@ -621,9 +656,10 @@ function WorkspaceContent({
 									<p role="status">
 										{shareMessage ||
 											(project.share && !project.share.revokedAt
-												? "当前有有效链接；明文不再保留，需要时重新生成。"
+												? shareUrl ? "当前链接有效，可随时复制。" : "此浏览器未保留当前链接地址；可重新生成并保留新链接。"
 												: "尚无有效分享链接。")}
 									</p>
+									</div>
 								</details>
 							) : null}
 						</div>

@@ -1,5 +1,6 @@
 import { QueryCache } from "./query-cache";
 import { eventTags, mutationTags, queryPolicy } from "./cache-policy";
+import { clearSavedShares } from "./saved-share-links";
 import type { ProjectUpdate } from "@/lib/project-events";
 
 export class ApiError extends Error {
@@ -109,7 +110,8 @@ function resetSessionData() {
 	queries.clear();
 	for (const listener of sessionListeners) listener();
 }
-export function clearApiSession() {
+export function clearApiSession(preserveSavedShares = false) {
+	if (!preserveSavedShares) clearSavedShares();
 	resetSessionData();
 	csrfToken = null;
 	csrfPending = null;
@@ -118,14 +120,15 @@ export function clearApiSession() {
 function listenForSessionChanges() {
 	if (listening || typeof window === "undefined") return;
 	listening = true;
-	window.addEventListener("pagehide", clearApiSession);
+	// Refresh clears request/image memory, but preserves owner copies of valid links.
+	window.addEventListener("pagehide", () => clearApiSession(true));
 	window.addEventListener("focus", () => queries.clear());
 	document.addEventListener("visibilitychange", () => {
 		if (document.hidden) queries.clear();
 	});
 	if (typeof BroadcastChannel !== "undefined") {
 		channel = new BroadcastChannel("pm-session-invalidation");
-		channel.onmessage = clearApiSession;
+		channel.onmessage = () => clearApiSession();
 	}
 }
 
@@ -163,7 +166,8 @@ export async function api<T>(
 	const ownerAuthAction = /^\/api\/auth\/(login|logout|verify|register)$/.test(url);
 	// Guest bootstrap replaces a project cookie in this tab. It must not log out an
 	// engineer workspace in another tab merely because a share link was opened.
-	if (ownerAuthAction || url === "/api/guest/session") clearApiSession();
+	if (ownerAuthAction) clearApiSession();
+	else if (url === "/api/guest/session") clearApiSession(true);
 	if (ownerAuthAction) channel?.postMessage("invalidate");
 	const started = identity;
 	if (method !== "GET") queries.invalidate(mutationTags(url));

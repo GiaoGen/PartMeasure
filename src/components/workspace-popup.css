@@ -5,6 +5,7 @@
 	border: 0;
 	padding: 0;
 	margin: 0;
+	box-shadow: none;
 }
 .workspace-redesign .thumbnail-browse {
 	inset: 0;
@@ -14,14 +15,18 @@
 }
 .workspace-redesign .thumbnail-annotation-hit {
 	z-index: 2;
-	border-radius: 18px;
+	border-radius: 0;
 }
-.workspace-redesign .thumbnail-browse:hover,
-.workspace-redesign .thumbnail-annotation-hit:hover {
-	background: none;
+.workspace-redesign :is(.thumbnail-browse, .thumbnail-annotation-hit):is(:hover, :active, :focus-visible):not(:disabled) {
+	background: transparent;
+	box-shadow: none;
 }
-.workspace-redesign .thumbnail-annotation-hit:active {
-	transform: none;
+.thumbnail-annotation {
+	opacity: 0.85;
+}
+.thumbnail-annotation[data-highlighted="true"] {
+	opacity: 1;
+	filter: brightness(1.25) saturate(1.2);
 }
 .workspace-redesign .annotated-thumbnail > img {
 	pointer-events: none;

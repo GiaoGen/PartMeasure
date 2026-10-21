@@ -415,6 +415,18 @@
 	text-align: left;
 	font-size: 14px;
 }
+.project-settings-content { overflow: hidden; }
+.project-settings[open] > .project-settings-content {
+	animation: project-settings-expand calc(180ms * var(--workspace-motion, 1)) ease-out;
+	transform-origin: top;
+}
+@keyframes project-settings-expand {
+	from { opacity: 0; transform: translateY(-6px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+	.project-settings[open] > .project-settings-content { animation: none; }
+}
 .workspace-project-info .project-settings input {
 	min-width: 0;
 }

@@ -93,6 +93,7 @@ export default function AnnotationCanvas({
 	canUndo = false,
 	canRedo = false,
 	showNumbers = false,
+	showToolbar = true,
 }: {
 	image: CanonicalImage;
 	src: string;
@@ -112,6 +113,7 @@ export default function AnnotationCanvas({
 	canUndo?: boolean;
 	canRedo?: boolean;
 	showNumbers?: boolean;
+	showToolbar?: boolean;
 }) {
 	const mark = useWorkspaceMark(guest);
 	const canEdit = !guest && !disabled;
@@ -757,7 +759,7 @@ export default function AnnotationCanvas({
 	}
 	return (
 		<div className="canvas-column">
-			<div
+			{showToolbar ? <div
 				className="annotation-toolbar"
 				role="toolbar"
 				aria-label="图片编辑工具"
@@ -863,7 +865,7 @@ export default function AnnotationCanvas({
 				>
 					<AnnotationIcon kind="fit" />
 				</button>
-			</div>
+			</div> : null}
 
 			<div
 				ref={host}

@@ -109,7 +109,10 @@ export function AnnotationEditor({
 		[historyId, setHistoryId] = useState<string | null>(null),
 		[before, setBefore] = useState<number | null>(null),
 		[historyLoading, setHistoryLoading] = useState(false),
-		[preview, setPreview] = useState<(Revision & { id: string }) | null>(null),
+		[preview, setPreview] = useState<
+			| (Pick<Revision, "revision" | "geometry" | "metadata"> & { id: string })
+			| null
+		>(null),
 		[notice, setNotice] = useState("");
 	const historyRun = useRef(0);
 	const selected = session.items.find((i) => i.id === session.selected) ?? null;
@@ -553,6 +556,24 @@ export function AnnotationEditor({
 								fileId={fileId}
 								annotationId={selected.id}
 								guest={guest}
+								onViewPosition={(target) => {
+									if (
+										guest ||
+										session.dirty ||
+										session.saving ||
+										session.blocked ||
+										changes.current.request
+									) {
+										setNotice("请先保存或处理当前输入，再查看历史位置。");
+										return;
+									}
+									setPreview({
+										id: target.annotationRef.id,
+										revision: target.annotationRef.revision,
+										geometry: target.annotation.geometry,
+										metadata: target.annotation.metadata,
+									});
+								}}
 								refreshKey={refreshKey + collaborationVersion}
 								onInvalid={onInvalid}
 								onUpdated={() => {
@@ -573,8 +594,8 @@ export function AnnotationEditor({
 							onToggle={(event) => setHistoryOpen(event.currentTarget.open)}
 						>
 							<summary>
-								<span>历史记录</span>
-								<small>标注修订与已隐藏标注</small>
+								<span>标注修订</span>
+								<small>含已隐藏标注</small>
 							</summary>
 							{!guest && session.heads.some((h) => h.deleted) ? (
 								<details>

@@ -1,5 +1,9 @@
 "use client";
-import { unitsForField, displayUnit } from "@/lib/annotation-collaboration";
+import {
+	unitsForField,
+	displayUnit,
+	measurementFieldLabel,
+} from "@/lib/annotation-collaboration";
 import {
 	useCallback,
 	useEffect,
@@ -292,13 +296,14 @@ export function IssueResponseForm({
 						))}
 					</fieldset>
 				) : null}
-				{kind === "numeric" || compact ? (
+				{kind === "numeric" ? (
 					<div className="numeric-entry">
 						<label>
-							{compact ? "实测尺寸" : "测量数值"}
+							{compact
+								? `${issue.state === "remeasure_requested" ? "重新填写" : "填写"}${issue.target && issue.measurementField ? measurementFieldLabel(issue.target.annotation, issue.measurementField) : "尺寸"}`
+								: "测量数值"}
 							<input
 								required={kind === "numeric"}
-								disabled={compact && kind !== "numeric"}
 								placeholder="输入实测值"
 								inputMode="decimal"
 								value={value}
@@ -313,7 +318,6 @@ export function IssueResponseForm({
 							{compact ? <span className="sr-only">测量单位</span> : "测量单位"}
 							<select
 								value={unit}
-								disabled={compact && kind !== "numeric"}
 								onChange={(e) => {
 									setUnit(e.target.value);
 									write.changed();
@@ -334,9 +338,7 @@ export function IssueResponseForm({
 						open={extrasOpen}
 						onToggle={(e) => setExtrasOpen(e.currentTarget.open)}
 					>
-						<summary>
-							更多选项<span>照片 · 说明 · 记录</span>
-						</summary>
+						<summary>照片、说明或其他回复方式</summary>
 						{extras}
 					</details>
 				) : (

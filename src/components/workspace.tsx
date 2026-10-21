@@ -8,6 +8,7 @@ import "./workspace.css";
 import "./workspace-measurement.css";
 import "./workspace-popup.css";
 import "./annotation-properties.css";
+import "./measurement-reply.css";
 import { AnnotatedThumbnail } from "./annotated-thumbnail";
 import { WorkspaceContextDialog } from "./workspace-context-dialog";
 import { WorkspaceSideTarget } from "./workspace-side-content";

@@ -4,6 +4,7 @@ import type { IssueSummary } from "@/lib/issues";
 import { api, ApiError } from "./api";
 import { IssueDetail } from "./issue-detail";
 import { useProjectUpdates } from "./project-live";
+import type { MeasurementTarget } from "./issue-history";
 
 export function AnnotationCollaboration({
 	base,
@@ -15,6 +16,7 @@ export function AnnotationCollaboration({
 	onInvalid,
 	onUpdated,
 	onDirty,
+	onViewPosition,
 }: {
 	base: string;
 	fileId: string;
@@ -25,6 +27,7 @@ export function AnnotationCollaboration({
 	onInvalid: () => void;
 	onUpdated: () => void;
 	onDirty: (value: boolean) => void;
+	onViewPosition?: (target: MeasurementTarget) => void;
 }) {
 	const [items, setItems] = useState<IssueSummary[]>([]),
 		[cursor, setCursor] = useState<string | null>(null),
@@ -123,6 +126,7 @@ export function AnnotationCollaboration({
 				guest={guest}
 				inline
 				compact={compact}
+				{...(onViewPosition ? { onViewPosition } : {})}
 				onInvalid={onInvalid}
 				onUpdated={updated}
 				onBack={() => {}}

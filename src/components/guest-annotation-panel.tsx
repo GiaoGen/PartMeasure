@@ -29,6 +29,11 @@ export function GuestAnnotationPanel({
 		notesId = useId();
 	const metadata = item.metadata,
 		method = metadata.measurementMethod;
+	const hasLiveReply = !!(
+		item.collaboration?.pending ||
+		item.collaboration?.submitted ||
+		item.collaboration?.remeasure
+	);
 	return (
 		<section
 			className="guest-annotation-panel"
@@ -62,8 +67,9 @@ export function GuestAnnotationPanel({
 					<p className="preserve-lines">{metadata.notes}</p>
 				</div>
 			) : null}
-			{(method && method !== "unspecified") ||
-			metadata.measurementInstructions?.trim() ? (
+			{!hasLiveReply &&
+			((method && method !== "unspecified") ||
+				metadata.measurementInstructions?.trim()) ? (
 				<div className="guest-annotation-guidance">
 					{method && method !== "unspecified" ? (
 						<div>

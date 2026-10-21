@@ -2,6 +2,7 @@
 import {
 	geometryPaths,
 	photoDimensionText,
+	photoStatusText,
 	annotationColor,
 	labelPosition,
 } from "@/lib/annotation-presentation";
@@ -140,6 +141,8 @@ export function AnnotatedThumbnail({
 					{items.map((item) => {
 						const g = item.geometry;
 						const color = annotationColor(item);
+						const scale = Math.max(0.001, size.width / w);
+						const position = labelPosition(g, w, h, scale);
 						return (
 							<g key={item.id}>
 								<g
@@ -187,6 +190,30 @@ export function AnnotatedThumbnail({
 										paintOrder="stroke"
 									>
 										{photoDimensionText(item)}
+									</text>
+								) : null}
+								{photoStatusText(item) ? (
+									<text
+										x={Math.max(
+											30 / scale,
+											Math.min(w - 30 / scale, position.x),
+										)}
+										y={Math.max(
+											14 / scale,
+											Math.min(
+												h - 6 / scale,
+												position.y +
+													(photoDimensionText(item) ? 18 : 0) / scale,
+											),
+										)}
+										fontSize={11 / scale}
+										textAnchor="middle"
+										fill={color}
+										stroke="white"
+										strokeWidth={3 / scale}
+										paintOrder="stroke"
+									>
+										{photoStatusText(item)}
 									</text>
 								) : null}
 							</g>

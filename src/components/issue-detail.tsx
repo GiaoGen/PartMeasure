@@ -62,6 +62,7 @@ export function IssueDetail({
 		[formVersion, setFormVersion] = useState(0),
 		[canvasError, setCanvasError] = useState("");
 	const [targetExpanded, setTargetExpanded] = useState(false);
+	const [evidenceExpanded, setEvidenceExpanded] = useState(false);
 	const [historyExpanded, setHistoryExpanded] = useState(false);
 	const [committedPending, setCommittedPending] = useState(false),
 		[savedNotice, setSavedNotice] = useState("");
@@ -341,6 +342,7 @@ export function IssueDetail({
 				)}
 			</section>
 		);
+	const ownerInline = inline && !guest && issue.kind === "measurement";
 	const mainContent = (
 		<>
 			<div className="detail-heading">
@@ -362,8 +364,8 @@ export function IssueDetail({
 						: "尺寸补充"
 					: "文件级文字问题"}
 			</p>
-			{savedNotice ? <p role="status">{savedNotice}</p> : null}
-			{error ? (
+			{savedNotice && !ownerInline ? <p role="status">{savedNotice}</p> : null}
+			{error && !ownerInline ? (
 				<p role="alert" className="error">
 					{error}
 					<button type="button" onClick={() => void load()}>
@@ -435,6 +437,114 @@ export function IssueDetail({
 			</details>{" "}
 		</>
 	);
+	// The picture and editable requirements already live above this inline panel.
+	// Keep its first view focused on this field's latest reply and the remeasure action.
+	if (ownerInline)
+		return (
+			<section
+				className="owner-annotation-reply"
+				aria-label="当前标注的客户补充"
+			>
+				<header className="annotation-reply-heading">
+					<h4>
+						{target && issue.measurementField
+							? measurementFieldLabel(target.annotation, issue.measurementField)
+							: "尺寸补充"}
+					</h4>
+					<small>{issue.closedAt ? "已结束" : stateLabel[issue.state]}</small>
+				</header>
+				{savedNotice ? <p role="status">{savedNotice}</p> : null}
+				{error ? (
+					<p role="alert" className="error">
+						{error}
+						<button type="button" onClick={reload}>
+							重试
+						</button>
+					</p>
+				) : null}
+				{issue.closedAt ? (
+					<p>{issue.closureNote}，原回复及证据已保留。</p>
+				) : null}
+				{latestResponse ? (
+					<>
+						<div className="annotation-reply-value">
+							{latestResponse.value ? (
+								<>
+									{latestResponse.value}{" "}
+									<small>{displayUnit(latestResponse.unit)}</small>
+								</>
+							) : latestResponse.kind === "photo" ? (
+								"测量照片"
+							) : latestResponse.kind === "unable" ? (
+								"无法测量"
+							) : (
+								"文字回复"
+							)}
+						</div>
+						<p className="annotation-reply-meta">
+							{latestResponse.authorType === "owner"
+								? "工程师填写"
+								: `客户填写${latestResponse.guestLabel ? ` · ${latestResponse.guestLabel}` : ""}`}{" "}
+							· {new Date(latestResponse.createdAt).toLocaleString("zh-CN")}
+						</p>
+						{latestResponse.body ? (
+							<p className="preserve-lines">{latestResponse.body}</p>
+						) : null}
+						{latestResponse.attachments.length ? (
+							<details
+								className="annotation-reply-evidence"
+								onToggle={(e) => setEvidenceExpanded(e.currentTarget.open)}
+							>
+								<summary>
+									测量证据 · {latestResponse.attachments.length} 份
+								</summary>
+								{evidenceExpanded ? (
+									<ul className="evidence-gallery">
+										{latestResponse.attachments.map((file) => (
+											<li key={file.id}>
+												<a href={`${base}/files/${file.id}/download`}>
+													{file.mime.startsWith("image/") ? (
+														<EvidencePreview base={base} file={file} />
+													) : null}
+													{file.filename}
+												</a>
+											</li>
+										))}
+									</ul>
+								) : null}
+							</details>
+						) : null}
+					</>
+				) : (
+					<p className="annotation-reply-meta">
+						等待客户补充，提交后自动完成。
+					</p>
+				)}
+				{issue.state === "remeasure_requested" && lastReview?.note ? (
+					<p role="status" className="remeasure-note">
+						待补测：{lastReview.note}
+					</p>
+				) : null}
+				{issue.state === "confirmed" && lastReview?.value ? (
+					<p>
+						历史确认值：{lastReview.value} {displayUnit(lastReview.unit)}
+					</p>
+				) : null}
+				{!issue.closedAt && issue.state === "submitted" && !committedPending ? (
+					<IssueReviewForm
+						key={`${issue.id}:${issue.revision}:${formVersion}`}
+						base={base}
+						issue={issue}
+						onSaved={saved}
+						onInvalid={onInvalid}
+						onDirty={handleDirty}
+						onReload={reload}
+					/>
+				) : null}
+				{historyContent}
+				<div className="annotation-fixed-target">{mainContent}</div>
+			</section>
+		);
 	return (
 		<section
 			className={`issue-detail${inline ? " inline-collaboration" : ""}`}

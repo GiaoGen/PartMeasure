@@ -18,7 +18,6 @@ import { useAnnotationSession } from "./use-annotation-session";
 import { EngineeringFields } from "./engineering-fields";
 import { WorkspaceSideContent } from "./workspace-side-content";
 import { AnnotationCollaboration } from "./annotation-collaboration";
-import { FileIssues } from "./file-issues";
 
 const Canvas = dynamic(() => import("./annotation-canvas"), {
 	ssr: false,
@@ -38,7 +37,6 @@ export function AnnotationEditor({
 	onInvalid,
 	onDirty,
 	onIssueCreated,
-	onOpenIssue,
 	onAnnotationsSaved,
 	refreshKey = 0,
 	initialAnnotationId,
@@ -60,14 +58,15 @@ export function AnnotationEditor({
 	panelHidden?: boolean;
 	onOpenProperties?: () => boolean;
 }) {
-	const changes = useRef({ annotation: false, request: false, comment: false });
+	const changes = useRef({ annotation: false, request: false });
 	const [requestDirty, setRequestDirty] = useState(false);
 	const [collaborationVersion, setCollaborationVersion] = useState(0);
-	const [fileIssuesMounted, setFileIssuesMounted] = useState(false);
+	const [historyOpen, setHistoryOpen] = useState(false);
+	const [listOpen, setListOpen] = useState(false);
 	const onAnnotationDirty = useCallback(
 		(dirty: boolean) => {
 			changes.current.annotation = dirty;
-			onDirty(dirty || changes.current.request || changes.current.comment);
+			onDirty(dirty || changes.current.request);
 		},
 		[onDirty],
 	);
@@ -75,14 +74,7 @@ export function AnnotationEditor({
 		(dirty: boolean) => {
 			changes.current.request = dirty;
 			setRequestDirty(dirty);
-			onDirty(dirty || changes.current.annotation || changes.current.comment);
-		},
-		[onDirty],
-	);
-	const onFileIssueDirty = useCallback(
-		(dirty: boolean) => {
-			changes.current.comment = dirty;
-			onDirty(dirty || changes.current.annotation || changes.current.request);
+			onDirty(dirty || changes.current.annotation);
 		},
 		[onDirty],
 	);
@@ -141,6 +133,7 @@ export function AnnotationEditor({
 			return;
 		if (id && onOpenProperties?.() === false) return;
 		session.setSelected(id);
+		setListOpen(false);
 		setPreview(null);
 		setHistory([]);
 		setHistoryId(null);
@@ -158,6 +151,7 @@ export function AnnotationEditor({
 		select(null);
 	}
 	async function loadHistory(id: string, next: number | null = null) {
+		setHistoryOpen(true);
 		const run = ++historyRun.current;
 		setHistoryLoading(true);
 		try {
@@ -312,7 +306,63 @@ export function AnnotationEditor({
 					className="annotation-properties"
 					aria-label="标注属性与列表"
 				>
-					{" "}
+					<header className="annotation-properties-heading">
+						<h3>标注与属性</h3>
+						{!guest ? (
+							<div className="annotation-property-actions">
+								<button
+									className="annotation-icon-button property-save"
+									aria-label={
+										session.saving
+											? "保存中"
+											: session.blocked
+												? "重试保存"
+												: "保存标注"
+									}
+									title="保存标注"
+									type="button"
+									disabled={
+										session.saving ||
+										session.conflict ||
+										!!preview ||
+										(!session.dirty && !session.blocked)
+									}
+									onClick={() => void save()}
+								>
+									<AnnotationIcon kind="save" />
+								</button>
+								<button
+									className="annotation-icon-button"
+									aria-label="修订历史"
+									title="修订历史"
+									type="button"
+									disabled={
+										!selected ||
+										requestDirty ||
+										session.dirty ||
+										session.saving ||
+										!!preview ||
+										!session.heads.some((h) => h.id === selected.id)
+									}
+									onClick={() => {
+										if (selected) void loadHistory(selected.id);
+									}}
+								>
+									<AnnotationIcon kind="history" />
+								</button>
+								<button
+									className="annotation-icon-button danger"
+									aria-label="删除选中标注"
+									title="删除选中标注"
+									type="button"
+									disabled={!selected || editDisabled}
+									onClick={remove}
+								>
+									<AnnotationIcon kind="delete" />
+								</button>
+							</div>
+						) : null}
+					</header>
 					<div className="editor-status">
 						<p role="status">
 							{preview
@@ -387,210 +437,113 @@ export function AnnotationEditor({
 						) : null}
 						<p role="status">{notice}</p>
 					</div>
-					<h3>标注与属性</h3>
-					{!guest ? (
-						<div className="actions">
-							<button
-								className="annotation-icon-button"
-								aria-label={
-									session.saving
-										? "保存中"
-										: session.blocked
-											? "重试保存"
-											: "保存标注"
-								}
-								title={
-									session.saving
-										? "保存中"
-										: session.blocked
-											? "重试保存"
-											: "保存标注"
-								}
-								type="button"
-								disabled={
-									session.saving ||
-									session.conflict ||
-									!!preview ||
-									(!session.dirty && !session.blocked)
-								}
-								onClick={() => void save()}
-							>
-								<AnnotationIcon kind="save" />
-							</button>
-						</div>
-					) : null}
 					{!session.items.length ? (
 						<p>{guest ? "暂无标注" : "选择工具，在图上标注。"}</p>
 					) : null}
-					<ol className="annotation-list">
-						{session.items.map((item, index) => (
-							<li key={item.id}>
-								<button
-									type="button"
-									aria-pressed={session.selected === item.id && !preview}
-									onClick={() => select(item.id)}
-								>
-									<span className="annotation-number">{index + 1}</span>
-									{item.metadata.name || typeLabel(item.geometry)}
-									{annotationText(item) ? ` · ${annotationText(item)}` : ""}
-								</button>
-							</li>
-						))}
-					</ol>
+					<details
+						className="annotation-selector"
+						open={listOpen || !selected}
+						onToggle={(event) => setListOpen(event.currentTarget.open)}
+					>
+						<summary>
+							<span>本图标注</span>
+							<small>
+								{selected ? (
+									<>
+										{session.items.findIndex(
+											(item) => item.id === selected.id,
+										) + 1}{" "}
+										/ {session.items.length} ·{" "}
+										{selected.metadata.name || typeLabel(selected.geometry)}
+									</>
+								) : (
+									<>{session.items.length} 个</>
+								)}
+							</small>
+						</summary>
+						<ol className="annotation-list">
+							{session.items.map((item, index) => (
+								<li key={item.id}>
+									<button
+										type="button"
+										aria-pressed={session.selected === item.id && !preview}
+										onClick={() => select(item.id)}
+									>
+										<span className="annotation-number">{index + 1}</span>
+										{item.metadata.name || typeLabel(item.geometry)}
+										{annotationText(item) ? ` · ${annotationText(item)}` : ""}
+									</button>
+								</li>
+							))}
+						</ol>
+					</details>
 					{detail ? (
-						<>
-							{!guest ? (
-								<EngineeringFields
-									item={detail}
-									disabled={editDisabled}
-									onChange={session.update}
-									onBlur={session.endEdit}
-								/>
-							) : (
-								<div className="annotation-readout">
-									<h4>{detail.metadata.name || typeLabel(detail.geometry)}</h4>
-									{detail.geometry.type === "text" ? (
-										<p>{detail.geometry.text}</p>
-									) : null}
-									{detail.metadata.dimension &&
-									!(
-										detail.geometry.type === "ellipse" &&
-										detail.metadata.ellipseMeasure === "majorRadius"
-									) ? (
-										<p>
-											人工
-											{measurementFieldLabel(detail, "dimension")}：
-											{detail.metadata.dimension} {detail.metadata.unit}
-										</p>
-									) : null}
-									{detail.metadata.holeDepth ? (
-										<p>
-											孔深：{detail.metadata.holeDepth} {detail.metadata.unit}
-										</p>
-									) : null}
-									{detail.metadata.holeType ? (
-										<p>
-											孔类型：
-											{
-												{
-													through: "通孔",
-													blind: "盲孔",
-													threaded: "螺纹孔",
-													counterbore: "柱形沉孔",
-													countersink: "锥形沉孔",
-													other: "其他",
-												}[detail.metadata.holeType]
-											}
-										</p>
-									) : null}
-									{detail.metadata.thread ? (
-										<p>螺纹：{detail.metadata.thread}</p>
-									) : null}
-									{(["angleValue", "arcLength", "majorRadius"] as const)
-										.filter(
-											(field) =>
-												!!detail.metadata[field] &&
-												(field !== "majorRadius" ||
-													detail.metadata.ellipseMeasure === "majorRadius"),
-										)
-										.map((field) => (
-											<p key={field}>
-												{measurementFieldLabel(detail, field)}：
-												{detail.metadata[field]}{" "}
-												{field === "angleValue" ? "°" : detail.metadata.unit}
-											</p>
-										))}
-									<p>{detail.metadata.notes}</p>
-								</div>
-							)}
-							{!guest && selected && !preview ? (
-								<div className="actions">
-									<button
-										aria-label="删除选中标注"
-										title="删除选中标注"
-										type="button"
-										className="annotation-icon-button danger"
-										disabled={editDisabled}
-										onClick={remove}
-									>
-										<AnnotationIcon kind="delete" />
-									</button>
-									<button
-										className="annotation-icon-button"
-										aria-label="修订历史"
-										title="修订历史"
-										type="button"
-										disabled={
-											session.dirty ||
-											session.saving ||
-											!session.heads.some((h) => h.id === selected.id)
-										}
-										onClick={() => void loadHistory(selected.id)}
-									>
-										<AnnotationIcon kind="history" />
-									</button>
-								</div>
-							) : null}
-						</>
-					) : null}
-					{!guest && session.heads.some((h) => h.deleted) ? (
-						<details>
-							<summary>
-								已隐藏的标注（{session.heads.filter((h) => h.deleted).length}）
-							</summary>
-							{session.heads
-								.filter((h) => h.deleted)
-								.map((h) => (
-									<p key={h.id}>
-										{h.metadata.name || typeLabel(h.geometry)}{" "}
-										<button
-											className="annotation-icon-button"
-											aria-label="查看修订"
-											title="查看修订"
-											type="button"
-											disabled={requestDirty || session.dirty || session.saving}
-											onClick={() => void loadHistory(h.id)}
-										>
-											<AnnotationIcon kind="history" />
-										</button>
+						!guest ? (
+							<EngineeringFields
+								key={detail.id}
+								number={shown.findIndex((item) => item.id === detail.id) + 1}
+								item={detail}
+								disabled={editDisabled}
+								onChange={session.update}
+								onBlur={session.endEdit}
+							/>
+						) : (
+							<div className="annotation-readout">
+								<h4>{detail.metadata.name || typeLabel(detail.geometry)}</h4>
+								{detail.geometry.type === "text" ? (
+									<p>{detail.geometry.text}</p>
+								) : null}
+								{detail.metadata.dimension &&
+								!(
+									detail.geometry.type === "ellipse" &&
+									detail.metadata.ellipseMeasure === "majorRadius"
+								) ? (
+									<p>
+										人工
+										{measurementFieldLabel(detail, "dimension")}：
+										{detail.metadata.dimension} {detail.metadata.unit}
 									</p>
-								))}
-						</details>
-					) : null}
-					{historyLoading ? <p role="status">读取修订…</p> : null}
-					{historyId ? (
-						<section className="revision-list" aria-label="标注修订历史">
-							<h4>保留的修订</h4>
-							<ol>
-								{history.map((r) => (
-									<li key={r.revision}>
-										<button
-											type="button"
-											disabled={requestDirty || session.dirty || session.saving}
-											onClick={() => setPreview({ ...r, id: historyId })}
-										>
-											修订 #{r.revision} · {r.deleted ? "隐藏" : "保存"} ·{" "}
-											{r.metadata.name || typeLabel(r.geometry)}
-										</button>
-										<small>
-											{new Date(r.createdAt).toLocaleString("zh-CN")}
-										</small>
-									</li>
-								))}
-							</ol>
-							{before ? (
-								<button
-									className="annotation-icon-button"
-									aria-label="更早修订"
-									title="更早修订"
-									type="button"
-									disabled={historyLoading}
-									onClick={() => void loadHistory(historyId, before)}
-								>
-									<AnnotationIcon kind="more" />
-								</button>
-							) : null}
-						</section>
+								) : null}
+								{detail.metadata.holeDepth ? (
+									<p>
+										孔深：{detail.metadata.holeDepth} {detail.metadata.unit}
+									</p>
+								) : null}
+								{detail.metadata.holeType ? (
+									<p>
+										孔类型：
+										{
+											{
+												through: "通孔",
+												blind: "盲孔",
+												threaded: "螺纹孔",
+												counterbore: "柱形沉孔",
+												countersink: "锥形沉孔",
+												other: "其他",
+											}[detail.metadata.holeType]
+										}
+									</p>
+								) : null}
+								{detail.metadata.thread ? (
+									<p>螺纹：{detail.metadata.thread}</p>
+								) : null}
+								{(["angleValue", "arcLength", "majorRadius"] as const)
+									.filter(
+										(field) =>
+											!!detail.metadata[field] &&
+											(field !== "majorRadius" ||
+												detail.metadata.ellipseMeasure === "majorRadius"),
+									)
+									.map((field) => (
+										<p key={field}>
+											{measurementFieldLabel(detail, field)}：
+											{detail.metadata[field]}{" "}
+											{field === "angleValue" ? "°" : detail.metadata.unit}
+										</p>
+									))}
+								<p>{detail.metadata.notes}</p>
+							</div>
+						)
 					) : null}
 					{selected && !preview ? (
 						session.heads.some((h) => h.id === selected.id && !h.deleted) ? (
@@ -613,27 +566,88 @@ export function AnnotationEditor({
 							<p>保存标注后，缺少尺寸会自动提示客户补充。</p>
 						)
 					) : null}
-					<details
-						className="photo-file-issues"
-						onToggle={(event) => {
-							if (event.currentTarget.open) setFileIssuesMounted(true);
-						}}
-					>
-						<summary>这张照片的其他问题</summary>
-						{fileIssuesMounted ? (
-							<FileIssues
-								key={fileId}
-								base={base}
-								fileId={fileId}
-								guest={guest}
-								refreshKey={refreshKey}
-								onDirty={onFileIssueDirty}
-								onInvalid={onInvalid}
-								onOpen={onOpenIssue}
-								onCreated={onIssueCreated}
-							/>
-						) : null}
-					</details>
+					{!guest ? (
+						<details
+							className="annotation-history"
+							open={historyOpen}
+							onToggle={(event) => setHistoryOpen(event.currentTarget.open)}
+						>
+							<summary>
+								<span>历史记录</span>
+								<small>标注修订与已隐藏标注</small>
+							</summary>
+							{!guest && session.heads.some((h) => h.deleted) ? (
+								<details>
+									<summary>
+										已隐藏的标注（
+										{session.heads.filter((h) => h.deleted).length}）
+									</summary>
+									{session.heads
+										.filter((h) => h.deleted)
+										.map((h) => (
+											<p key={h.id}>
+												{h.metadata.name || typeLabel(h.geometry)}{" "}
+												<button
+													className="annotation-icon-button"
+													aria-label="查看修订"
+													title="查看修订"
+													type="button"
+													disabled={
+														requestDirty || session.dirty || session.saving
+													}
+													onClick={() => void loadHistory(h.id)}
+												>
+													<AnnotationIcon kind="history" />
+												</button>
+											</p>
+										))}
+								</details>
+							) : null}
+							{historyLoading ? <p role="status">读取修订…</p> : null}
+							{historyId ? (
+								<section className="revision-list" aria-label="标注修订历史">
+									<h4>保留的修订</h4>
+									<ol>
+										{history.map((r) => (
+											<li key={r.revision}>
+												<button
+													type="button"
+													disabled={
+														requestDirty || session.dirty || session.saving
+													}
+													onClick={() => setPreview({ ...r, id: historyId })}
+												>
+													修订 #{r.revision} · {r.deleted ? "隐藏" : "保存"} ·{" "}
+													{r.metadata.name || typeLabel(r.geometry)}
+												</button>
+												<small>
+													{new Date(r.createdAt).toLocaleString("zh-CN")}
+												</small>
+											</li>
+										))}
+									</ol>
+									{before ? (
+										<button
+											className="annotation-icon-button"
+											aria-label="更早修订"
+											title="更早修订"
+											type="button"
+											disabled={historyLoading}
+											onClick={() => void loadHistory(historyId, before)}
+										>
+											<AnnotationIcon kind="more" />
+										</button>
+									) : null}
+								</section>
+							) : null}
+
+							{!historyId && !historyLoading ? (
+								<p className="annotation-history-hint">
+									选择上方修订历史图标查看当前标注的历史。
+								</p>
+							) : null}
+						</details>
+					) : null}
 				</aside>
 			</WorkspaceSideContent>
 		</div>

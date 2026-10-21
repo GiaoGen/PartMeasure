@@ -10,6 +10,7 @@ import {
 	geometryPaths,
 	labelPosition,
 	photoDimensionText,
+	photoStatusText,
 	annotationColor,
 } from "@/lib/annotation-presentation";
 import {
@@ -486,6 +487,7 @@ export default function AnnotationCanvas({
 			stroke = annotationColor(item),
 			lineWidth = (chosen ? 3 : 2) / s;
 		const label = photoDimensionText(item);
+		const statusLabel = photoStatusText(item);
 		const position = labelPosition(g, w, h, s);
 		const number =
 			showNumbers && !preview
@@ -634,12 +636,6 @@ export default function AnnotationCanvas({
 					{shape}
 					{number > 0 ? (
 						<Group x={badgeX} y={badgeY} listening={false}>
-							<Circle
-								radius={12 / s}
-								fill="white"
-								stroke={stroke}
-								strokeWidth={1.5 / s}
-							/>
 							<Text
 								x={-12 / s}
 								y={-6 / s}
@@ -648,8 +644,29 @@ export default function AnnotationCanvas({
 								text={String(number)}
 								fontSize={12 / s}
 								fill={stroke}
+								stroke="white"
+								strokeWidth={2 / s}
+								fillAfterStrokeEnabled
 							/>
 						</Group>
+					) : null}
+					{statusLabel ? (
+						<Text
+							x={Math.max(0, Math.min(w - 180 / s, position.x - 90 / s))}
+							y={Math.max(
+								0,
+								Math.min(h - 18 / s, position.y + (label ? 12 : -6) / s),
+							)}
+							width={180 / s}
+							align="center"
+							text={statusLabel}
+							fontSize={11 / s}
+							fill={stroke}
+							stroke="white"
+							strokeWidth={2 / s}
+							fillAfterStrokeEnabled
+							listening={false}
+						/>
 					) : null}
 
 					{label && g.type !== "text" ? (

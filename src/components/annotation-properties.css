@@ -1,0 +1,98 @@
+/* Selected annotation properties: one aligned form, then contextual disclosures. */
+.annotation-properties {
+	--property-label-width: 76px;
+	container-type: inline-size;
+}
+.annotation-properties .annotation-properties-heading {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+.annotation-properties-heading h3 { margin: 0; }
+.annotation-property-actions { display: flex; gap: 3px; margin-left: auto; }
+.annotation-properties .annotation-property-actions button { border: 0; background: transparent; padding: 7px; min-width: 32px; width: 32px; height: 32px; min-height: 32px; }
+.annotation-property-actions .property-save { color: var(--workspace-action, #36567f); }
+.annotation-properties .editor-status { padding: 0; margin: 3px 0 12px; }
+.annotation-properties .editor-status p { margin: 3px 0; font-size: 12px; }
+.annotation-properties .annotation-selector { margin-bottom: 18px; }
+.annotation-properties .annotation-selector > summary,
+.annotation-properties .engineering-guidance > summary,
+.annotation-properties .annotation-history > summary,
+.annotation-properties .hole-properties > summary { display: flex; align-items: center; gap: 8px; list-style: none; }
+.annotation-properties summary::-webkit-details-marker { display: none; }
+.annotation-properties .annotation-selector > summary::before,
+.annotation-properties .engineering-guidance > summary::before,
+.annotation-properties .annotation-history > summary::before,
+.annotation-properties .hole-properties > summary::before { content: "›"; flex: 0 0 8px; color: #627080; font-size: 18px; }
+.annotation-properties details[open] > summary::before { transform: rotate(90deg); }
+.annotation-properties summary > small,
+.annotation-properties .hole-properties > summary > span { margin-left: auto; color: #627080; font-size: 12px; min-width: 0; overflow-wrap: anywhere; text-align: right; }
+.annotation-properties .annotation-list { margin: 8px 0 0; }
+.annotation-properties .annotation-list button { align-items: baseline; }
+.annotation-properties .annotation-number { flex: 0 0 20px; background: transparent; border-radius: 0; }
+.annotation-properties .engineering-fields { border-top: 1px solid var(--workspace-line, #d5dae1); margin: 0; padding-top: 16px; gap: 0; }
+.annotation-properties .engineering-fields > legend { display: flex; align-items: center; justify-content: space-between; gap: 8px; float: left; width: 100%; font-size: 14px; font-weight: 500; margin-bottom: 16px; }
+.annotation-properties .engineering-status { font-size: 12px; font-weight: 400; text-align: right; }
+.annotation-properties .engineering-core { display: grid; clear: both; gap: 13px; min-width: 0; }
+.annotation-properties .engineering-field { display: grid; grid-template-columns: var(--property-label-width) minmax(0, 1fr); gap: 10px; align-items: center; min-width: 0; }
+.annotation-properties .engineering-fields .engineering-field > label { display: block; margin: 0; color: #627080; font-size: 13px; }
+.annotation-properties .engineering-control { min-width: 0; }
+.annotation-properties .engineering-control input,
+.annotation-properties .engineering-control select,
+.annotation-properties .engineering-control textarea { width: 100%; min-width: 0; padding: 8px; border-radius: 6px; min-height: 40px; }
+.annotation-properties .engineering-control textarea { min-height: 76px; resize: vertical; }
+.annotation-properties .engineering-value-unit { display: grid; grid-template-columns: minmax(0, 1fr) 64px; align-items: center; gap: 6px; }
+.annotation-properties .engineering-unit { color: #627080; text-align: center; font-size: 13px; }
+.annotation-properties .engineering-fields .engineering-checks { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.annotation-properties .engineering-fields .engineering-checks label { display: inline-flex; flex-direction: row; align-items: center; gap: 6px; margin: 0; }
+.annotation-properties .engineering-checks input[type="checkbox"] { flex: 0 0 16px; width: 16px; min-height: 16px; height: 16px; }
+.annotation-properties .engineering-quantities { display: block; padding: 0; border: 0; margin: 0; min-width: 0; }
+.annotation-properties .engineering-quantities > legend { float: left; width: var(--property-label-width); font-weight: 400; margin: 0 10px 0 0; font-size: 13px; color: #627080; }
+.annotation-properties .engineering-quantities > .engineering-checks { margin-left: calc(var(--property-label-width) + 10px); }
+.annotation-properties .engineering-offset { margin-left: calc(var(--property-label-width) + 10px); }
+.annotation-properties .hole-properties.engineering-offset { margin-left: 0; }
+.annotation-properties .hole-properties > summary { padding-left: calc(var(--property-label-width) + 10px); }
+.annotation-properties .hole-properties > .engineering-core { padding-top: 8px; }
+.annotation-properties .engineering-help { margin: 0 0 0 calc(var(--property-label-width) + 10px); font-size: 12px; color: #627080; }
+.annotation-properties .engineering-guidance { border-top: 1px solid var(--workspace-line, #d5dae1); margin-top: 18px; padding: 7px 0; }
+.annotation-properties .engineering-guidance > .engineering-core { padding: 10px 0; }
+.annotation-properties .annotation-history { border-top: 1px solid var(--workspace-line, #d5dae1); padding-top: 7px; margin-top: 18px; }
+.annotation-properties .annotation-history-hint { font-size: 12px; color: #627080; }
+.annotation-properties .annotation-collaboration { border-top: 1px solid var(--workspace-line, #d5dae1); padding-top: 18px; }
+.annotation-properties .annotation-collaboration-title { margin: 0 0 14px; font-size: 14px; }
+.annotation-reply-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.annotation-reply-heading h4 { margin: 0; font-size: 13px; font-weight: 500; }
+.annotation-properties .annotation-reply-heading > small,
+.annotation-properties .annotation-reply-meta { color: #627080; font-size: 12px; }
+.annotation-properties .owner-annotation-reply { padding: 0 0 16px; }
+.annotation-properties .owner-annotation-reply + .owner-annotation-reply { border-top: 1px solid var(--workspace-line, #d5dae1); padding-top: 16px; }
+.annotation-reply-value { font-size: 20px; font-variant-numeric: tabular-nums; margin-top: 10px; }
+.annotation-properties .annotation-reply-value > small { font-size: 13px; color: #627080; }
+.annotation-properties .owner-annotation-reply .issue-review-form { margin-top: 12px; }
+.annotation-properties .owner-annotation-reply .issue-review-form > summary,
+.annotation-properties .owner-annotation-reply .issue-history-disclosure > summary,
+.annotation-properties .owner-annotation-reply .annotation-fixed-target .issue-target > summary { font-size: 12px; }
+.annotation-properties .owner-annotation-reply .issue-history-disclosure { border-top: 0; margin-top: 8px; }
+.annotation-properties .annotation-fixed-target > .detail-heading,
+.annotation-properties .annotation-fixed-target > .issue-state { display: none; }
+.annotation-properties .owner-annotation-reply .evidence-gallery { padding: 0; list-style: none; }
+.annotation-properties .owner-annotation-reply .evidence-gallery a { overflow-wrap: anywhere; }
+@container (max-width: 220px) {
+	.annotation-properties .engineering-field { grid-template-columns: minmax(0, 1fr); gap: 5px; }
+	.annotation-properties .engineering-quantities { display: block; }
+	.annotation-properties .engineering-quantities > legend { float: none; width: auto; margin-bottom: 6px; }
+	.annotation-properties .engineering-quantities > .engineering-checks { margin-left: 0; }
+	.annotation-properties .engineering-offset,
+	.annotation-properties .engineering-help { margin-left: 0; }
+	.annotation-properties .hole-properties > summary { padding-left: 0; }
+}
+@media (pointer: coarse) {
+	.annotation-properties .annotation-property-actions button { min-width: 40px; width: 40px; height: 44px; }
+	.annotation-properties .engineering-fields .engineering-checks label { min-height: 44px; }
+}
+@media (max-width: 700px) {
+	/* The mobile dialog already supplies the same title and its close action. */
+	.workspace-context-content .annotation-properties-heading h3 { display: none; }
+}

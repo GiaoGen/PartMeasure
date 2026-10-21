@@ -130,8 +130,12 @@ export function AnnotationCollaboration({
 			/>
 		);
 	};
+	if (!guest && !loading && !error && !items.length) return null;
 	return (
 		<section className="annotation-collaboration" aria-label="标注补充与记录">
+			{!guest ? (
+				<h3 className="annotation-collaboration-title">客户补充</h3>
+			) : null}
 			{loading && !items.length ? <p role="status">读取补充状态…</p> : null}
 			{error ? (
 				<p role="alert">

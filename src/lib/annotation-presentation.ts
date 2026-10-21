@@ -172,6 +172,9 @@ export function annotationColor(item: AnnotationDraft) {
 		? "#dc2626"
 		: "#16a34a";
 }
+export function photoStatusText(item: AnnotationDraft) {
+	return item.collaboration?.remeasure ? "待补测" : "";
+}
 export function labelPosition(
 	g: Geometry,
 	w: number,

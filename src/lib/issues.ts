@@ -177,6 +177,10 @@ export function validateReview(
 		throw new AppError("CONFIRMATION_SOURCE_REQUIRED", 422);
 }
 export type IssueSummary = {
+	/** Display-only context, supplied by the paginated list without extra HTTP reads. */
+	fileLabel?: string;
+	annotationLabel?: string | null;
+	annotationNumber?: number | null;
 	closedAt?: string | null;
 	closureNote?: string;
 	measurementField?: MeasurementField | null;

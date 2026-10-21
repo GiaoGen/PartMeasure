@@ -82,7 +82,11 @@ export async function listIssues(
 			`with ranked as (select ${columns},file_id,annotation_id,created_at as sort_at,case when closed_at is not null then 3 else ${rank} end as priority from pm.issues where project_id=$1 and (closed_at is null or $4::uuid is not null) and ($2::uuid is null or file_id=$2) and ($4::uuid is null or annotation_id=$4)),
 			 anchor as (select priority,sort_at,id from ranked where id=$3::uuid),
 			 page as (select * from ranked r where $3::uuid is null or r.priority>(select priority from anchor) or (r.priority=(select priority from anchor) and (r.sort_at,r.id)<(select sort_at,id from anchor)) order by priority,sort_at desc,id desc limit 31)
-			 select coalesce((select jsonb_agg(to_jsonb(p)-'priority'-'sort_at'-'file_id'-'annotation_id' order by priority,sort_at desc,id desc) from page p),'[]'::jsonb) as items,
+			 select coalesce((select jsonb_agg((to_jsonb(p)-'priority'-'sort_at'-'file_id'-'annotation_id') || jsonb_build_object(
+			 'fileLabel',(select f.filename from pm.file_assets f where f.project_id=$1 and f.id=p.file_id),
+			 'annotationLabel',(select coalesce(nullif(i.annotation_snapshot->'metadata'->>'name',''),case i.annotation_snapshot->'geometry'->>'type' when 'line' then '线段' when 'circle' then '圆 / 孔位' when 'arc' then '圆弧' when 'angle' then '角度' when 'ellipse' then '椭圆' else '标注' end) from pm.issues i where i.project_id=$1 and i.id=p.id and i.annotation_id is not null),
+			 'annotationNumber',(select count(*)::int from pm.annotations a join pm.annotations target on target.project_id=a.project_id and target.file_id=a.file_id and target.id=p.annotation_id and target.deleted_at is null where a.project_id=$1 and a.file_id=p.file_id and a.deleted_at is null and (a.created_at,a.id)<=(target.created_at,target.id) having count(*)>0)
+			 ) order by priority,sort_at desc,id desc) from page p),'[]'::jsonb) as items,
 			 coalesce((select jsonb_object_agg(state,n) from (select state,count(*)::int n from pm.issues where project_id=$1 and closed_at is null group by state) t),'{}'::jsonb) as counts,
 			 coalesce((select jsonb_object_agg(state,n) from (select state,count(*)::int n from ranked where "closedAt" is null group by state) t),'{}'::jsonb) as "filteredCounts",
 			 exists(select 1 from anchor) as "anchorExists"`,

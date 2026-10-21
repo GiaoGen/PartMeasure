@@ -79,7 +79,7 @@
 	max-height: calc(var(--task-visible-height, 100dvh) - 32px);
 	padding: 24px;
 	border: 0;
-	border-radius: 32px;
+	border-radius: 18px;
 	background-color: var(--workspace-card);
 	color: #273444;
 	overflow-y: auto;
@@ -105,7 +105,7 @@
 	align-items: center;
 	justify-content: space-between;
 	gap: 12px;
-	margin-bottom: 20px;
+	margin-bottom: 10px;
 }
 .task-inbox-heading h2 {
 	margin: 0;
@@ -121,48 +121,161 @@
 	padding: 11px;
 	border: 0;
 }
-.task-inbox-group + .task-inbox-group {
-	margin-top: 24px;
-}
-.task-inbox-group h3 {
-	font-size: 13px;
-	font-weight: 500;
-	color: #526171;
-	margin: 0 0 10px;
-}
-.task-inbox-group ul {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	display: grid;
-	gap: 10px;
-}
-.workspace-redesign .task-inbox-group button {
-	width: 100%;
+.task-inbox-legend {
 	display: flex;
-	justify-content: space-between;
-	text-align: left;
-	gap: 12px;
-	padding: 16px;
-	border: 0;
-	border-radius: 20px;
-	background-color: var(--workspace-soft);
-	animation: task-inbox-enter 180ms ease;
-}
-.task-inbox-group button > span {
-	min-width: 0;
-	overflow-wrap: anywhere;
-}
-.task-inbox-group strong {
-	display: block;
-	font-size: 14px;
-	font-weight: 500;
-}
-.task-inbox-group small {
+	flex-wrap: wrap;
+	gap: 16px;
+	margin-bottom: 18px;
+	color: #526171;
 	font-size: 12px;
 }
-.task-inbox-group button > small {
+.task-inbox-legend span {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+.task-inbox-legend span::before {
+	content: "";
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: #b9363a;
+}
+.task-inbox-legend [data-tone="redo"]::before {
+	background: #906711;
+}
+.task-inbox-legend [data-tone="done"]::before {
+	background: #217548;
+}
+.task-file-group {
+	margin-top: 16px;
+	min-width: 0;
+}
+.task-file-heading {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	margin-bottom: 6px;
+}
+.task-file-heading > svg {
 	flex-shrink: 0;
+	width: 15px;
+	height: 15px;
+	color: #68788c;
+}
+.task-file-heading h3 {
+	min-width: 0;
+	margin: 0;
+	overflow-wrap: anywhere;
+	font-size: 12px;
+	font-weight: 500;
+	color: #526171;
+}
+.task-lane-arrows {
+	display: flex;
+	margin-left: auto;
+	flex-shrink: 0;
+}
+.workspace-redesign .task-lane-arrows button {
+	width: 30px;
+	min-height: 32px;
+	padding: 2px;
+	border: 0;
+	background: transparent;
+	border-radius: 4px;
+}
+.task-card-lane {
+	display: flex;
+	min-width: 0;
+	overflow-x: auto;
+	overscroll-behavior-x: contain;
+	scroll-snap-type: x proximity;
+	scrollbar-width: thin;
+	gap: 12px;
+	padding: 4px 3px 9px;
+}
+.task-card-cluster {
+	display: flex;
+	flex: none;
+	gap: 7px;
+	padding-right: 12px;
+	border-right: 1px solid #d9e1ec;
+}
+.task-card-cluster:last-child {
+	border: 0;
+	padding-right: 0;
+}
+.workspace-redesign .task-reminder-card {
+	--task-card-bg: #fbe7e7;
+	--task-card-color: #a62b32;
+	flex: none;
+	width: auto;
+	max-width: 240px;
+	overflow-wrap: anywhere;
+	scroll-snap-align: start;
+	border: 1px solid transparent;
+	border-radius: 7px;
+	padding: 9px 12px;
+	min-height: 40px;
+	background: var(--task-card-bg);
+	color: var(--task-card-color);
+	font-size: 14px;
+	text-align: left;
+}
+.workspace-redesign .task-reminder-card[data-tone="redo"] {
+	--task-card-bg: #f8edce;
+	--task-card-color: #80600f;
+}
+.workspace-redesign .task-reminder-card[data-tone="done"] {
+	--task-card-bg: #e2f1e9;
+	--task-card-color: #217548;
+}
+.workspace-redesign .task-reminder-card:hover:not(:disabled) {
+	background-color: var(--task-card-bg);
+	color: var(--task-card-color);
+	filter: brightness(0.97);
+}
+.workspace-redesign .task-reminder-card[aria-pressed="true"] {
+	outline: 2px solid var(--workspace-action);
+	outline-offset: 1px;
+}
+.task-selected-detail {
+	border-top: 1px solid #d9e1ec;
+	margin-top: 16px;
+	padding-top: 16px;
+}
+.task-selected-heading {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin-bottom: 12px;
+}
+.task-selected-heading h3 {
+	margin: 0;
+	font-size: 15px;
+	overflow-wrap: anywhere;
+}
+.workspace-redesign .task-selected-heading button {
+	width: 36px;
+	min-height: 36px;
+	padding: 8px;
+	border: 0;
+	flex-shrink: 0;
+}
+.task-selected-heading :where(button) svg {
+	transform: rotate(180deg);
+}
+.task-target-preview {
+	min-width: 0;
+	margin-bottom: 16px;
+}
+.task-selected-detail .measurement-reply {
+	margin-top: 16px;
+}
+.task-file-download {
+	margin: 0 0 16px;
+	overflow-wrap: anywhere;
 }
 .workspace-redesign .task-inbox-list > button {
 	margin-top: 16px;
@@ -247,7 +360,7 @@
 	.workspace-redesign .task-inbox-dialog {
 		width: calc(100vw - 24px);
 		max-height: calc(var(--task-visible-height, 100dvh) - 24px);
-		border-radius: 30px;
+		border-radius: 18px;
 		padding: 20px 18px;
 	}
 	.task-inbox-dialog .numeric-entry {
@@ -261,8 +374,21 @@
 	.task-inbox-dialog[data-phase],
 	.task-inbox-dialog[data-phase]::backdrop,
 	.task-inbox-badge,
-	.workspace-redesign .task-inbox-group button,
 	.task-inbox-dialog .issue-popup-main {
 		animation: none;
+	}
+}
+@media (pointer: coarse) {
+	.workspace-redesign
+		:is(
+			.task-reminder-card,
+			.task-lane-arrows button,
+			.task-selected-heading button
+		) {
+		min-height: 44px;
+	}
+	.workspace-redesign
+		:is(.task-lane-arrows button, .task-selected-heading button) {
+		min-width: 44px;
 	}
 }

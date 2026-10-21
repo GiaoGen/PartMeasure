@@ -28,6 +28,7 @@ export function MeasurementReplyContent({
 	onDirty,
 	onReload,
 	onViewPosition,
+	showGuidance = false,
 }: {
 	issue: IssueDetail;
 	base: string;
@@ -39,6 +40,7 @@ export function MeasurementReplyContent({
 	onDirty: (dirty: boolean) => void;
 	onReload: () => void;
 	onViewPosition?: (target: MeasurementTarget) => void;
+	showGuidance?: boolean;
 }) {
 	const latest = issue.responses.find(
 		(response) => response.id === issue.latestResponseId,
@@ -51,11 +53,16 @@ export function MeasurementReplyContent({
 	const remeasure = !issue.closedAt && issue.state === "remeasure_requested";
 	const canReply =
 		!issue.closedAt && (issue.state === "awaiting_response" || remeasure);
-	const field =
-		issue.target && issue.measurementField
+	const isComment = issue.kind === "comment";
+	const field = isComment
+		? "问题说明"
+		: issue.target && issue.measurementField
 			? measurementFieldLabel(issue.target.annotation, issue.measurementField)
 			: "尺寸";
 	const metadata = issue.target?.annotation.metadata;
+	const instructions =
+		metadata?.measurementInstructions?.trim() || issue.description.trim();
+	const method = issue.measurementMethod;
 	const previous = latest?.value
 		? `${latest.value} ${displayUnit(latest.unit)}`
 		: latest?.kind === "photo"
@@ -69,7 +76,13 @@ export function MeasurementReplyContent({
 		<section
 			className={`measurement-reply ${guest ? "guest-measurement" : "owner-annotation-reply"}`}
 			data-remeasure={remeasure}
-			aria-label={guest ? "当前标注的测量回复" : "当前标注的客户补充"}
+			aria-label={
+				isComment
+					? "文件问题回复"
+					: guest
+						? "当前标注的测量回复"
+						: "当前标注的客户补充"
+			}
 		>
 			<header className="annotation-reply-heading">
 				<h4>{field}</h4>
@@ -83,6 +96,9 @@ export function MeasurementReplyContent({
 								: "已补充"}
 				</small>
 			</header>
+			{isComment && issue.description ? (
+				<p className="preserve-lines">{issue.description}</p>
+			) : null}
 			{issue.closedAt ? (
 				<p className="annotation-reply-meta">
 					{issue.closureNote}，历史记录保留。
@@ -91,7 +107,7 @@ export function MeasurementReplyContent({
 			{remeasure ? (
 				<>
 					<div className="reply-remeasure-reason" role="status">
-						<small>工程师补测要求</small>
+						<small>{isComment ? "工程师补充要求" : "工程师补测要求"}</small>
 						<p className="preserve-lines">
 							{lastReview?.note || "请重新补充本项测量信息。"}
 						</p>
@@ -144,24 +160,21 @@ export function MeasurementReplyContent({
 					<ReplyEvidence base={base} files={latest.attachments} />
 				</>
 			) : null}
-			{guest &&
+			{(guest || showGuidance) &&
 			canReply &&
-			metadata &&
-			(metadata.measurementInstructions?.trim() ||
-				(metadata.measurementMethod &&
-					metadata.measurementMethod !== "unspecified")) ? (
+			!isComment &&
+			(instructions || method !== "unspecified") ? (
 				<div className="reply-measurement-guidance">
-					{metadata.measurementMethod &&
-					metadata.measurementMethod !== "unspecified" ? (
+					{method !== "unspecified" ? (
 						<p>
 							<small>测量方式</small>
-							{methodLabel[metadata.measurementMethod]}
+							{methodLabel[method]}
 						</p>
 					) : null}
-					{metadata.measurementInstructions?.trim() ? (
+					{instructions ? (
 						<p className="preserve-lines">
 							<small>测量说明</small>
-							{metadata.measurementInstructions}
+							{instructions}
 						</p>
 					) : null}
 				</div>

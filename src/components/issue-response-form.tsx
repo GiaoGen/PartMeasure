@@ -196,39 +196,43 @@ export function IssueResponseForm({
 					? evidence
 					: null}
 			</details>
-			<label>
-				{kind === "unable" ? "无法测量的原因" : "补充说明（选填）"}
-				<textarea
-					aria-label="回复说明"
-					required={kind === "unable"}
-					maxLength={4000}
-					value={body}
-					onChange={(e) => {
-						setBody(e.target.value);
-						write.changed();
-					}}
-				/>
-			</label>
-			<fieldset className="response-choices" aria-label="其他回复方式">
-				{(
-					[
-						["photo", "仅传照片"],
-						["unable", "无法测量"],
-					] as const
-				).map(([type, text]) => (
-					<button
-						type="button"
-						key={type}
-						aria-pressed={kind === type}
-						onClick={() => {
-							setKind(kind === type ? "numeric" : type);
+			{kind !== "text" ? (
+				<label>
+					{kind === "unable" ? "无法测量的原因" : "补充说明（选填）"}
+					<textarea
+						aria-label="回复说明"
+						required={kind === "unable"}
+						maxLength={4000}
+						value={body}
+						onChange={(e) => {
+							setBody(e.target.value);
 							write.changed();
 						}}
-					>
-						{text}
-					</button>
-				))}
-			</fieldset>
+					/>
+				</label>
+			) : null}
+			{issue.kind === "measurement" ? (
+				<fieldset className="response-choices" aria-label="其他回复方式">
+					{(
+						[
+							["photo", "仅传照片"],
+							["unable", "无法测量"],
+						] as const
+					).map(([type, text]) => (
+						<button
+							type="button"
+							key={type}
+							aria-pressed={kind === type}
+							onClick={() => {
+								setKind(kind === type ? "numeric" : type);
+								write.changed();
+							}}
+						>
+							{text}
+						</button>
+					))}
+				</fieldset>
+			) : null}
 			<details>
 				<summary>称呼（选填）</summary>
 				<label>
@@ -332,13 +336,32 @@ export function IssueResponseForm({
 						</label>
 					</div>
 				) : null}
+				{compact && kind === "text" ? (
+					<label>
+						补充说明
+						<textarea
+							aria-label="回复说明"
+							required
+							maxLength={4000}
+							value={body}
+							onChange={(e) => {
+								setBody(e.target.value);
+								write.changed();
+							}}
+						/>
+					</label>
+				) : null}
 				{compact ? (
 					<details
 						className="guest-measurement-more"
 						open={extrasOpen}
 						onToggle={(e) => setExtrasOpen(e.currentTarget.open)}
 					>
-						<summary>照片、说明或其他回复方式</summary>
+						<summary>
+							{issue.kind === "comment"
+								? "附件与其他信息"
+								: "照片、说明或其他回复方式"}
+						</summary>
 						{extras}
 					</details>
 				) : (
@@ -387,7 +410,7 @@ export function IssueResponseForm({
 						: compact
 							? kind === "photo"
 								? "提交照片"
-								: kind === "unable"
+								: kind === "unable" || kind === "text"
 									? "提交说明"
 									: "提交尺寸"
 							: "提交回复"}

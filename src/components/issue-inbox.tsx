@@ -1,12 +1,14 @@
 "use client";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { type IssueSummary, stateLabel } from "@/lib/issues";
+import type { IssueDetail as IssueData, IssueSummary } from "@/lib/issues";
 import { api, ApiError } from "./api";
 import { IssueDetail } from "./issue-detail";
 import { useProjectDialog } from "./projects-motion";
 import { WorkspaceSideTarget } from "./workspace-side-content";
 import { WorkspaceIcon } from "./workspace-ui";
-import { ownTask, taskInboxState } from "./task-inbox-state";
+import { taskInboxState } from "./task-inbox-state";
+import { groupTaskCards, type TaskCard } from "./task-inbox-groups";
+import { TaskCardRows } from "./task-card-rows";
 import "./issue-inbox.css";
 
 export function IssueInbox({
@@ -16,7 +18,6 @@ export function IssueInbox({
 	onInvalid,
 	onUpdated,
 	onDirty,
-	onOpenAnnotation,
 }: {
 	base: string;
 	guest: boolean;
@@ -24,12 +25,11 @@ export function IssueInbox({
 	onInvalid: () => void;
 	onUpdated: () => void;
 	onDirty: (dirty: boolean) => void;
-	onOpenAnnotation?: (fileId: string, annotationId: string) => boolean;
 }) {
 	const popup = useProjectDialog();
 	const titleId = useId();
 	const [opened, setOpened] = useState(false);
-	const [selected, setSelected] = useState<string | null>(null);
+	const [selected, setSelected] = useState<TaskCard | null>(null);
 	const [items, setItems] = useState<IssueSummary[]>([]);
 	const [counts, setCounts] = useState<Record<string, number>>({});
 	const [cursor, setCursor] = useState<string | null>(null);
@@ -46,6 +46,23 @@ export function IssueInbox({
 	const handleDirty = useCallback((value: boolean) => {
 		dirty.current = value;
 		callbacks.current.onDirty(value);
+	}, []);
+	const updateItem = useCallback((detail: IssueData) => {
+		setItems((old) =>
+			old.map((item) =>
+				item.id === detail.id ? { ...item, ...detail } : item,
+			),
+		);
+		setSelected((old) =>
+			old
+				? {
+						...old,
+						items: old.items.map((item) =>
+							item.id === detail.id ? { ...item, ...detail } : item,
+						),
+					}
+				: old,
+		);
 	}, []);
 	const load = useCallback(
 		async (next: string | null = null) => {
@@ -152,74 +169,32 @@ export function IssueInbox({
 		if (opened)
 			popup.ref.current
 				?.querySelector<HTMLButtonElement>(
-					selected
-						? '.task-inbox-heading button[aria-label="关闭待办"]'
-						: ".task-inbox-heading button:not(:disabled)",
+					'.task-inbox-heading button[aria-label="关闭待办"]',
 				)
 				?.focus();
-	}, [selected, opened, popup.ref]);
-	const backToList = () => {
+	}, [opened, popup.ref]);
+	const choose = (card: TaskCard | null) => {
 		if (
 			dirty.current &&
 			!window.confirm(
-				"有未保存或未确认的提交，仍要返回事项列表吗？已发出的请求可能仍完成。",
+				"当前有未保存的输入，切换事项会放弃输入，继续吗？已发出的请求可能仍完成。",
 			)
 		)
 			return;
-		setSelected(null);
-		void load();
+		handleDirty(false);
+		setSelected(card?.id === selected?.id ? null : card);
 	};
 	function close() {
 		// Keep detail mounted: closing is not discarding its reply/review form.
 		popup.close(() => setOpened(false));
 	}
 	const badge = taskInboxState(counts, guest, !!error || !loaded);
-	const pending = items.filter(
-		(item) =>
-			item.state === "awaiting_response" ||
-			item.state === "remeasure_requested",
-	);
-	const completed = items.filter(
-		(item) => item.state === "submitted" || item.state === "confirmed",
-	);
-	const mine = pending.filter((item) => ownTask(item, guest));
-	const waiting = pending.filter((item) => !ownTask(item, guest));
-	function group(label: string, rows: IssueSummary[], count: number) {
-		if (!rows.length) return null;
-		return (
-			<section className="task-inbox-group" aria-label={label}>
-				<h3>
-					{label} · {count}
-				</h3>
-				<ul>
-					{rows.map((item) => (
-						<li key={item.id}>
-							<button
-								type="button"
-								onClick={() => {
-									if (
-										item.kind === "measurement" &&
-										item.annotationRef &&
-										onOpenAnnotation?.(item.fileId, item.annotationRef.id)
-									)
-										close();
-									else setSelected(item.id);
-								}}
-							>
-								<span>
-									<strong>{item.title}</strong>
-									<small>
-										{item.kind === "measurement" ? "标注补充" : "文件问题"}
-									</small>
-								</span>
-								<small>{stateLabel[item.state]}</small>
-							</button>
-						</li>
-					))}
-				</ul>
-			</section>
-		);
-	}
+	const groups = groupTaskCards(items);
+	const current = selected
+		? (groupTaskCards([...items, ...selected.items])
+				.flatMap((group) => group.cards)
+				.find((card) => card.id === selected.id) ?? selected)
+		: null;
 	return (
 		<div className="task-inbox">
 			<button
@@ -278,7 +253,12 @@ export function IssueInbox({
 						</button>
 					</div>
 				</header>
-				<div className="task-inbox-list" hidden={!!selected}>
+				<section className="task-inbox-legend" aria-label="状态颜色图例">
+					<span data-tone="redo">待补测</span>
+					<span data-tone="missing">待补充</span>
+					<span data-tone="done">已补充</span>
+				</section>
+				<div className="task-inbox-list">
 					{loading ? <p role="status">读取待办…</p> : null}
 					{error ? (
 						<p className="error" role="alert">
@@ -288,27 +268,17 @@ export function IssueInbox({
 							</button>
 						</p>
 					) : null}
-					{!loading && !error && loaded && badge.own + badge.waiting === 0 ? (
+					{!loading && !error && loaded && !groups.length ? (
 						<div className="task-inbox-empty">
 							<WorkspaceIcon kind="check" />
 							<p>没有待处理事项</p>
 						</div>
 					) : null}
-					{group("待我处理", mine, badge.own)}
-					{group("等待对方", waiting, badge.waiting)}
-					{completed.length ? (
-						<details>
-							<summary>已补充与历史</summary>
-							{group("已补充", completed, completed.length)}
-						</details>
-					) : null}
-					{!loading &&
-					!error &&
-					loaded &&
-					badge.own + badge.waiting > 0 &&
-					!pending.length ? (
-						<p>待办尚未载入，请加载更多。</p>
-					) : null}
+					<TaskCardRows
+						groups={groups}
+						selected={selected?.id ?? null}
+						onSelect={choose}
+					/>
 					{cursor ? (
 						<button
 							type="button"
@@ -320,22 +290,117 @@ export function IssueInbox({
 					) : null}
 				</div>
 				<WorkspaceSideTarget value={null}>
-					{selected ? (
-						<IssueDetail
-							key={selected}
+					{current ? (
+						<TaskCardDetail
+							key={current.id}
+							card={current}
 							base={base}
-							id={selected}
 							guest={guest}
-							panelOnly
-							backLabel="全部事项"
 							onInvalid={onInvalid}
 							onUpdated={onUpdated}
 							onDirty={handleDirty}
-							onBack={backToList}
+							onSnapshot={updateItem}
+							onCollapse={() => choose(null)}
 						/>
 					) : null}
 				</WorkspaceSideTarget>
 			</dialog>
 		</div>
+	);
+}
+
+type CardDetailProps = {
+	card: TaskCard;
+	base: string;
+	guest: boolean;
+	onInvalid: () => void;
+	onUpdated: () => void;
+	onDirty: (value: boolean) => void;
+	onSnapshot: (issue: IssueData) => void;
+	onCollapse: () => void;
+};
+function TaskCardDetail(props: CardDetailProps) {
+	const pending = useRef(new Set<string>());
+	const { onDirty } = props;
+	const report = useCallback(
+		(id: string, value: boolean) => {
+			if (value) pending.current.add(id);
+			else pending.current.delete(id);
+			onDirty(pending.current.size > 0);
+		},
+		[onDirty],
+	);
+	// Keep form order stable when a submit changes priority; only the cards reorder.
+	const firstId = useRef(props.card.items[0]?.id);
+	const rows = [...props.card.items].sort((a, b) =>
+		a.id === firstId.current
+			? -1
+			: b.id === firstId.current
+				? 1
+				: a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id),
+	);
+	return (
+		<section className="task-selected-detail" aria-label={props.card.label}>
+			<header className="task-selected-heading">
+				<h3>{props.card.label}</h3>
+				<button
+					type="button"
+					aria-label="收起当前事项"
+					onClick={props.onCollapse}
+				>
+					<WorkspaceIcon kind="chevron" />
+				</button>
+			</header>
+			{rows.map((item, index) => (
+				<TaskCardIssue
+					key={item.id}
+					{...props}
+					item={item}
+					showTarget={index === 0}
+					report={report}
+				/>
+			))}
+		</section>
+	);
+}
+function TaskCardIssue({
+	item,
+	showTarget,
+	report,
+	...props
+}: CardDetailProps & {
+	item: IssueSummary;
+	showTarget: boolean;
+	report: (id: string, value: boolean) => void;
+}) {
+	const handleDirty = useCallback(
+		(value: boolean) => report(item.id, value),
+		[report, item.id],
+	);
+	return (
+		<IssueDetail
+			base={props.base}
+			id={item.id}
+			guest={props.guest}
+			inbox
+			inline
+			showTarget={showTarget}
+			onSnapshot={props.onSnapshot}
+			targetStatus={{
+				pending: props.card.items.filter(
+					(i) => !i.closedAt && i.state === "awaiting_response",
+				).length,
+				remeasure: props.card.items.filter(
+					(i) => !i.closedAt && i.state === "remeasure_requested",
+				).length,
+				submitted: props.card.items.filter(
+					(i) => !i.closedAt && i.state === "submitted",
+				).length,
+			}}
+			onInvalid={props.onInvalid}
+			onUpdated={props.onUpdated}
+			onDirty={handleDirty}
+			onBack={props.onCollapse}
+		/>
 	);
 }

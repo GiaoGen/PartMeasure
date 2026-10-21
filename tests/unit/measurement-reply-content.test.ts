@@ -99,6 +99,32 @@ const render = (issue: IssueDetail, guest = false) =>
 		}),
 	);
 describe("focused measurement replies", () => {
+	it("keeps file questions as text rather than inventing a size or measurement method", () => {
+		const issue: IssueDetail = {
+			...fixture("awaiting_response"),
+			kind: "comment",
+			title: "表面处理",
+			description: "请说明表面处理方式",
+			target: null,
+			measurementField: null,
+			responses: [],
+			reviews: [],
+			latestResponseId: null,
+		};
+		const html = render(issue, true);
+		expect(html).toContain("文件问题回复");
+		expect(html).toContain("请说明表面处理方式");
+		expect(html).not.toContain("测量方式");
+		expect(html).not.toContain("<h4>尺寸</h4>");
+	});
+	it("uses the request's fixed method for depth even when the annotation suggests another tool", () => {
+		const issue = fixture("awaiting_response");
+		issue.measurementMethod = "depth";
+		if (issue.target)
+			issue.target.annotation.metadata.measurementMethod = "outside";
+		expect(render(issue, true)).toContain("深度杆");
+		expect(render(issue, true)).not.toContain("外测量爪");
+	});
 	it("prioritizes the remeasure reason and shows the old number only as a previous submission", () => {
 		const html = render(fixture());
 		expect(html.indexOf("请重新测量并附位置照片")).toBeLessThan(

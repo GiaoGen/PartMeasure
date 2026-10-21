@@ -675,7 +675,6 @@ function WorkspaceContent({
 							onInvalid={onInvalid}
 							onUpdated={issueUpdated}
 							onDirty={onInboxDirty}
-                            onOpenAnnotation={(fileId, annotationId) => { const file = assets.find(f => f.id === fileId); if (!file) return false; openThumbnailAnnotation(file, annotationId); return true; }}
 						/>
 						<div hidden={!!selected || !!selectedIssue}>
 							{loading ? (

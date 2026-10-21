@@ -44,6 +44,10 @@ export function IssueDetail({
 	onOpenProperties,
 	onViewPosition,
 	backLabel,
+	inbox = false,
+	showTarget = true,
+	onSnapshot,
+	targetStatus,
 }: {
 	base: string;
 	id: string;
@@ -58,6 +62,11 @@ export function IssueDetail({
 	onOpenProperties?: () => void;
 	onViewPosition?: (target: MeasurementTarget) => void;
 	backLabel?: string;
+	/** Task inbox keeps one fixed target above the existing reply UI. */
+	inbox?: boolean;
+	showTarget?: boolean;
+	onSnapshot?: (issue: Detail) => void;
+	targetStatus?: { pending: number; remeasure: number; submitted: number };
 }) {
 	const [issue, setIssue] = useState<Detail | null>(null),
 		[loading, setLoading] = useState(true),
@@ -69,8 +78,8 @@ export function IssueDetail({
 		[savedNotice, setSavedNotice] = useState("");
 	const generation = useRef(0),
 		dirty = useRef(false),
-		callbacks = useRef({ onInvalid, onUpdated });
-	callbacks.current = { onInvalid, onUpdated };
+		callbacks = useRef({ onInvalid, onUpdated, onSnapshot });
+	callbacks.current = { onInvalid, onUpdated, onSnapshot };
 	const handleDirty = useCallback(
 		(value: boolean) => {
 			dirty.current = value;
@@ -95,6 +104,7 @@ export function IssueDetail({
 					return;
 				}
 				setIssue(data);
+				callbacks.current.onSnapshot?.(data);
 				setCommittedPending(false);
 				setError("");
 				if (reset) setFormVersion((v) => v + 1);
@@ -141,6 +151,7 @@ export function IssueDetail({
 		if (updated) {
 			generation.current++;
 			setIssue(updated);
+			callbacks.current.onSnapshot?.(updated);
 			setFormVersion((v) => v + 1);
 			setCommittedPending(false);
 			setSavedNotice("本次提交已保存。");
@@ -181,9 +192,77 @@ export function IssueDetail({
 		(issue.state === "awaiting_response" ||
 			issue.state === "remeasure_requested");
 	const historyContent = <IssueHistory issue={issue} base={base} />;
-	if (inline && issue.kind === "measurement")
+	if (inbox || (inline && issue.kind === "measurement"))
 		return (
 			<>
+				{inbox && showTarget && target ? (
+					<section
+						className="task-target-preview"
+						aria-label="标准图片与当前标注"
+					>
+						<Canvas
+							key={`${issue.fileId}:${target.annotationRef.id}:${target.annotationRef.revision}`}
+							image={target.image}
+							src={`${base}/files/${issue.fileId}/preview`}
+							items={[
+								{
+									...target.annotation,
+									collaboration: {
+										pending:
+											!issue.closedAt && issue.state === "awaiting_response"
+												? 1
+												: 0,
+										remeasure:
+											!issue.closedAt && issue.state === "remeasure_requested"
+												? 1
+												: 0,
+										submitted: issue.state === "submitted" ? 1 : 0,
+										...targetStatus,
+										values: Object.fromEntries(
+											issue.responses.flatMap((r) =>
+												issue.measurementField &&
+												r.id === issue.latestResponseId &&
+												r.kind === "numeric" &&
+												r.value &&
+												r.unit
+													? [
+															[
+																issue.measurementField,
+																{ value: r.value, unit: r.unit },
+															],
+														]
+													: [],
+											),
+										),
+									},
+								},
+							]}
+							selected={target.annotationRef.id}
+							guest
+							disabled
+							onSelect={noop}
+							onCreate={noop}
+							onChange={noop}
+							onDelete={noop}
+							onUndo={noop}
+							onRedo={noop}
+							onSave={noop}
+							onError={setCanvasError}
+							onInvalid={onInvalid}
+						/>
+						{canvasError ? (
+							<p role="alert" className="error">
+								{canvasError}
+							</p>
+						) : null}
+					</section>
+				) : inbox && showTarget && !target ? (
+					<p className="task-file-download">
+						<a href={`${base}/files/${issue.fileId}/download`}>
+							下载 {issue.file.filename}
+						</a>
+					</p>
+				) : null}
 				{savedNotice ? <p role="status">{savedNotice}</p> : null}
 				{error ? (
 					<p role="alert" className="error">
@@ -194,6 +273,7 @@ export function IssueDetail({
 					</p>
 				) : null}
 				<MeasurementReplyContent
+					showGuidance={inbox}
 					issue={issue}
 					base={base}
 					guest={guest}

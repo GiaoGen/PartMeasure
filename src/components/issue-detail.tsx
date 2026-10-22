@@ -7,19 +7,22 @@ import dynamic from "next/dynamic";
 import { EvidencePreview } from "./evidence-preview";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-	type IssueDetail as Detail,
+	type IssueCurrent as Detail,
 	type IssueWriteResult,
 	applyIssueWrite,
 	stateLabel,
 	methodLabel,
 } from "@/lib/issues";
-import { api, ApiError } from "./api";
+import { ApiError, readCached, rememberApi } from "./api";
+import { currentIssueUrl, readCurrentIssue } from "./interaction-reads";
+import { useApiRevalidation } from "./use-api-revalidation";
 import { useProjectUpdates } from "./project-live";
 import { WorkspaceSideContent } from "./workspace-side-content";
 import { IssueResponseForm } from "./issue-response-form";
 import { IssueReviewForm } from "./issue-review-form";
 import { IssueHistory, type MeasurementTarget } from "./issue-history";
 import { MeasurementReplyContent } from "./measurement-reply-content";
+import { IssueTargetPreview } from "./issue-target-preview";
 const Canvas = dynamic(() => import("./annotation-canvas"), {
 	ssr: false,
 	loading: () => <p role="status">载入目标画布…</p>,
@@ -48,7 +51,13 @@ export function IssueDetail({
 	showTarget = true,
 	onSnapshot,
 	targetStatus,
+	currentView,
+	managedByInbox = false,
+	onReadRequest,
 }: {
+	currentView?: Detail;
+	managedByInbox?: boolean;
+	onReadRequest?: (id: string) => void;
 	base: string;
 	id: string;
 	guest: boolean;
@@ -68,8 +77,9 @@ export function IssueDetail({
 	onSnapshot?: (issue: Detail) => void;
 	targetStatus?: { pending: number; remeasure: number; submitted: number };
 }) {
-	const [issue, setIssue] = useState<Detail | null>(null),
-		[loading, setLoading] = useState(true),
+	const url = currentIssueUrl(base, id);
+	const [issue, setIssue] = useState<Detail | null>(() => currentView ?? (managedByInbox ? null : readCached<Detail>(url)) ?? null),
+		[loading, setLoading] = useState(!issue),
 		[error, setError] = useState(""),
 		[formVersion, setFormVersion] = useState(0),
 		[canvasError, setCanvasError] = useState("");
@@ -78,8 +88,12 @@ export function IssueDetail({
 		[savedNotice, setSavedNotice] = useState("");
 	const generation = useRef(0),
 		dirty = useRef(false),
-		callbacks = useRef({ onInvalid, onUpdated, onSnapshot });
-	callbacks.current = { onInvalid, onUpdated, onSnapshot };
+		callbacks = useRef({ onInvalid, onUpdated, onSnapshot, onReadRequest, onDirty });
+	callbacks.current = { onInvalid, onUpdated, onSnapshot, onReadRequest, onDirty };
+	const reading = useRef<AbortController | null>(null);
+	const activeRead = useRef(false);
+	const issueRef = useRef(issue);
+	issueRef.current = issue;
 	const handleDirty = useCallback(
 		(value: boolean) => {
 			dirty.current = value;
@@ -89,16 +103,20 @@ export function IssueDetail({
 	);
 	const load = useCallback(
 		async (reset = false) => {
+			if (callbacks.current.onReadRequest) {
+				if (reset) { dirty.current = false; callbacks.current.onDirty(false); setFormVersion(v => v + 1); }
+				callbacks.current.onReadRequest(id);
+				return;
+			}
+			if (!reset && activeRead.current && !reading.current?.signal.aborted) return;
+			activeRead.current = true;
 			const run = ++generation.current;
-			if (reset) setLoading(true);
+			reading.current?.abort();
+			const controller = new AbortController();
+			reading.current = controller;
 			try {
-				const data = await api<Detail>(
-					`${base}/issues/${id}`,
-					"GET",
-					undefined,
-					{ cacheMs: reset ? 0 : 1000 },
-				);
-				if (run !== generation.current) return;
+				const data = await readCurrentIssue(base, id, { refresh: reset, signal: controller.signal });
+				if (run !== generation.current || controller.signal.aborted) return;
 				if (dirty.current && !reset) {
 					setSavedNotice("对方已更新；当前输入已保留，提交时检查修订冲突。");
 					return;
@@ -109,23 +127,37 @@ export function IssueDetail({
 				setError("");
 				if (reset) setFormVersion((v) => v + 1);
 			} catch (e) {
-				if (run !== generation.current) return;
+				if (run !== generation.current || controller.signal.aborted) return;
 				if (e instanceof ApiError && e.status === 401)
 					callbacks.current.onInvalid();
 				setError(e instanceof Error ? e.message : "无法读取任务。");
 			} finally {
-				if (run === generation.current) setLoading(false);
+				if (run === generation.current) { activeRead.current = false; setLoading(false); }
 			}
 		},
 		[base, id],
 	);
+	const managed = managedByInbox || !!currentView;
 	useEffect(() => {
-		void load(true);
+		if (!managed) void load();
 		return () => {
 			generation.current++;
+			reading.current?.abort();
 		};
-	}, [load]);
+	}, [load, managed]);
+	useEffect(() => {
+		if (!currentView) return;
+		if (dirty.current) {
+			if (currentView.revision > (issueRef.current?.revision ?? 0)) setSavedNotice("对方已更新；当前输入已保留，提交时检查修订冲突。");
+			return;
+		}
+		setIssue(previous => previous && previous.revision > currentView.revision ? previous : currentView);
+		setLoading(false);
+		setCommittedPending(false);
+	}, [currentView]);
+	useApiRevalidation(() => { if (!managed && !dirty.current) void load(); });
 	useProjectUpdates((updates) => {
+		if (managed) return;
 		if (
 			!updates.some(
 				(e) =>
@@ -138,6 +170,8 @@ export function IssueDetail({
 			)
 		)
 			return;
+		const cached = readCached<Detail>(url);
+		if (updates.every(e => e.kind === "issue.changed" && e.entityId === id && e.revision !== null && cached && cached.revision >= e.revision && issue && issue.revision >= e.revision)) return;
 		if (dirty.current)
 			setSavedNotice("对方已更新；当前输入已保留，提交时检查修订冲突。");
 		else void load();
@@ -150,8 +184,10 @@ export function IssueDetail({
 		const updated = issue ? applyIssueWrite(issue, result) : null;
 		if (updated) {
 			generation.current++;
-			setIssue(updated);
-			callbacks.current.onSnapshot?.(updated);
+			reading.current?.abort();
+			const canonical = rememberApi(url, updated);
+			setIssue(canonical);
+			callbacks.current.onSnapshot?.(canonical);
 			setFormVersion((v) => v + 1);
 			setCommittedPending(false);
 			setSavedNotice("本次提交已保存。");
@@ -169,7 +205,7 @@ export function IssueDetail({
 	if (loading)
 		return (
 			<WorkspaceSideContent inline={inline}>
-				<p role="status">读取测量位置、回复与补测历史…</p>
+				<p role="status">读取测量位置与当前补充状态…</p>
 			</WorkspaceSideContent>
 		);
 	if (!issue)
@@ -196,67 +232,14 @@ export function IssueDetail({
 		return (
 			<>
 				{inbox && showTarget && target ? (
-					<section
-						className="task-target-preview"
-						aria-label="标准图片与当前标注"
-					>
-						<Canvas
-							showToolbar={false}
-							key={`${issue.fileId}:${target.annotationRef.id}:${target.annotationRef.revision}`}
-							image={target.image}
-							src={`${base}/files/${issue.fileId}/preview`}
-							items={[
-								{
-									...target.annotation,
-									collaboration: {
-										pending:
-											!issue.closedAt && issue.state === "awaiting_response"
-												? 1
-												: 0,
-										remeasure:
-											!issue.closedAt && issue.state === "remeasure_requested"
-												? 1
-												: 0,
-										submitted: issue.state === "submitted" ? 1 : 0,
-										...targetStatus,
-										values: Object.fromEntries(
-											issue.responses.flatMap((r) =>
-												issue.measurementField &&
-												r.id === issue.latestResponseId &&
-												r.kind === "numeric" &&
-												r.value &&
-												r.unit
-													? [
-															[
-																issue.measurementField,
-																{ value: r.value, unit: r.unit },
-															],
-														]
-													: [],
-											),
-										),
-									},
-								},
-							]}
-							selected={target.annotationRef.id}
-							guest
-							disabled
-							onSelect={noop}
-							onCreate={noop}
-							onChange={noop}
-							onDelete={noop}
-							onUndo={noop}
-							onRedo={noop}
-							onSave={noop}
-							onError={setCanvasError}
-							onInvalid={onInvalid}
-						/>
-						{canvasError ? (
-							<p role="alert" className="error">
-								{canvasError}
-							</p>
-						) : null}
-					</section>
+					<IssueTargetPreview
+						key={`${base}:${issue.fileId}:${target.image.imageHash}`}
+						base={base}
+						issue={issue}
+						image={target.image}
+						{...(targetStatus ? { status: targetStatus } : {})}
+						onInvalid={onInvalid}
+					/>
 				) : inbox && showTarget && !target ? (
 					<p className="task-file-download">
 						<a href={`${base}/files/${issue.fileId}/download`}>

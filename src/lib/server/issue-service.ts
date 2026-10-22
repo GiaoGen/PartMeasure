@@ -21,6 +21,7 @@ import { validateMeasurementUnit } from "../annotation-collaboration";
 import { cursorScope, cursorId, queryCursor } from "./query-cursor";
 
 const columns = `closed_at as "closedAt",closure_note as "closureNote",measurement_field as "measurementField",id,file_id as "fileId",kind,title,description,target_info as "targetInfo",measurement_method as "measurementMethod",state,revision,latest_response_id as "latestResponseId",created_at as "createdAt",updated_at as "updatedAt",case when annotation_id is null then null else jsonb_build_object('id',annotation_id,'revision',annotation_revision) end as "annotationRef"`;
+export const issueColumns = columns;
 async function head(
 	db: PoolClient,
 	projectId: string,

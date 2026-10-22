@@ -1,0 +1,145 @@
+{
+  "checkedAt": "2026-10-21T13:57:04.027Z",
+  "source": "Supabase MCP read-only aggregate/statistics/advisor; Vercel MCP read-only project/deployment inspection",
+  "supabase": {
+    "ref": "rvysclscetfqicpnzlra",
+    "region": "ap-northeast-1",
+    "status": "ACTIVE_HEALTHY",
+    "version": "17.11.0.003",
+    "counts": {
+      "projects": 80,
+      "files": 52,
+      "annotations": 50,
+      "issues": 80
+    },
+    "materialImage640": {
+      "total": 28,
+      "with640": 10,
+      "missing640": 18
+    },
+    "sizes": [
+      {
+        "mime": "application/octet-stream",
+        "files": 15,
+        "avgBytes": 3084113,
+        "maxBytes": 7920110
+      },
+      {
+        "mime": "image/webp",
+        "files": 35,
+        "avgBytes": 24959,
+        "maxBytes": 604090,
+        "avgOriginalBytes": 57035
+      },
+      {
+        "mime": "application/pdf",
+        "files": 2,
+        "avgBytes": 34,
+        "maxBytes": 34
+      }
+    ],
+    "derivatives": [
+      {
+        "variant": 320,
+        "count": 10,
+        "avgBytes": 1062,
+        "maxBytes": 3588
+      },
+      {
+        "variant": 640,
+        "count": 10,
+        "avgBytes": 2706,
+        "maxBytes": 9134
+      }
+    ],
+    "uploads": {
+      "rejected": 5,
+      "reserved": 4,
+      "cleaned": 18,
+      "ready": 54
+    },
+    "statementStats": {
+      "resetAt": "2026-10-16T08:33:42.402326+00:00",
+      "scope": "historical mixed statements, not endpoint-specific/p95; excludes client network and may contain lock wait",
+      "categories": [
+        {
+          "category": "annotations",
+          "calls": 499,
+          "weightedMeanExecMs": 4.916,
+          "maxExecMs": 171.942
+        },
+        {
+          "category": "file_assets",
+          "calls": 4880,
+          "weightedMeanExecMs": 1.684,
+          "maxExecMs": 315.298
+        },
+        {
+          "category": "issues",
+          "calls": 2134,
+          "weightedMeanExecMs": 3.304,
+          "maxExecMs": 107.286
+        },
+        {
+          "category": "rate_limits",
+          "calls": 10449,
+          "weightedMeanExecMs": 33.469,
+          "maxExecMs": 1836.818
+        }
+      ]
+    },
+    "performanceAdvisors": {
+      "unindexedForeignKeys": [
+        "image_derivatives(project_id,file_id)",
+        "thumbnail_jobs(project_id,file_id)"
+      ],
+      "authRlsInitplan": [
+        "asset_request_insert",
+        "derivative_request_insert"
+      ],
+      "multiplePermissivePolicies": [
+        "projects UPDATE: project_update + project_usage_request"
+      ],
+      "unusedIndexCount": 13
+    }
+  },
+  "deployment": {
+    "id": "dpl_85KpgskuFtkjYHV5zieWMdF14g3v",
+    "url": "partmeasure-staging-la7ndk7wa-messup-s-projects.vercel.app",
+    "target": "staging",
+    "createdAt": "2026-10-19T14:17:42.926Z",
+    "regions": [
+      "hnd1"
+    ],
+    "gitShaAvailable": false
+  },
+  "local": {
+    "sourceHead": "8e7bb6a6b8d76c68e6c1790e29f555ba09fc92b1",
+    "sourceHeadCommittedAt": "2026-10-21T21:14:08+08:00",
+    "buildId": "Qf1t0Q5DWd0i0ER_ptTCM",
+    "buildLastWriteLocal": "2026-10-21T21:12:31+08:00",
+    "freshBuildRun": false,
+    "node": "24.15.0",
+    "windowsUserProxyEnabled": false,
+    "windowsProxyServerConfigured": false,
+    "windowsPacConfigured": false,
+    "winHttpProxy": "Direct access",
+    "inheritedProxyEnvPresent": false,
+    "tunAndDnsState": "not-controlled; synthetic 198.18.0.0/15 DNS observed"
+  },
+  "checks": {
+    "focusedUnit": {
+      "files": 7,
+      "tests": 41,
+      "status": "PASS"
+    },
+    "networkPolicy": "PASS configuration only",
+    "browserPolicy": "PASS configuration only; browser not launched",
+    "lint": "NOT_RERUN_NO_APPLICATION_CHANGES",
+    "typecheck": "NOT_RERUN_NO_APPLICATION_CHANGES",
+    "build": "NOT_RERUN_USED_EXISTING_BUILD",
+    "e2e": "NOT_RUN_PER_PROJECT_CONSTRAINT",
+    "mainlandPhone": "NOT_VERIFIED",
+    "uploadEndToEnd": "NOT_RUN_THIS_AUDIT"
+  }
+}

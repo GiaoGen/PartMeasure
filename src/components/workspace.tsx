@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api, ApiError } from "./api";
+import { useApiRevalidation } from "./use-api-revalidation";
 import { readSavedShare, saveShare, forgetSavedShare, savedShareEvent } from "./saved-share-links";
 import { ProjectLiveProvider, useProjectUpdates } from "./project-live";
 import type { ProjectView } from "./projects";
@@ -247,6 +248,7 @@ function WorkspaceContent({
 			setMobilePanelOpen(false);
 			setInitialAnnotation(undefined);
 			setSelected(file);
+			if (!file) void load();
 		});
 	}
 	function selectIssue(id: string) {
@@ -373,12 +375,16 @@ function WorkspaceContent({
 		[onInvalid],
 	);
 	const fileLoadRun = useRef(0);
+	const fileReading = useRef<AbortController | null>(null);
 	const load = useCallback(async () => {
 		const run = ++fileLoadRun.current;
+		fileReading.current?.abort();
+		const controller = new AbortController();
+		fileReading.current = controller;
 		try {
 			const result = await api<{ items: Asset[]; nextCursor: string | null }>(
 				`${base}/files`,
-				"GET", undefined, { cacheMs: 1000 },
+				"GET", undefined, { signal: controller.signal },
 			);
 			if (run !== fileLoadRun.current) return;
 			setAssets(result.items);
@@ -392,8 +398,9 @@ function WorkspaceContent({
 	}, [base, failure]);
 	useEffect(() => {
 		void load();
-        return () => { fileLoadRun.current++; };
+        return () => { fileLoadRun.current++; fileReading.current?.abort(); };
 	}, [load]);
+	useApiRevalidation(() => { if (!selected && !selectedIssue) void load(); });
  useProjectUpdates(updates => {
   if (updates.some(e => e.kind === "file.changed" || e.kind === "resync")) void load();
   for (const event of updates) if ((event.kind === "annotation.changed" || event.kind === "issue.changed") && event.fileId) annotationsSaved(event.fileId);
@@ -920,6 +927,7 @@ function WorkspaceContent({
 						<div hidden={contextActive}>
 							<h2>交付与版本</h2>
 							<DeliverySection
+								active={!contextActive}
 								base={base}
 								guest={guest}
 								onInvalid={onInvalid}

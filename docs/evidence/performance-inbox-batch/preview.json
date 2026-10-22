@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-10-22T15:57:04.805Z",
+  "url": "https://partmeasure-staging-9m3rncmu7-messup-s-projects.vercel.app",
+  "buildId": "perf-20261022-17a0278bcf25d676",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "scope": "Normal login and read-only current task JSON. No browser, UI or phone acceptance.",
+  "results": [
+    {
+      "name": "exact_build_health",
+      "status": "PASS"
+    },
+    {
+      "name": "normal_login_same_file_bounded_current_views_fixed_snapshot",
+      "status": "PASS",
+      "count": 5
+    },
+    {
+      "name": "inbox_complete_bundle_normalized_fixed_target_pagination_and_update",
+      "status": "PASS",
+      "count": 5
+    }
+  ]
+}

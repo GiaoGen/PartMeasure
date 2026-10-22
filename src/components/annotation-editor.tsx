@@ -18,6 +18,9 @@ import { useAnnotationSession } from "./use-annotation-session";
 import { EngineeringFields } from "./engineering-fields";
 import { WorkspaceSideContent } from "./workspace-side-content";
 import { AnnotationCollaboration } from "./annotation-collaboration";
+import { imagePreviewHint } from "./image-preview";
+import { privateImage } from "./private-image-cache";
+import { CachedPhotoPreview } from "./workspace-ui";
 
 const Canvas = dynamic(() => import("./annotation-canvas"), {
 	ssr: false,
@@ -59,6 +62,17 @@ export function AnnotationEditor({
 	onOpenProperties?: () => boolean;
 }) {
 	const changes = useRef({ annotation: false, request: false });
+	const canonicalSrc = `${base}/files/${fileId}/preview`;
+	const [imageHint] = useState(() => imagePreviewHint(canonicalSrc));
+	useEffect(() => {
+		if (propertiesOnly || !imageHint) return;
+		let active = true, lease: { release: () => void } | undefined;
+		const controller = new AbortController();
+		void privateImage(canonicalSrc, imageHint.hash, controller.signal).then(value => {
+			if (active) lease = value; else value.release();
+		}).catch(() => { /* The canvas owns error reporting and retry. */ });
+		return () => { active = false; controller.abort(); lease?.release(); };
+	}, [canonicalSrc, imageHint, propertiesOnly]);
 	const [requestDirty, setRequestDirty] = useState(false);
 	const [collaborationVersion, setCollaborationVersion] = useState(0);
 	const [historyOpen, setHistoryOpen] = useState(false);
@@ -85,6 +99,7 @@ export function AnnotationEditor({
 		onInvalid,
 		onAnnotationDirty,
 		requestDirty,
+		initialAnnotationId,
 	);
 	const initialSelection = useRef("");
 	useEffect(() => {
@@ -175,11 +190,14 @@ export function AnnotationEditor({
 	}
 	if (session.loading)
 		return (
-			<WorkspaceSideContent>
-				<section className="editor-loading">
-					<p role="status">读取标注和图片记录…</p>
-				</section>
-			</WorkspaceSideContent>
+			<div className="annotation-editor">
+				{!propertiesOnly ? <CachedPhotoPreview preview={imageHint?.preview} /> : null}
+				<WorkspaceSideContent>
+					<section className="editor-loading">
+						<p role="status">读取标注和图片记录…</p>
+					</section>
+				</WorkspaceSideContent>
+			</div>
 		);
 	if (!session.document)
 		return (
@@ -254,6 +272,7 @@ export function AnnotationEditor({
 		>
 			{!propertiesOnly ? (
 				<Canvas
+					preview={imageHint?.preview}
 					showNumbers
 					image={image}
 					src={`${base}/files/${fileId}/preview`}

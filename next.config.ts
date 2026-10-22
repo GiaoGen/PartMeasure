@@ -1,6 +1,8 @@
 import type { NextConfig } from 'next';
+import { buildId } from './src/lib/build-info';
 
 const config: NextConfig = {
+  generateBuildId: async () => buildId,
   reactStrictMode: true,
   poweredByHeader: false,
   logging: { incomingRequests: false },

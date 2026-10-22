@@ -118,6 +118,7 @@ export function ProjectLiveProvider({
 		const connect = () => {
 			if (closed || document.hidden) return;
 			source?.close();
+			online = false;
 			source = new EventSource(
 				`${base}/events${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""}`,
 			);
@@ -165,8 +166,11 @@ export function ProjectLiveProvider({
 			}
 		};
 		const off = onApiSessionCleared(unavailable);
+		const pageShow = (event: PageTransitionEvent) => { if (event.persisted) visible(); };
 		document.addEventListener("visibilitychange", visible);
 		window.addEventListener("online", visible);
+		window.addEventListener("pagehide", stop);
+		window.addEventListener("pageshow", pageShow);
 		connect();
 		return () => {
 			closed = true;
@@ -174,6 +178,8 @@ export function ProjectLiveProvider({
 			off();
 			document.removeEventListener("visibilitychange", visible);
 			window.removeEventListener("online", visible);
+			window.removeEventListener("pagehide", stop);
+			window.removeEventListener("pageshow", pageShow);
 		};
 	}, [base, initial]);
 	return (

@@ -30,6 +30,7 @@ import {
 } from "@/lib/annotations";
 import * as annotations from "@/lib/server/annotation-service";
 import * as issues from "@/lib/server/issue-service";
+import * as interaction from "@/lib/server/interaction-reads";
 import { measurementSchema, responseSchema, reviewSchema } from "@/lib/issues";
 import { deliveryDraftSchema } from "@/lib/deliveries";
 import * as deliveries from "@/lib/server/delivery-service";
@@ -41,6 +42,7 @@ import { completeUpload } from "@/lib/server/complete-upload";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+export const maxDuration = 90;
 type Context = { params: Promise<{ segments: string[] }> };
 function expectedRevision(req: Request) {
 	return revisionFromHeaders(req.headers);
@@ -253,6 +255,27 @@ async function handle(req: Request, context: Context) {
 		const purpose = parsedPurpose.data;
 		const resource = parts[2],
 			objectId = parts[3];
+		if (method === "GET" && resource === "inbox" && parts.length === 3) {
+			if ([...url.searchParams.keys()].some(key => !["cursor", "ids", "limit"].includes(key)) || url.searchParams.getAll("ids").length > 1 || url.searchParams.getAll("limit").length > 1 || (url.searchParams.has("ids") && (url.searchParams.has("cursor") || url.searchParams.has("limit")))) throw new AppError("INVALID_INPUT", 422);
+			const limit = z.coerce.number().int().min(1).max(30).safeParse(url.searchParams.get("limit") ?? 30);
+			if (!limit.success) throw new AppError("INVALID_INPUT", 422);
+			const ids = url.searchParams.has("ids") ? interaction.inboxIds.safeParse(url.searchParams.get("ids")?.split(",")) : null;
+			if (ids && !ids.success) throw new AppError("INVALID_INPUT", 422);
+			return response(await interaction.inboxPage(actor, projectId, cursor, ids?.success ? ids.data : null, limit.data));
+		}
+		if (method === "GET" && resource === "image-access" && parts.length === 3) {
+			if ([...url.searchParams.keys()].some(key => key !== "ids") || url.searchParams.getAll("ids").length !== 1) throw new AppError("INVALID_INPUT", 422);
+			const ids = z.array(uuid).min(1).max(30).refine(values => new Set(values).size === values.length).safeParse(url.searchParams.get("ids")?.split(","));
+			if (!ids.success) throw new AppError("INVALID_INPUT", 422);
+			return response(await service.imageAccess(actor, projectId, ids.data));
+		}
+		if (method === "GET" && ["issue-views", "file-layers"].includes(resource ?? "") && !objectId) {
+			if (parts.length !== 3 || [...url.searchParams.keys()].some(key => key !== "ids") || url.searchParams.getAll("ids").length !== 1)
+				throw new AppError("INVALID_INPUT", 422);
+			const ids = interaction.batchIds.safeParse(url.searchParams.get("ids")?.split(","));
+			if (!ids.success) throw new AppError("INVALID_INPUT", 422);
+			return response(resource === "file-layers" ? await interaction.layers(actor, projectId, ids.data) : await interaction.currentIssues(actor, projectId, ids.data));
+		}
 		if (objectId && !uuid.safeParse(objectId).success)
 			throw new AppError("NOT_FOUND", 404);
 		if (!resource) {
@@ -398,6 +421,14 @@ async function handle(req: Request, context: Context) {
 			}
 		}
 		if (resource === "issues") {
+			if (method === "GET" && objectId && !parts[5] && ["current", "history-page"].includes(parts[4] ?? "")) {
+				if ([...url.searchParams.keys()].some(key => key !== "cursor")) throw new AppError("INVALID_INPUT", 422);
+				if (parts[4] === "current") {
+					if (cursor) throw new AppError("INVALID_INPUT", 422);
+					return response((await interaction.currentIssues(actor, projectId, [objectId])).items[0]);
+				}
+				return response(await interaction.historyPage(actor, projectId, objectId, cursor));
+			}
 			if (method === "GET" && !objectId && url.searchParams.has("annotationId"))
 				throw new AppError("INVALID_INPUT", 422);
 			if (
@@ -515,6 +546,12 @@ async function handle(req: Request, context: Context) {
 			}
 		}
 		if (resource === "files") {
+			if (method === "GET" && objectId && !parts[5] && ["interaction", "collaboration"].includes(parts[4] ?? "")) {
+				const annotationId = url.searchParams.get("annotationId");
+				if (!uuid.safeParse(annotationId).success || url.searchParams.getAll("annotationId").length !== 1 || [...url.searchParams.keys()].some(key => !["annotationId", "cursor"].includes(key)))
+					throw new AppError("INVALID_INPUT", 422);
+				return response(await interaction.fileInteraction(actor, projectId, objectId, annotationId as string, cursor, parts[4] === "interaction"));
+			}
 			if (objectId && parts[4] === "annotations" && method === "GET")
 				return response(
 					await annotations.annotations(actor, projectId, objectId),

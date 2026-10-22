@@ -8,7 +8,9 @@ import {
 	sameContent,
 	validateAnnotation,
 } from "@/lib/annotations";
-import { api, ApiError, message } from "./api";
+import { api, ApiError, message, readCached } from "./api";
+import { prioritizeLayers, readInteractionDocument } from "./interaction-reads";
+import { useApiRevalidation } from "./use-api-revalidation";
 import { useProjectUpdates } from "./project-live";
 type Operation = {
 	method: string;
@@ -28,14 +30,16 @@ export function useAnnotationSession(
 	onInvalid: () => void,
 	onDirty: (dirty: boolean) => void,
 	externalDirty = false,
+	initialAnnotationId?: string,
 ) {
-	const [document, setDocument] = useState<AnnotationDocument | null>(null),
-		[items, setItems] = useState<AnnotationDraft[]>([]),
-		[heads, setHeads] = useState<Annotation[]>([]);
+	const url = `${base}/files/${fileId}/annotations`;
+	const [document, setDocument] = useState<AnnotationDocument | null>(() => readCached<AnnotationDocument>(url) ?? null),
+		[items, setItems] = useState<AnnotationDraft[]>(() => document?.items.filter(i => !i.deleted) ?? []),
+		[heads, setHeads] = useState<Annotation[]>(() => document?.items ?? []);
 	const [past, setPast] = useState<AnnotationDraft[][]>([]),
 		[future, setFuture] = useState<AnnotationDraft[][]>([]),
 		[selected, setSelected] = useState<string | null>(null);
-	const [loading, setLoading] = useState(true),
+	const [loading, setLoading] = useState(!document),
 		[status, setStatus] = useState(""),
 		[error, setError] = useState(""),
 		[saving, setSaving] = useState(false),
@@ -47,8 +51,12 @@ export function useAnnotationSession(
 		busy = useRef(false),
 		editGroup = useRef(""),
 		loadRun = useRef(0);
+	const reading = useRef<AbortController | null>(null);
+	const activeRead = useRef(false);
 	itemsRef.current = items;
 	headsRef.current = heads;
+	const documentRef = useRef(document);
+	documentRef.current = document;
 	const invalidRef = useRef(onInvalid);
 	invalidRef.current = onInvalid;
 	const dirty =
@@ -73,15 +81,24 @@ export function useAnnotationSession(
 		return () => window.removeEventListener("beforeunload", prevent);
 	}, [dirty, saving, blocked]);
 	const load = useCallback(async (force = false) => {
+		if (!force && activeRead.current && !reading.current?.signal.aborted) return;
+		activeRead.current = true;
 		const run = ++loadRun.current;
-		if (force) setLoading(true);
+		reading.current?.abort();
+		const controller = new AbortController();
+		reading.current = controller;
 		setError("");
 		try {
-			const data = await api<AnnotationDocument>(
-				`${base}/files/${fileId}/annotations`,
+			prioritizeLayers(base, fileId);
+			const data = initialAnnotationId && !readCached<AnnotationDocument>(url)
+				? await readInteractionDocument(base, fileId, initialAnnotationId, { refresh: force, signal: controller.signal })
+				: await api<AnnotationDocument>(
+				url, "GET", undefined, { refresh: force, signal: controller.signal },
 			);
 			if (run !== loadRun.current) return;
+			if (controller.signal.aborted) return;
 			if (protectedDraft.current && !force) { setStatus("远程更新未覆盖当前草稿"); return; }
+			if (!force && JSON.stringify(documentRef.current) === JSON.stringify(data)) return;
 			setDocument(data);
 			setHeads(data.items);
 			headsRef.current = data.items;
@@ -98,16 +115,18 @@ export function useAnnotationSession(
 			if (e instanceof ApiError && e.status === 401) invalidRef.current();
 			setError(e instanceof Error ? e.message : "无法载入标注，请重试。");
 		} finally {
-			if (run === loadRun.current) setLoading(false);
+			if (run === loadRun.current) { activeRead.current = false; setLoading(false); }
 		}
-	}, [base, fileId]);
+	}, [url, base, fileId, initialAnnotationId]);
 	useEffect(() => {
 		void load();
 		return () => {
 			loadRun.current++;
+			reading.current?.abort();
 		};
 	}, [load]);
  const protectedDraft = useRef(false); protectedDraft.current = dirty || saving || blocked || externalDirty;
+ useApiRevalidation(() => { if (!protectedDraft.current) void load(); });
  useProjectUpdates(updates => {
   if (!updates.some(e => e.kind === "resync" || ((e.kind === "annotation.changed" || e.kind === "issue.changed") && e.fileId === fileId))) return;
   if (protectedDraft.current) setStatus("标注已有远程更新；当前草稿已保留，保存时检查修订冲突。");

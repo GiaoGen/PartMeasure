@@ -7,6 +7,7 @@ import {
 	versionLabel,
 } from "@/lib/deliveries";
 import { api, ApiError } from "./api";
+import { useApiRevalidation } from "./use-api-revalidation";
 import { useProjectUpdates } from "./project-live";
 import { useIssueWrite } from "./use-issue-write";
 import { UploadQueue } from "./upload-queue";
@@ -17,12 +18,13 @@ const sizeLabel = (bytes: string) =>
 		? `${bytes} B`
 		: `${(Number(bytes) / 1024 / 1024).toFixed(2)} MiB`;
 type Props = {
+	active?: boolean;
 	base: string;
 	guest: boolean;
 	onInvalid: () => void;
 	onDirty: (value: boolean) => void;
 };
-export function DeliverySection({ base, guest, onInvalid, onDirty }: Props) {
+export function DeliverySection({ base, guest, onInvalid, onDirty, active: visible = true }: Props) {
 	const [published, setPublished] = useState<Delivery | null>(null),
 		[drafts, setDrafts] = useState<Delivery[]>([]),
 		[active, setActive] = useState<Delivery | null>(null),
@@ -35,19 +37,23 @@ export function DeliverySection({ base, guest, onInvalid, onDirty }: Props) {
 		loadRun = useRef(0),
 		callbacks = useRef({ onInvalid, onDirty });
 	callbacks.current = { onInvalid, onDirty };
+	const reading = useRef<AbortController | null>(null);
 	const handleDirty = useCallback((value: boolean) => {
 		dirty.current = value;
 		callbacks.current.onDirty(value);
 	}, []);
 	const load = useCallback(async (reset = false) => {
 		const run = ++loadRun.current;
+		reading.current?.abort();
+		const controller = new AbortController();
+		reading.current = controller;
 		if (reset) setLoading(true);
 		setError("");
 		try {
 			const data = await api<{
 				published: Delivery | null;
 				drafts: Delivery[];
-			}>(`${base}/deliveries`);
+			}>(`${base}/deliveries`, "GET", undefined, { signal: controller.signal, refresh: reset });
 			if (run !== loadRun.current) return;
 			setPublished(data.published);
 			setDrafts(data.drafts);
@@ -65,11 +71,14 @@ export function DeliverySection({ base, guest, onInvalid, onDirty }: Props) {
 		}
 	}, [base, guest]);
 	useEffect(() => {
-		void load(true);
-		return () => { loadRun.current++; callbacks.current.onDirty(false); };
-	}, [load]);
+		if (!visible) return;
+		const timer = setTimeout(() => void load(), 500);
+		return () => { clearTimeout(timer); loadRun.current++; reading.current?.abort(); };
+	}, [load, visible]);
+	useEffect(() => () => callbacks.current.onDirty(false), []);
+	useApiRevalidation(() => { if (visible && !dirty.current) void load(); });
  useProjectUpdates(updates => {
-  if (updates.some(e => e.kind === "delivery.changed" || e.kind === "resync")) void load();
+  if (visible && updates.some(e => e.kind === "delivery.changed" || e.kind === "resync")) void load();
  });
 
 	function allowLeave() {

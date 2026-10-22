@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-10-22T10:01:00.919Z",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "scope": "Read-only real isolated DB; internal page size 1 exercises public query pagination without adding records",
+  "results": [
+    {
+      "check": "existing_real_history_current_latest_and_cursor_pages",
+      "status": "PASS",
+      "records": 4,
+      "pages": 4,
+      "pageSize": 1,
+      "publicPageSize": 20
+    },
+    {
+      "check": "bounded_gallery_and_foreground_overlap",
+      "status": "PASS",
+      "timing": "pool;dur=0.3, pool_count;desc=\"2\", sql;dur=2591.3, sql_count;desc=\"11\", app;dur=1450.9"
+    }
+  ]
+}

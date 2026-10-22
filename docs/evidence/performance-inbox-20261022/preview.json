@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-22T14:50:59.918Z",
+  "url": "https://partmeasure-staging-hcv816c1g-messup-s-projects.vercel.app",
+  "buildId": "perf-20261022-61710364a93874d3",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "scope": "Normal login and read-only current task JSON. No browser, UI or phone acceptance.",
+  "results": [
+    {
+      "name": "exact_build_health",
+      "status": "PASS"
+    },
+    {
+      "name": "normal_login_same_file_bounded_current_views_fixed_snapshot",
+      "status": "PASS",
+      "count": 5
+    }
+  ]
+}

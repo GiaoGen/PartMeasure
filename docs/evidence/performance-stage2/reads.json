@@ -1,0 +1,57 @@
+{
+  "checkedAt": "2026-10-22T09:56:59.196Z",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "scope": "Real isolated runtime-role DAL; auth and HTTP preflight excluded from timing; ordinary test login and guest-session bootstrap only",
+  "browser": false,
+  "productionDeployment": false,
+  "results": [
+    {
+      "name": "before_annotation_then_list_then_each_full_detail",
+      "status": "PASS",
+      "ms": 5483,
+      "timing": "pool;dur=0.6, pool_count;desc=\"3\", sql;dur=5477.4, sql_count;desc=\"21\", app;dur=5482.3",
+      "bytes": 5079
+    },
+    {
+      "name": "after_annotation_current_views_one_transaction",
+      "status": "PASS",
+      "ms": 2417,
+      "timing": "pool;dur=0.4, pool_count;desc=\"1\", sql;dur=2414.6, sql_count;desc=\"7\", app;dur=2416.4",
+      "bytes": 5240
+    },
+    {
+      "name": "bounded_current_batch",
+      "status": "PASS",
+      "ms": 1534,
+      "timing": "pool;dur=0.1, pool_count;desc=\"1\", sql;dur=1530.3, sql_count;desc=\"5\", app;dur=1533.6",
+      "bytes": 1497
+    },
+    {
+      "name": "complete_history_matches_legacy",
+      "status": "PASS",
+      "ms": 0,
+      "count": 0
+    },
+    {
+      "name": "visible_gallery_batch",
+      "status": "PASS",
+      "ms": 1734,
+      "timing": "pool;dur=0.2, pool_count;desc=\"1\", sql;dur=1733.3, sql_count;desc=\"6\", app;dur=1734.2",
+      "bytes": 3723
+    },
+    {
+      "name": "foreign_owner_and_wrong_project_rejected",
+      "status": "PASS",
+      "ms": 1808,
+      "timing": "pool;dur=0.5, pool_count;desc=\"2\", sql;dur=1805.8, sql_count;desc=\"8\", app;dur=1808.4",
+      "bytes": 24
+    },
+    {
+      "name": "guest_current_history_and_file_filter",
+      "status": "PASS",
+      "ms": 5601,
+      "timing": "pool;dur=0.4, pool_count;desc=\"4\", sql;dur=5599.2, sql_count;desc=\"24\", app;dur=5601.2",
+      "bytes": 31
+    }
+  ]
+}

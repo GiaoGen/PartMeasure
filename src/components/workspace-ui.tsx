@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { privateImage } from "./private-image-cache";
+import { privateImage, cachedPrivateImage } from "./private-image-cache";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export function WorkspaceIcon({
@@ -103,6 +103,18 @@ export function useWorkspaceDisclosure() {
 	};
 }
 
+/** A transition only leases an existing thumbnail; it never starts a second download. */
+export function CachedPhotoPreview({ preview }: { preview?: { src: string; version: string } | undefined }) {
+	const [url, setUrl] = useState("");
+	const src = preview?.src, version = preview?.version;
+	useEffect(() => {
+		const lease = src && version ? cachedPrivateImage(src, version) : undefined;
+		setUrl(lease?.url ?? "");
+		return () => lease?.release();
+	}, [src, version]);
+	return url ? <div className="photo-transition"><Image unoptimized src={url} alt="已载入的照片预览，正在准备高清图" fill sizes="100vw" style={{ objectFit: "contain" }} /></div> : null;
+}
+
 export function MaterialThumbnail({
 	src,
 	version,
@@ -117,9 +129,10 @@ export function MaterialThumbnail({
  const [failed,setFailed]=useState(false),[objectUrl,setObjectUrl]=useState("");
  useEffect(()=>{
   let active=true,lease:{url:string;release:()=>void}|undefined;
+  const controller = new AbortController();
   setObjectUrl("");setFailed(false);onReady?.(false);
-  if(src && version)void privateImage(src,version).then(value=>{if(!active){value.release();return;}lease=value;setObjectUrl(value.url);}).catch(()=>{if(active)setFailed(true);});
-  return()=>{active=false;lease?.release();};
+  if(src && version)void privateImage(src,version,controller.signal).then(value=>{if(!active){value.release();return;}lease=value;setObjectUrl(value.url);}).catch(()=>{if(active)setFailed(true);});
+  return()=>{active=false;controller.abort();lease?.release();};
  },[src,version,onReady]);
  return failed || !objectUrl ? (
 		<span className="workspace-image-fallback">

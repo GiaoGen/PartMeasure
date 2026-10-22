@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-10-22T15:44:41.171Z",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "scope": "Existing test data, DAL only; Auth/HTTP preflight excluded. No business writes, browser, UI acceptance or stress test.",
+  "results": [
+    {
+      "name": "summary_then_individual_current_reads",
+      "ms": 17684,
+      "bytes": 12461,
+      "timing": "pool;dur=3191.6, pool_count;desc=\"6\", sql;dur=14487.3, sql_count;desc=\"30\", app;dur=17683.8",
+      "status": "PASS"
+    },
+    {
+      "name": "inbox_one_page_current_views",
+      "ms": 3105,
+      "bytes": 7914,
+      "timing": "pool;dur=0.1, pool_count;desc=\"1\", sql;dur=3103.9, sql_count;desc=\"6\", app;dur=3105.2",
+      "status": "PASS"
+    },
+    {
+      "name": "same_fixed_snapshots_current_replies_and_cursor",
+      "count": 5,
+      "status": "PASS"
+    }
+  ]
+}

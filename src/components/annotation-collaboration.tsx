@@ -1,7 +1,9 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { IssueSummary } from "@/lib/issues";
-import { api, ApiError } from "./api";
+import type { IssueCurrent, IssueCurrentPage } from "@/lib/issues";
+import { ApiError, readCached } from "./api";
+import { collaborationUrl, readCollaboration } from "./interaction-reads";
+import { useApiRevalidation } from "./use-api-revalidation";
 import { IssueDetail } from "./issue-detail";
 import { useProjectUpdates } from "./project-live";
 import type { MeasurementTarget } from "./issue-history";
@@ -29,9 +31,11 @@ export function AnnotationCollaboration({
 	onDirty: (value: boolean) => void;
 	onViewPosition?: (target: MeasurementTarget) => void;
 }) {
-	const [items, setItems] = useState<IssueSummary[]>([]),
-		[cursor, setCursor] = useState<string | null>(null),
-		[loading, setLoading] = useState(true),
+	const url = collaborationUrl(base, fileId, annotationId);
+	const [initial] = useState(() => readCached<{ issues: IssueCurrentPage }>(url)?.issues);
+	const [items, setItems] = useState<IssueCurrent[]>(initial?.items ?? []),
+		[cursor, setCursor] = useState<string | null>(initial?.nextCursor ?? null),
+		[loading, setLoading] = useState(!initial),
 		[error, setError] = useState(""),
 		[historyOpen, setHistoryOpen] = useState(false);
 	const callbacks = useRef({ onInvalid, onUpdated, onDirty });
@@ -39,21 +43,20 @@ export function AnnotationCollaboration({
 	const dirty = useRef(new Set<string>()),
 		generation = useRef(0);
 	const dirtyHandlers = useRef(new Map<string, (value: boolean) => void>());
+	const reading = useRef<AbortController | null>(null);
+	const activeRead = useRef<{ cursor: string | null; busy: boolean }>({ cursor: null, busy: false });
 	const load = useCallback(
 		async (next: string | null = null) => {
+			if (activeRead.current.busy && activeRead.current.cursor === next && !reading.current?.signal.aborted) return;
+			activeRead.current = { cursor: next, busy: true };
 			const run = ++generation.current;
+			reading.current?.abort();
+			const controller = new AbortController();
+			reading.current = controller;
 			setLoading(true);
 			try {
-				const data = await api<{
-					items: IssueSummary[];
-					nextCursor: string | null;
-				}>(
-					`${base}/files/${fileId}/issues?annotationId=${annotationId}${next ? `&cursor=${encodeURIComponent(next)}` : ""}`,
-					"GET",
-					undefined,
-					{ cacheMs: 1000 },
-				);
-				if (run !== generation.current) return;
+				const data = await readCollaboration(base, fileId, annotationId, next, { signal: controller.signal });
+				if (run !== generation.current || controller.signal.aborted) return;
 				const related = data.items.filter(
 					(i) =>
 						i.kind === "measurement" &&
@@ -74,12 +77,12 @@ export function AnnotationCollaboration({
 				setCursor(data.nextCursor);
 				setError("");
 			} catch (e) {
-				if (run !== generation.current) return;
+				if (run !== generation.current || controller.signal.aborted) return;
 				if (e instanceof ApiError && e.status === 401)
 					callbacks.current.onInvalid();
 				setError(e instanceof Error ? e.message : "无法读取补充状态。");
 			} finally {
-				if (run === generation.current) setLoading(false);
+				if (run === generation.current) { activeRead.current.busy = false; setLoading(false); }
 			}
 		},
 		[base, fileId, annotationId],
@@ -89,8 +92,10 @@ export function AnnotationCollaboration({
 		void load();
 		return () => {
 			generation.current++;
+			reading.current?.abort();
 		};
 	}, [load, refreshKey]);
+	useApiRevalidation(() => void load());
 	useEffect(() => () => callbacks.current.onDirty(false), []);
 	useProjectUpdates((events) => {
 		if (
@@ -108,7 +113,7 @@ export function AnnotationCollaboration({
 		void load();
 		callbacks.current.onUpdated();
 	}, [load]);
-	const render = (item: IssueSummary) => {
+	const render = (item: IssueCurrent) => {
 		let handleDirty = dirtyHandlers.current.get(item.id);
 		if (!handleDirty) {
 			handleDirty = (value) => {
@@ -123,6 +128,7 @@ export function AnnotationCollaboration({
 				key={item.id}
 				base={base}
 				id={item.id}
+				currentView={item}
 				guest={guest}
 				inline
 				compact={compact}

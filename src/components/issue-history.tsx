@@ -1,8 +1,9 @@
 "use client";
-import { useState } from "react";
-import type { Evidence, IssueDetail } from "@/lib/issues";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { Evidence, IssueDetail, IssueHistoryEntry, IssueHistoryPage } from "@/lib/issues";
 import { displayUnit } from "@/lib/annotation-collaboration";
 import { EvidencePreview } from "./evidence-preview";
+import { api } from "./api";
 
 export type MeasurementTarget = NonNullable<IssueDetail["target"]>;
 export const replyTime = (value: string) =>
@@ -107,18 +108,53 @@ export function IssueHistory({
 	onViewPosition?: (target: MeasurementTarget) => void;
 }) {
 	const [expanded, setExpanded] = useState(false);
-	const events = historyEvents(issue);
-	if (!events.length) return null;
+	const [records, setRecords] = useState<IssueHistoryEntry[]>([]);
+	const [cursor, setCursor] = useState<string | null>(null);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState("");
+	const reading = useRef<AbortController | null>(null);
+	const requestedCursor = useRef<string | null>(null);
+	const paginated = "view" in issue && issue.view === "current";
+	const count = "historyCount" in issue ? Number(issue.historyCount) : issue.responses.length + issue.reviews.length;
+	const load = useCallback(async (next: string | null = null) => {
+		requestedCursor.current = next;
+		reading.current?.abort();
+		const controller = new AbortController();
+		reading.current = controller;
+		setLoading(true);
+		setError("");
+		try {
+			const page = await api<IssueHistoryPage>(`${base}/issues/${issue.id}/history-page${next ? `?cursor=${encodeURIComponent(next)}` : ""}`, "GET", undefined, { signal: controller.signal, cacheVersion: String(issue.revision) });
+			if (controller.signal.aborted) return;
+			setRecords(old => next ? [...old, ...page.items.filter(item => !old.some(previous => previous.type === item.type && previous.record.id === item.record.id))] : page.items);
+			setCursor(page.nextCursor);
+		} catch (failure) {
+			if (!controller.signal.aborted) setError(failure instanceof Error ? failure.message : "无法读取历史。");
+		} finally { if (!controller.signal.aborted) setLoading(false); }
+	}, [base, issue.id, issue.revision]);
+	useEffect(() => {
+		void issue.revision;
+		if (expanded && paginated) void load();
+		return () => reading.current?.abort();
+	}, [expanded, paginated, load, issue.revision]);
+	const events = historyEvents(paginated ? {
+		...issue,
+		responses: records.flatMap(item => item.type === "response" ? [item.record] : []),
+		reviews: records.flatMap(item => item.type === "review" ? [item.record] : []),
+	} : issue).reverse();
+	if (!count) return null;
 	return (
 		<details
 			className="issue-history-disclosure reply-history"
 			onToggle={(event) => setExpanded(event.currentTarget.open)}
 		>
 			<summary>
-				历史记录<span>{events.length} 条</span>
+				历史记录<span>{count} 条</span>
 			</summary>
 			{expanded ? (
 				<>
+					{loading ? <p role="status">载入历史…</p> : null}
+					{error ? <p role="alert">{error}<button type="button" onClick={() => void load(requestedCursor.current)}>重试</button></p> : null}
 					<ol className="reply-timeline">
 						{events.map((event) => (
 							<li
@@ -153,6 +189,7 @@ export function IssueHistory({
 							</li>
 						))}
 					</ol>
+					{paginated && cursor ? <button type="button" disabled={loading} onClick={() => void load(cursor)}>更早的记录</button> : null}
 					{issue.target && onViewPosition ? (
 						<button
 							type="button"

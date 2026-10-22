@@ -80,9 +80,87 @@ let csrfToken: string | null = null;
 let csrfPending: Promise<string> | null = null;
 let channel: BroadcastChannel | undefined;
 let listening = false;
-const sessionListeners = new Set<() => void>();
+export type SessionClearReason = "identity" | "unload";
+const sessionListeners = new Set<(reason: SessionClearReason) => void>();
 const requests = new Set<AbortController>();
 const projectListeners = new Set<(base: string, updates: ProjectUpdate[]) => void>();
+const revalidationListeners = new Set<() => void>();
+export function onApiRevalidate(listener: () => void) {
+	revalidationListeners.add(listener);
+	return () => { revalidationListeners.delete(listener); };
+}
+export type ReadOptions = {
+	key?: string; revision?: number; cacheMs?: number; cacheVersion?: string;
+	signal?: AbortSignal | undefined; refresh?: boolean;
+};
+const queryKey = (url: string, options: ReadOptions = {}) => `${identity}\n${url}\n${options.cacheVersion ?? ""}`;
+export function apiSessionGuard() {
+	const started = identity;
+	return () => { if (identity !== started) throw new ApiError("AUTH_REQUIRED", 401); };
+}
+/** Batch members own the resource cache/fences; avoid a second retrying cache for their transport. */
+export async function readApiTransport<T>(url: string, signal: AbortSignal): Promise<T> {
+	listenForSessionChanges();
+	const started = identity;
+	const value = await request<T>(url, "GET", undefined, {}, started, signal);
+	if (started !== identity) throw new ApiError("AUTH_REQUIRED", 401);
+	return value;
+}
+export function readCached<T>(url: string, options: ReadOptions = {}): T | undefined {
+	return (options.cacheMs ?? queryPolicy(url).ttl) > 0 ? queries.peek<T>(queryKey(url, options)) : undefined;
+}
+/** Reuse the same identity, invalidation fences and consumer cancellation for batched transport. */
+export function readApiWith<T>(url: string, load: (signal: AbortSignal) => Promise<T>, options: ReadOptions = {}): Promise<T> {
+	listenForSessionChanges();
+	const started = identity;
+	const policy = queryPolicy(url);
+	return queries.read(queryKey(url, options), async signal => {
+		const value = await load(signal);
+		if (identity !== started) throw new ApiError("AUTH_REQUIRED", 401);
+		policy.tags.splice(0, policy.tags.length, ...detailTags(url, value).tags);
+		return value;
+	}, options.cacheMs ?? policy.ttl, policy.tags, 1, options).then(value => {
+		if (identity !== started) throw new ApiError("AUTH_REQUIRED", 401);
+		return value;
+	});
+}
+export function observeApiVersion(url: string, version: string) {
+	const tag = queryPolicy(url).tags[1];
+	queries.observeVersion(queryKey(url), version, tag ? [tag] : []);
+}
+function detailTags(url: string, value: unknown) {
+	const policy = queryPolicy(url);
+	if ((/\/issues\/[^/?]+(?:\/current|\/history-page)?(?:\?|$)/.test(url) || /\/files\/[^/?]+\/(?:interaction|collaboration)\?/.test(url)) && value && typeof value === "object") {
+		type ResponseFiles = { attachments?: { id: string }[] };
+		const detail = value as { responses?: ResponseFiles[]; items?: { type?: string; record?: ResponseFiles }[]; issues?: { items: { responses: ResponseFiles[] }[] } };
+		const responses = detail.responses ?? detail.issues?.items.flatMap(item => item.responses) ?? detail.items?.flatMap(item => item.type === "response" && item.record ? [item.record] : []) ?? [];
+		const ids = new Set(responses.flatMap(r => r.attachments?.map(f => f.id) ?? []));
+		// Pending reads use the broad tag until their attachment identities are known.
+		policy.tags = policy.tags.filter(tag => tag !== `${policy.tags[0]}:evidence:all`);
+		if (ids.size > 200) policy.tags.push(`${policy.tags[0]}:evidence:all`);
+		else for (const id of ids) policy.tags.push(`${policy.tags[0]}:evidence:${id}`);
+	}
+	return policy;
+}
+/** Only canonical server responses/deltas may seed shared state, never unsaved forms. */
+export function rememberApi<T>(url: string, value: T) {
+	const previous = readCached<T & { revision?: number }>(url);
+	const revision = (value as { revision?: number } | null)?.revision;
+	if (previous?.revision !== undefined && revision !== undefined && previous.revision > revision) return previous;
+	const policy = detailTags(url, value);
+	if (policy.tags[1]) queries.invalidate([policy.tags[1]]);
+	queries.set(queryKey(url), value, policy.ttl, policy.tags);
+	return value;
+}
+/** Seed another representation from an aggregate without invalidating sibling history/lists. */
+export function seedApi<T>(url: string, value: T) {
+	const previous = readCached<T & { revision?: number }>(url);
+	const revision = (value as { revision?: number } | null)?.revision;
+	if (previous?.revision !== undefined && revision !== undefined && previous.revision > revision) return previous;
+	const policy = detailTags(url, value);
+	queries.seed(queryKey(url), value, policy.ttl, policy.tags);
+	return value;
+}
 export function onProjectCacheInvalidated(
 	listener: (base: string, updates: ProjectUpdate[]) => void,
 ) {
@@ -92,10 +170,16 @@ export function onProjectCacheInvalidated(
 	};
 }
 export function invalidateProjectQueries(base: string, updates: ProjectUpdate[]) {
-	queries.invalidate(eventTags(base, updates));
+	const tags = eventTags(base, updates).filter(tag => {
+		const event = updates.find(e => e.kind === "issue.changed" && tag === `${base}:issue:${e.entityId}`);
+		if (event?.kind !== "issue.changed" || event.revision === null) return true;
+		const cached = [readCached<{ revision: number }>(`${base}/issues/${event.entityId}`), readCached<{ revision: number }>(`${base}/issues/${event.entityId}/current`)].filter(v => v !== undefined);
+		return !cached.length || cached.some(v => !Number.isSafeInteger(v.revision) || v.revision < (event.revision as number));
+	});
+	queries.invalidate(tags);
 	for (const listener of projectListeners) listener(base, updates);
 }
-export function onApiSessionCleared(listener: () => void) {
+export function onApiSessionCleared(listener: (reason: SessionClearReason) => void) {
 	sessionListeners.add(listener);
 	return () => {
 		sessionListeners.delete(listener);
@@ -103,16 +187,16 @@ export function onApiSessionCleared(listener: () => void) {
 }
 export const invalidateQueries = () => queries.clear();
 
-function resetSessionData() {
+function resetSessionData(reason: SessionClearReason = "identity") {
 	identity++;
 	for (const controller of requests) controller.abort();
 	requests.clear();
 	queries.clear();
-	for (const listener of sessionListeners) listener();
+	for (const listener of sessionListeners) listener(reason);
 }
-export function clearApiSession(preserveSavedShares = false) {
+export function clearApiSession(preserveSavedShares = false, reason: SessionClearReason = "identity") {
 	if (!preserveSavedShares) clearSavedShares();
-	resetSessionData();
+	resetSessionData(reason);
 	csrfToken = null;
 	csrfPending = null;
 }
@@ -120,12 +204,27 @@ export function clearApiSession(preserveSavedShares = false) {
 function listenForSessionChanges() {
 	if (listening || typeof window === "undefined") return;
 	listening = true;
-	// Refresh clears request/image memory, but preserves owner copies of valid links.
-	window.addEventListener("pagehide", () => clearApiSession(true));
-	window.addEventListener("focus", () => queries.clear());
-	document.addEventListener("visibilitychange", () => {
-		if (document.hidden) queries.clear();
+	let timer: ReturnType<typeof setTimeout> | undefined;
+	let last = 0;
+	const revalidate = () => {
+		if (document.hidden || Date.now() - last < 1000) return;
+		clearTimeout(timer);
+		timer = setTimeout(() => {
+			if (document.hidden) return;
+			last = Date.now();
+			queries.markStale();
+			for (const listener of revalidationListeners) listener();
+		}, 180);
+	};
+	// BFCache is a suspended document, not logout. Restore its live connection and revalidate.
+	window.addEventListener("pagehide", event => {
+		clearTimeout(timer);
+		if (!event.persisted) clearApiSession(true, "unload");
 	});
+	window.addEventListener("pageshow", event => { if (event.persisted) revalidate(); });
+	window.addEventListener("focus", revalidate);
+	window.addEventListener("online", revalidate);
+	document.addEventListener("visibilitychange", revalidate);
 	if (typeof BroadcastChannel !== "undefined") {
 		channel = new BroadcastChannel("pm-session-invalidation");
 		channel.onmessage = () => clearApiSession();
@@ -160,7 +259,7 @@ export async function api<T>(
 	url: string,
 	method = "GET",
 	data?: unknown,
-	options: { key?: string; revision?: number; cacheMs?: number; cacheVersion?: string } = {},
+	options: ReadOptions = {},
 ): Promise<T> {
 	listenForSessionChanges();
 	const ownerAuthAction = /^\/api\/auth\/(login|logout|verify|register)$/.test(url);
@@ -172,32 +271,23 @@ export async function api<T>(
 	const started = identity;
 	if (method !== "GET") queries.invalidate(mutationTags(url));
 	const policy = queryPolicy(url);
-	const execute = async () => {
-		const value = await request<T>(url, method, data, options, started);
-		if (
-			method === "GET" &&
-			/\/issues\/[^/?]+$/.test(url) &&
-			value &&
-			typeof value === "object"
-		) {
-			const detail = value as { responses?: { attachments?: { id: string }[] }[] };
-			const ids = new Set(
-				detail.responses?.flatMap((r) => r.attachments?.map((f) => f.id) ?? []) ?? [],
-			);
-			const base = policy.tags[0];
-			if (ids.size > 200) policy.tags.push(`${base}:evidence:all`);
-			else for (const id of ids) policy.tags.push(`${base}:evidence:${id}`);
-		}
+	const execute = async (signal?: AbortSignal) => {
+		const value = await request<T>(url, method, data, options, started, signal);
+		if (method === "GET") policy.tags.splice(0, policy.tags.length, ...detailTags(url, value).tags);
 		return value;
 	};
-	return method === "GET"
+	const value = await (method === "GET"
 		? queries.read(
-				`${identity}\n${url}\n${options.cacheVersion ?? ""}`,
+				queryKey(url, options),
 				execute,
 				options.cacheMs ?? policy.ttl,
 				policy.tags,
+				1,
+				options,
 			)
-		: execute();
+		: execute());
+	if (method === "GET" && started !== identity) throw new ApiError("AUTH_REQUIRED", 401);
+	return value;
 }
 
 async function request<T>(
@@ -206,6 +296,7 @@ async function request<T>(
 	data: unknown,
 	options: { key?: string; revision?: number },
 	started: number,
+	readSignal?: AbortSignal,
 ): Promise<T> {
 	if (started !== identity) throw new ApiError("AUTH_REQUIRED", 401);
 	const headers: Record<string, string> = {};
@@ -222,7 +313,7 @@ async function request<T>(
 		method,
 		headers,
 		cache: "no-store",
-		signal: AbortSignal.any([controller.signal, AbortSignal.timeout(/\/uploads\/[^/]+\/(complete|retry)$/.test(url) ? 75000 : 45000)]),
+		signal: AbortSignal.any([controller.signal, ...(readSignal ? [readSignal] : []), AbortSignal.timeout(/\/uploads\/[^/]+\/(complete|retry)$/.test(url) ? 75000 : 45000)]),
 	};
 	if (data !== undefined) init.body = JSON.stringify(data);
 	try {

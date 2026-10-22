@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-10-22T10:58:11.947Z",
+  "url": "https://partmeasure-staging-darwh5ynt-messup-s-projects.vercel.app",
+  "expectedBuildId": "perf-20261022-d89ad33b02467f2c",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "scope": "Normal test login; read-only metadata/private thumbnail and initial SSE. No browser, UI, phone or full cloud write replay.",
+  "results": [
+    {
+      "name": "exact_build_health",
+      "status": "PASS",
+      "buildId": "perf-20261022-d89ad33b02467f2c"
+    },
+    {
+      "name": "normal_login_isolated_metadata_partial_manifest_private_thumbnail",
+      "status": "PASS"
+    },
+    {
+      "name": "same_preview_event_stream_initial",
+      "status": "PASS"
+    }
+  ]
+}

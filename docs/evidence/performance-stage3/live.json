@@ -1,0 +1,67 @@
+{
+  "checkedAt": "2026-10-22T10:52:32.020Z",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "sourceBuildId": "perf-20261022-e70986989ec88470",
+  "scope": "Local production build HTTP + real isolated Auth/DB/private Storage. Persistent-store adapter simulates a new client; actual browser IndexedDB and UI await manual acceptance.",
+  "browser": false,
+  "productionDeployment": false,
+  "results": [
+    {
+      "name": "same_build_normal_auth_setup",
+      "status": "PASS",
+      "ms": 17481,
+      "buildId": "perf-20261022-e70986989ec88470"
+    },
+    {
+      "name": "two_real_uploads_retryable_failure_and_ready_replay",
+      "status": "PASS",
+      "ms": 37857,
+      "readyFiles": 2,
+      "duplicateAssets": 0,
+      "retryUsedSameReservation": true,
+      "maxProcessingRequests": 1
+    },
+    {
+      "name": "fresh_manifest_scope_and_simulated_new_client_byte_reuse",
+      "status": "PASS",
+      "ms": 16944,
+      "freshAuthorizations": 1,
+      "imageByteGETsForReuse": 0,
+      "bytesReused": 880,
+      "actualBrowserIndexedDB": "manual-pending"
+    },
+    {
+      "name": "private_draft_image_manifest_denied_to_guest",
+      "status": "PASS",
+      "ms": 26729,
+      "ownerAllowed": true,
+      "guestDenied": true
+    },
+    {
+      "name": "private_range_4MiB_vs_8MiB",
+      "status": "PASS",
+      "ms": 79856,
+      "samples": [
+        {
+          "chunkMiB": 4,
+          "requests": 2,
+          "ms": 19029,
+          "receivedBytes": 8388608
+        },
+        {
+          "chunkMiB": 8,
+          "requests": 1,
+          "ms": 9626,
+          "receivedBytes": 8388608
+        }
+      ],
+      "integrity": "exact-byte-match"
+    },
+    {
+      "name": "revoked_guest_cannot_reuse_previously_saved_bytes",
+      "status": "PASS",
+      "ms": 4936,
+      "blobReadsAfterDenial": 0
+    }
+  ]
+}

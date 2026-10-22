@@ -2,6 +2,7 @@ import "server-only";
 import pg from "pg";
 import { readFileSync } from "node:fs";
 import { AppError } from "../policy";
+import { dependencyHint } from "./dependency-hint";
 
 type Subscriber = { change: (payload: string) => void; dropped: () => void };
 export class SessionNotifications {
@@ -16,8 +17,12 @@ export class SessionNotifications {
 		this.subscribers.add(subscriber);
 		try {
 			await this.open();
-		} catch {
+		} catch (error) {
 			this.subscribers.delete(subscriber);
+			if (error instanceof AppError) {
+				console.warn(JSON.stringify({ event: "updates_subscription_failed", code: error.code }));
+				throw error;
+			}
 			throw new AppError("UPDATES_UNAVAILABLE", 503);
 		}
 		return () => {
@@ -79,6 +84,7 @@ export class SessionNotifications {
 					throw Error("UNSAFE_ROLE");
 				await client.query(`listen ${this.channel}`);
 			} catch (error) {
+				console.warn(JSON.stringify({ event: "updates_subscription_failed", hint: dependencyHint(error), code: error instanceof AppError ? error.code : "UPDATES_UNAVAILABLE" }));
 				drop();
 				throw error;
 			}

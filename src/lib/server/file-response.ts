@@ -14,6 +14,7 @@ type FileForTransfer = {
 	storage_key: string;
 	original_key: string;
 	sha256: string;
+	image_cache_scope?: string | null;
 };
 export async function fileResponse(
 	req: Request,
@@ -27,7 +28,7 @@ export async function fileResponse(
 		throw new AppError("UNSUPPORTED_FORMAT", 415);
 	const range = req.headers.get("range"),
 		size = Number(original ? file.original_bytes : file.byte_size);
-	const baseHeaders = { "Cache-Control": "private, no-store", Vary: "Cookie" };
+	const baseHeaders = { "Cache-Control": "private, no-store", Vary: "Cookie", ...(preview && file.image_cache_scope ? { "X-PM-Image-Namespace": file.image_cache_scope, "X-PM-Image-Version": file.sha256 } : {}) };
 	if (range && !satisfiableRange(range, size))
 		return new Response(null, {
 			status: 416,
@@ -40,7 +41,7 @@ export async function fileResponse(
 		!range &&
 		size > 0 &&
 		size <= 262144 &&
-		/\/thumb-(320|640)\.webp$/.test(file.storage_key) &&
+		/\/thumb-(320|640)(?:-[a-f0-9]{64})?\.webp$/.test(file.storage_key) &&
 		/^[0-9a-f]{64}$/.test(file.sha256)
 	) {
 		const bytes = await thumbnails.read(

@@ -5,6 +5,8 @@ import { AppError } from "../policy";
 import { projectChanges } from "./project-changes";
 import { SessionNotifications } from "./session-notifications";
 import { uuid } from "./http";
+import { dependencyHint } from "./dependency-hint";
+import { timed } from "./timing";
 
 const notifications = new SessionNotifications("pm_project_events");
 let streams = 0;
@@ -18,7 +20,9 @@ export async function projectStream(req: Request, project: string, isGuest: bool
 	let actor: Actor | undefined;
 	const validateOwner = async () => {
 		if (!client) return;
-		const { data, error } = await client.auth.getUser();
+		const { data, error } = await timed("auth", () => client.auth.getUser());
+		if (error && (error.name === "AuthRetryableFetchError" || (error.status !== undefined && (error.status >= 500 || error.status === 0))))
+			throw new AppError("DEPENDENCY_UNAVAILABLE", 503);
 		if (
 			error ||
 			!data.user?.email_confirmed_at ||
@@ -79,6 +83,7 @@ export async function projectStream(req: Request, project: string, isGuest: bool
 		} catch (e) {
 			if (e instanceof AppError && [401, 403, 404].includes(e.status))
 				enqueue?.("unavailable", { reason: "access_lost" });
+			else console.warn(JSON.stringify({ event: "updates_refresh_failed", code: e instanceof AppError ? e.code : "DEPENDENCY_UNAVAILABLE", hint: dependencyHint(e) }));
 			close();
 		} finally {
 			busy = false;

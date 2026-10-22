@@ -9,7 +9,9 @@ import {
 import { annotationStatus } from "@/lib/annotation-collaboration";
 import { useEffect, useRef, useState } from "react";
 import type { AnnotationDocument } from "@/lib/annotations";
-import { api, ApiError } from "./api";
+import { ApiError, readCached, observeApiVersion } from "./api";
+import { readLayers } from "./interaction-reads";
+import { useApiRevalidation } from "./use-api-revalidation";
 import { annotationHitRegion } from "./annotation-hit-region";
 import { MaterialThumbnail } from "./workspace-ui";
 
@@ -54,7 +56,10 @@ export function AnnotatedThumbnail({
 		return () => observer.disconnect();
 	}, []);
 	const [visible, setVisible] = useState(false);
-	const [document, setDocument] = useState<AnnotationDocument | null>(null);
+	const url = `${base}/files/${fileId}/annotations`;
+	const [document, setDocument] = useState<AnnotationDocument | null>(() => readCached<AnnotationDocument>(url) ?? null);
+	const [validation, setValidation] = useState(0);
+	useApiRevalidation(() => { if (visible) setValidation(v => v + 1); });
 	const [failed, setFailed] = useState(false);
 	const [imageReady, setImageReady] = useState(false);
 	const [highlighted, setHighlighted] = useState<string | null>(null);
@@ -70,22 +75,17 @@ export function AnnotatedThumbnail({
 		return () => observer.disconnect();
 	}, []);
 	useEffect(() => {
+		void validation;
 		if (!visible) return;
+		if (annotationVersion) observeApiVersion(url, annotationVersion);
 		if (annotationCount === 0 && refreshKey === 0) {
 			setDocument(null);
 			setFailed(false);
 			return;
 		}
 		let active = true;
-		void api<AnnotationDocument>(
-			`${base}/files/${fileId}/annotations`,
-			"GET",
-			undefined,
-			{
-				cacheMs: 5000,
-				cacheVersion: `${annotationVersion ?? "unknown"}:${refreshKey}`,
-			},
-		)
+		const controller = new AbortController();
+		void readLayers(base, fileId, { signal: controller.signal })
 			.then((data) => {
 				if (active) {
 					setDocument(data);
@@ -93,16 +93,19 @@ export function AnnotatedThumbnail({
 				}
 			})
 			.catch((error) => {
-				if (!active) return;
+				if (!active || controller.signal.aborted) return;
 				setFailed(true);
 				if (error instanceof ApiError && error.status === 401) onInvalid();
 			});
 		return () => {
 			active = false;
+			controller.abort();
 		};
 	}, [
+		url,
 		base,
 		fileId,
+		validation,
 		visible,
 		refreshKey,
 		annotationVersion,
@@ -239,7 +242,7 @@ export function AnnotatedThumbnail({
 						/>
 					))
 				: null}
-			{!document && !failed ? (
+			{!document && !failed && (annotationCount !== 0 || refreshKey > 0) ? (
 				<span className="thumbnail-state">载入标注…</span>
 			) : null}
 			{failed ? (

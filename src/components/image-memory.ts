@@ -11,6 +11,7 @@ type Load = (signal: AbortSignal, reserve: (bytes: number) => void) => Promise<B
 export class PrivateImageCache {
 	private entries = new Map<string, Entry>();
 	private pending = new Map<string, Promise<Entry>>();
+	private waiters = new WeakMap<Promise<Entry>, number>();
 	private controllers = new Map<string, AbortController>();
 	private reserved = new Map<string, number>();
 	private epoch = 0;
@@ -29,6 +30,13 @@ export class PrivateImageCache {
 	clear() {
 		this.epoch++;
 		this.invalidate(() => true);
+	}
+	/** Acquire only a retained object; preview transitions must not start another transfer. */
+	cached(key: string) {
+		const entry = this.entries.get(key);
+		if (!entry) return undefined;
+		if (!entry.users && entry.expires <= Date.now()) { this.remove(key); return undefined; }
+		return this.hold(key, entry);
 	}
 	invalidate(matches: (key: string) => boolean) {
 		for (const [key, controller] of this.controllers)
@@ -55,7 +63,30 @@ export class PrivateImageCache {
 		if (used + bytes > this.budget || this.entries.size >= this.maxEntries)
 			throw Error("IMAGE_CACHE_BUSY");
 	}
-	async acquire(key: string, load: Load) {
+	private waitFor(key: string, promise: Promise<Entry>, signal?: AbortSignal) {
+		this.waiters.set(promise, (this.waiters.get(promise) ?? 0) + 1);
+		return new Promise<Entry>((resolve, reject) => {
+			let done = false;
+			const finish = (error: unknown, entry?: Entry) => {
+				if (done) return;
+				done = true;
+				signal?.removeEventListener("abort", abort);
+				this.waiters.set(promise, (this.waiters.get(promise) ?? 1) - 1);
+				queueMicrotask(() => {
+					if (!this.waiters.get(promise) && this.pending.get(key) === promise)
+						this.invalidate(candidate => candidate === key);
+				});
+				if (error !== undefined) reject(error);
+				else resolve(entry as Entry);
+			};
+			const abort = () => finish(signal?.reason ?? new DOMException("Aborted", "AbortError"));
+			signal?.addEventListener("abort", abort, { once: true });
+			if (signal?.aborted) abort();
+			promise.then(entry => finish(undefined, entry), error => finish(error));
+		});
+	}
+	async acquire(key: string, load: Load, signal?: AbortSignal) {
+		signal?.throwIfAborted();
 		let entry = this.entries.get(key);
 		if (entry && !entry.users && entry.expires <= Date.now()) {
 			this.remove(key);
@@ -90,6 +121,7 @@ export class PrivateImageCache {
 						return value;
 					})
 					.finally(() => {
+						if (this.pending.get(key) === promise) this.pending.delete(key);
 						if (this.controllers.get(key) === controller) {
 							this.controllers.delete(key);
 							this.reserved.delete(key);
@@ -97,13 +129,12 @@ export class PrivateImageCache {
 					});
 				this.pending.set(key, promise);
 			}
-			try {
-				entry = await promise;
-			} finally {
-				if (this.pending.get(key) === promise) this.pending.delete(key);
-			}
+			entry = await this.waitFor(key, promise, signal);
 		}
 		if (this.entries.get(key) !== entry) throw new ApiError("AUTH_REQUIRED", 401);
+		return this.hold(key, entry);
+	}
+	private hold(key: string, entry: Entry) {
 		entry.users++;
 		clearTimeout(entry.timer);
 		this.entries.delete(key);

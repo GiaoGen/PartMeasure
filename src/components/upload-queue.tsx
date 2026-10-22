@@ -1,7 +1,8 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { api, message } from "./api";
+import { api, message, onApiSessionCleared, apiSessionGuard } from "./api";
 import { useProjectUpdates } from "./project-live";
+import { uploadPipeline, uploadPause } from "./upload-pipeline";
 import { fileHash } from "./file-hash";
 import { WorkspaceIcon, useWorkspaceDisclosure } from "./workspace-ui";
 export type ReadyUpload = {id:string;filename:string;mime:string;byteSize:string};
@@ -11,10 +12,11 @@ type Item = {
 	key: string;
 	completeKey: string;
 	progress: number;
-	state: "waiting" | "uploading" | "processing" | "ready" | "failed";
+	state: "waiting" | "checking" | "reserving" | "uploading" | "processing_wait" | "processing" | "ready" | "failed";
 	error: string;
 	reservationId?: string;
 	terminal?: boolean;
+	uploaded?: boolean;
 };
 type Grant = {
 	signedUrl: string;
@@ -78,6 +80,26 @@ export function UploadQueue({
 	const [items, setItems] = useState<Item[]>([]),
 		[error, setError] = useState("");
 	const running = useRef(new Set<string>());
+	const notified = useRef(new Set<string>());
+	const lifetime = useRef(new AbortController());
+	useEffect(() => {
+		if (lifetime.current.signal.aborted) lifetime.current = new AbortController();
+		const off = onApiSessionCleared(() => lifetime.current.abort());
+		return () => { off(); lifetime.current.abort(); };
+	}, []);
+	const finishUpload = async (id: string, key: string, onStart: () => void) => {
+		const signal = lifetime.current.signal;
+		return uploadPipeline.finish(signal, async () => {
+			for (let attempt = 0; ; attempt++) {
+				signal.throwIfAborted(); onStart();
+				try { return await api(`${base}/uploads/${id}/complete`, "POST", {}, { key }); }
+				catch (failure) {
+					if (attempt >= 2 || !["PROCESSING_BUSY", "PROCESSING_ACTIVE"].includes((failure as { code?: string }).code ?? "")) throw failure;
+					await uploadPause(1500 * (attempt + 1), signal);
+				}
+			}
+		});
+	};
 
 	const [tracked, setTracked] = useState<Tracked[]>([]);
 	const [maxFileBytes, setMaxFileBytes] = useState(50 * 1024 * 1024);
@@ -114,11 +136,18 @@ export function UploadQueue({
 			}
 		}
         recoverRef.current = () => { void recover(); };
-        void recover();
-        return () => { active = false; recoverRef.current = () => {}; };
+		const timer = setTimeout(() => void recover(), 500);
+        return () => { clearTimeout(timer); active = false; recoverRef.current = () => {}; };
 	}, [base, purpose, localOnly]);
  function notifyReady(item:Item,id=item.reservationId) {
-  if(id)readyRef.current({id,filename:item.file.name,mime:item.file.type,byteSize:String(item.file.size)});
+  if (id && !notified.current.has(id)) {
+   notified.current.add(id);
+   if (notified.current.size > 128) {
+    const oldest = notified.current.values().next().value;
+    if (oldest) notified.current.delete(oldest);
+   }
+   readyRef.current({id,filename:item.file.name,mime:item.file.type,byteSize:String(item.file.size)});
+  }
  }
 	const update = useCallback(
 		(id: string, changes: Partial<Item>) =>
@@ -157,6 +186,7 @@ export function UploadQueue({
 				completeKey: crypto.randomUUID(),
 				terminal: false,
 				progress: 0,
+				uploaded: false,
 			};
 			update(item.id, item);
 		}
@@ -169,17 +199,25 @@ export function UploadQueue({
 		}
 		if (running.current.has(item.id)) return;
 		running.current.add(item.id);
-		update(item.id, { state: "uploading", error: "" });
+		update(item.id, { state: "waiting", error: "" });
+		const signal = lifetime.current.signal;
+		const ensureSession = apiSessionGuard();
 		try {
-			if (item.reservationId && item.progress === 100 && !item.terminal) {
-				update(item.id, { state: "processing", error: "" });
-				await api(`${base}/uploads/${item.reservationId}/complete`, "POST", {}, { key: item.completeKey });
+			await uploadPipeline.run(base, signal, async () => {
+			ensureSession(); signal.throwIfAborted();
+			if (item.reservationId && item.uploaded && !item.terminal) {
+				update(item.id, { state: "processing_wait", error: "" });
+				await finishUpload(item.reservationId, item.completeKey, () => update(item.id, { state: "processing" }));
+				ensureSession(); signal.throwIfAborted();
 				update(item.id, { state: "ready", error: "" });
  notifyReady(item);
 				return;
 			}
-			const hash = await fileHash(item.file);
-			const reservation = await api<{ id: string }>(
+			update(item.id, { state: "checking" });
+			const hash = await fileHash(item.file, signal);
+			ensureSession(); signal.throwIfAborted();
+			update(item.id, { state: "reserving" });
+			const reservation = await uploadPipeline.reservation(base, signal, () => api<{ id: string }>(
 				`${base}/uploads`,
 				"POST",
 				{
@@ -190,12 +228,15 @@ export function UploadQueue({
 					...(purpose === "delivery" ? { purpose } : {}),
 				},
 				{ key: item.key },
-			);
+			));
+			ensureSession(); signal.throwIfAborted();
 			update(item.id, { reservationId: reservation.id });
 			const grant = await api<Grant>(
 				`${base}/uploads/${reservation.id}/grant`,
 				"POST",
 			);
+			ensureSession(); signal.throwIfAborted();
+			update(item.id, { state: "uploading" });
 			if (!grant.state) {
 				if (item.file.size > 6 * 1024 * 1024) {
 					const { Upload } = await import("tus-js-client");
@@ -217,10 +258,13 @@ export function UploadQueue({
 							},
 							onProgress: (sent, total) =>
 								update(item.id, { progress: Math.round((sent / total) * 100) }),
-							onError: () => reject(new Error("文件传输失败，请重试。")),
-							onSuccess: () => resolve(),
+							onError: () => { signal.removeEventListener("abort", cancel); reject(new Error("文件传输失败，请重试。")); },
+							onSuccess: () => { signal.removeEventListener("abort", cancel); resolve(); },
 						});
-						uploader.start();
+						const cancel = () => { void uploader.abort(); reject(signal.reason); };
+						signal.addEventListener("abort", cancel, { once: true });
+						if (signal.aborted) { cancel(); return; }
+					uploader.start();
 					});
 				} else
 					await new Promise<void>((resolve, reject) => {
@@ -236,27 +280,31 @@ export function UploadQueue({
 									progress: Math.round((e.loaded / e.total) * 100),
 								});
 						};
-						xhr.onerror = () => reject(new Error("网络中断，请重试。"));
+						const cancel = () => { xhr.abort(); reject(signal.reason); };
+						const cleanup = () => signal.removeEventListener("abort", cancel);
+						xhr.onerror = () => { cleanup(); reject(new Error("网络中断，请重试。")); };
 						xhr.timeout = 120000;
-						xhr.ontimeout = () => reject(new Error("上传超时，请重试。"));
+						xhr.ontimeout = () => { cleanup(); reject(new Error("上传超时，请重试。")); };
 						xhr.onload = () => {
+							cleanup();
 							if (xhr.status >= 200 && xhr.status < 300) resolve();
 							else if (xhr.status === 409) resolve();
 							else reject(new Error("传输失败，请检查网络后重试。"));
 						};
-						xhr.send(item.file);
+						signal.addEventListener("abort", cancel, { once: true });
+						if (signal.aborted) { cancel(); return; }
+					xhr.send(item.file);
 					});
 			}
-			update(item.id, { state: "processing", progress: 100, error: "" });
-			await api(
-				`${base}/uploads/${reservation.id}/complete`,
-				"POST",
-				{},
-				{ key: item.completeKey },
-			);
+			ensureSession(); signal.throwIfAborted();
+			update(item.id, { state: "processing_wait", progress: 100, uploaded: true, error: "" });
+			await finishUpload(reservation.id, item.completeKey, () => update(item.id, { state: "processing" }));
+			ensureSession(); signal.throwIfAborted();
 			update(item.id, { state: "ready", progress: 100, error: "" });
- notifyReady(item,reservation.id);
+			notifyReady(item,reservation.id);
+			});
 		} catch (e) {
+			if (signal.aborted) return;
 			update(item.id, {
 				state: "failed",
 				terminal: ["UPLOAD_WINDOW_EXPIRED", "FILE_REJECTED", "INVALID_IMAGE", "MAGIC_MISMATCH", "HASH_OR_SIZE_MISMATCH", "ZIP_UNSAFE"].includes((e as { code?: string }).code ?? ""),
@@ -269,8 +317,8 @@ export function UploadQueue({
 	}
 	async function select(files: FileList | null) {
 		if (!files) return;
-		if (files.length > 20) {
-			setError("每批最多 20 个文件，请分批选择。");
+		if (files.length + itemsRef.current.filter(item => item.state !== "ready").length > 20) {
+			setError("当前上传队列最多 20 个文件，请等部分完成后再选择。");
 			return;
 		}
 		setError("");
@@ -283,8 +331,8 @@ export function UploadQueue({
 			state: "waiting" as const,
 			error: "",
 		}));
-		setItems((old) => [...old, ...batch]);
-		for (const item of batch) await send(item);
+		setItems((old) => [...old.filter(item => item.state !== "ready"), ...batch]);
+		await Promise.allSettled(batch.map(item => send(item)));
 	}
 	const showEmptyHint =
 		!!emptyHint &&
@@ -466,7 +514,7 @@ export function UploadQueue({
 									type="button"
 									onClick={async () => {
 										try {
-											await api(`${base}/uploads/${r.id}/retry`, "POST", {});
+											await finishUpload(r.id, crypto.randomUUID(), () => {});
 											setTracked((old) => old.filter((x) => x.id !== r.id));
 											readyRef.current();
 											setError("");
@@ -502,6 +550,9 @@ export function UploadQueue({
 								{
 									{
 										waiting: "等待传输",
+								checking: "校验文件",
+								reserving: "准备上传名额",
+								processing_wait: "传输完成 · 等待处理",
 										uploading: `传输 ${item.progress}%`,
 										processing: "传输完成 · 校验文件/处理图片",
 										ready:

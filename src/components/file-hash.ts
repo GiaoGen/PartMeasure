@@ -1,12 +1,16 @@
-export function fileHash(file: File): Promise<string> {
+export function fileHash(file: File, signal?: AbortSignal): Promise<string> {
 	return new Promise((resolve, reject) => {
+		signal?.throwIfAborted();
 		const worker = new Worker(new URL("./file-hash.worker.ts", import.meta.url), {
 			type: "module",
 		});
 		const finish = () => {
+			signal?.removeEventListener("abort", cancel);
 			clearTimeout(timer);
 			worker.terminate();
 		};
+		const cancel = () => { finish(); reject(signal?.reason); };
+		signal?.addEventListener("abort", cancel, { once: true });
 		const timer = setTimeout(() => {
 			finish();
 			reject(Error("文件校验超时，请重试。"));

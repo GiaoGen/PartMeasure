@@ -510,6 +510,19 @@ small {
 	color: #536477;
 	line-height: 1.6;
 }
+.photo-transition {
+	position: relative;
+	width: 100%;
+	height: clamp(320px, 62vh, 760px);
+	background: #f5f7fa;
+}
+.canvas-preview-status {
+	inset: auto 12px 12px auto;
+	padding: 6px 10px;
+	background: rgba(255, 255, 255, 0.94);
+	pointer-events: none;
+}
+.canvas-preview-status p { margin: 0; }
 .annotation-properties {
 	min-width: 0;
 	padding-left: 20px;

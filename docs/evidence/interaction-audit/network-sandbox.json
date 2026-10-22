@@ -1,0 +1,96 @@
+{
+  "checkedAt": "2026-10-21T13:52:01.095Z",
+  "source": "8e7bb6a6b8d76c68e6c1790e29f555ba09fc92b1",
+  "browserLaunched": false,
+  "mainlandPhoneValidated": false,
+  "tunDnsVerified": false,
+  "businessWrites": false,
+  "normalPasswordLoginAndRateAccounting": true,
+  "results": [
+    {
+      "name": "dns_classification",
+      "host": "rvysclscetfqicpnzlra.supabase.co",
+      "families": [
+        4
+      ],
+      "benchmarkFakeIpRange": true
+    },
+    {
+      "name": "dns_classification",
+      "host": "aws-0-ap-northeast-1.pooler.supabase.com",
+      "families": [
+        4
+      ],
+      "benchmarkFakeIpRange": true
+    },
+    {
+      "name": "auth_settings_1",
+      "error": "EACCES",
+      "totalMs": 16.6,
+      "phases": {
+        "dnsMs": 14.3
+      }
+    },
+    {
+      "name": "auth_settings_2",
+      "error": "EACCES",
+      "totalMs": 4,
+      "phases": {
+        "dnsMs": 3.1
+      }
+    },
+    {
+      "name": "storage_dedicated_reachability",
+      "error": "EACCES",
+      "totalMs": 2.4,
+      "phases": {
+        "dnsMs": 2
+      }
+    },
+    {
+      "name": "supabase_changelog",
+      "error": "EACCES",
+      "totalMs": 2.4,
+      "phases": {
+        "dnsMs": 1.8
+      }
+    },
+    {
+      "name": "pg_connection",
+      "error": "EACCES"
+    },
+    {
+      "environment": "local-production-build",
+      "name": "csrf",
+      "httpStatus": 200,
+      "headersMs": 238.6,
+      "totalMs": 240.9,
+      "bytes": 115,
+      "timing": {
+        "app": 3.7
+      },
+      "cacheControl": "private, no-store"
+    },
+    {
+      "environment": "local-production-build",
+      "name": "normal_password_login",
+      "httpStatus": 503,
+      "headersMs": 32.3,
+      "totalMs": 32.6,
+      "bytes": 129,
+      "timing": {
+        "pool": 8.4,
+        "app": 14.2,
+        "pool_count": 1
+      },
+      "cacheControl": "private, no-store",
+      "error": "DEPENDENCY_UNAVAILABLE"
+    },
+    {
+      "environment": "staging-2026-10-19",
+      "name": "csrf",
+      "error": "EACCES",
+      "totalMs": 3.4
+    }
+  ]
+}

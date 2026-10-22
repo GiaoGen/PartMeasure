@@ -235,6 +235,23 @@ export type IssueDetail = IssueSummary & {
 	reviews: IssueReview[];
 };
 
+/** A current view contains only the latest reply/review, never a complete history. */
+export type IssueCurrent = IssueDetail & {
+	view: "current";
+	historyCount: number;
+};
+export type IssueCurrentPage = {
+	items: IssueCurrent[];
+	nextCursor: string | null;
+};
+export type IssueHistoryEntry =
+	| { type: "response"; record: IssueResponse }
+	| { type: "review"; record: IssueReview };
+export type IssueHistoryPage = {
+	items: IssueHistoryEntry[];
+	nextCursor: string | null;
+};
+
 /** Small authoritative delta, stored with the operation's existing idempotent result. */
 export type IssueWriteResult = {
 	issueId: string;
@@ -245,10 +262,10 @@ export type IssueWriteResult = {
 	review?: IssueReview;
 };
 
-export function applyIssueWrite(
-	issue: IssueDetail,
+export function applyIssueWrite<T extends IssueDetail>(
+	issue: T,
 	result: IssueWriteResult,
-): IssueDetail | null {
+): T | null {
 	if (result.issueId !== issue.id) return null;
 	if (result.revision <= issue.revision) return issue;
 	if (result.revision !== issue.revision + 1 || !result.updatedAt) return null;
@@ -258,11 +275,12 @@ export function applyIssueWrite(
 	) {
 		return {
 			...issue,
+			...("historyCount" in issue ? { historyCount: Number(issue.historyCount) + 1 } : {}),
 			state: result.state,
 			revision: result.revision,
 			updatedAt: result.updatedAt,
 			latestResponseId: result.response.id,
-			responses: [
+			responses: "view" in issue && issue.view === "current" ? [result.response] : [
 				...issue.responses.filter((r) => r.id !== result.response?.id),
 				result.response,
 			],
@@ -278,10 +296,11 @@ export function applyIssueWrite(
 	) {
 		return {
 			...issue,
+			...("historyCount" in issue ? { historyCount: Number(issue.historyCount) + 1 } : {}),
 			state: result.state,
 			revision: result.revision,
 			updatedAt: result.updatedAt,
-			reviews: [
+			reviews: "view" in issue && issue.view === "current" ? [result.review] : [
 				...issue.reviews.filter((r) => r.id !== result.review?.id),
 				result.review,
 			],

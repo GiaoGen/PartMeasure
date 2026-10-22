@@ -1,0 +1,13 @@
+{
+  "projectRef": "rvysclscetfqicpnzlra",
+  "apply": true,
+  "startedAt": "2026-10-22T09:53:18.031Z",
+  "candidates": 18,
+  "completed": 18,
+  "failed": 0,
+  "derivatives": 36,
+  "bytes": 103268,
+  "canonicalHashesPreserved": true,
+  "errors": [],
+  "remaining": 0
+}

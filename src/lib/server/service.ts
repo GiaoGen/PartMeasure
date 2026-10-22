@@ -9,6 +9,8 @@ import { folderForOwner } from "./folder-service";
 import { queryProjects } from "./project-query";
 import type { ProjectFilters } from "../project-folders";
 import { eventCursor } from "./event-cursor";
+import { imageCacheScope } from "./image-cache-scope";
+import type { ImageAccess } from "../image-access";
 
 export type Project = {
 	id: string;
@@ -436,12 +438,30 @@ export async function fileForRead(
 			[fileId, id, actor.kind === "owner",variant],
 		);
 		if (!rows[0]) throw new AppError("NOT_FOUND", 404);
+		rows[0].image_cache_scope = imageCacheScope(actor, id);
 		if (variant !== null) {
 			if (original || rows[0].purpose !== "material" || ![320,640].includes(variant)) throw new AppError("INVALID_INPUT",422);
 			if (!rows[0].thumbnail_key) throw new AppError("IMAGE_NOT_READY",409);
 			return {...rows[0],storage_key:rows[0].thumbnail_key,byte_size:rows[0].thumbnail_bytes,sha256:rows[0].thumbnail_hash};
 		}
 		return rows[0];
+	});
+}
+/** Fresh batch authorization only. No Storage signatures or reusable access tokens. */
+export async function imageAccess(actor: Actor, projectId: string, ids: string[]): Promise<ImageAccess> {
+	if (!ids.length || ids.length > 30 || new Set(ids).size !== ids.length) throw new AppError("INVALID_INPUT", 422);
+	return transaction(actor, async db => {
+		await access(db, actor, projectId, false, true);
+		const { rows } = await db.query<{ id: string; images: ImageAccess["items"][number]["images"] }>(`select f.id,
+		 jsonb_build_array(jsonb_build_object('variant',null,'version',f.sha256,'bytes',f.byte_size)) ||
+		 coalesce((select jsonb_agg(jsonb_build_object('variant',d.variant,'version',d.sha256,'bytes',d.byte_size) order by d.variant) from pm.image_derivatives d where d.project_id=f.project_id and d.file_id=f.id and d.image_hash=f.sha256),'[]'::jsonb) images
+		 from pm.file_assets f where f.project_id=$1 and f.id=any($2::uuid[]) and f.deleted_at is null and f.mime='image/webp'
+		 and ($3::boolean or (f.visibility='customer' and (f.purpose='material' or exists(select 1 from pm.delivery_files a join pm.deliveries d on d.project_id=a.project_id and d.id=a.delivery_id where a.project_id=f.project_id and a.file_id=f.id and a.selected and d.state='published'))))`, [projectId, ids, actor.kind === "owner"]);
+		// A deleted/hidden file must not block other authorized photos in the same visible batch.
+		if (!rows.length) throw new AppError("NOT_FOUND", 404);
+		const namespace = imageCacheScope(actor, projectId);
+		if (!namespace) throw new AppError("STORAGE_NOT_CONFIGURED", 503);
+		return { namespace, items: rows };
 	});
 }
 export async function deleteFile(

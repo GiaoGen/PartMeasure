@@ -104,33 +104,36 @@ async function target(
 		normalization_version: 1;
 	};
 }
-export async function annotations(
-	actor: Actor,
-	projectId: string,
-	fileId: string,
-) {
-	return transaction(actor, async (db) => {
-		await access(db, actor, projectId, false, true);
-		const f = await target(db, projectId, fileId, true);
-		const { rows } = await db.query<Row>(
-			`select a.*,jsonb_build_object('pending',c.pending,'submitted',c.submitted,'remeasure',c.remeasure) as collaboration,c.measurement_responses from pm.annotations a
+/** Caller holds the project access lock; RLS still checks every requested file. */
+export async function annotationDocuments(db: PoolClient, actor: Actor, projectId: string, fileIds: string[]) {
+	const files = await db.query<{ id: string; mime: string; width: number; height: number; sha256: string; normalization_version: 1 }>(
+		"select id,mime,width,height,sha256,normalization_version from pm.file_assets where project_id=$1 and id=any($2::uuid[]) and deleted_at is null and purpose='material'",
+		[projectId, fileIds],
+	);
+	if (files.rows.length !== fileIds.length) throw new AppError("NOT_FOUND", 404);
+	if (files.rows.some(f => f.mime !== "image/webp" || !f.width || !f.height || f.normalization_version !== 1)) throw new AppError("IMAGE_NOT_READY", 409);
+	const { rows } = await db.query<Row>(
+		`select a.*,jsonb_build_object('pending',c.pending,'submitted',c.submitted,'remeasure',c.remeasure) as collaboration,c.measurement_responses from pm.annotations a
 			 left join lateral (select count(*) filter(where i.state='awaiting_response')::int pending,
 			 count(*) filter(where i.state='remeasure_requested')::int remeasure,
 			 count(*) filter(where i.state='submitted')::int submitted,
 			 coalesce(jsonb_agg(jsonb_build_object('field',coalesce(i.measurement_field,'dimension'),'value',r.value,'unit',r.unit,'snapshot',i.annotation_snapshot) order by i.created_at,i.id) filter(where i.state='submitted' and r.kind='numeric'),'[]'::jsonb) measurement_responses
 			 from pm.issues i left join pm.issue_responses r on r.project_id=i.project_id and r.issue_id=i.id and r.id=i.latest_response_id
 			 where i.project_id=a.project_id and i.file_id=a.file_id and i.annotation_id=a.id and i.closed_at is null) c on true
-			 where a.project_id=$1 and a.file_id=$2 and ($3::boolean or a.deleted_at is null) order by a.created_at,a.id`,
-			[projectId, fileId, actor.kind === "owner"],
-		);
-		const image: CanonicalImage = {
-			id: f.id,
-			width: f.width,
-			height: f.height,
-			imageHash: f.sha256,
-			normalizationVersion: f.normalization_version,
-		};
-		return { image, items: rows.map(dto) };
+			 where a.project_id=$1 and a.file_id=any($2::uuid[]) and ($3::boolean or a.deleted_at is null) order by a.created_at,a.id`,
+		[projectId, fileIds, actor.kind === "owner"],
+	);
+	return files.rows.map(f => ({
+		image: { id: f.id, width: f.width, height: f.height, imageHash: f.sha256, normalizationVersion: f.normalization_version } satisfies CanonicalImage,
+		items: rows.filter(r => r.file_id === f.id).map(dto),
+	}));
+}
+export async function annotations(actor: Actor, projectId: string, fileId: string) {
+	return transaction(actor, async db => {
+		await access(db, actor, projectId, false, true);
+		const document = (await annotationDocuments(db, actor, projectId, [fileId]))[0];
+		if (!document) throw new AppError("NOT_FOUND", 404);
+		return document;
 	});
 }
 export async function createAnnotation(

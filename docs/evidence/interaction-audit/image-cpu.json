@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-21T13:58:05.983Z",
+  "scope": "synthetic 3MP high-entropy JPEG; local CPU only; no network or user image",
+  "pixels": 3000000,
+  "sourceBytes": 2143231,
+  "canonicalBytes": 7661590,
+  "processingMs": 1344,
+  "thumbnailBytes": [
+    {
+      "variant": 320,
+      "bytes": 13066
+    },
+    {
+      "variant": 640,
+      "bytes": 102752
+    }
+  ]
+}

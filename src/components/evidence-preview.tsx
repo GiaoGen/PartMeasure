@@ -25,7 +25,8 @@ export function EvidencePreview({ base, file }: { base: string; file: Evidence }
 		if (!visible || !version) return;
 		let active = true,
 			lease: { url: string; release: () => void } | undefined;
-		void privateImage(`${base}/files/${file.id}/preview?variant=640`, version)
+		const controller = new AbortController();
+		void privateImage(`${base}/files/${file.id}/preview?variant=640`, version, controller.signal)
 			.then((value) => {
 				if (!active) {
 					value.release();
@@ -39,6 +40,7 @@ export function EvidencePreview({ base, file }: { base: string; file: Evidence }
 			});
 		return () => {
 			active = false;
+			controller.abort();
 			lease?.release();
 		};
 	}, [base, file.id, version, visible]);

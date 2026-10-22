@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-10-22",
+  "id": "dpl_CvxZVTdKQju6PniuekgedF6Y4XxC",
+  "url": "https://partmeasure-staging-darwh5ynt-messup-s-projects.vercel.app",
+  "project": "partmeasure-staging",
+  "projectId": "prj_rf7HXAsGzV6khGK5hxPkadCKhhAC",
+  "target": "preview",
+  "regions": [
+    "hnd1"
+  ],
+  "projectRef": "rvysclscetfqicpnzlra",
+  "buildId": "perf-20261022-d89ad33b02467f2c",
+  "state": "READY",
+  "production": false,
+  "verification": "preview.json"
+}

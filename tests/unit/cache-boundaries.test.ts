@@ -82,7 +82,7 @@ describe("project cache boundaries", () => {
 			`/api/projects/Q/issues/I`,
 		];
 		for (const url of urls) await api(url);
-		invalidateProjectQueries(base, [event("issue.changed")]);
+		invalidateProjectQueries(base, [{ ...event("issue.changed"), revision: 2 }]);
 		for (const url of urls) await api(url);
 		expect(fetch).toHaveBeenCalledTimes(urls.length + 3);
 		expect(queryPolicy(`${base}/changes`).ttl).toBe(0);

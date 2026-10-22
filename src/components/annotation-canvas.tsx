@@ -20,7 +20,9 @@ import {
 import { AnnotationIcon } from "./annotation-icon";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type Konva from "konva";
-import { privateImage, discardPrivateImage } from "./private-image-cache";
+import { decodedImage } from "./decoded-image";
+import { discardPrivateImage, cachedPrivateImage } from "./private-image-cache";
+import { imagePreviewHint } from "./image-preview";
 import { useWorkspaceMark } from "./use-workspace-theme";
 import {
 	Stage,
@@ -94,6 +96,7 @@ export default function AnnotationCanvas({
 	canRedo = false,
 	showNumbers = false,
 	showToolbar = true,
+	preview,
 }: {
 	image: CanonicalImage;
 	src: string;
@@ -114,9 +117,9 @@ export default function AnnotationCanvas({
 	canRedo?: boolean;
 	showNumbers?: boolean;
 	showToolbar?: boolean;
+	preview?: { src: string; version: string } | undefined;
 }) {
 	const mark = useWorkspaceMark(guest);
-	const canEdit = !guest && !disabled;
 	const host = useRef<HTMLDivElement>(null),
 		stage = useRef<Konva.Stage>(null);
 	const [size, setSize] = useState({ width: 640, height: 480 }),
@@ -125,11 +128,13 @@ export default function AnnotationCanvas({
 		viewRef = useRef(view);
 	viewRef.current = view;
 	const [bitmap, setBitmap] = useState<HTMLImageElement | null>(null),
+		[previewBitmap, setPreviewBitmap] = useState<HTMLImageElement | null>(null),
 		[loadError, setLoadError] = useState(false),
 		[attempt, setAttempt] = useState(0),
 		[tool, setTool] = useState<Tool>("select"),
 		[space, setSpace] = useState(false),
 		[draft, setDraft] = useState<Geometry | null>(null);
+	const canEdit = !guest && !disabled && bitmap !== null;
 	const controlDrag = useRef<{
 		item: AnnotationDraft;
 		imageId: string;
@@ -216,56 +221,37 @@ export default function AnnotationCanvas({
 		multi = useRef(false);
 	const handlers = useRef({ onCreate, onError, onInvalid });
 	handlers.current = { onCreate, onError, onInvalid };
+	const [hint] = useState(() => imagePreviewHint(src));
+	const previewSrc = preview?.src ?? (hint?.hash === image.imageHash ? hint.preview?.src : undefined);
+	const previewVersion = preview?.version ?? (hint?.hash === image.imageHash ? hint.preview?.version : undefined);
 	useEffect(() => {
-		let lease: { url: string; release: () => void } | undefined;
-		let objectUrl = "",
-			img: HTMLImageElement | null = null,
-			active = true;
-		setBitmap(null);
-		setLoadError(false);
+		setPreviewBitmap(null);
+		const lease = previewSrc && previewVersion ? cachedPrivateImage(previewSrc, previewVersion) : undefined;
+		if (!lease) return;
+		const img = new window.Image();
+		img.onload = () => setPreviewBitmap(img);
+		img.src = lease.url;
+		return () => { img.onload = null; img.src = ""; lease.release(); };
+	}, [previewSrc, previewVersion]);
+	useEffect(() => {
+		let lease: { release: () => void } | undefined;
+		const controller = new AbortController();
+		setBitmap(null); setLoadError(false);
 		void (async () => {
 			try {
 				if (attempt > 0) discardPrivateImage(src, image.imageHash);
-				const value = await privateImage(src, image.imageHash);
-				if (!active) {
-					value.release();
-					return;
-				}
-				lease = value;
-				objectUrl = value.url;
-				img = new window.Image();
-				img.onload = () => {
-					if (!active || !img) return;
-					if (
-						img.naturalWidth !== image.width ||
-						img.naturalHeight !== image.height
-					) {
-						setLoadError(true);
-						handlers.current.onError(
-							"图片尺寸与标准图记录不一致，已停止编辑。",
-						);
-						return;
-					}
-					setBitmap(img);
-				};
-				img.onerror = () => {
-					if (active) setLoadError(true);
-				};
-				img.src = objectUrl;
-			} catch {
-				if (active) setLoadError(true);
+				const decoded = await decodedImage(src, image.imageHash, image.width, image.height, controller.signal);
+				if (controller.signal.aborted) { decoded.release(); return; }
+				lease = decoded; setBitmap(decoded.image);
+			} catch (error) {
+				if (controller.signal.aborted) return;
+				setLoadError(true);
+				if (error instanceof Error && error.message === "IMAGE_DIMENSIONS") handlers.current.onError("图片尺寸与标准图记录不一致，已停止编辑。");
 			}
 		})();
-		return () => {
-			active = false;
-			if (img) {
-				img.onload = null;
-				img.onerror = null;
-				img.src = "";
-			}
-			lease?.release();
-		};
+		return () => { controller.abort(); lease?.release(); };
 	}, [src, image.width, image.height, image.imageHash, attempt]);
+
 	useEffect(() => {
 		if (!host.current) return;
 		const observer = new ResizeObserver(([entry]) => {
@@ -953,7 +939,7 @@ export default function AnnotationCanvas({
 				}}
 			>
 				{!bitmap ? (
-					<div className="canvas-message">
+					<div className={`canvas-message${previewBitmap && !loadError ? " canvas-preview-status" : ""}`}>
 						{loadError ? (
 							<>
 								<p role="alert">图片暂时无法载入。</p>
@@ -968,7 +954,7 @@ export default function AnnotationCanvas({
 								</button>
 							</>
 						) : (
-							<p role="status">载入标准图片…</p>
+							<p role="status">{previewBitmap ? "预览已载入，正在准备高清图…" : "载入标准图片…"}</p>
 						)}
 					</div>
 				) : null}
@@ -1010,9 +996,9 @@ export default function AnnotationCanvas({
 				>
 					<Layer>
 						<Group x={view.x} y={view.y} scaleX={s} scaleY={s}>
-							{bitmap ? (
+							{bitmap || previewBitmap ? (
 								<CanvasImage
-									image={bitmap}
+									image={bitmap ?? previewBitmap ?? undefined}
 									width={w}
 									height={h}
 									listening={false}

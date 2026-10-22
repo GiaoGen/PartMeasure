@@ -6,6 +6,8 @@ describe('infrastructure health, without external credentials', () => {
     const response = GET();
     expect(response.status).toBe(200);
     expect(response.headers.get('cache-control')).toBe('private, no-store');
-    expect(await response.json()).toEqual({ status: 'ok', scope: 'P0-1', database: 'not-probed' });
+    const body = await response.json();
+    expect(body).toMatchObject({ status: 'ok', scope: 'P0-1', database: 'not-probed' });
+    expect(body.buildId).toMatch(/^perf-20261022-[a-f0-9]{16}$/);
   });
 });

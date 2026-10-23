@@ -12,6 +12,7 @@ import {
 } from "@/lib/annotation-collaboration";
 import { annotationColor } from "@/lib/annotation-presentation";
 import { methodLabel } from "@/lib/issues";
+import { MeasurementHelp } from "./measurement-help";
 
 function Field({
 	id,
@@ -375,6 +376,10 @@ export function EngineeringFields({
 									))}
 								</select>
 							</Field>
+							<MeasurementHelp
+								method={method}
+								field={firstLength ?? (item.metadata.requireHoleDepth ? "holeDepth" : "angleValue")}
+							/>
 							<Field id={id("instructions")} label="测量说明">
 								<textarea
 									id={id("instructions")}

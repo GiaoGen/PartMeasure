@@ -1,4 +1,5 @@
 "use client";
+import { MeasurementHelp } from "./measurement-help";
 import {
 	displayUnit,
 	measurementFieldLabel,
@@ -391,7 +392,10 @@ export function IssueDetail({
 					) : null}
 					<h3>{issue.kind === "measurement" ? "怎么测" : "问题说明"}</h3>
 					{issue.kind === "measurement" ? (
-						<p>建议使用：{methodLabel[issue.measurementMethod]}</p>
+						<>
+							<p>建议使用：{methodLabel[issue.measurementMethod]}</p>
+							{canReply ? <MeasurementHelp key={issue.id} method={issue.measurementMethod} field={issue.measurementField} /> : null}
+						</>
 					) : null}
 					<p className="preserve-lines">{issue.description}</p>
 					{issue.state === "remeasure_requested" ? (

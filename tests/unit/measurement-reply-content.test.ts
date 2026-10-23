@@ -124,6 +124,25 @@ describe("focused measurement replies", () => {
 			issue.target.annotation.metadata.measurementMethod = "outside";
 		expect(render(issue, true)).toContain("深度杆");
 		expect(render(issue, true)).not.toContain("外测量爪");
+		expect(render(issue, true)).toContain('aria-label="测量帮助：深度杆');
+	});
+	it("offers help beside the method without replacing the guest reply form or requiring reading", () => {
+		const issue = fixture("awaiting_response");
+		issue.measurementMethod = "inside";
+		const html = render(issue, true);
+		expect(html.match(/class="measurement-help"/g)).toHaveLength(1);
+		expect(html).toContain("客户填写入口");
+		expect(html).not.toContain("<img");
+		expect(html).not.toContain("12.35");
+		expect(issue.responses[0]?.value).toBe("45");
+	});
+	it("does not add tutorials to unspecified methods, file questions, submitted replies or angular tasks", () => {
+		const unset = fixture("awaiting_response");
+		const comment: IssueDetail = { ...unset, kind: "comment", measurementMethod: "inside", target: null };
+		const submitted: IssueDetail = { ...unset, measurementMethod: "inside", state: "submitted" };
+		const angular: IssueDetail = { ...unset, measurementMethod: "outside", measurementField: "angleValue" };
+		for (const issue of [unset, comment, submitted, angular])
+			expect(render(issue, true)).not.toContain('class="measurement-help"');
 	});
 	it("prioritizes the remeasure reason and shows the old number only as a previous submission", () => {
 		const html = render(fixture());

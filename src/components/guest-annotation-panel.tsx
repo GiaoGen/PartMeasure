@@ -7,6 +7,8 @@ import {
 	photoDimensionText,
 } from "@/lib/annotation-presentation";
 import { AnnotationCollaboration } from "./annotation-collaboration";
+import { MeasurementHelp } from "./measurement-help";
+import { requiredMeasurements } from "@/lib/annotation-collaboration";
 
 export function GuestAnnotationPanel({
 	item,
@@ -29,6 +31,7 @@ export function GuestAnnotationPanel({
 		notesId = useId();
 	const metadata = item.metadata,
 		method = metadata.measurementMethod;
+	const helpField = requiredMeasurements(item).find(field => field !== "angleValue");
 	const hasLiveReply = !!(
 		item.collaboration?.pending ||
 		item.collaboration?.submitted ||
@@ -76,6 +79,9 @@ export function GuestAnnotationPanel({
 							<small>测量方式</small>
 							<p>{methodLabel[method]}</p>
 						</div>
+					) : null}
+					{helpField ? (
+						<MeasurementHelp method={method} field={helpField} />
 					) : null}
 					{metadata.measurementInstructions?.trim() ? (
 						<div>

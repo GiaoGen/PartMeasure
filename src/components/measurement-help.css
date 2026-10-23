@@ -1,0 +1,46 @@
+/* Contextual help follows the existing flat property/reply disclosures. */
+.measurement-help {
+	min-width: 0;
+	font-size: 14px;
+	border-top: 1px solid var(--workspace-line, #d5dae1);
+	border-bottom: 1px solid var(--workspace-line, #d5dae1);
+}
+.measurement-help > summary,
+.measurement-help-reading > summary {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 44px;
+	padding: 4px 0;
+	list-style: none;
+	cursor: pointer;
+	font-size: 14px;
+}
+.measurement-help > summary { color: var(--workspace-action, #36567f); }
+.measurement-help summary::-webkit-details-marker { display: none; }
+.measurement-help > summary::before,
+.measurement-help-reading > summary::before {
+	content: "›";
+	flex: 0 0 8px;
+	font-size: 18px;
+	color: #627080;
+}
+.measurement-help[open] > summary::before,
+.measurement-help-reading[open] > summary::before { transform: rotate(90deg); }
+.measurement-help summary:focus-visible,
+.measurement-help button:focus-visible { outline: 2px solid #245dcb; outline-offset: 2px; }
+.measurement-help-body { padding-bottom: 12px; overflow-wrap: anywhere; }
+.measurement-help h5 { margin: 10px 0; font-size: 14px; font-weight: 600; }
+.measurement-help-illustration { display: block; width: 100%; max-width: 640px; height: auto; }
+.measurement-help ol { margin: 12px 0; padding-left: 23px; }
+.measurement-help li + li { margin-top: 8px; }
+.measurement-help .measurement-help-note { margin: 8px 0; color: #627080; font-size: 13px; }
+.measurement-help-note button {
+	border: 0;
+	background: transparent;
+	color: var(--workspace-action, #36567f);
+	min-height: 44px;
+	padding: 4px 8px;
+	font-size: inherit;
+}
+.measurement-help-reading { border-top: 1px solid var(--workspace-line, #d5dae1); }

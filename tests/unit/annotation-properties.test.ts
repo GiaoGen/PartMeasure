@@ -26,6 +26,13 @@ const render = (geometry: Geometry, metadata = {}) =>
 		}),
 	);
 describe("aligned annotation properties", () => {
+	it("keeps help next to the chosen method, hides it for unassigned tools and angle-only quantities", () => {
+		const line: Geometry = { type: "line", from, to };
+		expect(render(line, { measurementMethod: "outside" })).toContain('aria-label="测量帮助：外测量爪');
+		for (const method of ["unspecified", "other"])
+			expect(render(line, { measurementMethod: method })).not.toContain('class="measurement-help"');
+		expect(render({ type: "arc", from, to, via: { x: 0.5, y: 0.1 } }, { measurementMethod: "outside", arcQuantities: ["angle"] })).not.toContain('class="measurement-help"');
+	});
 	it("keeps angle units separate from length units", () => {
 		const html = render({
 			type: "angle",

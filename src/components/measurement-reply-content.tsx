@@ -16,6 +16,7 @@ import {
 } from "./issue-history";
 import { IssueResponseForm } from "./issue-response-form";
 import { IssueReviewForm } from "./issue-review-form";
+import { MeasurementHelp } from "./measurement-help";
 
 export function MeasurementReplyContent({
 	issue,
@@ -171,6 +172,7 @@ export function MeasurementReplyContent({
 							{methodLabel[method]}
 						</p>
 					) : null}
+					<MeasurementHelp key={issue.id} method={method} field={issue.measurementField} />
 					{instructions ? (
 						<p className="preserve-lines">
 							<small>测量说明</small>

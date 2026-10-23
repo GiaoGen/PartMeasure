@@ -1,10 +1,28 @@
 import {
 	makeCircle,
 	moveGeometry,
+	sameContent,
+	type AnnotationDraft,
 	type Geometry,
 	type Point,
 } from "./annotations";
 import { angleGeometry, editEllipse, pixel } from "./geometry-extensions";
+
+// A gesture can only commit against the object it started from. Collaboration
+// colours/values may refresh meanwhile, so retain those from the current object.
+export function annotationDragResult(
+	start: AnnotationDraft,
+	current: AnnotationDraft | undefined,
+	geometry: Geometry,
+): { changed: AnnotationDraft | null; conflict: boolean } {
+	if (!current || start.id !== current.id || !sameContent(start.geometry, current.geometry) ||
+		!sameContent(start.metadata, current.metadata))
+		return { changed: null, conflict: true };
+	return {
+		changed: sameContent(start.geometry, geometry) ? null : { ...current, geometry },
+		conflict: false,
+	};
+}
 
 export function threePointGeometry(
 	tool: "angle" | "arc",

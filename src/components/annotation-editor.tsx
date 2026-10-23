@@ -266,9 +266,18 @@ export function AnnotationEditor({
 		? { id: preview.id, geometry: preview.geometry, metadata: preview.metadata }
 		: selected;
 	return (
+		// biome-ignore lint/a11y/noStaticElementInteractions: scoped save shortcut handles bubbled keys from the canvas and existing form controls; the wrapper is not a focus target.
 		<div
 			data-properties-only={propertiesOnly}
 			className={`annotation-editor ${guest ? "read-only-editor" : ""}`}
+			onKeyDown={(event) => {
+				if (guest || event.defaultPrevented || event.nativeEvent.isComposing) return;
+				if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
+					event.preventDefault();
+					if (!preview && !session.saving && !session.conflict && (session.dirty || session.blocked))
+						void save();
+				}
+			}}
 		>
 			{!propertiesOnly ? (
 				<Canvas
@@ -334,6 +343,7 @@ export function AnnotationEditor({
 							<div className="annotation-property-actions">
 								<button
 									className="annotation-icon-button property-save"
+									aria-keyshortcuts="Control+s Meta+s"
 									aria-label={
 										session.saving
 											? "保存中"
@@ -341,7 +351,7 @@ export function AnnotationEditor({
 												? "重试保存"
 												: "保存标注"
 									}
-									title="保存标注"
+									title="保存标注（Ctrl+S / ⌘S）"
 									type="button"
 									disabled={
 										session.saving ||

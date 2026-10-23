@@ -105,6 +105,7 @@ export function useAnnotationSession(
 			setItems(data.items.filter((i) => !i.deleted));
 			setPast([]);
 			setFuture([]);
+			editGroup.current = "";
 			setSelected(previous => !force && data.items.some(i => i.id === previous && !i.deleted) ? previous : null);
 			pending.current.clear();
 			setBlocked(false);
@@ -136,6 +137,9 @@ export function useAnnotationSession(
 	const change = (next: AnnotationDraft[], group = "") => {
 		if (guest || saving || blocked) return;
 		const previous = itemsRef.current;
+		if (sameContent(previous, next)) return;
+		// Protect edits immediately, before React renders the updated dirty flag.
+		protectedDraft.current = true;
 		if (!group || editGroup.current !== group)
 			setPast((old) => [...old.slice(-99), previous]);
 		editGroup.current = group;
@@ -172,6 +176,8 @@ export function useAnnotationSession(
 		setFuture((f) => [previous, ...f].slice(0, 100));
 		setItems(next);
 		itemsRef.current = next;
+		setSelected(id => next.some(item => item.id === id) ? id : null);
+		protectedDraft.current = true;
 		editGroup.current = "";
 		setStatus("已撤销；保存后同步");
 	}
@@ -183,6 +189,8 @@ export function useAnnotationSession(
 		setPast((p) => [...p.slice(-99), previous]);
 		setItems(next);
 		itemsRef.current = next;
+		setSelected(id => next.some(item => item.id === id) ? id : null);
+		protectedDraft.current = true;
 		editGroup.current = "";
 		setStatus("已重做；保存后同步");
 	}
@@ -204,6 +212,7 @@ export function useAnnotationSession(
 			return;
 		}
 		busy.current = true;
+		protectedDraft.current = true;
 		setSaving(true);
 		setError("");
 		setStatus("正在保存…");

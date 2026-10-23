@@ -16,6 +16,7 @@ import {
 import {
 	threePointGeometry,
 	dragHandleGeometry,
+	annotationDragResult,
 } from "@/lib/annotation-interaction";
 import { AnnotationIcon } from "./annotation-icon";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -135,6 +136,19 @@ export default function AnnotationCanvas({
 		[space, setSpace] = useState(false),
 		[draft, setDraft] = useState<Geometry | null>(null);
 	const canEdit = !guest && !disabled && bitmap !== null;
+	const latestItems = useRef(items);
+	latestItems.current = items;
+	const objectDrag = useRef<{ item: AnnotationDraft; imageId: string; node: Konva.Node } | null>(null);
+	const [movingId, setMovingId] = useState<string | null>(null);
+	const cancelObjectDrag = useCallback(() => {
+		const drag = objectDrag.current;
+		objectDrag.current = null;
+		if (drag) {
+			if (drag.node.isDragging()) drag.node.stopDrag();
+			drag.node.position({ x: 0, y: 0 });
+		}
+		setMovingId(null);
+	}, []);
 	const controlDrag = useRef<{
 		item: AnnotationDraft;
 		imageId: string;
@@ -171,10 +185,17 @@ export default function AnnotationCanvas({
 		)
 			cancelControlDrag();
 	}, [canEdit, selected, image.id, cancelControlDrag]);
+	useEffect(() => {
+		if (!canEdit || objectDrag.current?.item.id !== selected || objectDrag.current?.imageId !== image.id)
+			cancelObjectDrag();
+	}, [canEdit, selected, image.id, cancelObjectDrag]);
 	useEffect(
 		() => () => {
 			if (previewFrame.current !== null)
 				cancelAnimationFrame(previewFrame.current);
+			controlDrag.current = null;
+			objectDrag.current = null;
+			drawing.current = null;
 		},
 		[],
 	);
@@ -219,6 +240,63 @@ export default function AnnotationCanvas({
 			null,
 		),
 		multi = useRef(false);
+	const cancelGestures = useCallback(() => {
+		cancelControlDrag();
+		cancelObjectDrag();
+		drawing.current = null;
+		panning.current = null;
+		pinch.current = null;
+		multi.current = false;
+		suppressPointClick.current = true;
+		triplet.current = [];
+		setPartial([]);
+		setHover(null);
+		setDraft(null);
+		setSpace(false);
+	}, [cancelControlDrag, cancelObjectDrag]);
+	useEffect(() => {
+		// Permission/loading changes must also cancel unfinished new shapes.
+		if (!canEdit) cancelGestures();
+	}, [canEdit, cancelGestures]);
+	const gestureImage = useRef(`${image.id}:${image.imageHash}`);
+	useEffect(() => {
+		const identity = `${image.id}:${image.imageHash}`;
+		if (gestureImage.current !== identity) {
+			gestureImage.current = identity;
+			cancelGestures();
+		}
+	}, [image.id, image.imageHash, cancelGestures]);
+	useEffect(() => {
+		const hidden = () => { if (document.hidden) cancelGestures(); };
+		window.addEventListener("blur", cancelGestures);
+		window.addEventListener("pointercancel", cancelGestures);
+		document.addEventListener("visibilitychange", hidden);
+		return () => {
+			window.removeEventListener("blur", cancelGestures);
+			window.removeEventListener("pointercancel", cancelGestures);
+			document.removeEventListener("visibilitychange", hidden);
+		};
+	}, [cancelGestures]);
+	function focusCanvas() {
+		host.current?.focus({ preventScroll: true });
+	}
+	function changeView(next: View) {
+		cancelControlDrag();
+		cancelObjectDrag();
+		drawing.current = null;
+		panning.current = null;
+		pinch.current = null;
+		setDraft(null);
+		setHover(null);
+		// Keep already placed angle/arc points while zooming to place the next one.
+		viewRef.current = next;
+		setView(next);
+	}
+	function commitDrag(start: AnnotationDraft, geometry: Geometry) {
+		const result = annotationDragResult(start, latestItems.current.find(item => item.id === start.id), geometry);
+		if (result.conflict) onError("标注在拖动期间已被更新，本次拖动已取消，请重试。");
+		else if (result.changed) onChange(result.changed);
+	}
 	const handlers = useRef({ onCreate, onError, onInvalid });
 	handlers.current = { onCreate, onError, onInvalid };
 	const [hint] = useState(() => imagePreviewHint(src));
@@ -261,6 +339,12 @@ export default function AnnotationCanvas({
 					height: Math.max(200, Math.floor(entry.contentRect.height)),
 				},
 				old = sizeRef.current;
+			cancelControlDrag();
+			cancelObjectDrag();
+			drawing.current = null;
+			panning.current = null;
+			setDraft(null);
+			setHover(null);
 			setView((previous) => {
 				if (!old.width)
 					return fitView(image.width, image.height, next.width, next.height);
@@ -287,7 +371,7 @@ export default function AnnotationCanvas({
 		});
 		observer.observe(host.current);
 		return () => observer.disconnect();
-	}, [image.width, image.height]);
+	}, [image.width, image.height, cancelControlDrag, cancelObjectDrag]);
 	function asGeometry(d: Draw): Geometry {
 		if (d.tool === "line") return { type: "line", from: d.from, to: d.to };
 		if (d.tool === "ellipse")
@@ -302,7 +386,7 @@ export default function AnnotationCanvas({
 		drawing.current = null;
 		panning.current = null;
 		setDraft(null);
-		if (d && !multi.current) {
+		if (d && canEdit && !multi.current) {
 			handlers.current.onCreate(asGeometry(d));
 			setTool("select");
 		}
@@ -341,8 +425,9 @@ export default function AnnotationCanvas({
 		drawing.current = { tool, from: normalized, to: normalized };
 		setDraft(asGeometry(drawing.current));
 	}
-	function placePoint() {
+	function placePoint(event: Konva.KonvaEventObject<MouseEvent | TouchEvent>) {
 		if (
+			("button" in event.evt && event.evt.button !== 0) ||
 			!canEdit ||
 			!bitmap ||
 			multi.current ||
@@ -356,6 +441,7 @@ export default function AnnotationCanvas({
 
 		const points = [...triplet.current, normalized];
 		if (points.length === 3) {
+			suppressPointClick.current = true;
 			const [a, b, c] = points;
 			if (a && b && c)
 				handlers.current.onCreate(threePointGeometry(tool, [a, b, c]));
@@ -403,15 +489,9 @@ export default function AnnotationCanvas({
 		if (event.touches.length < 2) return;
 		event.preventDefault();
 		event.stopPropagation();
+		if (!multi.current) cancelGestures();
 		multi.current = true;
 		suppressPointClick.current = true;
-		cancelControlDrag();
-		triplet.current = [];
-		setPartial([]);
-		setHover(null);
-		drawing.current = null;
-		panning.current = null;
-		setDraft(null);
 		const a = event.touches[0],
 			b = event.touches[1],
 			rect = host.current?.getBoundingClientRect();
@@ -454,8 +534,9 @@ export default function AnnotationCanvas({
 		id: string,
 	) {
 		if (space || tool === "pan") return;
+		if (multi.current || ("button" in event.evt && event.evt.button !== 0)) return;
 		if (!guest && !["select", "pan"].includes(tool)) return;
-		if ((!space && !multi.current) || guest) {
+		if (!space && !multi.current) {
 			onSelect(id);
 			host.current?.focus({ preventScroll: true });
 			event.cancelBubble = true;
@@ -471,7 +552,7 @@ export default function AnnotationCanvas({
 					? controlPreview.geometry
 					: item.geometry,
 			chosen = !preview && selected === item.id,
-			editing = canEdit && chosen && !space && !preview,
+			editing = canEdit && chosen && tool === "select" && !space && !preview,
 			stroke = annotationColor(item),
 			lineWidth = (chosen ? 3 : 2) / s;
 		const label = photoDimensionText(item);
@@ -507,7 +588,7 @@ export default function AnnotationCanvas({
 		));
 
 		const handles: { key: string; point: Point }[] = [];
-		if (chosen && editing) {
+		if (chosen && editing && movingId !== item.id) {
 			if (g.type === "line")
 				handles.push(
 					{ key: "from", point: g.from },
@@ -601,13 +682,21 @@ export default function AnnotationCanvas({
 							);
 						return { x: view.x + dx * w * s, y: view.y + dy * h * s };
 					}}
+					onDragStart={(e) => {
+						if (!editing || multi.current) { e.target.stopDrag(); return; }
+						objectDrag.current = { item, imageId: image.id, node: e.target };
+						setMovingId(item.id);
+					}}
 					onDragEnd={(e) => {
 						const node = e.target,
 							dx = node.x() / w,
 							dy = node.y() / h;
+						const drag = objectDrag.current;
+						objectDrag.current = null;
+						setMovingId(null);
 						node.position({ x: 0, y: 0 });
-						if (!multi.current)
-							onChange({ ...item, geometry: moveGeometry(g, dx, dy, w, h) });
+						if (drag && canEdit && !multi.current && drag.imageId === image.id)
+							commitDrag(drag.item, moveGeometry(drag.item.geometry, dx, dy, w, h));
 					}}
 				>
 					{paths.length
@@ -719,24 +808,8 @@ export default function AnnotationCanvas({
 							const drag = controlDrag.current;
 							cancelControlDrag();
 							e.target.position({ x: point.x * w, y: point.y * h });
-							if (
-								drag &&
-								(JSON.stringify(drag.item.geometry) !==
-									JSON.stringify(item.geometry) ||
-									JSON.stringify(drag.item.metadata) !==
-										JSON.stringify(item.metadata))
-							) {
-								onError("标注在拖动期间已被更新，本次拖动已取消，请重试。");
-								return;
-							}
-							if (
-								drag &&
-								canEdit &&
-								!multi.current &&
-								JSON.stringify(drag.geometry) !==
-									JSON.stringify(drag.item.geometry)
-							)
-								onChange({ ...drag.item, geometry: drag.geometry });
+							if (drag && canEdit && !multi.current && drag.imageId === image.id)
+								commitDrag(drag.item, drag.geometry);
 						}}
 					/>
 				))}
@@ -774,13 +847,9 @@ export default function AnnotationCanvas({
 								aria-label={names[value]}
 								title={names[value]}
 								onClick={() => {
-									cancelControlDrag();
+									cancelGestures();
 									setTool(value);
-									drawing.current = null;
-									triplet.current = [];
-									setPartial([]);
-									setHover(null);
-									setDraft(null);
+									focusCanvas();
 								}}
 							>
 								<AnnotationIcon kind={value} />
@@ -792,7 +861,7 @@ export default function AnnotationCanvas({
 							disabled={disabled || !canUndo}
 							aria-label="撤销"
 							title="撤销"
-							onClick={onUndo}
+							onClick={() => { cancelGestures(); onUndo(); focusCanvas(); }}
 						>
 							<AnnotationIcon kind="undo" />
 						</button>
@@ -802,7 +871,7 @@ export default function AnnotationCanvas({
 							disabled={disabled || !canRedo}
 							aria-label="重做"
 							title="重做"
-							onClick={onRedo}
+							onClick={() => { cancelGestures(); onRedo(); focusCanvas(); }}
 						>
 							<AnnotationIcon kind="redo" />
 						</button>
@@ -813,15 +882,11 @@ export default function AnnotationCanvas({
 					className="annotation-icon-button"
 					aria-label="缩小"
 					title="缩小"
-					onClick={() =>
-						setView((v) =>
-							zoomView(
-								v,
-								{ x: size.width / 2, y: size.height / 2 },
-								v.scale / 1.2,
-							),
-						)
-					}
+					onClick={() => {
+						const v = viewRef.current;
+						changeView(zoomView(v, { x: size.width / 2, y: size.height / 2 }, v.scale / 1.2));
+						focusCanvas();
+					}}
 				>
 					<AnnotationIcon kind="zoomOut" />
 				</button>
@@ -830,15 +895,11 @@ export default function AnnotationCanvas({
 					className="annotation-icon-button"
 					aria-label="放大"
 					title="放大"
-					onClick={() =>
-						setView((v) =>
-							zoomView(
-								v,
-								{ x: size.width / 2, y: size.height / 2 },
-								v.scale * 1.2,
-							),
-						)
-					}
+					onClick={() => {
+						const v = viewRef.current;
+						changeView(zoomView(v, { x: size.width / 2, y: size.height / 2 }, v.scale * 1.2));
+						focusCanvas();
+					}}
 				>
 					<AnnotationIcon kind="zoomIn" />
 				</button>
@@ -847,7 +908,7 @@ export default function AnnotationCanvas({
 					className="annotation-icon-button"
 					aria-label="适应图片"
 					title="适应图片"
-					onClick={() => setView(fitView(w, h, size.width, size.height))}
+					onClick={() => { changeView(fitView(w, h, size.width, size.height)); focusCanvas(); }}
 				>
 					<AnnotationIcon kind="fit" />
 				</button>
@@ -856,6 +917,7 @@ export default function AnnotationCanvas({
 			<div
 				ref={host}
 				className="annotation-viewport"
+				style={{ cursor: guest || space || tool === "pan" ? "grab" : tool === "select" ? "default" : "crosshair" }}
 				role="application"
 				aria-label={guest ? "图片标注只读视图" : "图片标注编辑器"}
 				// biome-ignore lint/a11y/noNoninteractiveTabindex: custom canvas keyboard focus; parallel object list and forms provide accessible alternatives.
@@ -868,13 +930,7 @@ export default function AnnotationCanvas({
 				onTouchStartCapture={touches}
 				onTouchMoveCapture={touches}
 				onTouchEndCapture={endTouches}
-				onTouchCancelCapture={(event) => {
-					suppressPointClick.current = true;
-					cancelControlDrag();
-					drawing.current = null;
-					setDraft(null);
-					endTouches(event);
-				}}
+				onTouchCancelCapture={cancelGestures}
 				onBlur={() => setSpace(false)}
 				onKeyUp={(e) => {
 					if (e.code === "Space") setSpace(false);
@@ -887,17 +943,20 @@ export default function AnnotationCanvas({
 						return;
 					}
 					if (e.key === "Escape") {
-						cancelControlDrag();
-						drawing.current = null;
-						triplet.current = [];
-						setPartial([]);
-						setHover(null);
-						setDraft(null);
+						e.preventDefault();
+						e.stopPropagation();
+						cancelGestures();
 						setTool("select");
 						onSelect(null);
 						return;
 					}
 					if (!canEdit) return;
+					if (e.nativeEvent.isComposing) return;
+					if (drawing.current || controlDrag.current || objectDrag.current || triplet.current.length) {
+						if (e.ctrlKey || e.metaKey || e.key.startsWith("Arrow") || e.key === "Delete" || e.key === "Backspace")
+							e.preventDefault();
+						return;
+					}
 					if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
 						e.preventDefault();
 						onSave();
@@ -967,12 +1026,12 @@ export default function AnnotationCanvas({
 					onTap={placePoint}
 					onContextMenu={(e) => e.evt.preventDefault()}
 					onDblClick={(e) => {
-						if (!triplet.current.length && e.target === e.target.getStage())
-							setView(fitView(w, h, size.width, size.height));
+						if (["select", "pan"].includes(tool) && !suppressPointClick.current && e.target === e.target.getStage())
+							changeView(fitView(w, h, size.width, size.height));
 					}}
 					onDblTap={(e) => {
-						if (e.target === e.target.getStage())
-							setView(fitView(w, h, size.width, size.height));
+						if (["select", "pan"].includes(tool) && !suppressPointClick.current && e.target === e.target.getStage())
+							changeView(fitView(w, h, size.width, size.height));
 					}}
 					onMouseMove={move}
 					onMouseUp={finish}
@@ -983,13 +1042,14 @@ export default function AnnotationCanvas({
 					onTouchEnd={finish}
 					onWheel={(e) => {
 						e.evt.preventDefault();
+						if (!e.evt.deltaY) return;
 						const point = stage.current?.getPointerPosition();
 						if (point)
-							setView((v) =>
+							changeView(
 								zoomView(
-									v,
+									viewRef.current,
 									point,
-									v.scale * (e.evt.deltaY > 0 ? 1 / 1.1 : 1.1),
+									viewRef.current.scale * (e.evt.deltaY > 0 ? 1 / 1.1 : 1.1),
 								),
 							);
 					}}
@@ -1069,11 +1129,9 @@ export default function AnnotationCanvas({
 						title="取消"
 						type="button"
 						onClick={() => {
-							triplet.current = [];
-							setPartial([]);
-							setHover(null);
-							setDraft(null);
+							cancelGestures();
 							setTool("select");
+							focusCanvas();
 						}}
 					>
 						<AnnotationIcon kind="close" />

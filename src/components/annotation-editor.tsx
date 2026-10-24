@@ -316,6 +316,7 @@ export function AnnotationEditor({
 							};
 							session.change([...session.items, item]);
 							select(item.id);
+							return session.captureCvTicket(item.id);
 						} catch (e) {
 							session.setError(
 								message(e instanceof Error ? e.message : "INVALID_GEOMETRY"),
@@ -323,6 +324,7 @@ export function AnnotationEditor({
 						}
 					}}
 					onChange={(item) => session.update(item)}
+					onFitDraft={session.applyCvFit}
 					onDelete={remove}
 					onUndo={session.undo}
 					onRedo={session.redo}

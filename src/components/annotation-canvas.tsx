@@ -25,6 +25,9 @@ import { decodedImage } from "./decoded-image";
 import { discardPrivateImage, cachedPrivateImage } from "./private-image-cache";
 import { imagePreviewHint } from "./image-preview";
 import { useWorkspaceMark } from "./use-workspace-theme";
+import { useCvAssistance } from "./use-cv-assistance";
+import type { CvDraftTicket } from "@/lib/cv/draft";
+import "./annotation-cv.css";
 import {
 	Stage,
 	Layer,
@@ -87,6 +90,7 @@ export default function AnnotationCanvas({
 	onSelect,
 	onCreate,
 	onChange,
+	onFitDraft,
 	onDelete,
 	onUndo,
 	onRedo,
@@ -106,8 +110,9 @@ export default function AnnotationCanvas({
 	guest: boolean;
 	disabled: boolean;
 	onSelect: (id: string | null) => void;
-	onCreate: (g: Geometry) => void;
+	onCreate: ((g: Geometry) => CvDraftTicket | undefined) | ((g: Geometry) => void);
 	onChange: (item: AnnotationDraft) => void;
+	onFitDraft?: ((ticket: CvDraftTicket, geometry: Geometry) => boolean) | undefined;
 	onDelete: () => void;
 	onUndo: () => void;
 	onRedo: () => void;
@@ -136,6 +141,9 @@ export default function AnnotationCanvas({
 		[space, setSpace] = useState(false),
 		[draft, setDraft] = useState<Geometry | null>(null);
 	const canEdit = !guest && !disabled && bitmap !== null;
+	const cvAvailable = !guest && showToolbar && !!onFitDraft;
+	const cv = useCvAssistance({ image, src, bitmap, allowed: cvAvailable && canEdit, apply: onFitDraft });
+	const [activeCandidate, setActiveCandidate] = useState<string | null>(null);
 	const latestItems = useRef(items);
 	latestItems.current = items;
 	const objectDrag = useRef<{ item: AnnotationDraft; imageId: string; node: Konva.Node } | null>(null);
@@ -387,9 +395,13 @@ export default function AnnotationCanvas({
 		panning.current = null;
 		setDraft(null);
 		if (d && canEdit && !multi.current) {
-			handlers.current.onCreate(asGeometry(d));
+			createWithFit(asGeometry(d));
 			setTool("select");
 		}
+	}
+	function createWithFit(geometry: Geometry) {
+		const ticket = handlers.current.onCreate(geometry);
+		if (ticket) cv.fit(ticket);
 	}
 	const finishRef = useRef(finish);
 	finishRef.current = finish;
@@ -405,6 +417,7 @@ export default function AnnotationCanvas({
 	function begin(event?: Konva.KonvaEventObject<MouseEvent>) {
 		host.current?.focus({ preventScroll: true });
 		if (multi.current || !bitmap) return;
+		if (cv.busy) cv.cancel();
 		suppressPointClick.current = false;
 		const p = stage.current?.getPointerPosition();
 		if (!p) return;
@@ -444,7 +457,7 @@ export default function AnnotationCanvas({
 			suppressPointClick.current = true;
 			const [a, b, c] = points;
 			if (a && b && c)
-				handlers.current.onCreate(threePointGeometry(tool, [a, b, c]));
+				createWithFit(threePointGeometry(tool, [a, b, c]));
 			triplet.current = [];
 			setPartial([]);
 			setHover(null);
@@ -537,6 +550,7 @@ export default function AnnotationCanvas({
 		if (multi.current || ("button" in event.evt && event.evt.button !== 0)) return;
 		if (!guest && !["select", "pan"].includes(tool)) return;
 		if (!space && !multi.current) {
+			if (cv.busy) cv.cancel();
 			onSelect(id);
 			host.current?.focus({ preventScroll: true });
 			event.cancelBubble = true;
@@ -777,9 +791,11 @@ export default function AnnotationCanvas({
 						strokeWidth={2 / s}
 						draggable
 						onMouseDown={(e) => {
+							if (cv.busy) cv.cancel();
 							e.cancelBubble = true;
 						}}
 						onTouchStart={(e) => {
+							if (cv.busy) cv.cancel();
 							e.cancelBubble = true;
 						}}
 						dragBoundFunc={(pos) => {
@@ -875,6 +891,11 @@ export default function AnnotationCanvas({
 						>
 							<AnnotationIcon kind="redo" />
 						</button>
+						{cvAvailable ? <div className="annotation-cv-controls">
+							<label><input type="checkbox" checked={cv.enabled} disabled={!canEdit} onChange={cv.toggle} />边缘贴合</label>
+							<button type="button" disabled={!canEdit || cv.busy} onClick={() => { cancelGestures(); cv.detect(); }}>识别圆／椭圆</button>
+							{cv.busy ? <button type="button" onClick={cv.cancel}>取消辅助</button> : null}
+						</div> : null}
 					</>
 				) : null}
 				<button
@@ -913,6 +934,20 @@ export default function AnnotationCanvas({
 					<AnnotationIcon kind="fit" />
 				</button>
 			</div> : null}
+			{cvAvailable && (cv.status || cv.candidates.length) ? <div className="annotation-cv-results">
+				<p role="status" aria-busy={cv.busy}>{cv.status}</p>
+				{cv.candidates.length ? <fieldset className="annotation-cv-candidates" aria-label="可选圆与椭圆轮廓">
+					{cv.candidates.map((candidate, index) => <button key={candidate.id} type="button" disabled={!canEdit || cv.busy}
+						data-active={activeCandidate === candidate.id}
+						aria-label={`选用候选 ${index + 1}，${candidate.geometry.type === "circle" ? "圆" : "椭圆"}`}
+						onMouseEnter={() => setActiveCandidate(candidate.id)} onMouseLeave={() => setActiveCandidate(null)}
+						onFocus={() => setActiveCandidate(candidate.id)} onBlur={() => setActiveCandidate(null)}
+						onClick={() => { cancelGestures(); const ticket = handlers.current.onCreate(candidate.geometry); if (ticket) cv.adopt(candidate.id); setTool("select"); focusCanvas(); }}>
+						{index + 1} {candidate.geometry.type === "circle" ? "圆" : "椭圆"}
+					</button>)}
+					<button type="button" onClick={cv.clear}>清除候选</button>
+				</fieldset> : null}
+			</div> : null}
 
 			<div
 				ref={host}
@@ -946,6 +981,7 @@ export default function AnnotationCanvas({
 						e.preventDefault();
 						e.stopPropagation();
 						cancelGestures();
+						cv.clear();
 						setTool("select");
 						onSelect(null);
 						return;
@@ -1064,6 +1100,13 @@ export default function AnnotationCanvas({
 									listening={false}
 								/>
 							) : null}
+							{cvAvailable && bitmap ? cv.candidates.map((candidate, index) => {
+								const at = anchor(candidate.geometry), active = activeCandidate === candidate.id;
+								return <Group key={candidate.id} listening={false} opacity={activeCandidate && !active ? .35 : .85}>
+									{geometryPaths(candidate.geometry, w, h, s).map(data => <Path key={data} data={data} stroke={active ? mark : "#627080"} strokeWidth={(active ? 3 : 1.5) / s} dash={[5 / s, 4 / s]} />)}
+									<Text x={at.x * w + 6 / s} y={at.y * h + 6 / s} text={`候选${index + 1}`} fontSize={12 / s} fill={active ? mark : "#344054"} />
+								</Group>;
+							}) : null}
 							{bitmap ? items.map((i) => render(i)) : null}
 							{partial.length && hover && !draft ? (
 								<Line

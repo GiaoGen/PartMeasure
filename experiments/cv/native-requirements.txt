@@ -1,0 +1,4 @@
+# Offline comparison tool only, never imported by the production app.
+# CPython 3.12 x64; installed with --target ../../tmp/p1-03/python.
+opencv-contrib-python-headless==4.12.0.88
+numpy==2.2.6

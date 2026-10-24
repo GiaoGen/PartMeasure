@@ -1,0 +1,38 @@
+{
+  "version": "p1-03-agent-reference-1",
+  "reviewer": "Codex visual review, 2026-10-25; not a human engineer or independent blinded reviewer",
+  "method": "Approximate pixel references placed from full-resolution original photographs before this round's per-candidate review. Existing aggregate algorithm results and historical rough probes were already known. References are frozen before quantitative evaluation; no detector result is used as ground truth. Coordinates refer to the 1024px canonical images. Uncertainty is a judgement band, not calibrated measurement accuracy.",
+  "scope": "24 selected visible contour tasks on 11 photographs; not an exhaustive inventory of holes. Circle and ellipse tasks can intentionally address the same visible contour; do not count them as independent physical targets. All 36 photographs receive a separate output-candidate review.",
+  "excludedHistoricalProbes": [
+    {"imageId":"bracket_black-01","label":"bent bracket corner with curved transition","reason":"Rounded bend has no directly visible sharp vertex; an extrapolated engineering corner would require a different task definition."},
+    {"imageId":"bracket_brown-02","label":"open decorative curl; round contour is not a hole","reason":"Open spiral is not a single closed ellipse; useful negative candidate example, unsuitable as ellipse ground truth."},
+    {"imageId":"connector-03","label":"short bracket top edge","reason":"Historical rough draft crosses the stem below the hook rather than the named top edge; replaced by an explicit visible housing edge."},
+    {"imageId":"connector-03","label":"reflective front cap; non-hole circle intent","reason":"Cap silhouette is visibly elliptical; imposing a circle would mix tool choice with detector error. Reviewed as a non-hole candidate instead."}
+  ],
+  "targets": [
+    {"id":"plate01-edge","imageId":"metal_plate-01","label":"upper left exterior straight edge, selected subrange","type":"line","from":[184,359],"to":[563,198],"uncertaintyPx":3},
+    {"id":"plate01-corner","imageId":"metal_plate-01","label":"upper corner, two exterior edges","type":"angle","from":[533,210],"vertex":[725,128],"to":[850,383],"uncertaintyPx":4},
+    {"id":"plate01-circle","imageId":"metal_plate-01","label":"central aperture inner contour; top occluded by hook","type":"circle","center":[520,488],"radii":[75,75],"angleDeg":0,"uncertaintyPx":3,"semantic":"aperture"},
+    {"id":"plate01-ellipse","imageId":"metal_plate-01","label":"same aperture, ellipse tool preserves tool intent","type":"ellipse","center":[520,488],"radii":[75,74],"angleDeg":90,"uncertaintyPx":3,"semantic":"aperture"},
+    {"id":"white05-edge","imageId":"bracket_white-05","label":"left exterior silhouette, not inner highlight","type":"line","from":[467,266],"to":[467,717],"uncertaintyPx":3},
+    {"id":"white05-corner","imageId":"bracket_white-05","label":"upper right exterior corner; small rounding","type":"angle","from":[574,115],"vertex":[665,129],"to":[598,460],"uncertaintyPx":5},
+    {"id":"white05-circle","imageId":"bracket_white-05","label":"upper small aperture, hook partially occludes edge","type":"circle","center":[553,165],"radii":[14,14],"angleDeg":0,"uncertaintyPx":3,"semantic":"aperture"},
+    {"id":"white05-ellipse","imageId":"bracket_white-05","label":"same upper aperture with ellipse tool","type":"ellipse","center":[553,165],"radii":[15,13],"angleDeg":70,"uncertaintyPx":3,"semantic":"aperture"},
+    {"id":"black01-edge","imageId":"bracket_black-01","label":"long left exterior silhouette above bend","type":"line","from":[401,276],"to":[339,614],"uncertaintyPx":3},
+    {"id":"black01-circle","imageId":"bracket_black-01","label":"small left aperture above bend","type":"circle","center":[362,643],"radii":[7.5,7.5],"angleDeg":0,"uncertaintyPx":2,"semantic":"aperture"},
+    {"id":"black01-ellipse","imageId":"bracket_black-01","label":"same small aperture with ellipse tool","type":"ellipse","center":[362,643],"radii":[8.5,7],"angleDeg":110,"uncertaintyPx":2,"semantic":"aperture"},
+    {"id":"tubes03-upper-edge","imageId":"tubes-03","label":"upper exterior edge of near-horizontal upper tube","type":"line","from":[420,176],"to":[522,188],"uncertaintyPx":3},
+    {"id":"tubes03-lower-edge","imageId":"tubes-03","label":"left exterior edge of lower long tube","type":"line","from":[463,590],"to":[509,708],"uncertaintyPx":3},
+    {"id":"tubes03-end","imageId":"tubes-03","label":"flattened lower end contour; visible rim, not proof of an open bore","type":"ellipse","center":[538,702],"radii":[35,8],"angleDeg":-23,"uncertaintyPx":3,"semantic":"rim-ambiguous-opening"},
+    {"id":"brown02-edge","imageId":"bracket_brown-02","label":"bottom exterior straight edge","type":"line","from":[235,719],"to":[553,907],"uncertaintyPx":3},
+    {"id":"brown02-corner","imageId":"bracket_brown-02","label":"lower left exterior corner, rounded joint","type":"angle","from":[261,472],"vertex":[195,690],"to":[410,822],"uncertaintyPx":6},
+    {"id":"connector03-wheel","imageId":"connector-03","label":"middle wheel front-face rim, non-hole round feature","type":"ellipse","center":[569,567],"radii":[45,21],"angleDeg":90,"uncertaintyPx":4,"semantic":"non-hole-wheel"},
+    {"id":"connector03-edge","imageId":"connector-03","label":"left housing top edge","type":"line","from":[235,575],"to":[301,574],"uncertaintyPx":3},
+    {"id":"connector03-cap","imageId":"connector-03","label":"left reflective cap silhouette, non-hole feature","type":"ellipse","center":[263,645],"radii":[35,27],"angleDeg":78,"uncertaintyPx":4,"semantic":"non-hole-cap"},
+    {"id":"plate02-ellipse","imageId":"metal_plate-02","label":"central inner aperture, exclude blue thickness on right","type":"ellipse","center":[529,488],"radii":[73,53],"angleDeg":75,"uncertaintyPx":4,"semantic":"aperture"},
+    {"id":"plate03-circle","imageId":"metal_plate-03","label":"central aperture, top occluded by hook","type":"circle","center":[502,478],"radii":[74,74],"angleDeg":0,"uncertaintyPx":3,"semantic":"aperture"},
+    {"id":"plate04-circle","imageId":"metal_plate-04","label":"central aperture, top occluded by hook","type":"circle","center":[545,488],"radii":[74,74],"angleDeg":0,"uncertaintyPx":3,"semantic":"aperture"},
+    {"id":"plate05-circle","imageId":"metal_plate-05","label":"central aperture, top occluded by hook","type":"circle","center":[498,490],"radii":[73,73],"angleDeg":0,"uncertaintyPx":3,"semantic":"aperture"},
+    {"id":"plate06-circle","imageId":"metal_plate-06","label":"central aperture, slight ellipticity within judgement band","type":"circle","center":[511,492],"radii":[75,75],"angleDeg":0,"uncertaintyPx":3,"semantic":"aperture"}
+  ]
+}

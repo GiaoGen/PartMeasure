@@ -1,0 +1,4070 @@
+{
+  "generatedAt": "2026-10-24T16:31:28.366Z",
+  "status": "technical-experiment-complete-human-evaluation-pending",
+  "imageCount": 36,
+  "probeCount": 27,
+  "groups": {
+    "baseline": {
+      "bracket_black": {
+        "images": 6,
+        "circles": 1,
+        "ellipses": 3,
+        "changed": {
+          "line": 1
+        },
+        "retained": {
+          "angle": 1,
+          "circle": 1,
+          "ellipse": 1
+        }
+      },
+      "bracket_brown": {
+        "images": 6,
+        "circles": 0,
+        "ellipses": 3,
+        "changed": {
+          "line": 1
+        },
+        "retained": {
+          "angle": 1,
+          "ellipse": 1
+        }
+      },
+      "bracket_white": {
+        "images": 6,
+        "circles": 1,
+        "ellipses": 0,
+        "changed": {
+          "line": 1
+        },
+        "retained": {
+          "angle": 1,
+          "circle": 1,
+          "ellipse": 1
+        }
+      },
+      "connector": {
+        "images": 6,
+        "circles": 0,
+        "ellipses": 6,
+        "changed": {},
+        "retained": {
+          "ellipse": 2,
+          "circle": 1,
+          "line": 1
+        }
+      },
+      "metal_plate": {
+        "images": 6,
+        "circles": 3,
+        "ellipses": 7,
+        "changed": {
+          "line": 1,
+          "angle": 1,
+          "circle": 1,
+          "ellipse": 1
+        },
+        "retained": {
+          "line": 1,
+          "ellipse": 1,
+          "circle": 1,
+          "angle": 1
+        }
+      },
+      "tubes": {
+        "images": 6,
+        "circles": 0,
+        "ellipses": 5,
+        "changed": {
+          "line": 1
+        },
+        "retained": {
+          "line": 1,
+          "ellipse": 2
+        }
+      }
+    },
+    "edge": {
+      "bracket_black": {
+        "images": 6,
+        "circles": 8,
+        "ellipses": 1,
+        "changed": {
+          "line": 1
+        },
+        "retained": {
+          "angle": 1,
+          "circle": 1,
+          "ellipse": 1
+        }
+      },
+      "bracket_brown": {
+        "images": 6,
+        "circles": 24,
+        "ellipses": 24,
+        "changed": {
+          "line": 1
+        },
+        "retained": {
+          "angle": 1,
+          "ellipse": 1
+        }
+      },
+      "bracket_white": {
+        "images": 6,
+        "circles": 2,
+        "ellipses": 2,
+        "changed": {
+          "line": 1,
+          "circle": 1
+        },
+        "retained": {
+          "angle": 1,
+          "ellipse": 1
+        }
+      },
+      "connector": {
+        "images": 6,
+        "circles": 12,
+        "ellipses": 5,
+        "changed": {
+          "circle": 1
+        },
+        "retained": {
+          "ellipse": 2,
+          "line": 1
+        }
+      },
+      "metal_plate": {
+        "images": 6,
+        "circles": 5,
+        "ellipses": 2,
+        "changed": {
+          "line": 1,
+          "angle": 1,
+          "circle": 1,
+          "ellipse": 1
+        },
+        "retained": {
+          "line": 1,
+          "ellipse": 1,
+          "circle": 1,
+          "angle": 1
+        }
+      },
+      "tubes": {
+        "images": 6,
+        "circles": 0,
+        "ellipses": 0,
+        "changed": {
+          "line": 2
+        },
+        "retained": {
+          "ellipse": 2
+        }
+      }
+    }
+  },
+  "baseline": {
+    "environment": {
+      "node": "v24.15.0",
+      "platform": "win32",
+      "architecture": "x64",
+      "cvVersion": "General configuration for OpenCV 4.12.0 ====================================="
+    },
+    "configuration": {
+      "version": "p1-03-probe-2",
+      "cannyLow": 50,
+      "cannyHigh": 150,
+      "maxContours": 2000,
+      "maxCandidates": 12,
+      "minRadius": 7,
+      "minCoverage": 0.8,
+      "maxRadialResidual": 0.12,
+      "circleAxisRatio": 0.92,
+      "minEllipseAxisRatio": 0.18,
+      "maxPixels": 1048576
+    },
+    "initializationMs": 225.0448,
+    "artifactBytes": 10872779,
+    "artifactSha256": "bd0c3e6448043de04f6a64a12cb7b759f78c3ab8f7c35c9f2e0f71c88bb17103",
+    "timing": {
+      "label": "Node CPU wall time; not browser load, user completion time or phone response",
+      "totalMedianMs": 19.440400000000068,
+      "totalP95Ms": 38.11290000000008,
+      "preprocessingMedianMs": 12.216100000000097,
+      "candidateMedianMs": 6.979200000000219
+    },
+    "resources": {
+      "rssBeforeBytes": 182681600,
+      "rssAfterBytes": 251392000,
+      "wasmHeapCapacityBytes": 134217728,
+      "note": "RSS includes Node, Sharp and CV; endpoints are not peak memory; WASM capacity is not live allocations."
+    }
+  },
+  "edgeDrawing": {
+    "algorithm": "OpenCV contrib EdgeDrawing",
+    "opencv": "4.12.0",
+    "numpy": "2.2.6",
+    "python": "3.12.14",
+    "platform": "Windows-11-10.0.26300-SP0",
+    "threads": 1,
+    "parameters": {
+      "PFmode": true,
+      "NFAValidation": true
+    },
+    "initializationMs": 164.28979999909643,
+    "binaryBytes": 85000704,
+    "binarySha256": "36cacb9ac12d55ac4b8d43d83ac6b02bf673c1f2c401833b9dcc993156229fad",
+    "medianMs": 19.502499999362044,
+    "p95Ms": 71.12160000178847
+  },
+  "human": {
+    "precision": null,
+    "recall": null,
+    "completionTime": null,
+    "corrections": null,
+    "undoCount": null,
+    "browserInitializationMs": null,
+    "phoneResponsiveness": null
+  },
+  "limitations": [
+    "Single dataset, repeated part families, no actual user workbench/phone photos or typical solid stepped shafts",
+    "27 analyst-positioned rough intents are not independent human ground truth",
+    "Native full-image extraction and Node/WASM ROI fitting have different scopes/runtimes; timings are not a speed comparison",
+    "Changed geometry is not a correctness or productivity result",
+    "No browser/E2E or phone test has run; manual workbench is delivered for human use"
+  ],
+  "images": [
+    {
+      "id": "bracket_black-01",
+      "category": "bracket_black",
+      "canonicalSha256": "3b30bd6adc7d9eb77ff7b586b88b62922276e573b9856b14dd276ff155cf3aaa",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [],
+          "locals": [
+            {
+              "label": "dark bracket long side",
+              "input": {
+                "type": "line",
+                "from": {
+                  "x": 0.375,
+                  "y": 0.27
+                },
+                "to": {
+                  "x": 0.33,
+                  "y": 0.6
+                }
+              },
+              "output": {
+                "type": "line",
+                "from": {
+                  "x": 0.391713077234216,
+                  "y": 0.2731762409223397
+                },
+                "to": {
+                  "x": 0.3296156560307776,
+                  "y": 0.5999269572547179
+                }
+              },
+              "reason": "local-line",
+              "changed": true,
+              "milliseconds": 3.0124000000000706
+            },
+            {
+              "label": "bent bracket corner with curved transition",
+              "input": {
+                "type": "angle",
+                "from": {
+                  "x": 0.375,
+                  "y": 0.6
+                },
+                "vertex": {
+                  "x": 0.345,
+                  "y": 0.697
+                },
+                "to": {
+                  "x": 0.505,
+                  "y": 0.81
+                },
+                "reflex": false
+              },
+              "output": {
+                "type": "angle",
+                "from": {
+                  "x": 0.375,
+                  "y": 0.6
+                },
+                "vertex": {
+                  "x": 0.345,
+                  "y": 0.697
+                },
+                "to": {
+                  "x": 0.505,
+                  "y": 0.81
+                },
+                "reflex": false
+              },
+              "reason": "unreliable-angle-arm",
+              "changed": false,
+              "milliseconds": 1.72199999999998
+            },
+            {
+              "label": "small dark bracket hole circle intent",
+              "input": {
+                "type": "circle",
+                "center": {
+                  "x": 0.353,
+                  "y": 0.628
+                },
+                "radiusX": 0.01,
+                "radiusY": 0.01
+              },
+              "output": {
+                "type": "circle",
+                "center": {
+                  "x": 0.353,
+                  "y": 0.628
+                },
+                "radiusX": 0.01,
+                "radiusY": 0.01
+              },
+              "reason": "no-reliable-round",
+              "changed": false,
+              "milliseconds": 0.6648000000000138
+            },
+            {
+              "label": "small dark bracket hole ellipse intent",
+              "input": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.353,
+                  "y": 0.628
+                },
+                "axisA": {
+                  "x": 0.365,
+                  "y": 0.628
+                },
+                "axisB": {
+                  "x": 0.353,
+                  "y": 0.637
+                }
+              },
+              "output": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.353,
+                  "y": 0.628
+                },
+                "axisA": {
+                  "x": 0.365,
+                  "y": 0.628
+                },
+                "axisB": {
+                  "x": 0.353,
+                  "y": 0.637
+                }
+              },
+              "reason": "no-reliable-round",
+              "changed": false,
+              "milliseconds": 0.34989999999993415
+            }
+          ],
+          "computeMs": 48.59179999999992
+        },
+        {
+          "engine": "edge",
+          "candidates": [
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.43330304397068514,
+                "y": 0.17120529310406873
+              },
+              "radiusX": 0.021619580957493695,
+              "radiusY": 0.021619580957493695
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.4328474689670764,
+                "y": 0.17741122168745377
+              },
+              "radiusX": 0.007205815680006801,
+              "radiusY": 0.007205815680006801
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.3531696293618373,
+                "y": 0.6271336016486119
+              },
+              "radiusX": 0.007201875174342074,
+              "radiusY": 0.007201875174342074
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.41792009156067933,
+                "y": 0.6103049899954235
+              },
+              "radiusX": 0.007020630861576509,
+              "radiusY": 0.007020630861576509
+            }
+          ],
+          "locals": [
+            {
+              "label": "dark bracket long side",
+              "input": {
+                "type": "line",
+                "from": {
+                  "x": 0.375,
+                  "y": 0.27
+                },
+                "to": {
+                  "x": 0.33,
+                  "y": 0.6
+                }
+              },
+              "output": {
+                "type": "line",
+                "from": {
+                  "x": 0.39085769423760625,
+                  "y": 0.27293404730872756
+                },
+                "to": {
+                  "x": 0.33033143552645733,
+                  "y": 0.6000613233866063
+                }
+              },
+              "reason": "local-line",
+              "changed": true,
+              "milliseconds": 3.6456000000000017
+            },
+            {
+              "label": "bent bracket corner with curved transition",
+              "input": {
+                "type": "angle",
+                "from": {
+                  "x": 0.375,
+                  "y": 0.6
+                },
+                "vertex": {
+                  "x": 0.345,
+                  "y": 0.697
+                },
+                "to": {
+                  "x": 0.505,
+                  "y": 0.81
+                },
+                "reflex": false
+              },
+              "output": {
+                "type": "angle",
+                "from": {
+                  "x": 0.375,
+                  "y": 0.6
+                },
+                "vertex": {
+                  "x": 0.345,
+                  "y": 0.697
+                },
+                "to": {
+                  "x": 0.505,
+                  "y": 0.81
+                },
+                "reflex": false
+              },
+              "reason": "unreliable-angle-arm",
+              "changed": false,
+              "milliseconds": 0.8918999999999926
+            },
+            {
+              "label": "small dark bracket hole circle intent",
+              "input": {
+                "type": "circle",
+                "center": {
+                  "x": 0.353,
+                  "y": 0.628
+                },
+                "radiusX": 0.01,
+                "radiusY": 0.01
+              },
+              "output": {
+                "type": "circle",
+                "center": {
+                  "x": 0.353,
+                  "y": 0.628
+                },
+                "radiusX": 0.01,
+                "radiusY": 0.01
+              },
+              "reason": "no-reliable-round",
+              "changed": false,
+              "milliseconds": 0.4901999999999873
+            },
+            {
+              "label": "small dark bracket hole ellipse intent",
+              "input": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.353,
+                  "y": 0.628
+                },
+                "axisA": {
+                  "x": 0.365,
+                  "y": 0.628
+                },
+                "axisB": {
+                  "x": 0.353,
+                  "y": 0.637
+                }
+              },
+              "output": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.353,
+                  "y": 0.628
+                },
+                "axisA": {
+                  "x": 0.365,
+                  "y": 0.628
+                },
+                "axisB": {
+                  "x": 0.353,
+                  "y": 0.637
+                }
+              },
+              "reason": "no-reliable-round",
+              "changed": false,
+              "milliseconds": 0.4187000000000012
+            }
+          ],
+          "computeMs": 32.605899999907706
+        }
+      ]
+    },
+    {
+      "id": "bracket_black-02",
+      "category": "bracket_black",
+      "canonicalSha256": "e500e58ee76850bd029ba92b40604a613d2d4e0c8dee4752465450d0737e1aa1",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.4902094900608063,
+                "y": 0.6095569133758545
+              },
+              "axisA": {
+                "x": 0.48347176821710663,
+                "y": 0.6141386659003022
+              },
+              "axisB": {
+                "x": 0.4860520806190259,
+                "y": 0.6034432116297168
+              }
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.41535770893096924,
+                "y": 0.6259899139404297
+              },
+              "axisA": {
+                "x": 0.40854933384870357,
+                "y": 0.6308723862312537
+              },
+              "axisB": {
+                "x": 0.41096313472240675,
+                "y": 0.619861889497777
+              }
+            }
+          ],
+          "locals": [],
+          "computeMs": 17.03679999999997
+        },
+        {
+          "engine": "edge",
+          "candidates": [
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.4152448470680183,
+                "y": 0.6259665984713557
+              },
+              "radiusX": 0.008070003618918417,
+              "radiusY": 0.008070003618918417
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.49019865157926096,
+                "y": 0.6095114400175856
+              },
+              "radiusX": 0.007912490856927386,
+              "radiusY": 0.007912490856927386
+            }
+          ],
+          "locals": [],
+          "computeMs": 19.806799999059876
+        }
+      ]
+    },
+    {
+      "id": "bracket_black-03",
+      "category": "bracket_black",
+      "canonicalSha256": "cd12f294da8be852ae4c338d8168251ccbe77197744c62ee213bfecfe513c2d4",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 19.440400000000068
+        },
+        {
+          "engine": "edge",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 18.798799999785842
+        }
+      ]
+    },
+    {
+      "id": "bracket_black-04",
+      "category": "bracket_black",
+      "canonicalSha256": "e0fc12b525f63697fed561d1ce02bbf0ac2f54138d42b92aa480248c95f27177",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 16.91319999999996
+        },
+        {
+          "engine": "edge",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 18.952300000819378
+        }
+      ]
+    },
+    {
+      "id": "bracket_black-05",
+      "category": "bracket_black",
+      "canonicalSha256": "b89ed614e4554ea7556632010401b342eee16bdd403141f4630145ca693016c8",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 15.69900000000007
+        },
+        {
+          "engine": "edge",
+          "candidates": [
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.4717927158627966,
+                "y": 0.6381352362978013
+              },
+              "axisA": {
+                "x": 0.49430238771807095,
+                "y": 0.6217704662447324
+              },
+              "axisB": {
+                "x": 0.484150620344952,
+                "y": 0.6551334815410932
+              }
+            }
+          ],
+          "locals": [],
+          "computeMs": 18.09240000147838
+        }
+      ]
+    },
+    {
+      "id": "bracket_black-06",
+      "category": "bracket_black",
+      "canonicalSha256": "3c4104039bbaadf21e85b9fd9a3ebdafe9ce514cc6516a58f6e258c3b8bf713b",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.4808981418609619,
+                "y": 0.6211970448493958
+              },
+              "axisA": {
+                "x": 0.47330208619833636,
+                "y": 0.6247153776226475
+              },
+              "axisB": {
+                "x": 0.47766826334652557,
+                "y": 0.6142237598987226
+              }
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.5545549392700195,
+                "y": 0.6056024432182312
+              },
+              "radiusX": 0.0076264142990112305,
+              "radiusY": 0.0076264142990112305
+            }
+          ],
+          "locals": [],
+          "computeMs": 15.337600000000066
+        },
+        {
+          "engine": "edge",
+          "candidates": [
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.48101261098939513,
+                "y": 0.6212304583939839
+              },
+              "radiusX": 0.007928310922024694,
+              "radiusY": 0.007928310922024694
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.554616713153696,
+                "y": 0.605599074941302
+              },
+              "radiusX": 0.0077264244618123305,
+              "radiusY": 0.0077264244618123305
+            }
+          ],
+          "locals": [],
+          "computeMs": 18.32289999947534
+        }
+      ]
+    },
+    {
+      "id": "bracket_brown-01",
+      "category": "bracket_brown",
+      "canonicalSha256": "ca87abe4a6b44de2f3a9c0400837556100b31e9ffeeebcc5a0291a409ec027a0",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 15.877099999999928
+        },
+        {
+          "engine": "edge",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 18.118899999535643
+        }
+      ]
+    },
+    {
+      "id": "bracket_brown-02",
+      "category": "bracket_brown",
+      "canonicalSha256": "1ac6113213ecb1c4ff3d1c1c18338bca30ef05ad46052150ee6013d766d7e4dd",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [],
+          "locals": [
+            {
+              "label": "decorative bracket bottom straight edge",
+              "input": {
+                "type": "line",
+                "from": {
+                  "x": 0.23,
+                  "y": 0.7
+                },
+                "to": {
+                  "x": 0.54,
+                  "y": 0.88
+                }
+              },
+              "output": {
+                "type": "line",
+                "from": {
+                  "x": 0.22798926064906,
+                  "y": 0.7036308207708402
+                },
+                "to": {
+                  "x": 0.5415165941305631,
+                  "y": 0.8772614643128118
+                }
+              },
+              "reason": "local-line",
+              "changed": true,
+              "milliseconds": 2.5615999999999985
+            },
+            {
+              "label": "decorative bracket lower corner",
+              "input": {
+                "type": "angle",
+                "from": {
+                  "x": 0.26,
+                  "y": 0.46
+                },
+                "vertex": {
+                  "x": 0.2,
+                  "y": 0.67
+                },
+                "to": {
+                  "x": 0.4,
+                  "y": 0.79
+                },
+                "reflex": false
+              },
+              "output": {
+                "type": "angle",
+                "from": {
+                  "x": 0.26,
+                  "y": 0.46
+                },
+                "vertex": {
+                  "x": 0.2,
+                  "y": 0.67
+                },
+                "to": {
+                  "x": 0.4,
+                  "y": 0.79
+                },
+                "reflex": false
+              },
+              "reason": "unreliable-angle-arm",
+              "changed": false,
+              "milliseconds": 2.763500000000022
+            },
+            {
+              "label": "open decorative curl; round contour is not a hole",
+              "input": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.681,
+                  "y": 0.856
+                },
+                "axisA": {
+                  "x": 0.768,
+                  "y": 0.856
+                },
+                "axisB": {
+                  "x": 0.681,
+                  "y": 0.933
+                }
+              },
+              "output": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.681,
+                  "y": 0.856
+                },
+                "axisA": {
+                  "x": 0.768,
+                  "y": 0.856
+                },
+                "axisB": {
+                  "x": 0.681,
+                  "y": 0.933
+                }
+              },
+              "reason": "no-reliable-round",
+              "changed": false,
+              "milliseconds": 1.5901000000001204
+            }
+          ],
+          "computeMs": 36.94089999999983
+        },
+        {
+          "engine": "edge",
+          "candidates": [
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.6659281835582969,
+                "y": 0.8361528552174232
+              },
+              "radiusX": 0.09742944226888403,
+              "radiusY": 0.09742944226888403
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.48164477919079685,
+                "y": 0.7229205698290425
+              },
+              "radiusX": 0.08988339250801627,
+              "radiusY": 0.08988339250801627
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.4160577281620623,
+                "y": 0.19678792062806214
+              },
+              "radiusX": 0.08768564654654176,
+              "radiusY": 0.08768564654654176
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.371741303868185,
+                "y": 0.3997849193900873
+              },
+              "axisA": {
+                "x": 0.41853161150813023,
+                "y": 0.46991303085536607
+              },
+              "axisB": {
+                "x": 0.3091968030390221,
+                "y": 0.4415153520773025
+              }
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.46727986026983925,
+                "y": 0.7251286882245739
+              },
+              "axisA": {
+                "x": 0.4915134691745182,
+                "y": 0.8021491924041205
+              },
+              "axisB": {
+                "x": 0.40379896701027557,
+                "y": 0.7451022154892846
+              }
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.34854453752369513,
+                "y": 0.38856041031968436
+              },
+              "radiusX": 0.06459376876564521,
+              "radiusY": 0.06459376876564521
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.36381899803931805,
+                "y": 0.4048912889593729
+              },
+              "axisA": {
+                "x": 0.362930123303817,
+                "y": 0.47228963651872635
+              },
+              "axisB": {
+                "x": 0.31651772804658634,
+                "y": 0.4042674620351797
+              }
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.6502223420124769,
+                "y": 0.7950848990464274
+              },
+              "radiusX": 0.03549732921390997,
+              "radiusY": 0.03549732921390997
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.47991143228375777,
+                "y": 0.6695936674221633
+              },
+              "axisA": {
+                "x": 0.4992461021058962,
+                "y": 0.669247465343139
+              },
+              "axisB": {
+                "x": 0.480223240783261,
+                "y": 0.6870075269882938
+              }
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.46700917348216436,
+                "y": 0.7052189061640575
+              },
+              "axisA": {
+                "x": 0.4818224452890717,
+                "y": 0.7366945014645543
+              },
+              "axisB": {
+                "x": 0.44697544842801595,
+                "y": 0.7146473224242978
+              }
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.40582734248428926,
+                "y": 0.20083296142528712
+              },
+              "radiusX": 0.017458161532652047,
+              "radiusY": 0.017458161532652047
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.3570314275423985,
+                "y": 0.4102811247198406
+              },
+              "axisA": {
+                "x": 0.37305905100559766,
+                "y": 0.41422457996524603
+              },
+              "axisB": {
+                "x": 0.353983806761666,
+                "y": 0.4226677540315622
+              }
+            }
+          ],
+          "locals": [
+            {
+              "label": "decorative bracket bottom straight edge",
+              "input": {
+                "type": "line",
+                "from": {
+                  "x": 0.23,
+                  "y": 0.7
+                },
+                "to": {
+                  "x": 0.54,
+                  "y": 0.88
+                }
+              },
+              "output": {
+                "type": "line",
+                "from": {
+                  "x": 0.22772162877212732,
+                  "y": 0.704121016784818
+                },
+                "to": {
+                  "x": 0.5413680433562158,
+                  "y": 0.8775255438778571
+                }
+              },
+              "reason": "local-line",
+              "changed": true,
+              "milliseconds": 0.4620999999999924
+            },
+            {
+              "label": "decorative bracket lower corner",
+              "input": {
+                "type": "angle",
+                "from": {
+                  "x": 0.26,
+                  "y": 0.46
+                },
+                "vertex": {
+                  "x": 0.2,
+                  "y": 0.67
+                },
+                "to": {
+                  "x": 0.4,
+                  "y": 0.79
+                },
+                "reflex": false
+              },
+              "output": {
+                "type": "angle",
+                "from": {
+                  "x": 0.26,
+                  "y": 0.46
+                },
+                "vertex": {
+                  "x": 0.2,
+                  "y": 0.67
+                },
+                "to": {
+                  "x": 0.4,
+                  "y": 0.79
+                },
+                "reflex": false
+              },
+              "reason": "unreliable-angle-arm",
+              "changed": false,
+              "milliseconds": 0.3585999999999956
+            },
+            {
+              "label": "open decorative curl; round contour is not a hole",
+              "input": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.681,
+                  "y": 0.856
+                },
+                "axisA": {
+                  "x": 0.768,
+                  "y": 0.856
+                },
+                "axisB": {
+                  "x": 0.681,
+                  "y": 0.933
+                }
+              },
+              "output": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.681,
+                  "y": 0.856
+                },
+                "axisA": {
+                  "x": 0.768,
+                  "y": 0.856
+                },
+                "axisB": {
+                  "x": 0.681,
+                  "y": 0.933
+                }
+              },
+              "reason": "no-reliable-round",
+              "changed": false,
+              "milliseconds": 0.10129999999998063
+            }
+          ],
+          "computeMs": 19.502499999362044
+        }
+      ]
+    },
+    {
+      "id": "bracket_brown-03",
+      "category": "bracket_brown",
+      "canonicalSha256": "39dd3ecab80379a0e328f091d2ed2f4258e197746196c7b76cc605d0098c9d52",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 22.247700000000123
+        },
+        {
+          "engine": "edge",
+          "candidates": [
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.7324703649243358,
+                "y": 0.8490116170889895
+              },
+              "radiusX": 0.09905871803608826,
+              "radiusY": 0.09905871803608826
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.5656137651716342,
+                "y": 0.7234870858541107
+              },
+              "axisA": {
+                "x": 0.5734681797009732,
+                "y": 0.8131203864075952
+              },
+              "axisB": {
+                "x": 0.48362285392281434,
+                "y": 0.730671810734371
+              }
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.49866953661126506,
+                "y": 0.1929780796842464
+              },
+              "radiusX": 0.089676792581825,
+              "radiusY": 0.089676792581825
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.4528669442490515,
+                "y": 0.39017393827876706
+              },
+              "axisA": {
+                "x": 0.4968329839063161,
+                "y": 0.46192603978613456
+              },
+              "axisB": {
+                "x": 0.38925866657156727,
+                "y": 0.42914985675568323
+              }
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.4276593226130558,
+                "y": 0.3891840596842697
+              },
+              "axisA": {
+                "x": 0.4369677315132811,
+                "y": 0.4686735437936558
+              },
+              "axisB": {
+                "x": 0.36029962192967796,
+                "y": 0.39707204190459505
+              }
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.5565316896414376,
+                "y": 0.7227478151961063
+              },
+              "axisA": {
+                "x": 0.5740810743237883,
+                "y": 0.794535230967997
+              },
+              "axisB": {
+                "x": 0.5071559918806414,
+                "y": 0.7348183585447775
+              }
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.4427669335641096,
+                "y": 0.3976630868612905
+              },
+              "axisA": {
+                "x": 0.43788010830836865,
+                "y": 0.466634201167321
+              },
+              "axisB": {
+                "x": 0.3978226615416845,
+                "y": 0.3944786406502935
+              }
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.7293854388982182,
+                "y": 0.8202942266520032
+              },
+              "axisA": {
+                "x": 0.7572673457534564,
+                "y": 0.8647580885080992
+              },
+              "axisB": {
+                "x": 0.6949445895753567,
+                "y": 0.8418910136324772
+              }
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.47759934166760354,
+                "y": 0.24428952644263036
+              },
+              "radiusX": 0.03659941132150607,
+              "radiusY": 0.03659941132150607
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.4534007539017004,
+                "y": 0.6516326554628189
+              },
+              "axisA": {
+                "x": 0.46623471969760694,
+                "y": 0.6959645368067485
+              },
+              "axisB": {
+                "x": 0.42556553852392054,
+                "y": 0.6596908788282714
+              }
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.43737720551688997,
+                "y": 0.41075036237906715
+              },
+              "radiusX": 0.020430530956824754,
+              "radiusY": 0.020430530956824754
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.5492808773966938,
+                "y": 0.7183092109366662
+              },
+              "radiusX": 0.018132854049539918,
+              "radiusY": 0.018132854049539918
+            }
+          ],
+          "locals": [],
+          "computeMs": 21.019700001488673
+        }
+      ]
+    },
+    {
+      "id": "bracket_brown-04",
+      "category": "bracket_brown",
+      "canonicalSha256": "40cec1ad813ebe390090e25ab886e41f03a3b561be0aefeed0392dc61cb01d53",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.5658143758773804,
+                "y": 0.5450919270515442
+              },
+              "axisA": {
+                "x": 0.5591204298467771,
+                "y": 0.5343220380985897
+              },
+              "axisB": {
+                "x": 0.5720115488769211,
+                "y": 0.5412401193140227
+              }
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.5141357779502869,
+                "y": 0.2715359330177307
+              },
+              "axisA": {
+                "x": 0.5095758718050186,
+                "y": 0.2606061030847469
+              },
+              "axisB": {
+                "x": 0.5210224899530405,
+                "y": 0.2686628086805183
+              }
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.44676971435546875,
+                "y": 0.6916821599006653
+              },
+              "axisA": {
+                "x": 0.44309469254772,
+                "y": 0.7207932480513729
+              },
+              "axisB": {
+                "x": 0.4311436440938729,
+                "y": 0.6897095043721778
+              }
+            }
+          ],
+          "locals": [],
+          "computeMs": 19.461199999999963
+        },
+        {
+          "engine": "edge",
+          "candidates": [
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.5220171493482373,
+                "y": 0.3957250365573638
+              },
+              "axisA": {
+                "x": 0.5279109125616069,
+                "y": 0.48324384274502197
+              },
+              "axisB": {
+                "x": 0.48984094598597067,
+                "y": 0.39789187282928234
+              }
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.46530795616616927,
+                "y": 0.6567699643710303
+              },
+              "radiusX": 0.019012916584167087,
+              "radiusY": 0.019012916584167087
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.5138943079230692,
+                "y": 0.2722751557289309
+              },
+              "axisA": {
+                "x": 0.5163890681820997,
+                "y": 0.28378202881256714
+              },
+              "axisB": {
+                "x": 0.5064061198247894,
+                "y": 0.2738986405752442
+              }
+            }
+          ],
+          "locals": [],
+          "computeMs": 20.181900003080955
+        }
+      ]
+    },
+    {
+      "id": "bracket_brown-05",
+      "category": "bracket_brown",
+      "canonicalSha256": "a3d1b9e47b322f18d0ba92406cc62fc1ebb9b7272782fa9369b079f9a44771ff",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 19.504899999999907
+        },
+        {
+          "engine": "edge",
+          "candidates": [
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.6452234330959967,
+                "y": 0.36482132697506187
+              },
+              "axisA": {
+                "x": 0.587816942740454,
+                "y": 0.42799651618090107
+              },
+              "axisB": {
+                "x": 0.5890610151167165,
+                "y": 0.3137872525765398
+              }
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.3746326423696092,
+                "y": 0.7694079472421821
+              },
+              "radiusX": 0.08195055154609826,
+              "radiusY": 0.08195055154609826
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.5165438494310632,
+                "y": 0.6820398685394606
+              },
+              "axisA": {
+                "x": 0.5142531650016069,
+                "y": 0.7615145756710957
+              },
+              "axisB": {
+                "x": 0.45001106892301546,
+                "y": 0.6801222068095999
+              }
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.5534918187086211,
+                "y": 0.6768746173631587
+              },
+              "radiusX": 0.07394432300910227,
+              "radiusY": 0.07394432300910227
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.6663058873016477,
+                "y": 0.3731147087082397
+              },
+              "radiusX": 0.07257581643585223,
+              "radiusY": 0.07257581643585223
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.6482257278280226,
+                "y": 0.3680441708643024
+              },
+              "radiusX": 0.07181278397848674,
+              "radiusY": 0.07181278397848674
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.5253114673734439,
+                "y": 0.6863090260079777
+              },
+              "axisA": {
+                "x": 0.5590757391532902,
+                "y": 0.7510305093989446
+              },
+              "axisB": {
+                "x": 0.468889455714464,
+                "y": 0.7157435821430946
+              }
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.38295584027341056,
+                "y": 0.750215561528912
+              },
+              "radiusX": 0.06460224543641435,
+              "radiusY": 0.06460224543641435
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.3789116948842376,
+                "y": 0.7630362680920704
+              },
+              "axisA": {
+                "x": 0.3815276973413081,
+                "y": 0.8292356714633068
+              },
+              "axisB": {
+                "x": 0.3281233400123945,
+                "y": 0.7650432719979853
+              }
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.3614138633849762,
+                "y": 0.7568941773132755
+              },
+              "radiusX": 0.054662370263993024,
+              "radiusY": 0.054662370263993024
+            }
+          ],
+          "locals": [],
+          "computeMs": 19.31499999773223
+        }
+      ]
+    },
+    {
+      "id": "bracket_brown-06",
+      "category": "bracket_brown",
+      "canonicalSha256": "0df6f13966585bca73dc62da433d05a49fbedca2a192cf33e30354916790984a",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 19.535499999999956
+        },
+        {
+          "engine": "edge",
+          "candidates": [
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.4454600982622702,
+                "y": 0.20402904515552542
+              },
+              "radiusX": 0.09894877651327963,
+              "radiusY": 0.09894877651327963
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.6710674785766737,
+                "y": 0.8540613799026859
+              },
+              "radiusX": 0.09689828520397074,
+              "radiusY": 0.09689828520397074
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.4922720065240379,
+                "y": 0.7289240650749821
+              },
+              "axisA": {
+                "x": 0.5055540970746808,
+                "y": 0.8070840530628665
+              },
+              "axisB": {
+                "x": 0.4305472503153696,
+                "y": 0.7394132401923961
+              }
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.3917908535228902,
+                "y": 0.3979363206094749
+              },
+              "axisA": {
+                "x": 0.39710351598932436,
+                "y": 0.47676614785071875
+              },
+              "axisB": {
+                "x": 0.3296729869877624,
+                "y": 0.4021226961171391
+              }
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.6446832545043741,
+                "y": 0.8210921214737666
+              },
+              "radiusX": 0.05676162424600431,
+              "radiusY": 0.05676162424600431
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.41021157490036436,
+                "y": 0.4012844721795462
+              },
+              "axisA": {
+                "x": 0.4090547981132002,
+                "y": 0.4643508783128192
+              },
+              "axisB": {
+                "x": 0.3729683075465758,
+                "y": 0.40060134863098107
+              }
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.4960313599043361,
+                "y": 0.6883047137540769
+              },
+              "radiusX": 0.04377394138369629,
+              "radiusY": 0.04377394138369629
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.4194938473753215,
+                "y": 0.656475776926372
+              },
+              "axisA": {
+                "x": 0.43058270996694026,
+                "y": 0.7012332135898234
+              },
+              "axisB": {
+                "x": 0.39187492611553215,
+                "y": 0.6633184928102474
+              }
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.40546348021735273,
+                "y": 0.4195651903505404
+              },
+              "radiusX": 0.023320841235672386,
+              "radiusY": 0.023320841235672386
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.44241295339929215,
+                "y": 0.23046644682026862
+              },
+              "axisA": {
+                "x": 0.4200936844237721,
+                "y": 0.2625615892886322
+              },
+              "axisB": {
+                "x": 0.421304976102498,
+                "y": 0.21578775756750398
+              }
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.5044622242882577,
+                "y": 0.7179067564726439
+              },
+              "radiusX": 0.019953686289167223,
+              "radiusY": 0.019953686289167223
+            }
+          ],
+          "locals": [],
+          "computeMs": 20.255199997336604
+        }
+      ]
+    },
+    {
+      "id": "bracket_white-01",
+      "category": "bracket_white",
+      "canonicalSha256": "6e497e5a16c3108261ba29428f6d9359e0c692e460ab7f6d5e20c5169ceb6e73",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 13.279999999999973
+        },
+        {
+          "engine": "edge",
+          "candidates": [
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.5046704492322048,
+                "y": 0.140881751228834
+              },
+              "axisA": {
+                "x": 0.5014024584093226,
+                "y": 0.15747968726999337
+              },
+              "axisB": {
+                "x": 0.4927548216184809,
+                "y": 0.1385356666557902
+              }
+            }
+          ],
+          "locals": [],
+          "computeMs": 15.375699997093761
+        }
+      ]
+    },
+    {
+      "id": "bracket_white-02",
+      "category": "bracket_white",
+      "canonicalSha256": "23a8fc3ee247607afc3d5d34f1b5f37641284433e0a27519597ba62ca885ea54",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 13.413900000000012
+        },
+        {
+          "engine": "edge",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 16.05080000081216
+        }
+      ]
+    },
+    {
+      "id": "bracket_white-03",
+      "category": "bracket_white",
+      "canonicalSha256": "7ea01777cad2bfab28ea0c0f198d1ee78709f2b45966a866b6634d6e2537f646",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.5384495258331299,
+                "y": 0.15305468440055847
+              },
+              "radiusX": 0.012878811918199062,
+              "radiusY": 0.012878811918199062
+            }
+          ],
+          "locals": [],
+          "computeMs": 14.278700000000072
+        },
+        {
+          "engine": "edge",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 15.268999999534572
+        }
+      ]
+    },
+    {
+      "id": "bracket_white-04",
+      "category": "bracket_white",
+      "canonicalSha256": "e42f371bf27363d9955e48aecdf62d94e26cca1b8731aae29dac8c09c0e381ad",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 14.591899999999896
+        },
+        {
+          "engine": "edge",
+          "candidates": [
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.44650355512003465,
+                "y": 0.12491125675865733
+              },
+              "axisA": {
+                "x": 0.4441856936912405,
+                "y": 0.1418371699548673
+              },
+              "axisB": {
+                "x": 0.4363678394526995,
+                "y": 0.12352325576123988
+              }
+            }
+          ],
+          "locals": [],
+          "computeMs": 17.690000000584405
+        }
+      ]
+    },
+    {
+      "id": "bracket_white-05",
+      "category": "bracket_white",
+      "canonicalSha256": "8db2f956f1fc1285e69cf8420991ddad7a5c2a159acd6c6b48fc30e22fda26bc",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [],
+          "locals": [
+            {
+              "label": "reflective left edge; competing highlights",
+              "input": {
+                "type": "line",
+                "from": {
+                  "x": 0.46,
+                  "y": 0.26
+                },
+                "to": {
+                  "x": 0.46,
+                  "y": 0.7
+                }
+              },
+              "output": {
+                "type": "line",
+                "from": {
+                  "x": 0.45703125,
+                  "y": 0.26
+                },
+                "to": {
+                  "x": 0.45703125,
+                  "y": 0.7
+                }
+              },
+              "reason": "local-line",
+              "changed": true,
+              "milliseconds": 2.8548000000000684
+            },
+            {
+              "label": "top-right corner; non-orthogonal photograph",
+              "input": {
+                "type": "angle",
+                "from": {
+                  "x": 0.56,
+                  "y": 0.109
+                },
+                "vertex": {
+                  "x": 0.65,
+                  "y": 0.128
+                },
+                "to": {
+                  "x": 0.58,
+                  "y": 0.45
+                },
+                "reflex": false
+              },
+              "output": {
+                "type": "angle",
+                "from": {
+                  "x": 0.56,
+                  "y": 0.109
+                },
+                "vertex": {
+                  "x": 0.65,
+                  "y": 0.128
+                },
+                "to": {
+                  "x": 0.58,
+                  "y": 0.45
+                },
+                "reflex": false
+              },
+              "reason": "unreliable-angle-arm",
+              "changed": false,
+              "milliseconds": 1.420699999999897
+            },
+            {
+              "label": "small partially occluded upper hole circle intent",
+              "input": {
+                "type": "circle",
+                "center": {
+                  "x": 0.54,
+                  "y": 0.16
+                },
+                "radiusX": 0.014,
+                "radiusY": 0.014
+              },
+              "output": {
+                "type": "circle",
+                "center": {
+                  "x": 0.54,
+                  "y": 0.16
+                },
+                "radiusX": 0.014,
+                "radiusY": 0.014
+              },
+              "reason": "no-reliable-round",
+              "changed": false,
+              "milliseconds": 0.5812999999998283
+            },
+            {
+              "label": "small upper hole ellipse intent",
+              "input": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.54,
+                  "y": 0.16
+                },
+                "axisA": {
+                  "x": 0.54,
+                  "y": 0.18
+                },
+                "axisB": {
+                  "x": 0.555,
+                  "y": 0.16
+                }
+              },
+              "output": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.54,
+                  "y": 0.16
+                },
+                "axisA": {
+                  "x": 0.54,
+                  "y": 0.18
+                },
+                "axisB": {
+                  "x": 0.555,
+                  "y": 0.16
+                }
+              },
+              "reason": "no-reliable-round",
+              "changed": false,
+              "milliseconds": 0.5650999999998021
+            }
+          ],
+          "computeMs": 22.50240000000008
+        },
+        {
+          "engine": "edge",
+          "candidates": [
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.5407694386383414,
+                "y": 0.16092957052029083
+              },
+              "radiusX": 0.015047454342096027,
+              "radiusY": 0.015047454342096027
+            }
+          ],
+          "locals": [
+            {
+              "label": "reflective left edge; competing highlights",
+              "input": {
+                "type": "line",
+                "from": {
+                  "x": 0.46,
+                  "y": 0.26
+                },
+                "to": {
+                  "x": 0.46,
+                  "y": 0.7
+                }
+              },
+              "output": {
+                "type": "line",
+                "from": {
+                  "x": 0.45710727534791923,
+                  "y": 0.25999934515674317
+                },
+                "to": {
+                  "x": 0.45700766994021846,
+                  "y": 0.6999993226084753
+                }
+              },
+              "reason": "local-line",
+              "changed": true,
+              "milliseconds": 0.21749999999997272
+            },
+            {
+              "label": "top-right corner; non-orthogonal photograph",
+              "input": {
+                "type": "angle",
+                "from": {
+                  "x": 0.56,
+                  "y": 0.109
+                },
+                "vertex": {
+                  "x": 0.65,
+                  "y": 0.128
+                },
+                "to": {
+                  "x": 0.58,
+                  "y": 0.45
+                },
+                "reflex": false
+              },
+              "output": {
+                "type": "angle",
+                "from": {
+                  "x": 0.56,
+                  "y": 0.109
+                },
+                "vertex": {
+                  "x": 0.65,
+                  "y": 0.128
+                },
+                "to": {
+                  "x": 0.58,
+                  "y": 0.45
+                },
+                "reflex": false
+              },
+              "reason": "unreliable-angle-arm",
+              "changed": false,
+              "milliseconds": 0.19919999999996207
+            },
+            {
+              "label": "small partially occluded upper hole circle intent",
+              "input": {
+                "type": "circle",
+                "center": {
+                  "x": 0.54,
+                  "y": 0.16
+                },
+                "radiusX": 0.014,
+                "radiusY": 0.014
+              },
+              "output": {
+                "type": "circle",
+                "center": {
+                  "x": 0.5407694386383414,
+                  "y": 0.16092957052029083
+                },
+                "radiusX": 0.015047454342096027,
+                "radiusY": 0.015047454342096027
+              },
+              "reason": "local-round",
+              "changed": true,
+              "milliseconds": 0.08940000000001191
+            },
+            {
+              "label": "small upper hole ellipse intent",
+              "input": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.54,
+                  "y": 0.16
+                },
+                "axisA": {
+                  "x": 0.54,
+                  "y": 0.18
+                },
+                "axisB": {
+                  "x": 0.555,
+                  "y": 0.16
+                }
+              },
+              "output": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.54,
+                  "y": 0.16
+                },
+                "axisA": {
+                  "x": 0.54,
+                  "y": 0.18
+                },
+                "axisB": {
+                  "x": 0.555,
+                  "y": 0.16
+                }
+              },
+              "reason": "no-reliable-round",
+              "changed": false,
+              "milliseconds": 0.08399999999994634
+            }
+          ],
+          "computeMs": 17.07669999814243
+        }
+      ]
+    },
+    {
+      "id": "bracket_white-06",
+      "category": "bracket_white",
+      "canonicalSha256": "d12d8d8c856e06e30c692b2d9bb88858c21a603b4115f97306f091f9c551ded4",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 14.193199999999933
+        },
+        {
+          "engine": "edge",
+          "candidates": [
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.5187815783142198,
+                "y": 0.1696187899115269
+              },
+              "radiusX": 0.013886037310515865,
+              "radiusY": 0.013886037310515865
+            }
+          ],
+          "locals": [],
+          "computeMs": 17.024400000082096
+        }
+      ]
+    },
+    {
+      "id": "connector-01",
+      "category": "connector",
+      "canonicalSha256": "c0f9be3207ade486ece944606f89d280ba5a38d5604a261a126fd0eaf5d3a824",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 24.230499999999893
+        },
+        {
+          "engine": "edge",
+          "candidates": [
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.8445271015678203,
+                "y": 0.5140792210316286
+              },
+              "radiusX": 0.04474776458386602,
+              "radiusY": 0.04474776458386602
+            }
+          ],
+          "locals": [],
+          "computeMs": 22.006600000167964
+        }
+      ]
+    },
+    {
+      "id": "connector-02",
+      "category": "connector",
+      "canonicalSha256": "5004bc2805e09643ed3c7a93ba63855a280f3a38013c545915fdf800d2c295e3",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.4154188930988312,
+                "y": 0.5789662599563599
+              },
+              "axisA": {
+                "x": 0.3530704872606559,
+                "y": 0.6219391634856754
+              },
+              "axisB": {
+                "x": 0.3870808884554885,
+                "y": 0.5378512951985812
+              }
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.2100846916437149,
+                "y": 0.6339201927185059
+              },
+              "axisA": {
+                "x": 0.20544769915446626,
+                "y": 0.5766291452609524
+              },
+              "axisB": {
+                "x": 0.24145455018084366,
+                "y": 0.6313811957044745
+              }
+            }
+          ],
+          "locals": [],
+          "computeMs": 21.24649999999997
+        },
+        {
+          "engine": "edge",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 24.12009999898146
+        }
+      ]
+    },
+    {
+      "id": "connector-03",
+      "category": "connector",
+      "canonicalSha256": "8af2e76957fd237c28f006ab7033f542e276f193f9236ac50e8881e4c1869239",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.509817361831665,
+                "y": 0.5662428140640259
+              },
+              "axisA": {
+                "x": 0.44619190158963284,
+                "y": 0.6097468176563904
+              },
+              "axisB": {
+                "x": 0.4807206629662795,
+                "y": 0.5236883201332904
+              }
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.27882954478263855,
+                "y": 0.6271525621414185
+              },
+              "axisA": {
+                "x": 0.2672811938601982,
+                "y": 0.7000401706116961
+              },
+              "axisB": {
+                "x": 0.21316143698442158,
+                "y": 0.6167480726927669
+              }
+            }
+          ],
+          "locals": [
+            {
+              "label": "adjustment wheel; non-hole round feature",
+              "input": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.544,
+                  "y": 0.549
+                },
+                "axisA": {
+                  "x": 0.544,
+                  "y": 0.596
+                },
+                "axisB": {
+                  "x": 0.57,
+                  "y": 0.549
+                }
+              },
+              "output": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.544,
+                  "y": 0.549
+                },
+                "axisA": {
+                  "x": 0.544,
+                  "y": 0.596
+                },
+                "axisB": {
+                  "x": 0.57,
+                  "y": 0.549
+                }
+              },
+              "reason": "no-reliable-round",
+              "changed": false,
+              "milliseconds": 1.2939000000001215
+            },
+            {
+              "label": "reflective front cap; non-hole circle intent",
+              "input": {
+                "type": "circle",
+                "center": {
+                  "x": 0.257,
+                  "y": 0.63
+                },
+                "radiusX": 0.026,
+                "radiusY": 0.026
+              },
+              "output": {
+                "type": "circle",
+                "center": {
+                  "x": 0.257,
+                  "y": 0.63
+                },
+                "radiusX": 0.026,
+                "radiusY": 0.026
+              },
+              "reason": "no-reliable-round",
+              "changed": false,
+              "milliseconds": 0.6611000000000331
+            },
+            {
+              "label": "short bracket top edge",
+              "input": {
+                "type": "line",
+                "from": {
+                  "x": 0.263,
+                  "y": 0.542
+                },
+                "to": {
+                  "x": 0.3,
+                  "y": 0.545
+                }
+              },
+              "output": {
+                "type": "line",
+                "from": {
+                  "x": 0.263,
+                  "y": 0.542
+                },
+                "to": {
+                  "x": 0.3,
+                  "y": 0.545
+                }
+              },
+              "reason": "no-reliable-line",
+              "changed": false,
+              "milliseconds": 0.16869999999994434
+            },
+            {
+              "label": "green background negative ellipse",
+              "input": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.16,
+                  "y": 0.2
+                },
+                "axisA": {
+                  "x": 0.19,
+                  "y": 0.2
+                },
+                "axisB": {
+                  "x": 0.16,
+                  "y": 0.22
+                }
+              },
+              "output": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.16,
+                  "y": 0.2
+                },
+                "axisA": {
+                  "x": 0.19,
+                  "y": 0.2
+                },
+                "axisB": {
+                  "x": 0.16,
+                  "y": 0.22
+                }
+              },
+              "reason": "no-reliable-round",
+              "changed": false,
+              "milliseconds": 0.18079999999986285
+            }
+          ],
+          "computeMs": 23.33439999999996
+        },
+        {
+          "engine": "edge",
+          "candidates": [
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.30661866594886034,
+                "y": 0.6205330547921835
+              },
+              "radiusX": 0.0498507106014324,
+              "radiusY": 0.0498507106014324
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.7804747006770737,
+                "y": 0.5188555937438734
+              },
+              "radiusX": 0.04752764882728719,
+              "radiusY": 0.04752764882728719
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.7358949345344344,
+                "y": 0.5323113195076429
+              },
+              "axisA": {
+                "x": 0.7416021453675103,
+                "y": 0.5639881367836623
+              },
+              "axisB": {
+                "x": 0.7109650922889468,
+                "y": 0.536802928133931
+              }
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.25585524084236516,
+                "y": 0.6247424069208765
+              },
+              "radiusX": 0.027612129232425613,
+              "radiusY": 0.027612129232425613
+            }
+          ],
+          "locals": [
+            {
+              "label": "adjustment wheel; non-hole round feature",
+              "input": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.544,
+                  "y": 0.549
+                },
+                "axisA": {
+                  "x": 0.544,
+                  "y": 0.596
+                },
+                "axisB": {
+                  "x": 0.57,
+                  "y": 0.549
+                }
+              },
+              "output": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.544,
+                  "y": 0.549
+                },
+                "axisA": {
+                  "x": 0.544,
+                  "y": 0.596
+                },
+                "axisB": {
+                  "x": 0.57,
+                  "y": 0.549
+                }
+              },
+              "reason": "no-reliable-round",
+              "changed": false,
+              "milliseconds": 0.14260000000001583
+            },
+            {
+              "label": "reflective front cap; non-hole circle intent",
+              "input": {
+                "type": "circle",
+                "center": {
+                  "x": 0.257,
+                  "y": 0.63
+                },
+                "radiusX": 0.026,
+                "radiusY": 0.026
+              },
+              "output": {
+                "type": "circle",
+                "center": {
+                  "x": 0.25585524084236516,
+                  "y": 0.6247424069208765
+                },
+                "radiusX": 0.027612129232425613,
+                "radiusY": 0.027612129232425613
+              },
+              "reason": "local-round",
+              "changed": true,
+              "milliseconds": 0.048699999999996635
+            },
+            {
+              "label": "short bracket top edge",
+              "input": {
+                "type": "line",
+                "from": {
+                  "x": 0.263,
+                  "y": 0.542
+                },
+                "to": {
+                  "x": 0.3,
+                  "y": 0.545
+                }
+              },
+              "output": {
+                "type": "line",
+                "from": {
+                  "x": 0.263,
+                  "y": 0.542
+                },
+                "to": {
+                  "x": 0.3,
+                  "y": 0.545
+                }
+              },
+              "reason": "no-reliable-line",
+              "changed": false,
+              "milliseconds": 0.1522000000000503
+            },
+            {
+              "label": "green background negative ellipse",
+              "input": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.16,
+                  "y": 0.2
+                },
+                "axisA": {
+                  "x": 0.19,
+                  "y": 0.2
+                },
+                "axisB": {
+                  "x": 0.16,
+                  "y": 0.22
+                }
+              },
+              "output": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.16,
+                  "y": 0.2
+                },
+                "axisA": {
+                  "x": 0.19,
+                  "y": 0.2
+                },
+                "axisB": {
+                  "x": 0.16,
+                  "y": 0.22
+                }
+              },
+              "reason": "no-reliable-round",
+              "changed": false,
+              "milliseconds": 0.06589999999999918
+            }
+          ],
+          "computeMs": 20.697299998573726
+        }
+      ]
+    },
+    {
+      "id": "connector-04",
+      "category": "connector",
+      "canonicalSha256": "fb87a7b436efe4c1f1c63b37df549a386dd603358e0f0c687d2f7d5567adf8a8",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.16167514026165009,
+                "y": 0.6158992052078247
+              },
+              "axisA": {
+                "x": 0.09434251928158512,
+                "y": 0.579824559886687
+              },
+              "axisB": {
+                "x": 0.18684786502250816,
+                "y": 0.5689148060468657
+              }
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.4024844467639923,
+                "y": 0.5253741145133972
+              },
+              "axisA": {
+                "x": 0.40082587323576324,
+                "y": 0.48508279680522404
+              },
+              "axisB": {
+                "x": 0.4177614606924198,
+                "y": 0.5247452432742981
+              }
+            }
+          ],
+          "locals": [],
+          "computeMs": 19.81989999999996
+        },
+        {
+          "engine": "edge",
+          "candidates": [
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.6688411081616785,
+                "y": 0.5237248264448957
+              },
+              "radiusX": 0.04568444794687999,
+              "radiusY": 0.04568444794687999
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.8065798747295067,
+                "y": 0.5079280174690414
+              },
+              "radiusX": 0.03900262654910602,
+              "radiusY": 0.03900262654910602
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.11242824587241448,
+                "y": 0.6043321315109742
+              },
+              "axisA": {
+                "x": 0.1101642845615672,
+                "y": 0.6528250023156972
+              },
+              "axisB": {
+                "x": 0.09699511216461494,
+                "y": 0.6036116128648357
+              }
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.8080819447116492,
+                "y": 0.5042128080340569
+              },
+              "radiusX": 0.02897967436772922,
+              "radiusY": 0.02897967436772922
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.8102013023532251,
+                "y": 0.5065418084164975
+              },
+              "radiusX": 0.02383582971765532,
+              "radiusY": 0.02383582971765532
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.8070774334063201,
+                "y": 0.5056856733578509
+              },
+              "radiusX": 0.017470106298845284,
+              "radiusY": 0.017470106298845284
+            }
+          ],
+          "locals": [],
+          "computeMs": 20.09620000171708
+        }
+      ]
+    },
+    {
+      "id": "connector-05",
+      "category": "connector",
+      "canonicalSha256": "0db655f5b8d40d104e8d72f45bbfdfbc83843cd4713d37a0d15a6ef3d549992c",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 15.880499999999984
+        },
+        {
+          "engine": "edge",
+          "candidates": [
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.5375761975980503,
+                "y": 0.5203036749174011
+              },
+              "axisA": {
+                "x": 0.539287921405141,
+                "y": 0.5566464530343891
+              },
+              "axisB": {
+                "x": 0.5170985682394336,
+                "y": 0.521268159403785
+              }
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.5345043487739372,
+                "y": 0.5145712660314365
+              },
+              "axisA": {
+                "x": 0.5310184858149024,
+                "y": 0.53717962028577
+              },
+              "axisB": {
+                "x": 0.5221227571927903,
+                "y": 0.5126622136970171
+              }
+            }
+          ],
+          "locals": [],
+          "computeMs": 18.474200001946883
+        }
+      ]
+    },
+    {
+      "id": "connector-06",
+      "category": "connector",
+      "canonicalSha256": "fca3dceb85576b06f24b0c649736fe7c7c802de443ee0cdb756e364c02d9476d",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 18.687599999999975
+        },
+        {
+          "engine": "edge",
+          "candidates": [
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.33247253649015057,
+                "y": 0.567780969344651
+              },
+              "radiusX": 0.04295231492164177,
+              "radiusY": 0.04295231492164177
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.7909568806732615,
+                "y": 0.6025931341513394
+              },
+              "axisA": {
+                "x": 0.7915085399799644,
+                "y": 0.6446704652508936
+              },
+              "axisB": {
+                "x": 0.7586900686881455,
+                "y": 0.6030161716079476
+              }
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.1588265449542449,
+                "y": 0.6343026035616901
+              },
+              "radiusX": 0.030243202314662043,
+              "radiusY": 0.030243202314662043
+            },
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.38601810917981233,
+                "y": 0.569975591142576
+              },
+              "radiusX": 0.01729915631304555,
+              "radiusY": 0.01729915631304555
+            }
+          ],
+          "locals": [],
+          "computeMs": 20.366299999295734
+        }
+      ]
+    },
+    {
+      "id": "metal_plate-01",
+      "category": "metal_plate",
+      "canonicalSha256": "f7bcb1a7a481b892925f884d063553cb43cd1c31c29ca915a3a458de4accdf22",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.5090664029121399,
+                "y": 0.47662851214408875
+              },
+              "radiusX": 0.07302694022655487,
+              "radiusY": 0.07302694022655487
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.4925658702850342,
+                "y": 0.4823969304561615
+              },
+              "axisA": {
+                "x": 0.1731137793978597,
+                "y": 0.7187661079465489
+              },
+              "axisB": {
+                "x": 0.2888343569199706,
+                "y": 0.20705452492308535
+              }
+            }
+          ],
+          "locals": [
+            {
+              "label": "top-left edge local range",
+              "input": {
+                "type": "line",
+                "from": {
+                  "x": 0.18,
+                  "y": 0.36
+                },
+                "to": {
+                  "x": 0.55,
+                  "y": 0.2
+                }
+              },
+              "output": {
+                "type": "line",
+                "from": {
+                  "x": 0.17498413449359454,
+                  "y": 0.34819299074615795
+                },
+                "to": {
+                  "x": 0.5459976209468262,
+                  "y": 0.19057866953213584
+                }
+              },
+              "reason": "local-line",
+              "changed": true,
+              "milliseconds": 0.8502999999998337
+            },
+            {
+              "label": "plate top corner; second point is vertex",
+              "input": {
+                "type": "angle",
+                "from": {
+                  "x": 0.52,
+                  "y": 0.21
+                },
+                "vertex": {
+                  "x": 0.71,
+                  "y": 0.13
+                },
+                "to": {
+                  "x": 0.83,
+                  "y": 0.4
+                },
+                "reflex": false,
+                "arcScale": 0.35
+              },
+              "output": {
+                "type": "angle",
+                "from": {
+                  "x": 0.5169841306835716,
+                  "y": 0.20288114568331447
+                },
+                "vertex": {
+                  "x": 0.7071220726572217,
+                  "y": 0.12233009637428043
+                },
+                "to": {
+                  "x": 0.8450155635110117,
+                  "y": 0.39233133720687613
+                },
+                "reflex": false,
+                "arcScale": 0.35
+              },
+              "reason": "local-angle",
+              "changed": true,
+              "milliseconds": 0.8203000000000884
+            },
+            {
+              "label": "partially occluded center contour; circle intent",
+              "input": {
+                "type": "circle",
+                "center": {
+                  "x": 0.509,
+                  "y": 0.476
+                },
+                "radiusX": 0.074,
+                "radiusY": 0.074
+              },
+              "output": {
+                "type": "circle",
+                "center": {
+                  "x": 0.5090663805603981,
+                  "y": 0.47662851214408875
+                },
+                "radiusX": 0.07302694022655487,
+                "radiusY": 0.07302694022655487
+              },
+              "reason": "local-round",
+              "changed": true,
+              "milliseconds": 0.9202999999999975
+            },
+            {
+              "label": "same partially occluded contour; ellipse intent stays ellipse",
+              "input": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.508,
+                  "y": 0.476
+                },
+                "axisA": {
+                  "x": 0.585,
+                  "y": 0.476
+                },
+                "axisB": {
+                  "x": 0.508,
+                  "y": 0.545
+                }
+              },
+              "output": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.5090663805603981,
+                  "y": 0.47662851214408875
+                },
+                "axisA": {
+                  "x": 0.44084754399740306,
+                  "y": 0.5085121882492931
+                },
+                "axisB": {
+                  "x": 0.47910920450274863,
+                  "y": 0.4125316466941204
+                }
+              },
+              "reason": "local-round",
+              "changed": true,
+              "milliseconds": 0.7508000000000266
+            },
+            {
+              "label": "blank background negative line",
+              "input": {
+                "type": "line",
+                "from": {
+                  "x": 0.12,
+                  "y": 0.12
+                },
+                "to": {
+                  "x": 0.3,
+                  "y": 0.12
+                }
+              },
+              "output": {
+                "type": "line",
+                "from": {
+                  "x": 0.12,
+                  "y": 0.12
+                },
+                "to": {
+                  "x": 0.3,
+                  "y": 0.12
+                }
+              },
+              "reason": "no-reliable-line",
+              "changed": false,
+              "milliseconds": 0.06989999999996144
+            },
+            {
+              "label": "blank background negative ellipse",
+              "input": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.18,
+                  "y": 0.18
+                },
+                "axisA": {
+                  "x": 0.24,
+                  "y": 0.18
+                },
+                "axisB": {
+                  "x": 0.18,
+                  "y": 0.22
+                }
+              },
+              "output": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.18,
+                  "y": 0.18
+                },
+                "axisA": {
+                  "x": 0.24,
+                  "y": 0.18
+                },
+                "axisB": {
+                  "x": 0.18,
+                  "y": 0.22
+                }
+              },
+              "reason": "no-reliable-round",
+              "changed": false,
+              "milliseconds": 0.07230000000004111
+            },
+            {
+              "label": "blank background negative circle",
+              "input": {
+                "type": "circle",
+                "center": {
+                  "x": 0.18,
+                  "y": 0.18
+                },
+                "radiusX": 0.045,
+                "radiusY": 0.045
+              },
+              "output": {
+                "type": "circle",
+                "center": {
+                  "x": 0.18,
+                  "y": 0.18
+                },
+                "radiusX": 0.045,
+                "radiusY": 0.045
+              },
+              "reason": "no-reliable-round",
+              "changed": false,
+              "milliseconds": 0.04719999999997526
+            },
+            {
+              "label": "blank background negative angle",
+              "input": {
+                "type": "angle",
+                "from": {
+                  "x": 0.13,
+                  "y": 0.12
+                },
+                "vertex": {
+                  "x": 0.2,
+                  "y": 0.12
+                },
+                "to": {
+                  "x": 0.2,
+                  "y": 0.2
+                },
+                "reflex": false
+              },
+              "output": {
+                "type": "angle",
+                "from": {
+                  "x": 0.13,
+                  "y": 0.12
+                },
+                "vertex": {
+                  "x": 0.2,
+                  "y": 0.12
+                },
+                "to": {
+                  "x": 0.2,
+                  "y": 0.2
+                },
+                "reflex": false
+              },
+              "reason": "unreliable-angle-arm",
+              "changed": false,
+              "milliseconds": 0.07869999999979882
+            }
+          ],
+          "computeMs": 19.35349999999994
+        },
+        {
+          "engine": "edge",
+          "candidates": [
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.5092342542917409,
+                "y": 0.47435608561691306
+              },
+              "radiusX": 0.07424605065495302,
+              "radiusY": 0.07424605065495302
+            }
+          ],
+          "locals": [
+            {
+              "label": "top-left edge local range",
+              "input": {
+                "type": "line",
+                "from": {
+                  "x": 0.18,
+                  "y": 0.36
+                },
+                "to": {
+                  "x": 0.55,
+                  "y": 0.2
+                }
+              },
+              "output": {
+                "type": "line",
+                "from": {
+                  "x": 0.1750971652461878,
+                  "y": 0.34846012559418965
+                },
+                "to": {
+                  "x": 0.5461054809723722,
+                  "y": 0.19083341317695465
+                }
+              },
+              "reason": "local-line",
+              "changed": true,
+              "milliseconds": 0.1661999999999466
+            },
+            {
+              "label": "plate top corner; second point is vertex",
+              "input": {
+                "type": "angle",
+                "from": {
+                  "x": 0.52,
+                  "y": 0.21
+                },
+                "vertex": {
+                  "x": 0.71,
+                  "y": 0.13
+                },
+                "to": {
+                  "x": 0.83,
+                  "y": 0.4
+                },
+                "reflex": false,
+                "arcScale": 0.35
+              },
+              "output": {
+                "type": "angle",
+                "from": {
+                  "x": 0.517093688811981,
+                  "y": 0.20315937253078656
+                },
+                "vertex": {
+                  "x": 0.7076666022878336,
+                  "y": 0.12219250318130598
+                },
+                "to": {
+                  "x": 0.8449117663325295,
+                  "y": 0.39242668791697827
+                },
+                "reflex": false,
+                "arcScale": 0.35
+              },
+              "reason": "local-angle",
+              "changed": true,
+              "milliseconds": 0.16599999999999682
+            },
+            {
+              "label": "partially occluded center contour; circle intent",
+              "input": {
+                "type": "circle",
+                "center": {
+                  "x": 0.509,
+                  "y": 0.476
+                },
+                "radiusX": 0.074,
+                "radiusY": 0.074
+              },
+              "output": {
+                "type": "circle",
+                "center": {
+                  "x": 0.5092342542917409,
+                  "y": 0.47435608561691306
+                },
+                "radiusX": 0.07424605065495302,
+                "radiusY": 0.07424605065495302
+              },
+              "reason": "local-round",
+              "changed": true,
+              "milliseconds": 0.05480000000000018
+            },
+            {
+              "label": "same partially occluded contour; ellipse intent stays ellipse",
+              "input": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.508,
+                  "y": 0.476
+                },
+                "axisA": {
+                  "x": 0.585,
+                  "y": 0.476
+                },
+                "axisB": {
+                  "x": 0.508,
+                  "y": 0.545
+                }
+              },
+              "output": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.5092342542917409,
+                  "y": 0.47435608561691306
+                },
+                "axisA": {
+                  "x": 0.5834803049466939,
+                  "y": 0.47435608561691306
+                },
+                "axisB": {
+                  "x": 0.5092342542917409,
+                  "y": 0.548602136271866
+                }
+              },
+              "reason": "local-round",
+              "changed": true,
+              "milliseconds": 0.048499999999989996
+            },
+            {
+              "label": "blank background negative line",
+              "input": {
+                "type": "line",
+                "from": {
+                  "x": 0.12,
+                  "y": 0.12
+                },
+                "to": {
+                  "x": 0.3,
+                  "y": 0.12
+                }
+              },
+              "output": {
+                "type": "line",
+                "from": {
+                  "x": 0.12,
+                  "y": 0.12
+                },
+                "to": {
+                  "x": 0.3,
+                  "y": 0.12
+                }
+              },
+              "reason": "no-reliable-line",
+              "changed": false,
+              "milliseconds": 0.07459999999997535
+            },
+            {
+              "label": "blank background negative ellipse",
+              "input": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.18,
+                  "y": 0.18
+                },
+                "axisA": {
+                  "x": 0.24,
+                  "y": 0.18
+                },
+                "axisB": {
+                  "x": 0.18,
+                  "y": 0.22
+                }
+              },
+              "output": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.18,
+                  "y": 0.18
+                },
+                "axisA": {
+                  "x": 0.24,
+                  "y": 0.18
+                },
+                "axisB": {
+                  "x": 0.18,
+                  "y": 0.22
+                }
+              },
+              "reason": "no-reliable-round",
+              "changed": false,
+              "milliseconds": 0.031799999999975626
+            },
+            {
+              "label": "blank background negative circle",
+              "input": {
+                "type": "circle",
+                "center": {
+                  "x": 0.18,
+                  "y": 0.18
+                },
+                "radiusX": 0.045,
+                "radiusY": 0.045
+              },
+              "output": {
+                "type": "circle",
+                "center": {
+                  "x": 0.18,
+                  "y": 0.18
+                },
+                "radiusX": 0.045,
+                "radiusY": 0.045
+              },
+              "reason": "no-reliable-round",
+              "changed": false,
+              "milliseconds": 0.04750000000001364
+            },
+            {
+              "label": "blank background negative angle",
+              "input": {
+                "type": "angle",
+                "from": {
+                  "x": 0.13,
+                  "y": 0.12
+                },
+                "vertex": {
+                  "x": 0.2,
+                  "y": 0.12
+                },
+                "to": {
+                  "x": 0.2,
+                  "y": 0.2
+                },
+                "reflex": false
+              },
+              "output": {
+                "type": "angle",
+                "from": {
+                  "x": 0.13,
+                  "y": 0.12
+                },
+                "vertex": {
+                  "x": 0.2,
+                  "y": 0.12
+                },
+                "to": {
+                  "x": 0.2,
+                  "y": 0.2
+                },
+                "reflex": false
+              },
+              "reason": "unreliable-angle-arm",
+              "changed": false,
+              "milliseconds": 0.14480000000003201
+            }
+          ],
+          "computeMs": 16.792300000815885
+        }
+      ]
+    },
+    {
+      "id": "metal_plate-02",
+      "category": "metal_plate",
+      "canonicalSha256": "030308a643c1df7b049e7789087f5bbb281402f9d1025488f5f6a2651d13c9ae",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.5163013935089111,
+                "y": 0.4770157039165497
+              },
+              "axisA": {
+                "x": 0.49772646506574025,
+                "y": 0.4130910436002923
+              },
+              "axisB": {
+                "x": 0.5670083768919245,
+                "y": 0.462281506139843
+              }
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.47492682933807373,
+                "y": 0.48471009731292725
+              },
+              "axisA": {
+                "x": 0.2879419068690199,
+                "y": 0.09623543765668074
+              },
+              "axisB": {
+                "x": 0.71127787794606,
+                "y": 0.3709469948790378
+              }
+            }
+          ],
+          "locals": [],
+          "computeMs": 15.892299999999977
+        },
+        {
+          "engine": "edge",
+          "candidates": [
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.5157576497185176,
+                "y": 0.47356529170603123
+              },
+              "axisA": {
+                "x": 0.5336492657277969,
+                "y": 0.5421608143707314
+              },
+              "axisB": {
+                "x": 0.46544217256004095,
+                "y": 0.48668896453003596
+              }
+            }
+          ],
+          "locals": [],
+          "computeMs": 19.064799998886883
+        }
+      ]
+    },
+    {
+      "id": "metal_plate-03",
+      "category": "metal_plate",
+      "canonicalSha256": "418f6c65685da4744fa796fd63fc92abe092582059556b8175a6b01b0aed3d01",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.4901728928089142,
+                "y": 0.46861404180526733
+              },
+              "radiusX": 0.07070513814687729,
+              "radiusY": 0.07070513814687729
+            }
+          ],
+          "locals": [],
+          "computeMs": 14.791299999999865
+        },
+        {
+          "engine": "edge",
+          "candidates": [
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.49083827343482656,
+                "y": 0.4649958561330306
+              },
+              "radiusX": 0.07537701578322434,
+              "radiusY": 0.07537701578322434
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.49761416897007643,
+                "y": 0.39777271015683
+              },
+              "axisA": {
+                "x": 0.4923623826375616,
+                "y": 0.41366372913012145
+              },
+              "axisB": {
+                "x": 0.48641962093347174,
+                "y": 0.394073049708615
+              }
+            }
+          ],
+          "locals": [],
+          "computeMs": 17.73660000253585
+        }
+      ]
+    },
+    {
+      "id": "metal_plate-04",
+      "category": "metal_plate",
+      "canonicalSha256": "4d7c9d2828a9b57c44f9ce51cbdf49e25bbd917f418a676446df61ba1b9ed82a",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.5321851372718811,
+                "y": 0.47662100195884705
+              },
+              "radiusX": 0.07115917652845383,
+              "radiusY": 0.07115917652845383
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.5148852467536926,
+                "y": 0.4645317494869232
+              },
+              "axisA": {
+                "x": 0.20225847751851295,
+                "y": 0.7323796212682031
+              },
+              "axisB": {
+                "x": 0.3034188190531796,
+                "y": 0.21771229315127433
+              }
+            }
+          ],
+          "locals": [],
+          "computeMs": 17.36130000000003
+        },
+        {
+          "engine": "edge",
+          "candidates": [
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.5306708447479682,
+                "y": 0.4757712440942596
+              },
+              "radiusX": 0.07116810430861303,
+              "radiusY": 0.07116810430861303
+            }
+          ],
+          "locals": [],
+          "computeMs": 18.091699999786215
+        }
+      ]
+    },
+    {
+      "id": "metal_plate-05",
+      "category": "metal_plate",
+      "canonicalSha256": "8bc55e00890a10aa4bee41479fd1b57565363a6d0c40ac93123863fe9fb39bcb",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.46981942653656006,
+                "y": 0.46941402554512024
+              },
+              "axisA": {
+                "x": 0.2859404587489621,
+                "y": 0.8395620501383914
+              },
+              "axisB": {
+                "x": 0.18133034720876418,
+                "y": 0.32610088971769235
+              }
+            }
+          ],
+          "locals": [],
+          "computeMs": 15.99330000000009
+        },
+        {
+          "engine": "edge",
+          "candidates": [
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.48617435790677727,
+                "y": 0.4780646585036389
+              },
+              "radiusX": 0.07103105220632837,
+              "radiusY": 0.07103105220632837
+            }
+          ],
+          "locals": [],
+          "computeMs": 21.532700000534533
+        }
+      ]
+    },
+    {
+      "id": "metal_plate-06",
+      "category": "metal_plate",
+      "canonicalSha256": "52045b183a7023f5b6c4ba3b19f6fe48196b0e2a9dbb4aa7545abcd2484a7707",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.4997488558292389,
+                "y": 0.48219141364097595
+              },
+              "axisA": {
+                "x": 0.42673690906740336,
+                "y": 0.468651424242154
+              },
+              "axisB": {
+                "x": 0.5121392006990838,
+                "y": 0.4153787173122326
+              }
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.4827416241168976,
+                "y": 0.461764931678772
+              },
+              "axisA": {
+                "x": 0.13203555875025502,
+                "y": 0.6800199457206857
+              },
+              "axisB": {
+                "x": 0.2984749260695807,
+                "y": 0.16567345843606618
+              }
+            }
+          ],
+          "locals": [],
+          "computeMs": 20.66989999999987
+        },
+        {
+          "engine": "edge",
+          "candidates": [
+            {
+              "type": "circle",
+              "center": {
+                "x": 0.49975733148338686,
+                "y": 0.47861611111526836
+              },
+              "radiusX": 0.07261015062106436,
+              "radiusY": 0.07261015062106436
+            }
+          ],
+          "locals": [],
+          "computeMs": 22.827199998573633
+        }
+      ]
+    },
+    {
+      "id": "tubes-01",
+      "category": "tubes",
+      "canonicalSha256": "aee8877000ab16d38389c1c894112cda5ff2452960bf01d26316b657fdcbb7d5",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.6332638263702393,
+                "y": 0.4309418797492981
+              },
+              "axisA": {
+                "x": 0.5980351357340409,
+                "y": 0.43775824869729785
+              },
+              "axisB": {
+                "x": 0.6312323600441286,
+                "y": 0.4204427563470349
+              }
+            }
+          ],
+          "locals": [],
+          "computeMs": 34.28850000000011
+        },
+        {
+          "engine": "edge",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 71.12160000178847
+        }
+      ]
+    },
+    {
+      "id": "tubes-02",
+      "category": "tubes",
+      "canonicalSha256": "08df67e73d371c83c05801e796fd34c46eaba55339d71cf7fe3eb9de5dd51869",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 25.1904999999997
+        },
+        {
+          "engine": "edge",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 62.770399999863
+        }
+      ]
+    },
+    {
+      "id": "tubes-03",
+      "category": "tubes",
+      "canonicalSha256": "3ef4f8c2bd0ccbd5695b35b0be4e1349597f9e0d3a244903e01934e784583565",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.6781457662582397,
+                "y": 0.4242517054080963
+              },
+              "axisA": {
+                "x": 0.6728246848672673,
+                "y": 0.414724572785621
+              },
+              "axisB": {
+                "x": 0.6857238773201947,
+                "y": 0.42001918893662793
+              }
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.5313435196876526,
+                "y": 0.9382144808769226
+              },
+              "axisA": {
+                "x": 0.5289825860960756,
+                "y": 0.9256999702984336
+              },
+              "axisB": {
+                "x": 0.538968254064175,
+                "y": 0.9367760313743647
+              }
+            },
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.22286441922187805,
+                "y": 0.5996017456054688
+              },
+              "axisA": {
+                "x": 0.1485397712977738,
+                "y": 0.6514661147003296
+              },
+              "axisB": {
+                "x": 0.20030742273145324,
+                "y": 0.5672762618169808
+              }
+            }
+          ],
+          "locals": [
+            {
+              "label": "short upper tube reflective edge",
+              "input": {
+                "type": "line",
+                "from": {
+                  "x": 0.41,
+                  "y": 0.174
+                },
+                "to": {
+                  "x": 0.51,
+                  "y": 0.19
+                }
+              },
+              "output": {
+                "type": "line",
+                "from": {
+                  "x": 0.40918792914941265,
+                  "y": 0.1807464347587256
+                },
+                "to": {
+                  "x": 0.5096581395778754,
+                  "y": 0.19284007119918872
+                }
+              },
+              "reason": "local-line",
+              "changed": true,
+              "milliseconds": 0.3386999999997897
+            },
+            {
+              "label": "lower long tube side among parallel highlights",
+              "input": {
+                "type": "line",
+                "from": {
+                  "x": 0.44,
+                  "y": 0.57
+                },
+                "to": {
+                  "x": 0.51,
+                  "y": 0.72
+                }
+              },
+              "output": {
+                "type": "line",
+                "from": {
+                  "x": 0.44,
+                  "y": 0.57
+                },
+                "to": {
+                  "x": 0.51,
+                  "y": 0.72
+                }
+              },
+              "reason": "no-reliable-line",
+              "changed": false,
+              "milliseconds": 0.7743000000000393
+            },
+            {
+              "label": "lower tube end; flattened ellipse",
+              "input": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.525,
+                  "y": 0.687
+                },
+                "axisA": {
+                  "x": 0.554,
+                  "y": 0.676
+                },
+                "axisB": {
+                  "x": 0.5280344827586207,
+                  "y": 0.695
+                }
+              },
+              "output": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.525,
+                  "y": 0.687
+                },
+                "axisA": {
+                  "x": 0.554,
+                  "y": 0.676
+                },
+                "axisB": {
+                  "x": 0.5280344827586207,
+                  "y": 0.695
+                }
+              },
+              "reason": "no-reliable-round",
+              "changed": false,
+              "milliseconds": 0.6471000000001368
+            },
+            {
+              "label": "textured empty background negative ellipse",
+              "input": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.82,
+                  "y": 0.82
+                },
+                "axisA": {
+                  "x": 0.87,
+                  "y": 0.82
+                },
+                "axisB": {
+                  "x": 0.82,
+                  "y": 0.85
+                }
+              },
+              "output": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.82,
+                  "y": 0.82
+                },
+                "axisA": {
+                  "x": 0.87,
+                  "y": 0.82
+                },
+                "axisB": {
+                  "x": 0.82,
+                  "y": 0.85
+                }
+              },
+              "reason": "no-reliable-round",
+              "changed": false,
+              "milliseconds": 0.06920000000036453
+            }
+          ],
+          "computeMs": 31.261499999999614
+        },
+        {
+          "engine": "edge",
+          "candidates": [],
+          "locals": [
+            {
+              "label": "short upper tube reflective edge",
+              "input": {
+                "type": "line",
+                "from": {
+                  "x": 0.41,
+                  "y": 0.174
+                },
+                "to": {
+                  "x": 0.51,
+                  "y": 0.19
+                }
+              },
+              "output": {
+                "type": "line",
+                "from": {
+                  "x": 0.4091200092109498,
+                  "y": 0.18079662018196024
+                },
+                "to": {
+                  "x": 0.509508717791357,
+                  "y": 0.1937944244597211
+                }
+              },
+              "reason": "local-line",
+              "changed": true,
+              "milliseconds": 0.13510000000002265
+            },
+            {
+              "label": "lower long tube side among parallel highlights",
+              "input": {
+                "type": "line",
+                "from": {
+                  "x": 0.44,
+                  "y": 0.57
+                },
+                "to": {
+                  "x": 0.51,
+                  "y": 0.72
+                }
+              },
+              "output": {
+                "type": "line",
+                "from": {
+                  "x": 0.4427340901765118,
+                  "y": 0.5687842125754727
+                },
+                "to": {
+                  "x": 0.5099802088541309,
+                  "y": 0.7200088006703185
+                }
+              },
+              "reason": "local-line",
+              "changed": true,
+              "milliseconds": 0.1290000000000191
+            },
+            {
+              "label": "lower tube end; flattened ellipse",
+              "input": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.525,
+                  "y": 0.687
+                },
+                "axisA": {
+                  "x": 0.554,
+                  "y": 0.676
+                },
+                "axisB": {
+                  "x": 0.5280344827586207,
+                  "y": 0.695
+                }
+              },
+              "output": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.525,
+                  "y": 0.687
+                },
+                "axisA": {
+                  "x": 0.554,
+                  "y": 0.676
+                },
+                "axisB": {
+                  "x": 0.5280344827586207,
+                  "y": 0.695
+                }
+              },
+              "reason": "no-reliable-round",
+              "changed": false,
+              "milliseconds": 0.049100000000009913
+            },
+            {
+              "label": "textured empty background negative ellipse",
+              "input": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.82,
+                  "y": 0.82
+                },
+                "axisA": {
+                  "x": 0.87,
+                  "y": 0.82
+                },
+                "axisB": {
+                  "x": 0.82,
+                  "y": 0.85
+                }
+              },
+              "output": {
+                "type": "ellipse",
+                "center": {
+                  "x": 0.82,
+                  "y": 0.82
+                },
+                "axisA": {
+                  "x": 0.87,
+                  "y": 0.82
+                },
+                "axisB": {
+                  "x": 0.82,
+                  "y": 0.85
+                }
+              },
+              "reason": "no-reliable-round",
+              "changed": false,
+              "milliseconds": 0.026399999999966894
+            }
+          ],
+          "computeMs": 60.40289999873494
+        }
+      ]
+    },
+    {
+      "id": "tubes-04",
+      "category": "tubes",
+      "canonicalSha256": "c5b4c0424f29220f914df42ca2e07928bca2805b66d88849105b7778f75862f4",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [
+            {
+              "type": "ellipse",
+              "center": {
+                "x": 0.4346117675304413,
+                "y": 0.23721371591091156
+              },
+              "axisA": {
+                "x": 0.3610930043236493,
+                "y": 0.19595654456397182
+              },
+              "axisB": {
+                "x": 0.4487952257512933,
+                "y": 0.21193931458020585
+              }
+            }
+          ],
+          "locals": [],
+          "computeMs": 38.11290000000008
+        },
+        {
+          "engine": "edge",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 71.53679999828455
+        }
+      ]
+    },
+    {
+      "id": "tubes-05",
+      "category": "tubes",
+      "canonicalSha256": "169b3bd39cc86c69b3ff4e47bc9179f762ec2d9130007f9ef9a2bc63145fbcd0",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 34.35829999999987
+        },
+        {
+          "engine": "edge",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 67.68639999791048
+        }
+      ]
+    },
+    {
+      "id": "tubes-06",
+      "category": "tubes",
+      "canonicalSha256": "3d922ad3301fc08103b72373c8616d29d4ebd6bc2e3ea42966e8f88d4dd0df57",
+      "views": [
+        {
+          "engine": "baseline",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 34.82119999999986
+        },
+        {
+          "engine": "edge",
+          "candidates": [],
+          "locals": [],
+          "computeMs": 67.89429999844288
+        }
+      ]
+    }
+  ]
+}

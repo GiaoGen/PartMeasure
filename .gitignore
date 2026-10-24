@@ -13,3 +13,4 @@ supabase/.branches/
 *.log
 tmp/
 experiments/konva/public/fixtures/
+public/cv/

@@ -1,0 +1,38 @@
+{
+  "checkedAt": "2026-10-24T18:23:14.687Z",
+  "scope": "Local built Next app HTTP HEAD only; no browser/E2E, account access, database writes or deployment",
+  "checks": [
+    {
+      "path": "/login",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": null,
+      "cacheControl": "private, no-store",
+      "csp": "default-src 'self'; script-src 'self' 'nonce-[redacted]' 'strict-dynamic'; worker-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; connect-src 'self' https://rvysclscetfqicpnzlra.supabase.co https://rvysclscetfqicpnzlra.storage.supabase.co; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    },
+    {
+      "path": "/cv/worker-v1.js",
+      "status": 200,
+      "contentType": "application/javascript; charset=UTF-8",
+      "contentLength": "468260",
+      "cacheControl": "no-store",
+      "csp": "default-src 'none'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval'; connect-src 'self'; worker-src 'none'"
+    },
+    {
+      "path": "/cv/opencv-4.12.0-bd0c3e644804.js",
+      "status": 200,
+      "contentType": "application/javascript; charset=UTF-8",
+      "contentLength": "10872779",
+      "cacheControl": "public, max-age=31536000, immutable",
+      "csp": null
+    },
+    {
+      "path": "/cv/LICENSE.txt",
+      "status": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "contentLength": "11357",
+      "cacheControl": "public, max-age=0",
+      "csp": null
+    }
+  ]
+}

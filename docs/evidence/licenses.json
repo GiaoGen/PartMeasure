@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-16T12:15:17.992Z",
+  "checkedAt": "2026-10-24T18:13:59.240Z",
   "packages": [
     {
       "name": "@alloc/quick-lru",
@@ -1515,6 +1515,21 @@
       ]
     },
     {
+      "name": "@techstark/opencv-js",
+      "version": "4.12.0-release.1",
+      "license": "Apache-2.0",
+      "licenseSource": "package-lock metadata",
+      "direct": true,
+      "path": "node_modules/@techstark/opencv-js",
+      "installed": true,
+      "notices": [
+        {
+          "file": "LICENSE",
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+        }
+      ]
+    },
+    {
       "name": "@tybys/wasm-util",
       "version": "0.10.4",
       "license": "MIT",
@@ -1894,7 +1909,7 @@
       "version": "0.28.2",
       "license": "MIT",
       "licenseSource": "package-lock metadata",
-      "direct": false,
+      "direct": true,
       "path": "node_modules/esbuild",
       "installed": true,
       "notices": [

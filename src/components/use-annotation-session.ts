@@ -12,6 +12,7 @@ import { api, ApiError, message, readCached } from "./api";
 import { prioritizeLayers, readInteractionDocument } from "./interaction-reads";
 import { useApiRevalidation } from "./use-api-revalidation";
 import { useProjectUpdates } from "./project-live";
+import { cvDraftUpdate, type CvDraftTicket } from "@/lib/cv/draft";
 type Operation = {
 	method: string;
 	url: string;
@@ -53,6 +54,13 @@ export function useAnnotationSession(
 		loadRun = useRef(0);
 	const reading = useRef<AbortController | null>(null);
 	const activeRead = useRef(false);
+	const draftVersion = useRef(0);
+	const selectedRef = useRef(selected);
+	selectedRef.current = selected;
+	const selectDraft = useCallback((id: string | null) => {
+		if (selectedRef.current !== id) { draftVersion.current++; selectedRef.current = id; }
+		setSelected(id);
+	}, []);
 	itemsRef.current = items;
 	headsRef.current = heads;
 	const documentRef = useRef(document);
@@ -100,6 +108,7 @@ export function useAnnotationSession(
 			if (protectedDraft.current && !force) { setStatus("远程更新未覆盖当前草稿"); return; }
 			if (!force && JSON.stringify(documentRef.current) === JSON.stringify(data)) return;
 			setDocument(data);
+			draftVersion.current++;
 			setHeads(data.items);
 			headsRef.current = data.items;
 			setItems(data.items.filter((i) => !i.deleted));
@@ -138,6 +147,7 @@ export function useAnnotationSession(
 		if (guest || saving || blocked) return;
 		const previous = itemsRef.current;
 		if (sameContent(previous, next)) return;
+		draftVersion.current++;
 		// Protect edits immediately, before React renders the updated dirty flag.
 		protectedDraft.current = true;
 		if (!group || editGroup.current !== group)
@@ -170,6 +180,7 @@ export function useAnnotationSession(
 	};
 	function undo() {
 		if (!past.length || guest || saving || blocked) return;
+		draftVersion.current++;
 		const next = past.at(-1) as AnnotationDraft[],
 			previous = itemsRef.current;
 		setPast((p) => p.slice(0, -1));
@@ -183,6 +194,7 @@ export function useAnnotationSession(
 	}
 	function redo() {
 		if (!future.length || guest || saving || blocked) return;
+		draftVersion.current++;
 		const next = future[0] as AnnotationDraft[],
 			previous = itemsRef.current;
 		setFuture((f) => f.slice(1));
@@ -212,6 +224,7 @@ export function useAnnotationSession(
 			return;
 		}
 		busy.current = true;
+		draftVersion.current++;
 		protectedDraft.current = true;
 		setSaving(true);
 		setError("");
@@ -321,7 +334,7 @@ export function useAnnotationSession(
 		items,
 		heads,
 		selected,
-		setSelected,
+		setSelected: selectDraft,
 		loading,
 		status,
 		error,
@@ -333,6 +346,21 @@ export function useAnnotationSession(
 		load,
 		change,
 		update,
+		captureCvTicket: (id: string): CvDraftTicket | undefined => {
+			const current = itemsRef.current.find(i => i.id === id), image = documentRef.current?.image;
+			if (guest || busy.current || blocked || !current || !image || headsRef.current.some(h => h.id === id)) return;
+			return { id, imageId: image.id, imageHash: image.imageHash, version: draftVersion.current, geometry: structuredClone(current.geometry) };
+		},
+		applyCvFit: (ticket: CvDraftTicket, geometry: AnnotationDraft["geometry"]) => {
+			const image = documentRef.current?.image;
+			if (!image) return false;
+			const item = cvDraftUpdate(ticket, geometry, { image, current: itemsRef.current.find(i => i.id === ticket.id), selected: selectedRef.current, version: draftVersion.current, saved: headsRef.current.some(h => h.id === ticket.id), editable: !guest && !busy.current && !saving && !blocked && !externalDirty });
+			if (!item) return false;
+			// Separate undo step restores the original hand drawing, with all human
+			// fields intact. Never group this into creation or a subsequent drag.
+			change(itemsRef.current.map(i => i.id === item.id ? item : i));
+			return true;
+		},
 		undo,
 		redo,
 		save,

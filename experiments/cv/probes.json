@@ -1,0 +1,33 @@
+{
+  "kind": "analyst-placed-rough-drafts-not-human-timing-or-ground-truth",
+  "description": "Rough intents placed by visual inspection of public photographs. They are technical probes only. No precision, recall or engineer completion-time claim may be derived from these inputs.",
+  "items": [
+    {"imageId":"metal_plate-01","label":"top-left edge local range","geometry":{"type":"line","from":{"x":0.18,"y":0.36},"to":{"x":0.55,"y":0.20}}},
+    {"imageId":"metal_plate-01","label":"plate top corner; second point is vertex","geometry":{"type":"angle","from":{"x":0.52,"y":0.21},"vertex":{"x":0.71,"y":0.13},"to":{"x":0.83,"y":0.40},"reflex":false,"arcScale":0.35}},
+    {"imageId":"metal_plate-01","label":"partially occluded center contour; circle intent","geometry":{"type":"circle","center":{"x":0.509,"y":0.476},"radiusX":0.074,"radiusY":0.074}},
+    {"imageId":"metal_plate-01","label":"same partially occluded contour; ellipse intent stays ellipse","geometry":{"type":"ellipse","center":{"x":0.508,"y":0.476},"axisA":{"x":0.585,"y":0.476},"axisB":{"x":0.508,"y":0.545}}},
+    {"imageId":"metal_plate-01","label":"blank background negative line","geometry":{"type":"line","from":{"x":0.12,"y":0.12},"to":{"x":0.30,"y":0.12}}},
+    {"imageId":"metal_plate-01","label":"blank background negative ellipse","geometry":{"type":"ellipse","center":{"x":0.18,"y":0.18},"axisA":{"x":0.24,"y":0.18},"axisB":{"x":0.18,"y":0.22}}},
+    {"imageId":"metal_plate-01","label":"blank background negative circle","geometry":{"type":"circle","center":{"x":0.18,"y":0.18},"radiusX":0.045,"radiusY":0.045}},
+    {"imageId":"metal_plate-01","label":"blank background negative angle","geometry":{"type":"angle","from":{"x":0.13,"y":0.12},"vertex":{"x":0.20,"y":0.12},"to":{"x":0.20,"y":0.20},"reflex":false}},
+    {"imageId":"bracket_white-05","label":"reflective left edge; competing highlights","geometry":{"type":"line","from":{"x":0.46,"y":0.26},"to":{"x":0.46,"y":0.70}}},
+    {"imageId":"bracket_white-05","label":"top-right corner; non-orthogonal photograph","geometry":{"type":"angle","from":{"x":0.56,"y":0.109},"vertex":{"x":0.65,"y":0.128},"to":{"x":0.58,"y":0.45},"reflex":false}},
+    {"imageId":"bracket_white-05","label":"small partially occluded upper hole circle intent","geometry":{"type":"circle","center":{"x":0.54,"y":0.16},"radiusX":0.014,"radiusY":0.014}},
+    {"imageId":"bracket_white-05","label":"small upper hole ellipse intent","geometry":{"type":"ellipse","center":{"x":0.54,"y":0.16},"axisA":{"x":0.54,"y":0.18},"axisB":{"x":0.555,"y":0.16}}},
+    {"imageId":"tubes-03","label":"short upper tube reflective edge","geometry":{"type":"line","from":{"x":0.41,"y":0.174},"to":{"x":0.51,"y":0.19}}},
+    {"imageId":"tubes-03","label":"lower long tube side among parallel highlights","geometry":{"type":"line","from":{"x":0.44,"y":0.57},"to":{"x":0.51,"y":0.72}}},
+    {"imageId":"tubes-03","label":"lower tube end; flattened ellipse","geometry":{"type":"ellipse","center":{"x":0.525,"y":0.687},"axisA":{"x":0.554,"y":0.676},"axisB":{"x":0.5280344827586207,"y":0.695}}},
+    {"imageId":"tubes-03","label":"textured empty background negative ellipse","geometry":{"type":"ellipse","center":{"x":0.82,"y":0.82},"axisA":{"x":0.87,"y":0.82},"axisB":{"x":0.82,"y":0.85}}},
+    {"imageId":"bracket_black-01","label":"dark bracket long side","geometry":{"type":"line","from":{"x":0.375,"y":0.27},"to":{"x":0.33,"y":0.60}}},
+    {"imageId":"bracket_black-01","label":"bent bracket corner with curved transition","geometry":{"type":"angle","from":{"x":0.375,"y":0.60},"vertex":{"x":0.345,"y":0.697},"to":{"x":0.505,"y":0.81},"reflex":false}},
+    {"imageId":"bracket_black-01","label":"small dark bracket hole circle intent","geometry":{"type":"circle","center":{"x":0.353,"y":0.628},"radiusX":0.010,"radiusY":0.010}},
+    {"imageId":"bracket_black-01","label":"small dark bracket hole ellipse intent","geometry":{"type":"ellipse","center":{"x":0.353,"y":0.628},"axisA":{"x":0.365,"y":0.628},"axisB":{"x":0.353,"y":0.637}}},
+    {"imageId":"bracket_brown-02","label":"decorative bracket bottom straight edge","geometry":{"type":"line","from":{"x":0.23,"y":0.70},"to":{"x":0.54,"y":0.88}}},
+    {"imageId":"bracket_brown-02","label":"decorative bracket lower corner","geometry":{"type":"angle","from":{"x":0.26,"y":0.46},"vertex":{"x":0.20,"y":0.67},"to":{"x":0.40,"y":0.79},"reflex":false}},
+    {"imageId":"bracket_brown-02","label":"open decorative curl; round contour is not a hole","geometry":{"type":"ellipse","center":{"x":0.681,"y":0.856},"axisA":{"x":0.768,"y":0.856},"axisB":{"x":0.681,"y":0.933}}},
+    {"imageId":"connector-03","label":"adjustment wheel; non-hole round feature","geometry":{"type":"ellipse","center":{"x":0.544,"y":0.549},"axisA":{"x":0.544,"y":0.596},"axisB":{"x":0.570,"y":0.549}}},
+    {"imageId":"connector-03","label":"reflective front cap; non-hole circle intent","geometry":{"type":"circle","center":{"x":0.257,"y":0.63},"radiusX":0.026,"radiusY":0.026}},
+    {"imageId":"connector-03","label":"short bracket top edge","geometry":{"type":"line","from":{"x":0.263,"y":0.542},"to":{"x":0.30,"y":0.545}}},
+    {"imageId":"connector-03","label":"green background negative ellipse","geometry":{"type":"ellipse","center":{"x":0.16,"y":0.20},"axisA":{"x":0.19,"y":0.20},"axisB":{"x":0.16,"y":0.22}}}
+  ]
+}

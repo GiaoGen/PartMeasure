@@ -9,6 +9,9 @@
     "npm": ">=11.12.1 <12"
   },
   "scripts": {
+    "cv:build": "node scripts/build-cv.mjs",
+    "predev": "npm run cv:build",
+    "prebuild": "npm run cv:build",
     "dev": "next dev --webpack --hostname 127.0.0.1",
     "build": "next build --webpack",
     "start": "next start --hostname 127.0.0.1",
@@ -30,6 +33,7 @@
   "dependencies": {
     "@supabase/ssr": "0.12.7",
     "@supabase/supabase-js": "2.118.0",
+    "@techstark/opencv-js": "4.12.0-release.1",
     "konva": "10.9.0",
     "next": "16.4.2",
     "pg": "8.23.1",
@@ -50,6 +54,7 @@
     "@types/pg": "8.23.1",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
+    "esbuild": "0.28.2",
     "supabase": "2.121.0",
     "tailwindcss": "4.3.3",
     "typescript": "6.0.3",

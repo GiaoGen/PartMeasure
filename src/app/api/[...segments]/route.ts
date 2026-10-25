@@ -29,6 +29,7 @@ import {
 	fileIssueSchema,
 } from "@/lib/annotations";
 import * as annotations from "@/lib/server/annotation-service";
+import { annotatedExport } from "@/lib/server/annotated-export-service";
 import * as issues from "@/lib/server/issue-service";
 import * as interaction from "@/lib/server/interaction-reads";
 import { measurementSchema, responseSchema, reviewSchema } from "@/lib/issues";
@@ -571,6 +572,10 @@ async function handle(req: Request, context: Context) {
 			}
 		}
 		if (resource === "files") {
+			if (method === "GET" && objectId && parts[4] === "annotated-export" && parts.length === 5) {
+				if (!uuid.safeParse(objectId).success || url.searchParams.size !== 0) throw new AppError("INVALID_INPUT", 422);
+				return response(await annotatedExport(actor, projectId, objectId));
+			}
 			if (method === "GET" && objectId && !parts[5] && ["interaction", "collaboration"].includes(parts[4] ?? "")) {
 				const annotationId = url.searchParams.get("annotationId");
 				if (!uuid.safeParse(annotationId).success || url.searchParams.getAll("annotationId").length !== 1 || [...url.searchParams.keys()].some(key => !["annotationId", "cursor"].includes(key)))

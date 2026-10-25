@@ -16,6 +16,7 @@ import { WorkspaceContextDialog } from "./workspace-context-dialog";
 import { WorkspaceSideTarget } from "./workspace-side-content";
 import { UploadQueue } from "./upload-queue";
 import { AnnotationEditor } from "./annotation-editor";
+import { AnnotatedImageExport } from "./annotated-image-export";
 import { FileIssues } from "./file-issues";
 import { IssueInbox } from "./issue-inbox";
 import { IssueDetail } from "./issue-detail";
@@ -105,6 +106,7 @@ function WorkspaceContent({
 	guest?: boolean;
 }) {
 	const themeStyle = useWorkspaceTheme(guest);
+	const [imageExportFile, setImageExportFile] = useState<string | null>(null);
 	const [project, setProject] = useState(initial),
 		[section, setSection] = useState("files"),
 		[assets, setAssets] = useState<Asset[]>([]),
@@ -846,6 +848,7 @@ function WorkspaceContent({
 										<details className="workspace-file-menu">
 											<summary aria-label="文件操作">···</summary>
 											<div className="workspace-file-menu-items">
+												{selected.mime.startsWith("image/") ? <button type="button" onClick={event => { setImageExportFile(selected.id); event.currentTarget.closest("details")?.removeAttribute("open"); }}>导出标注图片</button> : null}
 												<a
 													className="button"
 													href={`${base}/files/${selected.id}/download`}
@@ -894,6 +897,9 @@ function WorkspaceContent({
 											</div>
 										</details>
 									</div>
+									{selected.mime.startsWith("image/") ? (
+										imageExportFile === selected.id ? <AnnotatedImageExport key={selected.id} base={base} fileId={selected.id} onInvalid={onInvalid} onClose={() => setImageExportFile(null)} /> : null
+									) : null}
 									{selected.mime.startsWith("image/") ? (
 										<AnnotationEditor
 											key={selected.id}

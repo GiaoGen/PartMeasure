@@ -635,3 +635,8 @@
 	margin: 0;
 	color: var(--workspace-mark, #36567f);
 }
+/* Export stays in the existing file detail flow; no extra workspace panel. */
+.annotated-image-export { padding: 12px 0; margin-bottom: 16px; border-bottom: 1px solid var(--border, #d0d5dd); }
+.annotated-image-export p { margin: 6px 0; font-size: 14px; }
+.annotated-image-export-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.annotated-image-export-actions button, .annotated-image-export-actions select { min-height: 40px; }

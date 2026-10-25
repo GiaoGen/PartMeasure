@@ -1,0 +1,21 @@
+{
+  "environment": "disposable native PostgreSQL; synthetic Auth/file metadata only",
+  "results": [
+    {
+      "check": "runtime_guest_snapshot_seven_geometries_source_and_hash",
+      "status": "PASS"
+    },
+    {
+      "check": "runtime_rls_cross_owner_and_project_rejected",
+      "status": "PASS"
+    },
+    {
+      "check": "captured_export_not_mixed_with_later_saved_revision",
+      "status": "PASS"
+    },
+    {
+      "check": "archived_reads_allowed_revoked_guest_rejected",
+      "status": "PASS"
+    }
+  ]
+}

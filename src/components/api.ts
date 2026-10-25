@@ -38,6 +38,8 @@ const messages: Record<string, string> = {
 	CSRF_INVALID: "页面安全凭据失效，请刷新。",
 	FORBIDDEN: "当前访问方式没有此操作权限。",
 	PROJECT_ARCHIVED: "项目已归档，只能查看和下载；请由工程师恢复后再操作。",
+	EXPORT_LIMIT: "这张图的标注或说明超过单张导出上限（16MP／最长16384px／说明60000字），请减少本次内容或联系工程师。",
+	EXPORT_BUSY: "上次图片处理仍在结束，请稍后重新生成。",
 	FEEDBACK_STATE_CONFLICT: "本次接收记录已变化，请查看最新记录后再操作；留言输入已保留。",
 	FEEDBACK_LIMIT: "本版本反馈已达上限；已有接收记录仍可撤销。",
 	ORIGIN_MISMATCH: "访问地址与服务端配置不一致，请使用配置的站点地址；重新登录或清缓存无法解决。",

@@ -1,4 +1,4 @@
-param([string]$PostgresBin='C:\Program Files\PostgreSQL\18\bin')
+param([string]$PostgresBin='C:\Program Files\PostgreSQL\18\bin',[string]$CheckScript='scripts/p2-03/native.ts')
 $ErrorActionPreference='Stop'
 $pmRoot=(Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 Set-Location -LiteralPath $pmRoot
@@ -40,7 +40,7 @@ try{
  $env:EVENT_DATABASE_URL=$env:DATABASE_URL
  $env:WORKER_DATABASE_URL="postgresql://partmeasure_worker@127.0.0.1:$pmPort/postgres"
  $env:APP_URL='http://127.0.0.1:3105'
- & node --conditions=react-server --import tsx scripts/p2-03/native.ts
+ & node --conditions=react-server --import tsx $CheckScript
  if($LASTEXITCODE -ne 0){throw 'LOCAL_SERVICE_CHECK_FAILED'}
 }finally{
  foreach($pmEnvName in $pmPrevious.Keys){[Environment]::SetEnvironmentVariable($pmEnvName,$pmPrevious[$pmEnvName],'Process')}

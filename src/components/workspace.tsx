@@ -17,6 +17,7 @@ import { WorkspaceSideTarget } from "./workspace-side-content";
 import { UploadQueue } from "./upload-queue";
 import { AnnotationEditor } from "./annotation-editor";
 import { AnnotatedImageExport } from "./annotated-image-export";
+import { ZipPackageExport } from "./zip-package-export";
 import { FileIssues } from "./file-issues";
 import { IssueInbox } from "./issue-inbox";
 import { IssueDetail } from "./issue-detail";
@@ -107,7 +108,8 @@ function WorkspaceContent({
 }) {
 	const themeStyle = useWorkspaceTheme(guest);
 	const [imageExportFile, setImageExportFile] = useState<string | null>(null);
-	const [pdfSelection, setPdfSelection] = useState(false), [pdfFiles, setPdfFiles] = useState<string[]>([]), [pdfBusy, setPdfBusy] = useState(false), [pdfNotice, setPdfNotice] = useState("");
+	const [packageSelection, setPackageSelection] = useState<"pdf" | "zip" | null>(null), [exportFiles, setExportFiles] = useState<string[]>([]), [exportBusy, setExportBusy] = useState(false), [exportNotice, setExportNotice] = useState("");
+	const pdfSelection = packageSelection === "pdf", zipSelection = packageSelection === "zip";
 	const [project, setProject] = useState(initial),
 		[section, setSection] = useState("files"),
 		[assets, setAssets] = useState<Asset[]>([]),
@@ -241,7 +243,7 @@ function WorkspaceContent({
 		);
 	}
 	function selectFile(file: Asset | null) {
-		if (pdfBusy) return;
+		if (exportBusy) return;
 		if (
 			(selected?.id !== file?.id ||
 				selectedIssue ||
@@ -303,7 +305,7 @@ function WorkspaceContent({
 		setOverlayIssue(null);
 	}
 	function openThumbnailAnnotation(file: Asset, annotationId: string) {
-		if (pdfBusy) return;
+		if (exportBusy) return;
 		if (
 			popupSelection?.file.id === file.id &&
 			popupSelection.annotationId === annotationId &&
@@ -484,8 +486,8 @@ function WorkspaceContent({
 		}
 	}
 	function changeFileFilters(next: FileFilters) {
-		if (pdfBusy || !allowLeave()) return false;
-		setPdfFiles([]); if (pdfSelection) setPdfNotice("筛选已改变，请重新选择报告照片。");
+		if (exportBusy || !allowLeave()) return false;
+		setExportFiles([]); if (packageSelection) setExportNotice("筛选已改变，请重新选择导出资料。");
 		setSelected(null); setSelectedIssue(null); setPopupSelection(null);
 		setAssets([]); setCursor(null); setFileFilters(next);
 		return true;
@@ -749,14 +751,15 @@ function WorkspaceContent({
 						/>
 						<div hidden={!!selected || !!selectedIssue}>
 							<div className="workspace-file-filters">
-								<label>类型 <select disabled={pdfBusy} value={fileFilters.type} onChange={event => changeFileFilters({ ...fileFilters, type: event.target.value as FileFilters["type"] })}>{Object.entries(fileTypes).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
-								<label>排序 <select disabled={pdfBusy} value={fileFilters.sort} onChange={event => changeFileFilters({ ...fileFilters, sort: event.target.value as FileFilters["sort"] })}>{Object.entries(fileSorts).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
-								{!pdfSelection ? <button type="button" onClick={() => { if (fileFilters.type !== "image") { if (!changeFileFilters({ ...fileFilters, type: "image" })) return; } else if (!allowLeave()) return; setPdfSelection(true); setPdfFiles([]); setPdfNotice("在下方勾选1–8张照片，按选择顺序生成PDF。"); }}>PDF资料报告</button> : null}
+								<label>类型 <select disabled={exportBusy} value={fileFilters.type} onChange={event => changeFileFilters({ ...fileFilters, type: event.target.value as FileFilters["type"] })}>{Object.entries(fileTypes).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+								<label>排序 <select disabled={exportBusy} value={fileFilters.sort} onChange={event => changeFileFilters({ ...fileFilters, sort: event.target.value as FileFilters["sort"] })}>{Object.entries(fileSorts).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+								{!packageSelection ? <><button type="button" onClick={() => { if (fileFilters.type !== "image") { if (!changeFileFilters({ ...fileFilters, type: "image" })) return; } else if (!allowLeave()) return; setPackageSelection("pdf"); setExportFiles([]); setExportNotice("在下方勾选1–8张照片，按选择顺序生成PDF。"); }}>PDF资料报告</button><button type="button" onClick={() => { if (!allowLeave()) return; setPackageSelection("zip"); setExportFiles([]); setExportNotice("在下方勾选最多20项资料，可附加所选已发布附件。"); }}>ZIP资料包</button></> : null}
 							</div>
 							{pdfSelection ? <div className="workspace-pdf-selection">
-								<p role="status">已选 {pdfFiles.length} / 8 张。{pdfNotice}</p>
-								{pdfFiles[0] ? <AnnotatedImageExport key={base} base={base} fileId={pdfFiles[0]} fileIds={pdfFiles} reportOnly onInvalid={onInvalid} onBusyChange={setPdfBusy} onClose={() => { setPdfSelection(false); setPdfFiles([]); }} /> : <><button type="button" disabled>生成PDF（请先勾选照片）</button><button type="button" onClick={() => setPdfSelection(false)}>取消选择</button></>}
+								<p role="status">已选 {exportFiles.length} / 8 张。{exportNotice}</p>
+								{exportFiles[0] ? <AnnotatedImageExport key={base} base={base} fileId={exportFiles[0]} fileIds={exportFiles} reportOnly onInvalid={onInvalid} onBusyChange={setExportBusy} onClose={() => { setPackageSelection(null); setExportFiles([]); }} /> : <><button type="button" disabled>生成PDF（请先勾选照片）</button><button type="button" onClick={() => setPackageSelection(null)}>取消选择</button></>}
 							</div> : null}
+							{zipSelection ? <div className="workspace-pdf-selection"><p role="status">已选资料 {exportFiles.length} / 20。{exportNotice}</p><ZipPackageExport key={base} base={base} guest={guest} materialIds={exportFiles} onInvalid={onInvalid} onBusyChange={setExportBusy} onClose={() => { setPackageSelection(null); setExportFiles([]); }} /></div> : null}
 							{loading ? (
 								<p role="status">加载资料…</p>
 							) : assets.length === 0 ? (
@@ -765,9 +768,10 @@ function WorkspaceContent({
 							<ul className="workspace-gallery">
 								{assets.map((file) => (
 									<li key={file.id}>
+										{zipSelection ? <label className="workspace-pdf-checkbox"><input type="checkbox" checked={exportFiles.includes(file.id)} disabled={exportBusy || !exportFiles.includes(file.id) && exportFiles.length >= 20} onChange={event => { const checked = event.target.checked; setExportFiles(ids => checked ? ids.length < 20 ? [...ids, file.id] : ids : ids.filter(id => id !== file.id)); }} />选入ZIP：{file.filename}</label> : null}
 										{file.mime.startsWith("image/") ? (
 											<div className="workspace-asset">
-												{pdfSelection ? <label className="workspace-pdf-checkbox"><input type="checkbox" checked={pdfFiles.includes(file.id)} disabled={pdfBusy || !pdfFiles.includes(file.id) && pdfFiles.length >= 8} onChange={event => { const checked = event.target.checked; setPdfFiles(ids => checked ? ids.length < 8 ? [...ids, file.id] : ids : ids.filter(id => id !== file.id)); }} />选入PDF：{file.filename}</label> : null}
+												{pdfSelection ? <label className="workspace-pdf-checkbox"><input type="checkbox" checked={exportFiles.includes(file.id)} disabled={exportBusy || !exportFiles.includes(file.id) && exportFiles.length >= 8} onChange={event => { const checked = event.target.checked; setExportFiles(ids => checked ? ids.length < 8 ? [...ids, file.id] : ids : ids.filter(id => id !== file.id)); }} />选入PDF：{file.filename}</label> : null}
 												<AnnotatedThumbnail
 													base={base}
 													fileId={file.id}

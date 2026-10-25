@@ -13,5 +13,6 @@ supabase/.branches/
 *.log
 tmp/
 output/pdf/
+output/zip/
 experiments/konva/public/fixtures/
 public/cv/

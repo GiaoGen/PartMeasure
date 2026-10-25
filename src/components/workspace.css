@@ -645,3 +645,10 @@
 .workspace-pdf-selection .annotated-image-export { margin-bottom: 0; border-bottom: 0; }
 .workspace-pdf-checkbox { display: flex; align-items: center; gap: 8px; min-height: 40px; font-size: 14px; overflow-wrap: anywhere; }
 .workspace-pdf-checkbox input { width: 18px; height: 18px; flex-shrink: 0; }
+.zip-package-export { padding: 10px 0; margin: 8px 0; border-bottom: 1px solid var(--border, #d0d5dd); }
+.zip-package-export p { margin: 6px 0; font-size: 14px; }
+.zip-package-export fieldset { padding: 8px 0; margin: 8px 0; border: 0; }
+.zip-package-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.zip-package-actions button, .zip-package-actions select { min-height: 40px; max-width: 100%; }
+.zip-option { display: flex; align-items: center; gap: 8px; min-height: 40px; overflow-wrap: anywhere; }
+.zip-option input { width: 18px; height: 18px; flex-shrink: 0; }

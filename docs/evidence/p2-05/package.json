@@ -1,0 +1,7 @@
+{
+  "checker": "Python zipfile independently read every entry and verified CRC, UTF-8, length, SHA256 and metadata references",
+  "entries": 7,
+  "bytes": 8699,
+  "status": "PASS",
+  "scope": "synthetic producer sample; not browser, actual Supabase or mobile acceptance"
+}

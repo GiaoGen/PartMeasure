@@ -1,0 +1,17 @@
+{
+  "environment": "disposable PostgreSQL; synthetic Auth/file metadata only",
+  "results": [
+    {
+      "check": "guest_mixed_selection_fixed_issue_snapshots_without_private_revision_access",
+      "status": "PASS"
+    },
+    {
+      "check": "owner_original_hash_guest_original_cross_owner_draft_membership_rejected",
+      "status": "PASS"
+    },
+    {
+      "check": "frozen_revision_final_access_archive_revocation_and_shared_pdf_history",
+      "status": "PASS"
+    }
+  ]
+}

@@ -1,4 +1,8 @@
 import { beforeEach, expect, it, vi } from "vitest";
+vi.mock("../../src/lib/server/zip-package-service", () => ({
+	zipSnapshot: vi.fn(),
+	zipAccess: vi.fn(),
+}));
 vi.mock("server-only", () => ({}));
 vi.mock("../../src/lib/server/auth", () => ({
 	owner: vi.fn(),
@@ -20,6 +24,10 @@ import { GET } from "../../src/app/api/[...segments]/route";
 import { owner, guest } from "../../src/lib/server/auth";
 import { annotatedExport } from "../../src/lib/server/annotated-export-service";
 import { pdfReport } from "../../src/lib/server/pdf-report-service";
+import {
+	zipSnapshot,
+	zipAccess,
+} from "../../src/lib/server/zip-package-service";
 import { AppError } from "../../src/lib/policy";
 const id = "00000000-0000-4000-8000-000000000001";
 function request(suffix = "", isGuest = false) {
@@ -38,6 +46,68 @@ beforeEach(() => {
 		snapshotId: "fixed",
 	} as never);
 	vi.mocked(pdfReport).mockResolvedValue({ snapshotId: "pdf-fixed" } as never);
+	vi.mocked(zipSnapshot).mockResolvedValue({
+		snapshotId: "zip-fixed",
+	} as never);
+	vi.mocked(zipAccess).mockResolvedValue({ files: [] });
+});
+function requestZip(query: string, isGuest = false, check = false) {
+	const path = `${isGuest ? "guest/" : ""}projects/${id}/${check ? "zip-access" : "zip-snapshot"}`;
+	return GET(new Request(`http://127.0.0.1:3000/api/${path}?${query}`), {
+		params: Promise.resolve({ segments: path.split("/") }),
+	});
+}
+it.each([false, true])(
+	"forwards exact ZIP scope with private headers (Guest=%s)",
+	async (isGuest) => {
+		const response = await requestZip(
+			`materials=${id}&delivery=${id}&attachments=${id}`,
+			isGuest,
+		);
+		expect(response.status).toBe(200);
+		expect(response.headers.get("cache-control")).toBe("private, no-store");
+		expect(zipSnapshot).toHaveBeenCalledWith(
+			isGuest ? { kind: "guest", hash: "hash" } : { kind: "owner", id },
+			id,
+			{ materialIds: [id], originals: false, delivery: { id, fileIds: [id] } },
+		);
+	},
+);
+it("fresh ZIP access uses the same validated scope", async () => {
+	expect(
+		(await requestZip(`materials=${id}&originals=1`, false, true)).status,
+	).toBe(200);
+	expect(zipAccess).toHaveBeenCalledWith({ kind: "owner", id }, id, {
+		materialIds: [id],
+		originals: true,
+		delivery: null,
+	});
+});
+it("rejects invalid ZIP scope and excess material IDs before the service", async () => {
+	const many = Array.from(
+		{ length: 21 },
+		(_, n) => `00000000-0000-4000-8000-${String(n + 1).padStart(12, "0")}`,
+	).join(",");
+	for (const query of [
+		"",
+		`materials=${id},${id}`,
+		`materials=${id}&draft=1`,
+		`materials=${id}&originals=yes`,
+		`delivery=${id}`,
+		`materials=${many}`,
+	])
+		expect((await requestZip(query)).status).toBe(422);
+	expect(zipSnapshot).not.toHaveBeenCalled();
+});
+it("preserves ZIP original permission, revocation and resource rejections", async () => {
+	for (const [code, status] of [
+		["FORBIDDEN", 403],
+		["LINK_UNAVAILABLE", 401],
+		["ZIP_LIMIT", 413],
+	] as const) {
+		vi.mocked(zipSnapshot).mockRejectedValueOnce(new AppError(code, status));
+		expect((await requestZip(`materials=${id}`, true)).status).toBe(status);
+	}
 });
 function requestPdf(query: string, isGuest = false) {
 	const path = `${isGuest ? "guest/" : ""}projects/${id}/pdf-report`;

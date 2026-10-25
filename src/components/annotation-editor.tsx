@@ -1,5 +1,6 @@
 "use client";
 import { GuestAnnotationPanel } from "./guest-annotation-panel";
+import { useProjectReadOnly } from "./project-read-only";
 import { AnnotationIcon } from "./annotation-icon";
 import { annotationText } from "@/lib/annotation-presentation";
 import { measurementFieldLabel } from "@/lib/annotation-collaboration";
@@ -131,8 +132,9 @@ export function AnnotationEditor({
 		[notice, setNotice] = useState("");
 	const historyRun = useRef(0);
 	const selected = session.items.find((i) => i.id === session.selected) ?? null;
+	const archived = useProjectReadOnly();
 	const editDisabled =
-		session.saving || session.blocked || !!preview || requestDirty;
+		archived || session.saving || session.blocked || !!preview || requestDirty;
 	async function save() {
 		const heads = await session.save();
 		if (heads) {
@@ -356,7 +358,7 @@ export function AnnotationEditor({
 									title="保存标注（Ctrl+S / ⌘S）"
 									type="button"
 									disabled={
-										session.saving ||
+										archived || session.saving ||
 										session.conflict ||
 										!!preview ||
 										(!session.dirty && !session.blocked)

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { api, ApiError } from "./api";
+import { useProjectReadOnly } from "./project-read-only";
 
 export function useIssueWrite<T = unknown>(
 	url: string,
@@ -10,6 +11,7 @@ export function useIssueWrite<T = unknown>(
 	onDirty?: (dirty: boolean) => void,
 	method: "POST" | "PATCH" = "POST",
 ) {
+	const archived = useProjectReadOnly();
 	const [dirty, setDirty] = useState(false),
 		[busy, setBusy] = useState(false),
 		[blocked, setBlocked] = useState(false),
@@ -37,6 +39,7 @@ export function useIssueWrite<T = unknown>(
 		return () => window.removeEventListener("beforeunload", guard);
 	}, [dirty, busy, blocked]);
 	async function submit(data: unknown) {
+		if (archived) { setError("项目已归档，请恢复后再操作。"); return; }
 		if (running.current || conflict) return;
 		running.current = true;
 		setBusy(true);
@@ -90,6 +93,7 @@ export function useIssueWrite<T = unknown>(
 			setDirty(true);
 			setError("");
 		},
-		disabled: busy || blocked,
+		disabled: busy || blocked || archived,
+		readOnly: archived,
 	};
 }

@@ -1,0 +1,10 @@
+{
+  "projectRef": "rvysclscetfqicpnzlra",
+  "migration": "20261025100557_p2_03_archive_filters",
+  "applied": true,
+  "archivedColumn": true,
+  "guardedBusinessTables": 12,
+  "projectTriggerIncludesArchivedAt": true,
+  "guardFunctionsUseSecurityInvoker": true,
+  "scope": "Actual isolated schema configuration only; not a real Auth/Storage/business-flow or RLS acceptance result."
+}

@@ -614,3 +614,24 @@
 		transition: none;
 	}
 }
+.workspace-file-filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-bottom: 16px;
+}
+.workspace-file-filters label {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-width: 0;
+}
+.workspace-file-filters select {
+	min-height: 40px;
+	max-width: 100%;
+}
+.workspace-archive-notice {
+	padding: 12px 24px;
+	margin: 0;
+	color: var(--workspace-mark, #36567f);
+}

@@ -20,6 +20,9 @@ import { FileIssues } from "./file-issues";
 import { IssueInbox } from "./issue-inbox";
 import { IssueDetail } from "./issue-detail";
 import { DeliverySection } from "./delivery-section";
+import { ArchiveProjectButton } from "./archive-project-button";
+import { ProjectReadOnly } from "./project-read-only";
+import { type FileFilters, defaultFileFilters, fileTypes, fileSorts, filesUrl } from "@/lib/archive-filters";
 import { useWorkspaceTheme } from "./use-workspace-theme";
 import { EntryShell } from "./entry-shell";
 type Asset = {
@@ -140,6 +143,8 @@ function WorkspaceContent({
 	const [error, setError] = useState(""),
 		[loading, setLoading] = useState(true),
 		[invalid, setInvalid] = useState(false);
+	const [fileFilters, setFileFilters] = useState<FileFilters>(defaultFileFilters);
+	const archived = !!project.archivedAt;
 	const editorDirty = useRef(false),
 		deliveryDirty = useRef(false);
 	const onDeliveryDirty = useCallback((dirty: boolean) => {
@@ -381,9 +386,10 @@ function WorkspaceContent({
 		fileReading.current?.abort();
 		const controller = new AbortController();
 		fileReading.current = controller;
+		setLoading(true); setPaging(false);
 		try {
 			const result = await api<{ items: Asset[]; nextCursor: string | null }>(
-				`${base}/files`,
+				filesUrl(base, fileFilters),
 				"GET", undefined, { signal: controller.signal },
 			);
 			if (run !== fileLoadRun.current) return;
@@ -395,7 +401,7 @@ function WorkspaceContent({
 		} finally {
 			if (run === fileLoadRun.current) setLoading(false);
 		}
-	}, [base, failure]);
+	}, [base, failure, fileFilters]);
 	useEffect(() => {
 		void load();
         return () => { fileLoadRun.current++; fileReading.current?.abort(); };
@@ -450,11 +456,15 @@ function WorkspaceContent({
 	}
 	async function loadMore() {
 		if (!cursor || paging) return;
+		const run = fileLoadRun.current;
+		const signal = fileReading.current?.signal;
+		if (!signal) return;
 		setPaging(true);
 		try {
 			const next = await api<{ items: Asset[]; nextCursor: string | null }>(
-				`${base}/files?cursor=${encodeURIComponent(cursor)}`,
+				filesUrl(base, fileFilters, cursor), "GET", undefined, { signal },
 			);
+			if (run !== fileLoadRun.current) return;
 			setAssets((old) => [
 				...old,
 				...next.items.filter(
@@ -463,14 +473,20 @@ function WorkspaceContent({
 			]);
 			setCursor(next.nextCursor);
 		} catch (e) {
-			failure(e);
+			if (run === fileLoadRun.current && !signal.aborted) failure(e);
 		} finally {
-			setPaging(false);
+			if (run === fileLoadRun.current) setPaging(false);
 		}
+	}
+	function changeFileFilters(next: FileFilters) {
+		if (!allowLeave()) return;
+		setSelected(null); setSelectedIssue(null); setPopupSelection(null);
+		setAssets([]); setCursor(null); setFileFilters(next);
 	}
 	if (invalid) return <Unavailable />;
 	return (
 		<WorkspaceSideTarget value={sideTarget}>
+			<ProjectReadOnly.Provider value={archived}>
 			<main
 				className="workspace workspace-redesign"
 				style={themeStyle}
@@ -531,6 +547,10 @@ function WorkspaceContent({
 								}}>
 									<summary>编辑说明与分享</summary>
 									<div className="project-settings-content">
+									<ArchiveProjectButton project={project} beforeChange={allowLeave} onSaved={updated => {
+										setProject(old => old.revision > updated.revision ? old : ({ ...old, ...updated }));
+										if (!projectDraft.current.dirty) projectDraft.current.revision = updated.revision;
+									}} />
 									<form
 										className="stack"
 										onSubmit={async (e) => {
@@ -560,7 +580,7 @@ function WorkspaceContent({
 												value={name}
 												maxLength={120}
 												required
-													disabled={saving}
+												disabled={saving || archived}
 													onChange={(e) => { projectDraft.current.dirty = true; setName(e.target.value); }}
 											/>
 										</label>
@@ -569,24 +589,24 @@ function WorkspaceContent({
 											<textarea
 												value={description}
 												maxLength={4000}
-													disabled={saving}
+												disabled={saving || archived}
 													onChange={(e) => { projectDraft.current.dirty = true; setDescription(e.target.value); }}
 											/>
 										</label>
 										{projectNotice ? <p role="status">{projectNotice} <button type="button" disabled={saving} onClick={() => { if (window.confirm("放弃当前项目说明输入，载入已收到的最新版本？")) { setName(project.name); setDescription(project.description); projectDraft.current = { dirty: false, revision: project.revision }; setProjectNotice(""); } }}>载入最新说明</button></p> : null}
-										<button type="submit" disabled={saving}>
+										<button type="submit" disabled={saving || archived}>
 											{saving ? "保存中…" : "保存项目说明"}
 										</button>
 									</form>
 									<h2>客户分享链接</h2>
 									<p className="muted">
-										持链接者可查看客户可见资料、上传和下载。有效期 30
+											持链接者可查看客户可见资料、上传和下载；归档期间只读。有效期 30
 										天，可随时撤销。请只发给协作人员。
 									</p>
 									<div className="actions">
 										<button
 											type="button"
-											disabled={shareBusy}
+											disabled={shareBusy || archived}
 											onClick={() => void rotate()}
 										>
 											{project.share && !project.share.revokedAt
@@ -696,6 +716,7 @@ function WorkspaceContent({
 						</button>
 					</p>
 				) : null}
+				{archived ? <p className="workspace-archive-notice" role="status">项目已归档：仅可查看和下载，恢复后可继续编辑。{!guest ? "可在项目说明中恢复或撤销分享。" : "请联系工程师恢复。"}</p> : null}
 				<div
 					className="workspace-panels"
 					data-changing={changingView}
@@ -720,10 +741,14 @@ function WorkspaceContent({
 							onDirty={onInboxDirty}
 						/>
 						<div hidden={!!selected || !!selectedIssue}>
+							<div className="workspace-file-filters">
+								<label>类型 <select value={fileFilters.type} onChange={event => changeFileFilters({ ...fileFilters, type: event.target.value as FileFilters["type"] })}>{Object.entries(fileTypes).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+								<label>排序 <select value={fileFilters.sort} onChange={event => changeFileFilters({ ...fileFilters, sort: event.target.value as FileFilters["sort"] })}>{Object.entries(fileSorts).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+							</div>
 							{loading ? (
 								<p role="status">加载资料…</p>
 							) : assets.length === 0 ? (
-								<p className="empty">暂无资料</p>
+								<p className="empty">当前类型下暂无资料，可调整筛选条件。</p>
 							) : null}
 							<ul className="workspace-gallery">
 								{assets.map((file) => (
@@ -842,6 +867,7 @@ function WorkspaceContent({
 													<button
 														type="button"
 														className="danger"
+														disabled={archived}
 														onClick={async () => {
 															if (!allowLeave()) return;
 															if (
@@ -984,6 +1010,7 @@ function WorkspaceContent({
 					/>
 				</div>
 			</main>
+			</ProjectReadOnly.Provider>
 		</WorkspaceSideTarget>
 	);
 }

@@ -5,6 +5,7 @@ import { useProjectUpdates } from "./project-live";
 import { uploadPipeline, uploadPause } from "./upload-pipeline";
 import { fileHash } from "./file-hash";
 import { WorkspaceIcon, useWorkspaceDisclosure } from "./workspace-ui";
+import { useProjectReadOnly } from "./project-read-only";
 export type ReadyUpload = {id:string;filename:string;mime:string;byteSize:string};
 type Item = {
 	id: string;
@@ -52,6 +53,7 @@ export function UploadQueue({
 	emptyHint?: string | undefined;
  localOnly?:boolean;
 }) {
+	const archived = useProjectReadOnly();
 	const picker = useRef<HTMLInputElement>(null),
 		camera = useRef<HTMLInputElement>(null),
 		album = useRef<HTMLInputElement>(null);
@@ -83,10 +85,15 @@ export function UploadQueue({
 	const notified = useRef(new Set<string>());
 	const lifetime = useRef(new AbortController());
 	useEffect(() => {
+		if (archived) {
+			lifetime.current.abort();
+			setItems(old => old.map(item => item.state === "ready" ? item : { ...item, state: "failed", error: "项目已归档；恢复后可重试或重新选择文件。" }));
+			return;
+		}
 		if (lifetime.current.signal.aborted) lifetime.current = new AbortController();
 		const off = onApiSessionCleared(() => lifetime.current.abort());
 		return () => { off(); lifetime.current.abort(); };
-	}, []);
+	}, [archived]);
 	const finishUpload = async (id: string, key: string, onStart: () => void) => {
 		const signal = lifetime.current.signal;
 		return uploadPipeline.finish(signal, async () => {
@@ -179,6 +186,7 @@ export function UploadQueue({
  });
 
 	async function send(item: Item) {
+		if (archived) return;
 		if (item.terminal) {
 			item = {
 				...item,
@@ -316,6 +324,7 @@ export function UploadQueue({
 		}
 	}
 	async function select(files: FileList | null) {
+		if (archived) return;
 		if (!files) return;
 		if (files.length + itemsRef.current.filter(item => item.state !== "ready").length > 20) {
 			setError("当前上传队列最多 20 个文件，请等部分完成后再选择。");
@@ -344,6 +353,8 @@ export function UploadQueue({
 			className={`uploads ${floating ? "workspace-uploads" : ""} ${compact ? "uploads-compact" : ""}`}
 			aria-label={purpose === "delivery" ? "上传成果附件" : "上传资料"}
 		>
+			{archived ? <p className="muted">项目已归档，上传已暂停。</p> : null}
+			<div hidden={archived}>
 			{compact ? (
 				<div className="upload-compact-entry" data-empty={showEmptyHint}>
 					<div
@@ -486,6 +497,7 @@ export function UploadQueue({
 					</div>
 				</>
 			)}
+			</div>
 			{error ? (
 				<p role="alert" className="error">
 					{error}
@@ -510,7 +522,7 @@ export function UploadQueue({
 							) : null}
 							{r.canProcess !== false && !r.processingActive &&
 							(r.state === "queued" || r.state === "processing") ? (
-								<button
+								<button disabled={archived}
 									type="button"
 									onClick={async () => {
 										try {
@@ -565,7 +577,7 @@ export function UploadQueue({
 							</small>
 							{item.error ? <p className="error">{item.error}</p> : null}
 							{item.state === "processing" && item.error ? (
-								<button
+								<button disabled={archived}
 									type="button"
 									onClick={async () => {
 										try {
@@ -587,7 +599,7 @@ export function UploadQueue({
 								</button>
 							) : null}
 							{item.state === "failed" ? (
-								<button type="button" onClick={() => void send(item)}>
+								<button type="button" disabled={archived} onClick={() => void send(item)}>
 									重试此文件
 								</button>
 							) : null}

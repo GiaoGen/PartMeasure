@@ -14,6 +14,7 @@ import { UploadQueue } from "./upload-queue";
 import { DeliveryHistory } from "./delivery-history";
 import { DeliveryContents, deliverySizeLabel as sizeLabel } from "./delivery-version";
 import "./delivery-section.css";
+import { useProjectReadOnly } from "./project-read-only";
 type Props = {
 	active?: boolean;
 	base: string;
@@ -22,6 +23,7 @@ type Props = {
 	onDirty: (value: boolean) => void;
 };
 export function DeliverySection({ base, guest, onInvalid, onDirty, active: visible = true }: Props) {
+	const archived = useProjectReadOnly();
 	const [published, setPublished] = useState<Delivery | null>(null),
 		[drafts, setDrafts] = useState<Delivery[]>([]),
 		[active, setActive] = useState<Delivery | null>(null),
@@ -178,6 +180,7 @@ export function DeliverySection({ base, guest, onInvalid, onDirty, active: visib
 					{!editing ? (
 						<button
 							type="button"
+							disabled={archived}
 							onClick={() => {
 								setActive(drafts[0] ?? null);
 								setEditing(true);
@@ -381,7 +384,7 @@ function DeliveryEditor({
 						<button
 							type="submit"
 							disabled={
-								save.busy || save.conflict || publish.busy || publish.blocked
+								save.readOnly || save.busy || save.conflict || publish.busy || publish.blocked
 							}
 						>
 							{save.busy
@@ -403,7 +406,7 @@ function DeliveryEditor({
 								type="button"
 								className="primary"
 								disabled={
-									save.dirty ||
+									save.readOnly || save.dirty ||
 									save.busy ||
 									save.blocked ||
 									publish.busy ||

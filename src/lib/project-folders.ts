@@ -38,6 +38,7 @@ export const projectFiltersSchema = z
 			.union([z.uuid(), z.literal("none")])
 			.nullable()
 			.default(null),
+		status: z.enum(["active", "archived", "all"]).default("active"),
 	})
 	.strict();
-export type ProjectFilters = z.infer<typeof projectFiltersSchema>;
+export type ProjectFilters = Omit<z.infer<typeof projectFiltersSchema>, "status"> & { status?: "active" | "archived" | "all" };

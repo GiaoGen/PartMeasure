@@ -1,7 +1,9 @@
 "use client";
-import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { api } from "./api";
-import { searchProjects } from "./project-search";
+import { projectStatuses } from "@/lib/archive-filters";
+import { ArchiveProjectButton } from "./archive-project-button";
+import { useApiRevalidation } from "./use-api-revalidation";
 import type { FolderSummary } from "@/lib/project-folders";
 import { prefersReducedMotion, useProjectDialog } from "./projects-motion";
 import {
@@ -23,6 +25,7 @@ export type ProjectView = {
 	description: string;
 	revision: number;
 	createdAt: string;
+	archivedAt?: string | null;
 	folderId?: string | null;
 	folder?: FolderSummary | null;
 	share?: { id: string; expiresAt: string; revokedAt: string | null } | null;
@@ -274,6 +277,15 @@ export function Projects({
 	const [folderColor, setFolderColor] = useState<FolderColor>("blue");
 	const [query, setQuery] = useState("");
 	const [searchOpen, setSearchOpen] = useState(false);
+	const [status, setStatus] = useState<keyof typeof projectStatuses>("active");
+	const [matchCount, setMatchCount] = useState<number | null>(null);
+	const listRun = useRef(0);
+	const listReading = useRef<AbortController | null>(null);
+	const listCursor = useRef(cursor);
+	listCursor.current = cursor;
+	const filterKey = JSON.stringify([selected, query.trim(), status]);
+	const initialFilter = useRef(filterKey);
+	const [loadedFilter, setLoadedFilter] = useState(filterKey);
 	const createDialog = useProjectDialog(),
 		folderDialog = useProjectDialog(),
 		drawer = useProjectDialog();
@@ -287,10 +299,8 @@ export function Projects({
 	const shell = useRef<HTMLDivElement>(null);
 	const lastPaint = useRef<string>(defaultProjectTheme.page);
 	const activeFolder = folders.find((folder) => folder.id === selected);
-	const classified = selected
-		? items.filter((project) => project.folderId === selected)
-		: items;
-	const visible = searchProjects(classified, query);
+	const visible = loadedFilter === filterKey ? items : [];
+	const refreshing = loading || loadedFilter !== filterKey;
 	const searching = query.trim().length > 0;
 	const contentKey = `${selected}:${visible.map((project) => project.id).join(":")}`;
 	const lastContentKey = useRef("");
@@ -419,22 +429,31 @@ export function Projects({
 		setFolderKey("");
 		drawer.close(() => folderDialog.open());
 	}
-	async function load(replace = false) {
-		if (loading) return;
+	const reloadFolders = useCallback(async () => {
+		try {
+			const result = await api<{ items: Folder[] }>("/api/project-folders", "GET", undefined, { refresh: true });
+			setFolders(result.items); setFolderLoadError("");
+		} catch (e) { setFolderLoadError(e instanceof Error ? e.message : "文件夹加载失败，请重试。"); }
+	}, []);
+	const load = useCallback(async (replace = false, refresh = false) => {
+		const run = ++listRun.current;
+		listReading.current?.abort();
+		const controller = new AbortController(); listReading.current = controller;
 		setLoading(true);
 		try {
+			const [folderId, q, state] = JSON.parse(filterKey) as [string, string, string];
+			const params = new URLSearchParams({ q, status: state });
+			if (folderId) params.set("folderId", folderId);
+			if (!replace && listCursor.current) params.set("cursor", listCursor.current);
 			const projectRequest = api<{
 				items: ProjectView[];
 				nextCursor: string | null;
+				counts: { searchMatchCount: number };
 			}>(
-				`/api/projects${!replace && cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""}`,
+				`/api/projects?${params}`, "GET", undefined, { signal: controller.signal, refresh },
 			);
-			const [result] = await Promise.all([
-				projectRequest,
-				api<{ items: Folder[] }>("/api/project-folders", "GET", undefined, { cacheMs: 0 })
-					.then((result) => { setFolders(result.items); setFolderLoadError(""); })
-					.catch((e: unknown) => setFolderLoadError(e instanceof Error ? e.message : "文件夹加载失败，请重试。")),
-			]);
+			const result = await projectRequest;
+			if (run !== listRun.current) return;
 			setItems((old) =>
 				replace
 					? result.items
@@ -447,13 +466,20 @@ export function Projects({
 						],
 			);
 			setCursor(result.nextCursor);
+			setLoadedFilter(filterKey); setMatchCount(result.counts.searchMatchCount);
 			setError("");
 		} catch (e) {
-			setError(e instanceof Error ? e.message : "加载失败");
+			if (run === listRun.current && !controller.signal.aborted) setError(e instanceof Error ? e.message : "加载失败");
 		} finally {
-			setLoading(false);
+			if (run === listRun.current) setLoading(false);
 		}
-	}
+	}, [filterKey]);
+	useEffect(() => {
+		if (initialFilter.current === filterKey) { initialFilter.current = ""; return; }
+		const timer = setTimeout(() => void load(true), 250);
+		return () => { clearTimeout(timer); listRun.current++; listReading.current?.abort(); };
+	}, [filterKey, load]);
+	useApiRevalidation(() => { void load(true, true); void reloadFolders(); });
 	const sidebarProps = {
 		folders,
 		selected,
@@ -495,8 +521,7 @@ export function Projects({
 						</h1>
 						<p className="muted" aria-live="polite">
 							{activeFolder?.name ?? "全部"}
-							{searching ? ` · “${query.trim()}”` : ""} · {visible.length} 个
-							{searching ? "匹配" : ""}项目{cursor ? "（已加载范围）" : ""}
+							{searching ? ` · “${query.trim()}”` : ""} · {projectStatuses[status]} · {loadedFilter === filterKey ? matchCount ?? visible.length : "…"} 个项目{matchCount === null && cursor ? "（已加载）" : ""}
 						</p>
 						{activeFolder?.description ? (
 							<p className="projects-folder-description">
@@ -504,6 +529,8 @@ export function Projects({
 							</p>
 						) : null}
 					</header>
+					<div className="projects-status-filter"><label>状态 <select value={status} onChange={event => setStatus(event.target.value as keyof typeof projectStatuses)}>{Object.entries(projectStatuses).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label></div>
+					{refreshing ? <p role="status">读取项目…</p> : null}
 					{error ? (
 						<p className="error" role="alert">
 							{error}{" "}
@@ -516,17 +543,11 @@ export function Projects({
 							</button>
 						</p>
 					) : null}
-					{folderLoadError ? <p className="error" role="alert">{folderLoadError} <button type="button" disabled={loading} onClick={() => void load(true)}>重新加载文件夹</button></p> : null}
-					<section aria-label="已有项目" aria-busy={loading}>
-						{visible.length === 0 ? (
+					{folderLoadError ? <p className="error" role="alert">{folderLoadError} <button type="button" disabled={loading} onClick={() => void reloadFolders()}>重新加载文件夹</button></p> : null}
+					<section aria-label="已有项目" aria-busy={refreshing}>
+						{visible.length === 0 && !refreshing ? (
 							<p className="empty">
-								{searching
-									? cursor
-										? "未找到匹配项目，可更换关键词或加载更多项目。"
-										: "未找到匹配项目，可更换关键词或切换到「全部」。"
-									: selected
-										? "这个文件夹还没有项目，可通过右下角「新增」创建。"
-										: "还没有项目，点击右下角「新增」开始。"}
+								当前条件下没有项目，可调整状态、文件夹或搜索词。
 							</p>
 						) : (
 							<ul className="project-list projects-list">
@@ -541,6 +562,7 @@ export function Projects({
 											)}
 										>
 											<strong>{project.name}</strong>
+											{project.archivedAt ? <span className="project-archive-label">已归档</span> : null}
 											<p>{project.description || "暂无项目说明"}</p>
 											<small>
 												{new Date(project.createdAt).toLocaleDateString(
@@ -551,11 +573,12 @@ export function Projects({
 												)}
 											</small>
 										</a>
+										<div className="project-archive-action"><ArchiveProjectButton project={project} onSaved={() => void load(true)} /></div>
 									</li>
 								))}
 							</ul>
 						)}
-						{cursor ? (
+						{cursor && loadedFilter === filterKey ? (
 							<button
 								type="button"
 								disabled={loading}
@@ -739,6 +762,8 @@ export function Projects({
 							);
 							createDialog.close(() => {
 								setQuery("");
+								setStatus("active");
+								setMatchCount(null);
 								setItems((old) => [
 									project,
 									...old.filter((item) => item.id !== project.id),

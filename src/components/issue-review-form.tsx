@@ -71,7 +71,7 @@ export function IssueReviewForm({
 						}}
 					/>
 				</label>
-				<button type="submit" disabled={write.busy || write.conflict}>
+				<button type="submit" disabled={write.busy || write.conflict || write.readOnly}>
 					{write.busy
 						? "正在保存…"
 						: write.blocked

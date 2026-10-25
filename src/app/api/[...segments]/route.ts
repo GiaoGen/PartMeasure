@@ -40,6 +40,7 @@ import { appOrigin } from "@/lib/server/origin";
 import { revisionFromHeaders } from "@/lib/revision";
 import { timed } from "@/lib/server/timing";
 import { projectChanges } from "@/lib/server/project-changes";
+import { archiveInputSchema, fileFiltersSchema } from "@/lib/archive-filters";
 import { completeUpload } from "@/lib/server/complete-upload";
 
 export const dynamic = "force-dynamic";
@@ -220,7 +221,7 @@ async function handle(req: Request, context: Context) {
 			if (method === "GET") {
 				for (const [key] of url.searchParams) {
 					if (
-						!["cursor", "q", "folderId", "sort"].includes(key) ||
+						!["cursor", "q", "folderId", "sort", "status"].includes(key) ||
 						url.searchParams.getAll(key).length !== 1
 					)
 						throw new AppError("INVALID_INPUT", 422);
@@ -233,6 +234,7 @@ async function handle(req: Request, context: Context) {
 				const filters = projectFiltersSchema.safeParse({
 					q: url.searchParams.get("q") ?? "",
 					folderId: url.searchParams.get("folderId"),
+					status: url.searchParams.get("status") ?? "active",
 				});
 				if (!filters.success) throw new AppError("INVALID_INPUT", 422);
 				return response(
@@ -280,6 +282,10 @@ async function handle(req: Request, context: Context) {
 		}
 		if (objectId && !uuid.safeParse(objectId).success)
 			throw new AppError("NOT_FOUND", 404);
+		if (resource === "archive" && parts.length === 3 && method === "POST") {
+			const input = await body(req, archiveInputSchema);
+			return response(await service.archiveProject(actor, projectId, input.archived, expectedRevision(req), idemKey(req)));
+		}
 		if (!resource) {
 			if (method === "GET")
 				return response(await service.projectDetail(actor, projectId));
@@ -593,9 +599,12 @@ async function handle(req: Request, context: Context) {
 				);
 			}
 			if (method === "GET" && !objectId) {
-				if (cursor && !uuid.safeParse(cursor).success)
-					throw new AppError("INVALID_INPUT", 422);
-				return response(await service.files(actor, projectId, cursor, purpose));
+				{
+					if ([...url.searchParams.keys()].some(key => !["cursor", "purpose", "type", "sort"].includes(key) || url.searchParams.getAll(key).length !== 1)) throw new AppError("INVALID_INPUT", 422);
+					const filters = fileFiltersSchema.safeParse({ type: url.searchParams.get("type") ?? "all", sort: url.searchParams.get("sort") ?? "created-desc" });
+					if (!filters.success) throw new AppError("INVALID_INPUT", 422);
+					return response(await service.files(actor, projectId, cursor, purpose, filters.data));
+				}
 			}
 			if (method === "DELETE" && objectId)
 				return response(

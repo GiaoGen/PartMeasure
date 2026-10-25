@@ -1,0 +1,27 @@
+{
+  "checkedAt": "2026-10-25T10:01:26.997Z",
+  "scope": "Disposable local PG SQL/RLS/DAL only; synthetic identities and file metadata. Not real Supabase Auth/Storage, downloads, mobile/network or UI acceptance.",
+  "results": [
+    {
+      "check": "server_filters_find_projects_beyond_first_page",
+      "status": "PASS"
+    },
+    {
+      "check": "file_types_and_all_sort_orders_have_complete_distinct_pages",
+      "status": "PASS"
+    },
+    {
+      "check": "archive_preserves_reads_and_existing_shares_but_blocks_writes",
+      "status": "FAIL",
+      "code": "ERR_ASSERTION"
+    },
+    {
+      "check": "database_guards_and_owner_authority_are_enforced",
+      "status": "PASS"
+    },
+    {
+      "check": "restore_preserves_files_and_does_not_revive_revoked_links",
+      "status": "PASS"
+    }
+  ]
+}

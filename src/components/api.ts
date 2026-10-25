@@ -37,6 +37,7 @@ const messages: Record<string, string> = {
 	REVISION_REQUIRED: "页面缺少资料修订，请保留输入并重新载入。",
 	CSRF_INVALID: "页面安全凭据失效，请刷新。",
 	FORBIDDEN: "当前访问方式没有此操作权限。",
+	PROJECT_ARCHIVED: "项目已归档，只能查看和下载；请由工程师恢复后再操作。",
 	FEEDBACK_STATE_CONFLICT: "本次接收记录已变化，请查看最新记录后再操作；留言输入已保留。",
 	FEEDBACK_LIMIT: "本版本反馈已达上限；已有接收记录仍可撤销。",
 	ORIGIN_MISMATCH: "访问地址与服务端配置不一致，请使用配置的站点地址；重新登录或清缓存无法解决。",

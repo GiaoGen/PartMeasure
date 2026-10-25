@@ -64,10 +64,10 @@ describe("backend alignment contracts", () => {
 		);
 	});
 	it("separates all, unclassified and a specific folder without treating blank as all", () => {
-		expect(projectFiltersSchema.parse({})).toEqual({ folderId: null, q: "" });
+		expect(projectFiltersSchema.parse({})).toEqual({ folderId: null, q: "", status: "active" });
 		expect(
 			projectFiltersSchema.parse({ folderId: "none", q: "  中文_%  " }),
-		).toEqual({ folderId: "none", q: "中文_%" });
+		).toEqual({ folderId: "none", q: "中文_%", status: "active" });
 		expect(projectFiltersSchema.safeParse({ folderId: "" }).success).toBe(
 			false,
 		);

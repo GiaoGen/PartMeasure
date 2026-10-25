@@ -13,6 +13,7 @@ import { prioritizeLayers, readInteractionDocument } from "./interaction-reads";
 import { useApiRevalidation } from "./use-api-revalidation";
 import { useProjectUpdates } from "./project-live";
 import { cvDraftUpdate, type CvDraftTicket } from "@/lib/cv/draft";
+import { useProjectReadOnly } from "./project-read-only";
 type Operation = {
 	method: string;
 	url: string;
@@ -33,6 +34,7 @@ export function useAnnotationSession(
 	externalDirty = false,
 	initialAnnotationId?: string,
 ) {
+	const archived = useProjectReadOnly();
 	const url = `${base}/files/${fileId}/annotations`;
 	const [document, setDocument] = useState<AnnotationDocument | null>(() => readCached<AnnotationDocument>(url) ?? null),
 		[items, setItems] = useState<AnnotationDraft[]>(() => document?.items.filter(i => !i.deleted) ?? []),
@@ -144,7 +146,7 @@ export function useAnnotationSession(
  });
 
 	const change = (next: AnnotationDraft[], group = "") => {
-		if (guest || saving || blocked) return;
+		if (guest || archived || saving || blocked) return;
 		const previous = itemsRef.current;
 		if (sameContent(previous, next)) return;
 		draftVersion.current++;
@@ -179,7 +181,7 @@ export function useAnnotationSession(
 		}
 	};
 	function undo() {
-		if (!past.length || guest || saving || blocked) return;
+		if (!past.length || guest || archived || saving || blocked) return;
 		draftVersion.current++;
 		const next = past.at(-1) as AnnotationDraft[],
 			previous = itemsRef.current;
@@ -193,7 +195,7 @@ export function useAnnotationSession(
 		setStatus("已撤销；保存后同步");
 	}
 	function redo() {
-		if (!future.length || guest || saving || blocked) return;
+		if (!future.length || guest || archived || saving || blocked) return;
 		draftVersion.current++;
 		const next = future[0] as AnnotationDraft[],
 			previous = itemsRef.current;
@@ -207,7 +209,7 @@ export function useAnnotationSession(
 		setStatus("已重做；保存后同步");
 	}
 	async function save() {
-		if (guest || !document || busy.current || conflict) return;
+		if (guest || archived || !document || busy.current || conflict) return;
 		try {
 			for (const item of itemsRef.current)
 				validateAnnotation(
@@ -348,13 +350,13 @@ export function useAnnotationSession(
 		update,
 		captureCvTicket: (id: string): CvDraftTicket | undefined => {
 			const current = itemsRef.current.find(i => i.id === id), image = documentRef.current?.image;
-			if (guest || busy.current || blocked || !current || !image || headsRef.current.some(h => h.id === id)) return;
+			if (guest || archived || busy.current || blocked || !current || !image || headsRef.current.some(h => h.id === id)) return;
 			return { id, imageId: image.id, imageHash: image.imageHash, version: draftVersion.current, geometry: structuredClone(current.geometry) };
 		},
 		applyCvFit: (ticket: CvDraftTicket, geometry: AnnotationDraft["geometry"]) => {
 			const image = documentRef.current?.image;
 			if (!image) return false;
-			const item = cvDraftUpdate(ticket, geometry, { image, current: itemsRef.current.find(i => i.id === ticket.id), selected: selectedRef.current, version: draftVersion.current, saved: headsRef.current.some(h => h.id === ticket.id), editable: !guest && !busy.current && !saving && !blocked && !externalDirty });
+			const item = cvDraftUpdate(ticket, geometry, { image, current: itemsRef.current.find(i => i.id === ticket.id), selected: selectedRef.current, version: draftVersion.current, saved: headsRef.current.some(h => h.id === ticket.id), editable: !guest && !archived && !busy.current && !saving && !blocked && !externalDirty });
 			if (!item) return false;
 			// Separate undo step restores the original hand drawing, with all human
 			// fields intact. Never group this into creation or a subsequent drag.

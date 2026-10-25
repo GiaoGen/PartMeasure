@@ -630,3 +630,23 @@ body:has(.projects-shell dialog[open]) {
 		animation-duration: 1ms;
 	}
 }
+.projects-status-filter {
+	margin: 12px 0 20px;
+}
+.projects-status-filter label {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+}
+.projects-status-filter select,
+.project-archive-action button {
+	min-height: 40px;
+}
+.project-archive-action {
+	padding: 0 0 12px;
+}
+.project-archive-label {
+	margin-left: 10px;
+	font-size: 12px;
+	font-weight: 400;
+}

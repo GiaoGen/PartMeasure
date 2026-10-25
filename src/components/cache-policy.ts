@@ -49,6 +49,7 @@ export function eventTags(base: string, updates: ProjectUpdate[]) {
 				break;
 			case "project.changed":
 				tags.add(`${base}:project`);
+				if (e.state === "archived" || e.state === "active") tags.add(base);
 				tags.add("projects:list");
 				break;
 			case "file.changed":
@@ -91,6 +92,7 @@ export function mutationTags(url: string) {
 	if (path === "/issues") return [`${base}:issues:all`, `${base}:annotations:all`, `${base}:files`];
 	if (path.startsWith("/annotations")) return [`${base}:annotations:all`, `${base}:files`, `${base}:issues:all`];
 	if (path.startsWith("/share-links")) return [base];
+	if (path === "/archive") return [base, "projects:list"];
 	if (!path) return [`${base}:project`, "projects:list"];
 	return policy.tags.slice(1);
 }

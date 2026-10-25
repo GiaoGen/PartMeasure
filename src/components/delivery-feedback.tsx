@@ -5,6 +5,7 @@ import { versionLabel } from "@/lib/deliveries";
 import { api, ApiError } from "./api";
 import { useProjectUpdates } from "./project-live";
 import { useApiRevalidation } from "./use-api-revalidation";
+import { useProjectReadOnly } from "./project-read-only";
 
 export type FeedbackDirtyHandler = (deliveryId: string, dirty: boolean) => void;
 export function DeliveryFeedbackSection({ base, deliveryId, versionNo, guest, visible, onInvalid, onDirty }: {
@@ -12,6 +13,7 @@ export function DeliveryFeedbackSection({ base, deliveryId, versionNo, guest, vi
 	onInvalid: () => void; onDirty: FeedbackDirtyHandler;
 }) {
 	const heading = useId();
+	const archived = useProjectReadOnly();
 	const [page, setPage] = useState<FeedbackPage | null>(null);
 	const [trail, setTrail] = useState<(string | null)[]>([null]);
 	const [history, setHistory] = useState(false);
@@ -75,6 +77,7 @@ export function DeliveryFeedbackSection({ base, deliveryId, versionNo, guest, vi
 		if (visible && updates.some(event => event.kind === "resync" || event.kind === "delivery.changed" && event.entityId === deliveryId)) void load(path.current);
 	});
 	async function submit(input: FeedbackInput) {
+		if (archived) { setWriteError("项目已归档，请工程师恢复后再提交。"); return; }
 		if (running.current) return;
 		const parsed = feedbackInputSchema.safeParse(input);
 		if (!parsed.success) { setWriteError("请填写留言（最多4000字），称呼最多80字。"); return; }
@@ -121,7 +124,7 @@ export function DeliveryFeedbackSection({ base, deliveryId, versionNo, guest, vi
 		</nav> : null}
 		{trail.length > 1 ? <button type="button" disabled={loading} onClick={() => void load([null], true)}>查看最新记录</button> : null}
 		{guest ? <form className="delivery-feedback-form" onSubmit={event => { event.preventDefault(); void submit(input("comment")); }}>
-			<fieldset disabled={busy || blocked}>
+			<fieldset disabled={busy || blocked || archived}>
 				<label>客户称呼（可选）<input value={label} maxLength={80} onChange={event => { setLabel(event.target.value); setChanged(true); }} /></label>
 				<label>对 {versionLabel(versionNo)} 的留言／说明<textarea value={body} maxLength={4000} onChange={event => { setBody(event.target.value); setChanged(true); }} /></label>
 				<div className="delivery-feedback-actions">
@@ -136,7 +139,7 @@ export function DeliveryFeedbackSection({ base, deliveryId, versionNo, guest, vi
 			<small>称呼仅作来源说明；可撤销本次访问提交的接收记录。留言更正请追加说明。</small>
 			{busy ? <p role="status">正在提交…</p> : null}
 			{writeError ? <p role="alert" className="error">{writeError}</p> : null}
-			{blocked ? <button type="button" disabled={busy} onClick={() => { if (pending.current) void submit(pending.current.input); }}>重试上次提交</button> : null}
+			{blocked ? <button type="button" disabled={busy || archived} onClick={() => { if (pending.current) void submit(pending.current.input); }}>重试上次提交</button> : null}
 			{notice ? <p role="status">{notice}</p> : null}
 		</form> : null}
 	</section>;

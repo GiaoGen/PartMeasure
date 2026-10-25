@@ -11,6 +11,8 @@ import type { ProjectFilters } from "../project-folders";
 import { eventCursor } from "./event-cursor";
 import { imageCacheScope } from "./image-cache-scope";
 import type { ImageAccess } from "../image-access";
+import { type FileFilters, fileFiltersSchema, defaultFileFilters } from "../archive-filters";
+import { cursorScope, cursorId, queryCursor } from "./query-cursor";
 
 export type Project = {
 	id: string;
@@ -20,6 +22,7 @@ export type Project = {
 	owner_id: string;
 	created_at: string;
 	folder_id: string | null;
+	archived_at: string | null;
 };
 export const actorKey = (actor: Actor) =>
 	actor.kind === "owner" ? `owner:${actor.id}` : `guest:${actor.hash}`;
@@ -29,9 +32,10 @@ export async function access(
 	projectId: string,
 	manage = false,
 	readOnly = false,
+	allowArchivedOwner = false,
 ) {
 	const { rows } = await db.query<Project>(
-		`select id,name,description,revision,owner_id,created_at,folder_id from pm.projects where id=$1 ${readOnly ? "for share" : "for update"}`,
+		`select id,name,description,revision,owner_id,created_at,folder_id,archived_at from pm.projects where id=$1 ${readOnly ? "for share" : "for update"}`,
 		[projectId],
 	);
 	const project = rows[0];
@@ -50,8 +54,10 @@ export async function access(
 			[actor.hash, projectId],
 		);
 		if (!sessions[0]) throw new AppError("LINK_UNAVAILABLE", 401);
+		if (project.archived_at && !readOnly) throw new AppError("PROJECT_ARCHIVED", 409);
 		return { project, shareId: sessions[0].share_id as string, sessionId: sessions[0].id as string };
 	}
+	if (project.archived_at && !readOnly && !allowArchivedOwner) throw new AppError("PROJECT_ARCHIVED", 409);
 	return { project, shareId: null, sessionId: null };
 }
 export const publicProject = (p: Project) => ({
@@ -60,7 +66,23 @@ export const publicProject = (p: Project) => ({
 	description: p.description,
 	revision: p.revision,
 	createdAt: p.created_at,
+	archivedAt: p.archived_at,
 });
+export async function archiveProject(actor: Actor, id: string, archived: boolean, revision: number, key: string) {
+	if (actor.kind !== "owner") throw new AppError("FORBIDDEN", 403);
+	return transaction(actor, async db => {
+		const { project } = await access(db, actor, id, true, false, true);
+		return idempotent(db, `${id}:${actorKey(actor)}:archive`, key, { archived, revision }, async () => {
+			if (project.revision !== revision) throw new AppError("REVISION_CONFLICT", 409);
+			if (!!project.archived_at === archived) return publicProject(project);
+			const { rows } = await db.query<Project>("update pm.projects set archived_at=case when $2 then now() else null end,revision=revision+1,updated_at=now() where id=$1 returning *", [id, archived]);
+			const updated = rows[0];
+			if (!updated) throw new AppError("NOT_FOUND", 404);
+			await audit(db, actor, id, archived ? "project.archive" : "project.restore", id);
+			return publicProject(updated);
+		});
+	});
+}
 export async function audit(
 	db: PoolClient,
 	actor: Actor,
@@ -203,7 +225,7 @@ export async function revokeShare(
 	key: string,
 ) {
 	return transaction(actor, async (db) => {
-		await access(db, actor, id, true);
+		await access(db, actor, id, true, false, true);
 		return idempotent(
 			db,
 			`${id}:${actorKey(actor)}:revoke`,
@@ -400,11 +422,22 @@ export async function files(
 	id: string,
 	cursor: string | null,
 	purpose: "material" | "delivery" = "material",
+	filters: FileFilters = defaultFileFilters,
 ) {
 	if (purpose === "delivery" && actor.kind !== "owner")
 		throw new AppError("FORBIDDEN", 403);
+	const { type, sort } = fileFiltersSchema.parse(filters);
+	const scope = cursorScope(["files-v2", actorKey(actor), id, purpose, type, sort]);
+	const anchor = cursorId(cursor, scope, type === "all" && sort === "created-desc");
+	const typeClause = `($5='all' or ($5='image' and mime like 'image/%') or ($5='pdf' and extension='pdf') or ($5='zip' and extension='zip') or ($5='cad' and extension in ('step','stp','sldprt','sldasm','stl','dxf','dwg')))`;
+	const visible = `project_id=$1 and deleted_at is null and ($2::boolean or visibility='customer') and purpose=$4 and ${typeClause}`;
+	const keyColumns = sort === "name-asc" ? 'lower(filename) collate "C",id' : "created_at,id";
+	const order = sort === "name-asc" ? 'lower(filename) collate "C" asc,id asc' : sort === "created-asc" ? "created_at asc,id asc" : "created_at desc,id desc";
+	const compare = sort === "created-desc" ? "<" : ">";
 	return transaction(actor, async (db) => {
 		await access(db, actor, id, false, true);
+		const params = [id, actor.kind === "owner", anchor, purpose, type];
+		if (anchor && !(await db.query(`select id from pm.file_assets where ${visible} and id=$3::uuid`, params)).rows[0]) throw new AppError("CURSOR_INVALID", 422);
 		const { rows } = await db.query(
 			`select id,filename,mime,extension,byte_size as "byteSize",width,height,uploader_type as "uploaderType",created_at as "createdAt",
 			 case when mime='image/webp' and purpose='material' then sha256||':n'||normalization_version::text else null end as "previewVersion",
@@ -413,12 +446,12 @@ export async function files(
 			 select jsonb_build_object('version',md5(coalesce(string_agg(a.id::text||':'||a.revision::text||':'||(a.deleted_at is not null)::text,',' order by a.id),'')),
 			 'count',count(*) filter(where a.deleted_at is null)) from pm.annotations a where a.project_id=pm.file_assets.project_id and a.file_id=pm.file_assets.id
 			 ) else null end as "annotationSummary" from pm.file_assets
-   where project_id=$1 and deleted_at is null and ($2::boolean or visibility='customer') and purpose=$4 and ($3::uuid is null or (created_at,id)<(select created_at,id from pm.file_assets where id=$3 and project_id=$1)) order by created_at desc,id desc limit 31`,
-			[id, actor.kind === "owner", cursor, purpose],
+   where ${visible} and ($3::uuid is null or (${keyColumns})${compare}(select ${keyColumns} from pm.file_assets where id=$3 and project_id=$1)) order by ${order} limit 31`,
+			params,
 		);
 		return {
 			items: rows.slice(0, 30),
-			nextCursor: rows.length > 30 ? rows[29].id : null,
+			nextCursor: rows.length > 30 ? queryCursor(rows[29].id, scope) : null,
 		};
 	});
 }

@@ -155,7 +155,7 @@ export function FileIssues({
 								}}
 							/>
 						</label>
-						<button disabled={write.busy || write.conflict} type="submit">
+						<button disabled={write.busy || write.conflict || write.readOnly} type="submit">
 							{write.busy
 								? "保存中…"
 								: write.blocked

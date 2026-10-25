@@ -402,7 +402,7 @@ export function IssueResponseForm({
 					</>
 				)}
 			</fieldset>
-			<button type="submit" disabled={write.busy || write.conflict}>
+			<button type="submit" disabled={write.busy || write.conflict || write.readOnly}>
 				{write.busy
 					? "正在提交回复…"
 					: write.blocked

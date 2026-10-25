@@ -1,0 +1,8 @@
+{
+  "reader": "pypdf strict; Poppler rendered all pages",
+  "pages": 6,
+  "pageSize": "A4",
+  "raster": "1588x2246 RGB JPEG each page",
+  "status": "PASS",
+  "scope": "synthetic offline sample, not actual browser or cloud"
+}

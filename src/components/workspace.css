@@ -640,3 +640,8 @@
 .annotated-image-export p { margin: 6px 0; font-size: 14px; }
 .annotated-image-export-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .annotated-image-export-actions button, .annotated-image-export-actions select { min-height: 40px; }
+.workspace-pdf-selection { padding: 8px 0; border-bottom: 1px solid var(--border, #d0d5dd); }
+.workspace-pdf-selection > p { margin: 6px 0; font-size: 14px; }
+.workspace-pdf-selection .annotated-image-export { margin-bottom: 0; border-bottom: 0; }
+.workspace-pdf-checkbox { display: flex; align-items: center; gap: 8px; min-height: 40px; font-size: 14px; overflow-wrap: anywhere; }
+.workspace-pdf-checkbox input { width: 18px; height: 18px; flex-shrink: 0; }

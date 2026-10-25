@@ -1,0 +1,11 @@
+{
+  "environment": "offline native Canvas adapter; synthetic data only, not browser or Supabase acceptance",
+  "pages": 6,
+  "bytes": 2619007,
+  "photoStarts": [
+    1,
+    4
+  ],
+  "continuedBlocks": 2,
+  "lastTextPresent": false
+}

@@ -107,6 +107,7 @@ function WorkspaceContent({
 }) {
 	const themeStyle = useWorkspaceTheme(guest);
 	const [imageExportFile, setImageExportFile] = useState<string | null>(null);
+	const [pdfSelection, setPdfSelection] = useState(false), [pdfFiles, setPdfFiles] = useState<string[]>([]), [pdfBusy, setPdfBusy] = useState(false), [pdfNotice, setPdfNotice] = useState("");
 	const [project, setProject] = useState(initial),
 		[section, setSection] = useState("files"),
 		[assets, setAssets] = useState<Asset[]>([]),
@@ -240,6 +241,7 @@ function WorkspaceContent({
 		);
 	}
 	function selectFile(file: Asset | null) {
+		if (pdfBusy) return;
 		if (
 			(selected?.id !== file?.id ||
 				selectedIssue ||
@@ -301,6 +303,7 @@ function WorkspaceContent({
 		setOverlayIssue(null);
 	}
 	function openThumbnailAnnotation(file: Asset, annotationId: string) {
+		if (pdfBusy) return;
 		if (
 			popupSelection?.file.id === file.id &&
 			popupSelection.annotationId === annotationId &&
@@ -481,9 +484,11 @@ function WorkspaceContent({
 		}
 	}
 	function changeFileFilters(next: FileFilters) {
-		if (!allowLeave()) return;
+		if (pdfBusy || !allowLeave()) return false;
+		setPdfFiles([]); if (pdfSelection) setPdfNotice("筛选已改变，请重新选择报告照片。");
 		setSelected(null); setSelectedIssue(null); setPopupSelection(null);
 		setAssets([]); setCursor(null); setFileFilters(next);
+		return true;
 	}
 	if (invalid) return <Unavailable />;
 	return (
@@ -744,9 +749,14 @@ function WorkspaceContent({
 						/>
 						<div hidden={!!selected || !!selectedIssue}>
 							<div className="workspace-file-filters">
-								<label>类型 <select value={fileFilters.type} onChange={event => changeFileFilters({ ...fileFilters, type: event.target.value as FileFilters["type"] })}>{Object.entries(fileTypes).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
-								<label>排序 <select value={fileFilters.sort} onChange={event => changeFileFilters({ ...fileFilters, sort: event.target.value as FileFilters["sort"] })}>{Object.entries(fileSorts).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+								<label>类型 <select disabled={pdfBusy} value={fileFilters.type} onChange={event => changeFileFilters({ ...fileFilters, type: event.target.value as FileFilters["type"] })}>{Object.entries(fileTypes).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+								<label>排序 <select disabled={pdfBusy} value={fileFilters.sort} onChange={event => changeFileFilters({ ...fileFilters, sort: event.target.value as FileFilters["sort"] })}>{Object.entries(fileSorts).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+								{!pdfSelection ? <button type="button" onClick={() => { if (fileFilters.type !== "image") { if (!changeFileFilters({ ...fileFilters, type: "image" })) return; } else if (!allowLeave()) return; setPdfSelection(true); setPdfFiles([]); setPdfNotice("在下方勾选1–8张照片，按选择顺序生成PDF。"); }}>PDF资料报告</button> : null}
 							</div>
+							{pdfSelection ? <div className="workspace-pdf-selection">
+								<p role="status">已选 {pdfFiles.length} / 8 张。{pdfNotice}</p>
+								{pdfFiles[0] ? <AnnotatedImageExport key={base} base={base} fileId={pdfFiles[0]} fileIds={pdfFiles} reportOnly onInvalid={onInvalid} onBusyChange={setPdfBusy} onClose={() => { setPdfSelection(false); setPdfFiles([]); }} /> : <><button type="button" disabled>生成PDF（请先勾选照片）</button><button type="button" onClick={() => setPdfSelection(false)}>取消选择</button></>}
+							</div> : null}
 							{loading ? (
 								<p role="status">加载资料…</p>
 							) : assets.length === 0 ? (
@@ -757,6 +767,7 @@ function WorkspaceContent({
 									<li key={file.id}>
 										{file.mime.startsWith("image/") ? (
 											<div className="workspace-asset">
+												{pdfSelection ? <label className="workspace-pdf-checkbox"><input type="checkbox" checked={pdfFiles.includes(file.id)} disabled={pdfBusy || !pdfFiles.includes(file.id) && pdfFiles.length >= 8} onChange={event => { const checked = event.target.checked; setPdfFiles(ids => checked ? ids.length < 8 ? [...ids, file.id] : ids : ids.filter(id => id !== file.id)); }} />选入PDF：{file.filename}</label> : null}
 												<AnnotatedThumbnail
 													base={base}
 													fileId={file.id}
@@ -848,7 +859,7 @@ function WorkspaceContent({
 										<details className="workspace-file-menu">
 											<summary aria-label="文件操作">···</summary>
 											<div className="workspace-file-menu-items">
-												{selected.mime.startsWith("image/") ? <button type="button" onClick={event => { setImageExportFile(selected.id); event.currentTarget.closest("details")?.removeAttribute("open"); }}>导出标注图片</button> : null}
+												{selected.mime.startsWith("image/") ? <button type="button" onClick={event => { setImageExportFile(selected.id); event.currentTarget.closest("details")?.removeAttribute("open"); }}>导出图片／PDF</button> : null}
 												<a
 													className="button"
 													href={`${base}/files/${selected.id}/download`}

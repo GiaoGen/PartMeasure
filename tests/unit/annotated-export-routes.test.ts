@@ -8,6 +8,9 @@ vi.mock("../../src/lib/server/auth", () => ({
 vi.mock("../../src/lib/server/annotated-export-service", () => ({
 	annotatedExport: vi.fn(),
 }));
+vi.mock("../../src/lib/server/pdf-report-service", () => ({
+	pdfReport: vi.fn(),
+}));
 vi.mock("../../src/lib/server/db", async (original) => ({
 	...(await original<object>()),
 	transaction: vi.fn(async () => null),
@@ -16,6 +19,7 @@ vi.mock("../../src/lib/server/db", async (original) => ({
 import { GET } from "../../src/app/api/[...segments]/route";
 import { owner, guest } from "../../src/lib/server/auth";
 import { annotatedExport } from "../../src/lib/server/annotated-export-service";
+import { pdfReport } from "../../src/lib/server/pdf-report-service";
 import { AppError } from "../../src/lib/policy";
 const id = "00000000-0000-4000-8000-000000000001";
 function request(suffix = "", isGuest = false) {
@@ -33,6 +37,51 @@ beforeEach(() => {
 	vi.mocked(annotatedExport).mockResolvedValue({
 		snapshotId: "fixed",
 	} as never);
+	vi.mocked(pdfReport).mockResolvedValue({ snapshotId: "pdf-fixed" } as never);
+});
+function requestPdf(query: string, isGuest = false) {
+	const path = `${isGuest ? "guest/" : ""}projects/${id}/pdf-report`;
+	return GET(new Request(`http://127.0.0.1:3000/api/${path}?${query}`), {
+		params: Promise.resolve({ segments: path.split("/") }),
+	});
+}
+it.each([false, true])(
+	"forwards the exact PDF selection to verified role (Guest=%s)",
+	async (isGuest) => {
+		const other = "00000000-0000-4000-8000-000000000002",
+			response = await requestPdf(`ids=${other},${id}`, isGuest);
+		expect(response.status).toBe(200);
+		expect(response.headers.get("cache-control")).toBe("private, no-store");
+		expect(pdfReport).toHaveBeenCalledWith(
+			isGuest ? { kind: "guest", hash: "hash" } : { kind: "owner", id },
+			id,
+			[other, id],
+		);
+	},
+);
+it("rejects duplicate, missing, excessive or unsupported PDF selection input", async () => {
+	const nine = Array.from(
+		{ length: 9 },
+		(_, n) => `00000000-0000-4000-8000-${String(n + 1).padStart(12, "0")}`,
+	).join(",");
+	for (const query of [
+		"",
+		"ids=x",
+		`ids=${id},${id}`,
+		`ids=${id}&ids=${id}`,
+		`ids=${id}&draft=1`,
+		`ids=${nine}`,
+	])
+		expect((await requestPdf(query)).status).toBe(422);
+	expect(pdfReport).not.toHaveBeenCalled();
+});
+it("preserves PDF resource and revoked-access rejections", async () => {
+	vi.mocked(pdfReport).mockRejectedValueOnce(new AppError("PDF_LIMIT", 413));
+	expect((await requestPdf(`ids=${id}`)).status).toBe(413);
+	vi.mocked(pdfReport).mockRejectedValueOnce(
+		new AppError("LINK_UNAVAILABLE", 401),
+	);
+	expect((await requestPdf(`ids=${id}`, true)).status).toBe(401);
 });
 it.each([false, true])(
 	"uses the verified actor and returns a private noncached snapshot (Guest=%s)",

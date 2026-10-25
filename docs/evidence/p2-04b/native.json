@@ -1,0 +1,17 @@
+{
+  "environment": "disposable PostgreSQL; synthetic Auth/file metadata only",
+  "results": [
+    {
+      "check": "batch_selection_order_fixed_capture_and_full_related_history",
+      "status": "PASS"
+    },
+    {
+      "check": "single_image_contract_preserved_no_later_revision_mixed",
+      "status": "PASS"
+    },
+    {
+      "check": "rls_cross_owner_missing_file_duplicate_archive_and_revocation",
+      "status": "PASS"
+    }
+  ]
+}

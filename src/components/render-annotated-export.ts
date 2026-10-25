@@ -18,10 +18,35 @@ import { ApiError, readApiTransport, apiSessionGuard } from "./api";
 import { rangeBytes } from "./download-budget";
 import type { ImageAccess } from "@/lib/image-access";
 
+export async function authorizeExportPhotos(
+	base: string,
+	photos: AnnotatedExport[],
+	signal: AbortSignal,
+) {
+	const access = await readApiTransport<ImageAccess>(
+		`${base}/image-access?ids=${photos.map((photo) => photo.file.id).join(",")}`,
+		signal,
+	);
+	if (
+		!photos.every((photo) =>
+			access.items.some(
+				(file) =>
+					file.id === photo.file.id &&
+					file.images.some(
+						(image) =>
+							image.variant === null &&
+							image.version === photo.document.image.imageHash,
+					),
+			),
+		)
+	)
+		throw new ApiError("NOT_FOUND", 404);
+}
+
 // One bounded export per tab; queued exports would retain private snapshots.
 const exports = new ImageTransfers(1, 0);
 let nativeOperations = 0;
-function nativeResult<T>(
+export function nativeResult<T>(
 	work: Promise<T>,
 	signal: AbortSignal,
 	disposeLate?: (value: T) => void,
@@ -39,7 +64,15 @@ function nativeResult<T>(
 	);
 	return abortableExport(settled, signal, disposeLate);
 }
-const font = '"Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif';
+export const exportFont =
+	'"Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif';
+const font = exportFont;
+export function runExport<T>(signal: AbortSignal, work: () => Promise<T>) {
+	return exports.run(signal, () => {
+		if (nativeOperations) throw new AppError("EXPORT_BUSY", 409);
+		return work();
+	});
+}
 export function abortableExport<T>(
 	work: Promise<T>,
 	signal: AbortSignal,
@@ -62,7 +95,7 @@ export function abortableExport<T>(
 		);
 	});
 }
-const breathe = async (signal: AbortSignal) => {
+export const breathe = async (signal: AbortSignal) => {
 	await abortableExport(
 		new Promise<void>((resolve) => setTimeout(resolve, 0)),
 		signal,
@@ -106,7 +139,7 @@ function shortened(
 		? text
 		: `${characters.join("")}…`;
 }
-async function decodePhoto(
+export async function decodePhoto(
 	blob: Blob,
 	size: { width: number; height: number },
 	signal: AbortSignal,
@@ -210,59 +243,7 @@ export async function renderAnnotatedExport(
 		context.drawImage(decoded.image, x, y, photo.width, photo.height);
 		decoded.release();
 		decoded = undefined;
-		const scale = photo.width / snapshot.document.image.width;
-		for (const [index, item] of snapshot.document.items.entries()) {
-			context.save();
-			context.translate(x, y);
-			context.beginPath();
-			context.rect(0, 0, photo.width, photo.height);
-			context.clip();
-			context.scale(scale, scale);
-			const paths = geometryPaths(
-				item.geometry,
-				snapshot.document.image.width,
-				snapshot.document.image.height,
-				scale,
-			);
-			for (const path of paths) {
-				const shape = new Path2D(path);
-				context.strokeStyle = "#ffffff";
-				context.lineWidth = 5 / scale;
-				context.stroke(shape);
-				context.strokeStyle = annotationColor(item);
-				context.lineWidth = 2.5 / scale;
-				context.stroke(shape);
-			}
-			context.restore();
-			const at = labelPosition(
-				item.geometry,
-				snapshot.document.image.width,
-				snapshot.document.image.height,
-				scale,
-			);
-			const text =
-				`${index + 1} ${item.geometry.type === "text" ? item.geometry.text : photoDimensionText(item)} ${photoStatusText(item)}`.trim();
-			context.font = `600 18px ${font}`;
-			const label = shortened(
-				text,
-				(value) => context.measureText(value).width,
-				Math.max(12, photo.width - 24),
-			);
-			const labelWidth = Math.min(
-				photo.width,
-				context.measureText(label).width + 12,
-			);
-			const lx =
-					x + Math.max(0, Math.min(photo.width - labelWidth, at.x * scale)),
-				ly =
-					y +
-					Math.max(0, Math.min(Math.max(0, photo.height - 28), at.y * scale));
-			context.fillStyle = "#ffffff";
-			context.fillRect(lx, ly, labelWidth, 28);
-			context.fillStyle = "#202833";
-			context.fillText(label, lx + 6, ly + 20);
-			if (index % 10 === 0) await breathe(signal);
-		}
+		await drawExportAnnotations(context, snapshot, { x, y, ...photo }, signal);
 		progress("绘制数值来源与状态…");
 		context.strokeStyle = "#d0d5dd";
 		context.lineWidth = 1;
@@ -317,63 +298,17 @@ export async function generateAnnotatedExport(
 		ensureSession();
 		signal.throwIfAborted();
 		progress("读取标准图…");
-		const response = await fetch(`${base}/files/${fileId}/preview`, {
-			cache: "no-store",
-			signal,
-		});
-		if (!response.ok) {
-			let code = "DEPENDENCY_UNAVAILABLE";
-			try {
-				code = (await response.json()).error.code;
-			} catch {}
-			throw new ApiError(code, response.status);
-		}
-		if (
-			response.headers.get("content-type")?.split(";")[0] !== "image/webp" ||
-			response.headers.get("x-pm-image-version") !==
-				snapshot.document.image.imageHash
-		) {
-			await response.body?.cancel();
-			throw new ApiError("IMAGE_VERSION_CONFLICT", 409);
-		}
-		const bytes = await rangeBytes(
-			response,
-			snapshot.file.byteSize,
-			signal,
-			() => {},
-		);
-		const hash = Array.from(
-			new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)),
-		)
-			.map((value) => value.toString(16).padStart(2, "0"))
-			.join("");
-		if (hash !== snapshot.document.image.imageHash)
-			throw new ApiError("IMAGE_VERSION_CONFLICT", 409);
-		ensureSession();
-		signal.throwIfAborted();
+		const source = await readExportPhoto(base, snapshot, signal);
 		const blob = await renderAnnotatedExport(
 			snapshot,
-			new Blob([bytes], { type: "image/webp" }),
+			source,
 			format,
 			signal,
 			progress,
 		);
 		progress("检查下载权限…");
 		// Fresh authorization after generation, including when the image bytes were already read.
-		const access = await readApiTransport<ImageAccess>(
-			`${base}/image-access?ids=${fileId}`,
-			signal,
-		);
-		if (
-			!access.items.some(
-				(file) =>
-					file.id === fileId &&
-					file.images.some(
-						(image) => image.variant === null && image.version === hash,
-					),
-			)
-		)
-			throw new ApiError("NOT_FOUND", 404);
+		await authorizeExportPhotos(base, [snapshot], signal);
 		ensureSession();
 		signal.throwIfAborted();
 		return {
@@ -381,4 +316,109 @@ export async function generateAnnotatedExport(
 			filename: `${snapshot.file.filename.replace(/\.[^.]+$/, "")}-标注-${snapshot.snapshotId.slice(0, 8)}.${format}`,
 		};
 	});
+}
+
+export async function drawExportAnnotations(
+	context: CanvasRenderingContext2D,
+	snapshot: AnnotatedExport,
+	box: { x: number; y: number; width: number; height: number },
+	signal: AbortSignal,
+) {
+	const { x, y, ...photo } = box;
+	const scale = photo.width / snapshot.document.image.width;
+	for (const [index, item] of snapshot.document.items.entries()) {
+		context.save();
+		context.translate(x, y);
+		context.beginPath();
+		context.rect(0, 0, photo.width, photo.height);
+		context.clip();
+		context.scale(scale, scale);
+		const paths = geometryPaths(
+			item.geometry,
+			snapshot.document.image.width,
+			snapshot.document.image.height,
+			scale,
+		);
+		for (const path of paths) {
+			const shape = new Path2D(path);
+			context.strokeStyle = "#ffffff";
+			context.lineWidth = 5 / scale;
+			context.stroke(shape);
+			context.strokeStyle = annotationColor(item);
+			context.lineWidth = 2.5 / scale;
+			context.stroke(shape);
+		}
+		context.restore();
+		const at = labelPosition(
+			item.geometry,
+			snapshot.document.image.width,
+			snapshot.document.image.height,
+			scale,
+		);
+		const text =
+			`${index + 1} ${item.geometry.type === "text" ? item.geometry.text : photoDimensionText(item)} ${photoStatusText(item)}`.trim();
+		context.font = `600 18px ${font}`;
+		const label = shortened(
+			text,
+			(value) => context.measureText(value).width,
+			Math.max(12, photo.width - 24),
+		);
+		const labelWidth = Math.min(
+			photo.width,
+			context.measureText(label).width + 12,
+		);
+		const lx =
+				x + Math.max(0, Math.min(photo.width - labelWidth, at.x * scale)),
+			ly =
+				y + Math.max(0, Math.min(Math.max(0, photo.height - 28), at.y * scale));
+		context.fillStyle = "#ffffff";
+		context.fillRect(lx, ly, labelWidth, 28);
+		context.fillStyle = "#202833";
+		context.fillText(label, lx + 6, ly + 20);
+		if (index % 10 === 0) await breathe(signal);
+	}
+}
+
+export async function readExportPhoto(
+	base: string,
+	snapshot: AnnotatedExport,
+	signal: AbortSignal,
+) {
+	const fileId = snapshot.file.id,
+		ensureSession = apiSessionGuard();
+	const response = await fetch(`${base}/files/${fileId}/preview`, {
+		cache: "no-store",
+		signal,
+	});
+	if (!response.ok) {
+		let code = "DEPENDENCY_UNAVAILABLE";
+		try {
+			code = (await response.json()).error.code;
+		} catch {}
+		throw new ApiError(code, response.status);
+	}
+	if (
+		response.headers.get("content-type")?.split(";")[0] !== "image/webp" ||
+		response.headers.get("x-pm-image-version") !==
+			snapshot.document.image.imageHash
+	) {
+		await response.body?.cancel();
+		throw new ApiError("IMAGE_VERSION_CONFLICT", 409);
+	}
+	const bytes = await rangeBytes(
+		response,
+		snapshot.file.byteSize,
+		signal,
+		() => {},
+	);
+	const hash = Array.from(
+		new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)),
+	)
+		.map((value) => value.toString(16).padStart(2, "0"))
+		.join("");
+	if (hash !== snapshot.document.image.imageHash)
+		throw new ApiError("IMAGE_VERSION_CONFLICT", 409);
+	ensureSession();
+	signal.throwIfAborted();
+	return new Blob([bytes], { type: "image/webp" });
 }

@@ -30,6 +30,8 @@ import {
 } from "@/lib/annotations";
 import * as annotations from "@/lib/server/annotation-service";
 import { annotatedExport } from "@/lib/server/annotated-export-service";
+import { pdfReport } from "@/lib/server/pdf-report-service";
+import { pdfSelectionSchema } from "@/lib/pdf-report";
 import * as issues from "@/lib/server/issue-service";
 import * as interaction from "@/lib/server/interaction-reads";
 import { measurementSchema, responseSchema, reviewSchema } from "@/lib/issues";
@@ -260,6 +262,12 @@ async function handle(req: Request, context: Context) {
 		const purpose = parsedPurpose.data;
 		const resource = parts[2],
 			objectId = parts[3];
+		if (resource === "pdf-report" && method === "GET" && parts.length === 3) {
+			if ([...url.searchParams.keys()].some(key => key !== "ids") || url.searchParams.getAll("ids").length !== 1) throw new AppError("INVALID_INPUT", 422);
+			const selection = pdfSelectionSchema.safeParse({ fileIds: url.searchParams.get("ids")?.split(",") });
+			if (!selection.success) throw new AppError("INVALID_INPUT", 422);
+			return response(await pdfReport(actor, projectId, selection.data.fileIds));
+		}
 		if (method === "GET" && resource === "inbox" && parts.length === 3) {
 			if ([...url.searchParams.keys()].some(key => !["cursor", "ids", "limit"].includes(key)) || url.searchParams.getAll("ids").length > 1 || url.searchParams.getAll("limit").length > 1 || (url.searchParams.has("ids") && (url.searchParams.has("cursor") || url.searchParams.has("limit")))) throw new AppError("INVALID_INPUT", 422);
 			const limit = z.coerce.number().int().min(1).max(30).safeParse(url.searchParams.get("limit") ?? 30);

@@ -50,9 +50,9 @@ export async function access(
 			[actor.hash, projectId],
 		);
 		if (!sessions[0]) throw new AppError("LINK_UNAVAILABLE", 401);
-		return { project, shareId: sessions[0].share_id as string };
+		return { project, shareId: sessions[0].share_id as string, sessionId: sessions[0].id as string };
 	}
-	return { project, shareId: null };
+	return { project, shareId: null, sessionId: null };
 }
 export const publicProject = (p: Project) => ({
 	id: p.id,

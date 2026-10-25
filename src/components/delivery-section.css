@@ -2,6 +2,60 @@
 	border: 0;
 	padding-bottom: 0;
 }
+.delivery-feedback {
+	margin: 14px 0;
+	padding-top: 12px;
+	border-top: 1px solid var(--workspace-line, #7395c6);
+}
+.delivery-feedback-list {
+	list-style: none;
+	padding: 0;
+	margin: 12px 0;
+}
+.delivery-feedback-list > li {
+	padding: 8px 0;
+	overflow-wrap: anywhere;
+}
+.delivery-feedback-meta strong {
+	color: #24613e;
+}
+.delivery-feedback small {
+	display: block;
+	font-size: 12px;
+	font-weight: 400;
+	overflow-wrap: anywhere;
+}
+.delivery-feedback-form {
+	margin-top: 14px;
+}
+.delivery-feedback-form fieldset {
+	border: 0;
+	padding: 0;
+	min-width: 0;
+}
+.delivery-feedback-form label {
+	display: block;
+	margin: 10px 0;
+}
+.delivery-feedback-form input,
+.delivery-feedback-form textarea {
+	display: block;
+	width: 100%;
+	min-width: 0;
+	margin-top: 6px;
+}
+.delivery-feedback-form textarea {
+	min-height: 84px;
+	resize: vertical;
+}
+.delivery-feedback-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+.delivery-feedback button {
+	min-height: 40px;
+}
 .delivery-section .delivery-history {
 	margin: 18px 0;
 	padding: 12px 0;

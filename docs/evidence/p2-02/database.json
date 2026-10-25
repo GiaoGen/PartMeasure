@@ -1,0 +1,28 @@
+{
+  "checkedAt": "2026-10-25T07:45:25.289Z",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "scope": "Real isolated Postgres RLS/trigger/transaction checks using restricted runtime role; all fixture writes rolled back. Actual DAL read after rollback. No browser, HTTP business-flow or mobile acceptance; not an Auth identity test.",
+  "results": [
+    {
+      "name": "guest_append_upgrade_and_withdrawal",
+      "status": "PASS"
+    },
+    {
+      "name": "draft_and_history_mutation_denied",
+      "status": "PASS"
+    },
+    {
+      "name": "owner_read_only_and_project_isolation",
+      "status": "PASS"
+    },
+    {
+      "name": "revocation_denies_feedback_reads_and_writes",
+      "status": "PASS"
+    },
+    {
+      "name": "actual_runtime_feedback_reader",
+      "status": "FAIL",
+      "code": "CONNECTION_TIMEOUT"
+    }
+  ]
+}

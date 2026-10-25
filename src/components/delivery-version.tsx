@@ -1,6 +1,7 @@
 "use client";
 import type { Delivery } from "@/lib/deliveries";
 import { DeliveryDownload } from "./delivery-download";
+import { DeliveryFeedbackSection, type FeedbackDirtyHandler } from "./delivery-feedback";
 
 export const deliverySizeLabel = (bytes: string) =>
 	Number(bytes) < 1024
@@ -9,10 +10,13 @@ export const deliverySizeLabel = (bytes: string) =>
 			? `${(Number(bytes) / 1024).toFixed(1)} KiB`
 			: `${(Number(bytes) / 1024 / 1024).toFixed(2)} MiB`;
 
-export function DeliveryContents({ delivery, base, onInvalid }: {
+export function DeliveryContents({ delivery, base, onInvalid, guest, visible, onFeedbackDirty }: {
 	delivery: Delivery;
 	base: string;
 	onInvalid: () => void;
+	guest: boolean;
+	visible: boolean;
+	onFeedbackDirty: FeedbackDirtyHandler;
 }) {
 	return <>
 		<p className="preserve-lines">{delivery.description || "未填写版本说明"}</p>
@@ -25,5 +29,6 @@ export function DeliveryContents({ delivery, base, onInvalid }: {
 				<DeliveryDownload base={base} deliveryId={delivery.id} file={file} onInvalid={onInvalid} />
 			</li>)}
 		</ul>
+		<DeliveryFeedbackSection key={`${base}:${delivery.id}`} base={base} deliveryId={delivery.id} versionNo={delivery.versionNo ?? 1} guest={guest} visible={visible} onInvalid={onInvalid} onDirty={onFeedbackDirty} />
 	</>;
 }

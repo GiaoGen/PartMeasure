@@ -34,6 +34,8 @@ import * as interaction from "@/lib/server/interaction-reads";
 import { measurementSchema, responseSchema, reviewSchema } from "@/lib/issues";
 import { deliveryDraftSchema, deliveryHistoryQuerySchema } from "@/lib/deliveries";
 import * as deliveries from "@/lib/server/delivery-service";
+import { feedbackInputSchema } from "@/lib/delivery-feedback";
+import * as deliveryFeedback from "@/lib/server/delivery-feedback-service";
 import { appOrigin } from "@/lib/server/origin";
 import { revisionFromHeaders } from "@/lib/revision";
 import { timed } from "@/lib/server/timing";
@@ -295,6 +297,15 @@ async function handle(req: Request, context: Context) {
 			}
 		}
 		if (resource === "deliveries") {
+			if (objectId && parts[4] === "feedback" && parts.length === 5) {
+				if ([...url.searchParams.keys()].some(key => key !== "cursor")) throw new AppError("INVALID_INPUT", 422);
+				if (method === "GET") return response(await deliveryFeedback.listFeedback(actor, projectId, objectId, cursor));
+				if (method === "POST") {
+					if (url.searchParams.size) throw new AppError("INVALID_INPUT", 422);
+					return response(await deliveryFeedback.addFeedback(actor, projectId, objectId, await body(req, feedbackInputSchema), idemKey(req)), 201);
+				}
+				throw new AppError("METHOD_NOT_ALLOWED", 405);
+			}
 			if (actor.kind === "guest" && method !== "GET")
 				throw new AppError("FORBIDDEN", 403);
 			if (method === "GET" && !objectId) {

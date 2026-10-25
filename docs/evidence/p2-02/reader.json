@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-10-25T07:48:51.744Z",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "scope": "Real isolated Postgres RLS/trigger/transaction checks using restricted runtime role; all fixture writes rolled back. Actual DAL read after rollback. No browser, HTTP business-flow or mobile acceptance; not an Auth identity test.",
+  "results": [
+    {
+      "name": "actual_runtime_feedback_reader",
+      "status": "PASS"
+    }
+  ]
+}

@@ -4,12 +4,16 @@ import { type Delivery, type DeliveryHistoryPage, versionLabel } from "@/lib/del
 import { api, ApiError } from "./api";
 import { DeliveryContents } from "./delivery-version";
 import { useApiRevalidation } from "./use-api-revalidation";
+import type { FeedbackDirtyHandler } from "./delivery-feedback";
 
-export function DeliveryHistory({ base, beforeVersion, visible, onInvalid }: {
+export function DeliveryHistory({ base, beforeVersion, visible, guest, onInvalid, onFeedbackDirty, allowFeedbackLeave }: {
 	base: string;
 	beforeVersion: number;
 	visible: boolean;
 	onInvalid: () => void;
+	guest: boolean;
+	onFeedbackDirty: FeedbackDirtyHandler;
+	allowFeedbackLeave: (id: string) => boolean;
 }) {
 	const region = useId();
 	const [open, setOpen] = useState(false);
@@ -55,8 +59,9 @@ export function DeliveryHistory({ base, beforeVersion, visible, onInvalid }: {
 		return () => { run.current++; reading.current?.abort(); };
 	}, [load, open, visible]);
 	useApiRevalidation(() => { if (open && visible) void load(path.current); });
+	const leaveSelected = () => !selected || allowFeedbackLeave(selected);
 	return <section className="delivery-history" aria-label="历史交付版本">
-		<button type="button" className="delivery-history-toggle" aria-expanded={open} aria-controls={region} onClick={() => setOpen(value => !value)}>
+		<button type="button" className="delivery-history-toggle" aria-expanded={open} aria-controls={region} onClick={() => { if (!open || leaveSelected()) setOpen(value => !value); }}>
 			<span aria-hidden="true">{open ? "▾" : "▸"}</span> 历史版本
 		</button>
 		{open ? <div id={region} aria-busy={busy}>
@@ -65,25 +70,25 @@ export function DeliveryHistory({ base, beforeVersion, visible, onInvalid }: {
 			{!busy && !error && page?.items.length === 0 ? <p className="empty">暂无更早版本</p> : null}
 			<ul className="delivery-history-list">
 				{page?.items.map(item => <li key={item.id}>
-					<button type="button" className="delivery-version-toggle" aria-expanded={selected === item.id} aria-controls={`${region}-${item.id}`} disabled={busy} onClick={() => setSelected(old => old === item.id ? null : item.id)}>
+					<button type="button" className="delivery-version-toggle" aria-expanded={selected === item.id} aria-controls={`${region}-${item.id}`} disabled={busy} onClick={() => { if (leaveSelected()) setSelected(old => old === item.id ? null : item.id); }}>
 						<span><strong>{versionLabel(item.versionNo ?? 1)}</strong><small><time dateTime={item.publishedAt ?? item.createdAt}>{new Date(item.publishedAt ?? item.createdAt).toLocaleString("zh-CN")}</time> · {item.fileCount}份附件</small></span>
 						<span>{selected === item.id ? "收起" : "展开"}</span>
 					</button>
 					{selected === item.id ? <div id={`${region}-${item.id}`}>
-						<HistoryDetail key={`${base}:${item.id}`} base={base} id={item.id} visible={visible} onInvalid={onInvalid} />
+						<HistoryDetail key={`${base}:${item.id}`} base={base} id={item.id} visible={visible} guest={guest} onInvalid={onInvalid} onFeedbackDirty={onFeedbackDirty} />
 					</div> : null}
 				</li>)}
 			</ul>
 			{page && (trail.length > 1 || page.nextCursor) ? <nav className="delivery-history-pages" aria-label="历史版本分页">
-				<button type="button" disabled={busy || trail.length === 1} onClick={() => void load(trail.slice(0, -1))}>上一页</button>
+				<button type="button" disabled={busy || trail.length === 1} onClick={() => { if (leaveSelected()) void load(trail.slice(0, -1)); }}>上一页</button>
 				<span>第{trail.length}页</span>
-				<button type="button" disabled={busy || !page.nextCursor} onClick={() => { if (page.nextCursor) void load([...trail, page.nextCursor]); }}>更早版本</button>
+				<button type="button" disabled={busy || !page.nextCursor} onClick={() => { if (page.nextCursor && leaveSelected()) void load([...trail, page.nextCursor]); }}>更早版本</button>
 			</nav> : null}
 		</div> : null}
 	</section>;
 }
 
-function HistoryDetail({ base, id, visible, onInvalid }: { base: string; id: string; visible: boolean; onInvalid: () => void }) {
+function HistoryDetail({ base, id, visible, guest, onInvalid, onFeedbackDirty }: { base: string; id: string; visible: boolean; guest: boolean; onInvalid: () => void; onFeedbackDirty: FeedbackDirtyHandler }) {
 	const [delivery, setDelivery] = useState<Delivery | null>(null);
 	const [error, setError] = useState("");
 	const [retry, setRetry] = useState(0);
@@ -104,6 +109,6 @@ function HistoryDetail({ base, id, visible, onInvalid }: { base: string; id: str
 	}, [base, id, visible, retry]);
 	return <div className="delivery-history-detail">
 		{error ? <p role="alert" className="error">{error} <button type="button" onClick={() => setRetry(value => value + 1)}>重试读取附件</button></p>
-			: delivery ? <DeliveryContents delivery={delivery} base={base} onInvalid={onInvalid} /> : <p role="status">读取本版本附件…</p>}
+			: delivery ? <DeliveryContents delivery={delivery} base={base} guest={guest} visible={visible} onInvalid={onInvalid} onFeedbackDirty={onFeedbackDirty} /> : <p role="status">读取本版本附件…</p>}
 	</div>;
 }

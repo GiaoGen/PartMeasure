@@ -30,6 +30,11 @@ export function DeliverySection({ base, guest, onInvalid, onDirty, active: visib
 		[formVersion, setFormVersion] = useState(0),
 		[error, setError] = useState(""),
 		[notice, setNotice] = useState("");
+	const feedbackDirty = useRef(new Set<string>());
+	const initialized = useRef(false);
+	const publishedId = useRef<string | null>(null);
+	publishedId.current = published?.id ?? null;
+	const [newerVersion, setNewerVersion] = useState(false);
 	const dirty = useRef(false),
 		loadRun = useRef(0),
 		callbacks = useRef({ onInvalid, onDirty });
@@ -37,8 +42,13 @@ export function DeliverySection({ base, guest, onInvalid, onDirty, active: visib
 	const reading = useRef<AbortController | null>(null);
 	const handleDirty = useCallback((value: boolean) => {
 		dirty.current = value;
-		callbacks.current.onDirty(value);
+		callbacks.current.onDirty(value || feedbackDirty.current.size > 0);
 	}, []);
+	const onFeedbackDirty = useCallback((id: string, value: boolean) => {
+		if (value) feedbackDirty.current.add(id); else feedbackDirty.current.delete(id);
+		callbacks.current.onDirty(dirty.current || feedbackDirty.current.size > 0);
+	}, []);
+	const allowFeedbackLeave = useCallback((id: string) => !feedbackDirty.current.has(id) || window.confirm("该版本有尚未提交或结果未确认的反馈，放弃本页输入并离开？"), []);
 	const load = useCallback(async (reset = false) => {
 		const run = ++loadRun.current;
 		reading.current?.abort();
@@ -52,12 +62,18 @@ export function DeliverySection({ base, guest, onInvalid, onDirty, active: visib
 				drafts: Delivery[];
 			}>(`${base}/deliveries`, "GET", undefined, { signal: controller.signal, refresh: reset });
 			if (run !== loadRun.current) return;
-			setPublished(data.published);
+			if (publishedId.current && feedbackDirty.current.size > 0 && data.published?.id !== publishedId.current) {
+				setNewerVersion(true);
+				setNotice("已有新版本发布；当前版本的留言已保留，提交完成后可查看最新版。");
+			} else { setPublished(data.published); setNewerVersion(false); }
 			setDrafts(data.drafts);
             if (!dirty.current) {
-              setActive(old => data.drafts.find(d => d.id === old?.id) ?? data.drafts[0] ?? null);
-              setEditing(!guest && (!data.published || data.drafts.length > 0));
+              if (!initialized.current || reset) {
+                setActive(old => data.drafts.find(d => d.id === old?.id) ?? data.drafts[0] ?? null);
+                setEditing(!guest && (!data.published || data.drafts.length > 0));
+              } else setActive(old => old ? data.drafts.find(d => d.id === old.id) ?? old : null);
             } else setNotice("交付已在别处更新；当前输入已保留，保存时检查冲突。");
+			initialized.current = true;
 		} catch (e) {
 			if (run !== loadRun.current) return;
 			if (e instanceof ApiError && e.status === 401)
@@ -80,12 +96,12 @@ export function DeliverySection({ base, guest, onInvalid, onDirty, active: visib
 
 	function allowLeave() {
 		return (
-			!dirty.current ||
-			window.confirm("交付草稿尚未确认保存，放弃本页输入并重新载入？")
+			(!dirty.current && !feedbackDirty.current.size) ||
+			window.confirm("有尚未保存的交付输入或未提交的反馈，放弃本页输入并重新载入？")
 		);
 	}
 	function refresh() {
-		if (allowLeave()) { handleDirty(false); setFormVersion(v => v + 1); void load(true); }
+		if (allowLeave()) { feedbackDirty.current.clear(); handleDirty(false); setFormVersion(v => v + 1); void load(true); }
 	}
 	function saved(d: Delivery) {
 		loadRun.current++;
@@ -127,17 +143,18 @@ export function DeliverySection({ base, guest, onInvalid, onDirty, active: visib
 			) : null}
 			{published ? (
 				<section className="published-delivery" aria-label="已发布成果">
-					<h3>最新版本 {versionLabel(published.versionNo ?? 1)}</h3>
+					<h3>{newerVersion ? "正在查看版本" : "最新版本"} {versionLabel(published.versionNo ?? 1)}</h3>
+					{newerVersion ? <button type="button" onClick={refresh}>查看最新版本</button> : null}
 					<p>
 						工程师发布 ·{" "}
 						{new Date(
 							published.publishedAt ?? published.createdAt,
 						).toLocaleString("zh-CN")} · {published.files.length}份附件
 					</p>
-					<DeliveryContents delivery={published} base={base} onInvalid={onInvalid} />
+					<DeliveryContents key={`${published.id}:${formVersion}`} delivery={published} base={base} guest={guest} visible={visible} onInvalid={onInvalid} onFeedbackDirty={onFeedbackDirty} />
 				</section>
 			) : null}
-			{published ? <DeliveryHistory key={`${base}:${published.id}`} base={base} beforeVersion={published.versionNo ?? 1} visible={visible} onInvalid={onInvalid} /> : null}
+			{published ? <DeliveryHistory key={`${base}:${published.id}:${formVersion}`} base={base} beforeVersion={published.versionNo ?? 1} visible={visible} guest={guest} onInvalid={onInvalid} onFeedbackDirty={onFeedbackDirty} allowFeedbackLeave={allowFeedbackLeave} /> : null}
 			{!guest && (!loading || editing) ? (
 				<>
 					{drafts.length > 1 ? (

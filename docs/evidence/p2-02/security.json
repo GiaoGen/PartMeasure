@@ -1,0 +1,11 @@
+{
+  "projectRef": "rvysclscetfqicpnzlra",
+  "feedbackRlsEnabled": true,
+  "anonAuthenticatedWorkerTableGrants": false,
+  "migrationVersion": "20261025072814",
+  "securityAdvisor": {
+    "newFindings": 0,
+    "existing": ["auth_leaked_password_protection"],
+    "remediation": "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection"
+  }
+}

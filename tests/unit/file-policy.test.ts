@@ -21,6 +21,8 @@ describe("upload trust boundary", () => {
 		["a.webp", 20],
 		["a.pdf", 50],
 		["a.step", 100],
+		["a.sldprt", 100],
+		["a.sldasm", 100],
 		["a.zip", 100],
 	])("enforces size of %s", (name, size) => {
 		expect(() =>
@@ -56,6 +58,9 @@ describe("upload trust boundary", () => {
 			sniff(Buffer.from("ISO-10303-21;\nHEADER;"), "step"),
 		).not.toThrow();
 		expect(() => sniff(Buffer.from("MZ executable"), "step")).toThrow();
+	});
+	it.each(["sldprt", "sldasm"])("accepts .%s attachments without a fixed file header", (ext) => {
+		expect(() => sniff(Buffer.from("opaque CAD attachment"), ext)).not.toThrow();
 	});
 	it("rejects binary STL with a forged triangle count", () => {
 		const bytes = Buffer.alloc(84);

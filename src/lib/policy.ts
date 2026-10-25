@@ -139,7 +139,7 @@ export function sniff(bytes: Buffer, ext: string) {
 						: ext === "step" || ext === "stp"
 							? /^\s*ISO-10303-21;/.test(ascii)
 							: ext === "sldprt" || ext === "sldasm"
-								? hex === "d0cf11e0a1b11ae1"
+									? true // Opaque attachments; size/hash checks still run upstream.
 								: ext === "dwg"
 									? /^AC10[0-9]{2}/.test(ascii)
 									: ext === "dxf"

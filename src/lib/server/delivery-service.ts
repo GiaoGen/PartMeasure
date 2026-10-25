@@ -1,9 +1,10 @@
 import "server-only";
 import type { PoolClient } from "pg";
-import type { Delivery, DeliveryDraftInput } from "../deliveries";
+import { DELIVERY_HISTORY_PAGE_SIZE, type Delivery, type DeliveryDraftInput, type DeliveryHistoryPage, type DeliverySummary } from "../deliveries";
 import { AppError } from "../policy";
 import { type Actor, transaction, idempotent } from "./db";
 import { access, actorKey, audit } from "./service";
+import { cursorScope, cursorId, queryCursor } from "./query-cursor";
 const columns =
 	'id,description,state,revision,version_no as "versionNo",created_at as "createdAt",published_at as "publishedAt"';
 async function delivery(
@@ -39,7 +40,48 @@ async function validateFiles(db: PoolClient, projectId: string, ids: string[]) {
 export async function getDelivery(actor: Actor, projectId: string, id: string) {
 	return transaction(actor, async (db) => {
 		await access(db, actor, projectId, false, true);
-		return delivery(db, projectId, id);
+		const result = await delivery(db, projectId, id);
+		if (actor.kind === "guest" && result.state !== "published")
+			throw new AppError("NOT_FOUND", 404);
+		return result;
+	});
+}
+export async function listDeliveryHistory(
+	actor: Actor,
+	projectId: string,
+	beforeVersion: number,
+	cursor: string | null,
+): Promise<DeliveryHistoryPage> {
+	if (!Number.isInteger(beforeVersion) || beforeVersion < 1 || beforeVersion > 2147483647)
+		throw new AppError("INVALID_INPUT", 422);
+	const scope = cursorScope(["delivery-history-v1", actorKey(actor), projectId, beforeVersion]);
+	const anchor = cursorId(cursor, scope);
+	return transaction(actor, async (db) => {
+		await access(db, actor, projectId, false, true);
+		// Version numbers are immutable and project-unique. Recheck the cursor
+		// anchor in the same published/project scope; a cursor grants no access.
+		const { rows } = await db.query<{ items: DeliverySummary[]; anchorExists: boolean }>(
+			`with anchor as (
+			 select version_no from pm.deliveries where project_id=$1 and state='published' and version_no<$2 and id=$3::uuid
+			), page as (
+			 select ${columns} from pm.deliveries
+			 where project_id=$1 and state='published' and version_no<$2
+			 and ($3::uuid is null or version_no<(select version_no from anchor))
+			 order by version_no desc limit $4
+			)
+			select coalesce((select jsonb_agg(to_jsonb(p) || jsonb_build_object('fileCount',(
+			 select count(*)::int from pm.delivery_files a where a.project_id=$1 and a.delivery_id=p.id and a.selected
+			)) order by p."versionNo" desc) from page p),'[]'::jsonb) as items,
+			($3::uuid is null or exists(select 1 from anchor)) as "anchorExists"`,
+			[projectId, beforeVersion, anchor, DELIVERY_HISTORY_PAGE_SIZE + 1],
+		);
+		const result = rows[0];
+		if (!result?.anchorExists) throw new AppError("CURSOR_INVALID", 422);
+		const last = result.items[DELIVERY_HISTORY_PAGE_SIZE - 1];
+		return {
+			items: result.items.slice(0, DELIVERY_HISTORY_PAGE_SIZE),
+			nextCursor: result.items.length > DELIVERY_HISTORY_PAGE_SIZE && last ? queryCursor(last.id, scope) : null,
+		};
 	});
 }
 export async function listDeliveries(actor: Actor, projectId: string) {

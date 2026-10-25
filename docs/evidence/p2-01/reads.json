@@ -1,0 +1,24 @@
+{
+  "checkedAt": "2026-10-25T06:11:21.663Z",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "scope": "Fresh existing A/B account login; actual restricted-runtime DAL reads on existing records. No business mutations, schema changes, browser, HTTP/UI acceptance, valid Guest positive path or network/mobile acceptance.",
+  "results": [
+    {
+      "name": "runtime_owner_history_matches_immutable_details",
+      "status": "PASS",
+      "count": 1
+    },
+    {
+      "name": "real_cursor_anchor_orders_older_versions",
+      "status": "PASS"
+    },
+    {
+      "name": "owner_B_and_cross_project_detail_denied",
+      "status": "PASS"
+    },
+    {
+      "name": "invalid_guest_session_cannot_read_history",
+      "status": "PASS"
+    }
+  ]
+}

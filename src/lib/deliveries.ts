@@ -25,4 +25,15 @@ export type Delivery = {
 	publishedAt: string | null;
 	files: DeliveryFile[];
 };
+export const DELIVERY_HISTORY_PAGE_SIZE = 10;
+export const deliveryHistoryQuerySchema = z.object({
+	view: z.literal("history"),
+	beforeVersion: z.coerce.number().int().min(1).max(2147483647),
+	cursor: z.string().min(1).max(512).optional(),
+}).strict();
+export type DeliverySummary = Omit<Delivery, "files"> & { fileCount: number };
+export type DeliveryHistoryPage = {
+	items: DeliverySummary[];
+	nextCursor: string | null;
+};
 export const versionLabel = (n: number) => `V${String(n).padStart(3, "0")}`;

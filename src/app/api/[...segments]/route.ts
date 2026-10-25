@@ -32,7 +32,7 @@ import * as annotations from "@/lib/server/annotation-service";
 import * as issues from "@/lib/server/issue-service";
 import * as interaction from "@/lib/server/interaction-reads";
 import { measurementSchema, responseSchema, reviewSchema } from "@/lib/issues";
-import { deliveryDraftSchema } from "@/lib/deliveries";
+import { deliveryDraftSchema, deliveryHistoryQuerySchema } from "@/lib/deliveries";
 import * as deliveries from "@/lib/server/delivery-service";
 import { appOrigin } from "@/lib/server/origin";
 import { revisionFromHeaders } from "@/lib/revision";
@@ -297,8 +297,16 @@ async function handle(req: Request, context: Context) {
 		if (resource === "deliveries") {
 			if (actor.kind === "guest" && method !== "GET")
 				throw new AppError("FORBIDDEN", 403);
-			if (method === "GET" && !objectId)
+			if (method === "GET" && !objectId) {
+				if (url.searchParams.has("view")) {
+					const input = deliveryHistoryQuerySchema.safeParse(Object.fromEntries(url.searchParams));
+					if (!input.success || [...url.searchParams.keys()].some(key => url.searchParams.getAll(key).length !== 1))
+						throw new AppError("INVALID_INPUT", 422);
+					return response(await deliveries.listDeliveryHistory(actor, projectId, input.data.beforeVersion, input.data.cursor ?? null));
+				}
+				if (url.searchParams.size) throw new AppError("INVALID_INPUT", 422);
 				return response(await deliveries.listDeliveries(actor, projectId));
+			}
 			if (method === "POST" && !objectId)
 				return response(
 					await deliveries.saveDelivery(

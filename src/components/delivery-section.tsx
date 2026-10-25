@@ -11,12 +11,9 @@ import { useApiRevalidation } from "./use-api-revalidation";
 import { useProjectUpdates } from "./project-live";
 import { useIssueWrite } from "./use-issue-write";
 import { UploadQueue } from "./upload-queue";
-import { DeliveryDownload } from "./delivery-download";
+import { DeliveryHistory } from "./delivery-history";
+import { DeliveryContents, deliverySizeLabel as sizeLabel } from "./delivery-version";
 import "./delivery-section.css";
-const sizeLabel = (bytes: string) =>
-	Number(bytes) < 1024
-		? `${bytes} B`
-		: `${(Number(bytes) / 1024 / 1024).toFixed(2)} MiB`;
 type Props = {
 	active?: boolean;
 	base: string;
@@ -88,7 +85,7 @@ export function DeliverySection({ base, guest, onInvalid, onDirty, active: visib
 		);
 	}
 	function refresh() {
-		if (allowLeave()) { dirty.current = false; setFormVersion(v => v + 1); void load(true); }
+		if (allowLeave()) { handleDirty(false); setFormVersion(v => v + 1); void load(true); }
 	}
 	function saved(d: Delivery) {
 		loadRun.current++;
@@ -105,6 +102,7 @@ export function DeliverySection({ base, guest, onInvalid, onDirty, active: visib
 		setDrafts((old) => old.filter((x) => x.id !== d.id));
 		setActive(null);
 		setEditing(false);
+		handleDirty(false);
 	}
 	return (
 		<section className="delivery-section" aria-label="成果交付">
@@ -129,36 +127,17 @@ export function DeliverySection({ base, guest, onInvalid, onDirty, active: visib
 			) : null}
 			{published ? (
 				<section className="published-delivery" aria-label="已发布成果">
-					<h3>成果集合 {versionLabel(published.versionNo ?? 1)}</h3>
+					<h3>最新版本 {versionLabel(published.versionNo ?? 1)}</h3>
 					<p>
 						工程师发布 ·{" "}
 						{new Date(
 							published.publishedAt ?? published.createdAt,
-						).toLocaleString("zh-CN")}
+						).toLocaleString("zh-CN")} · {published.files.length}份附件
 					</p>
-					{published.description ? (
-						<p className="preserve-lines">{published.description}</p>
-					) : null}
-					<ul className="delivery-file-list">
-						{published.files.map((file) => (
-							<li key={file.id}>
-								<div>
-									<strong>{file.filename}</strong>
-									<small>
-										{file.mime} · {sizeLabel(file.byteSize)}
-									</small>
-								</div>
-								<DeliveryDownload
-									base={base}
-									deliveryId={published.id}
-									file={file}
-									onInvalid={onInvalid}
-								/>
-							</li>
-						))}
-					</ul>
+					<DeliveryContents delivery={published} base={base} onInvalid={onInvalid} />
 				</section>
 			) : null}
+			{published ? <DeliveryHistory key={`${base}:${published.id}`} base={base} beforeVersion={published.versionNo ?? 1} visible={visible} onInvalid={onInvalid} /> : null}
 			{!guest && (!loading || editing) ? (
 				<>
 					{drafts.length > 1 ? (
@@ -304,6 +283,7 @@ function DeliveryEditor({
 	const hasContent = availableFiles.length > 0 || !!draft?.description;
 	return (
 		<section className="delivery-editor" aria-label="交付草稿">
+			{hasContent ? <h3>交付草稿 <small>仅工程师可见</small></h3> : null}
 			<UploadQueue
 				base={base}
 				purpose="delivery"

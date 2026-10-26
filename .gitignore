@@ -12,6 +12,9 @@ supabase/.temp/
 supabase/.branches/
 *.log
 tmp/
+backups/
+*.pmb
+*.backup-key
 output/pdf/
 output/zip/
 experiments/konva/public/fixtures/

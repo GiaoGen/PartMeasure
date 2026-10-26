@@ -1,5 +1,5 @@
-.workspace-redesign .thumbnail-browse,
-.workspace-redesign .thumbnail-annotation-hit {
+/* Keep actual thumbnail hit targets separate from the photo's browse target. */
+.workspace-redesign :is(.thumbnail-browse, .thumbnail-annotation-hit) {
 	position: absolute;
 	background: none;
 	border: 0;
@@ -17,16 +17,23 @@
 	z-index: 2;
 	border-radius: 0;
 }
-.workspace-redesign :is(.thumbnail-browse, .thumbnail-annotation-hit):is(:hover, :active, :focus-visible):not(:disabled) {
+.workspace-redesign
+	:is(.thumbnail-browse, .thumbnail-annotation-hit):is(:hover, :active):not(
+		:disabled
+	) {
 	background: transparent;
-	box-shadow: none;
+	transform: none;
+}
+.workspace-redesign .thumbnail-annotation-hit:focus-visible {
+	background: transparent;
+	outline: 2px solid var(--pm-accent);
+	outline-offset: 2px;
 }
 .thumbnail-annotation {
-	opacity: 0.85;
+	opacity: 0.9;
 }
 .thumbnail-annotation[data-highlighted="true"] {
 	opacity: 1;
-	filter: brightness(1.25) saturate(1.2);
 }
 .workspace-redesign .annotated-thumbnail > img {
 	pointer-events: none;
@@ -36,89 +43,48 @@
 	display: contents;
 }
 .workspace-context-dialog {
-	grid-column: 2;
+	grid-column: 3;
 	grid-row: 1;
-	position: relative;
-	inset: auto;
+	position: sticky;
+	top: 84px;
+	align-self: start;
+	inset-inline: auto;
 	margin: 0;
 	width: 100%;
 	min-width: 0;
 	max-width: none;
-	max-height: none;
-	min-height: calc(100dvh - 126px);
-	padding: 22px;
+	min-height: calc(100dvh - 140px);
+	max-height: calc(100dvh - 100px);
+	padding: 24px;
+	color: var(--pm-ink);
 	border: 0;
-	border-radius: 28px;
-	color: #273444;
-	background-color: var(--workspace-soft);
+	border-left: 1px solid var(--pm-line);
+	border-radius: 0;
+	background: var(--pm-surface);
+	overflow-y: auto;
 	overflow-wrap: anywhere;
+	overscroll-behavior: contain;
 }
 .workspace-context-dialog[data-phase="open"] {
-	animation: workspace-context-enter calc(220ms * var(--workspace-motion, 1))
-		ease;
+	animation: pm-content-enter var(--pm-enter) var(--pm-ease);
 }
 .workspace-context-dialog[data-phase="closing"] {
-	animation: workspace-popover-exit calc(180ms * var(--workspace-motion, 1))
-		ease forwards;
+	animation: pm-content-exit var(--pm-exit) ease forwards;
 	pointer-events: none;
 }
 .workspace-context-dialog::backdrop {
-	background-color: rgb(12 20 16 / 55%);
-	animation: workspace-popup-backdrop-in
-		calc(200ms * var(--workspace-motion, 1)) ease;
+	background: rgb(10 18 28 / 55%);
+	animation: pm-backdrop-enter var(--pm-enter) ease;
 }
 .workspace-context-dialog[data-phase="closing"]::backdrop {
-	animation: workspace-popover-exit calc(180ms * var(--workspace-motion, 1))
-		ease forwards;
+	animation: pm-backdrop-exit var(--pm-exit) ease forwards;
 }
 .workspace-context-header {
 	display: none;
 }
-.workspace-context-content .editor-status {
-	border: 0;
-	font-size: 12px;
-	color: #526171;
-}
-.workspace-context-content p,
-.workspace-context-content label {
-	font-size: 13px;
-}
-.workspace-context-content .annotation-reminders {
-	border-top: 1px solid var(--workspace-line);
-	padding-top: 18px;
-	margin-top: 22px;
-}
-.workspace-context-content .issue-popup-main h2 {
-	font-size: 16px;
-}
-.workspace-context-content .issue-popup-main .detail-heading {
-	align-items: flex-start;
-	flex-wrap: wrap;
-}
-.workspace-context-content .issue-popup-main .annotation-viewport {
-	height: 240px;
-	min-height: 200px;
-}
-.workspace-context-content .issue-popup-main .issue-target {
-	margin-bottom: 20px;
-}
-.workspace-context-content .numeric-entry {
-	grid-template-columns: minmax(0, 1fr) 76px;
-}
-.workspace-context-content .photo-file-issues {
-	margin-top: 22px;
-}
-@keyframes workspace-popup-backdrop-in {
-	from {
-		opacity: 0;
-	}
-	to {
-		opacity: 1;
-	}
-}
-@media (min-width: 701px) {
-	.workspace-deliveries[data-context-active="true"] {
-		display: none;
+@media (min-width: 701px) and (max-width: 1100px) {
+	.workspace-context-dialog {
+		grid-column: 2;
 	}
 }
 @media (max-width: 700px) {
@@ -132,56 +98,55 @@
 		);
 		translate: 0 -50%;
 		margin: 0 auto;
-		width: min(440px, calc(100vw - 32px));
-		max-height: calc(var(--context-visible-height, 100dvh) - 32px);
+		width: min(440px, calc(100vw - 24px));
 		min-height: 0;
+		max-height: calc(var(--context-visible-height, 100dvh) - 24px);
 		padding: 22px;
-		border-radius: 30px;
-		background-color: var(--workspace-panel);
-		overflow-y: auto;
-		overscroll-behavior: contain;
+		border: 1px solid var(--pm-line);
+		border-radius: 12px;
 		scrollbar-gutter: stable;
 	}
 	.workspace-context-header {
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
-		gap: 14px;
+		justify-content: space-between;
+		gap: 12px;
 		margin-bottom: 18px;
 	}
 	.workspace-context-header h2 {
-		font-size: 16px;
-		margin: 0;
+		font-size: var(--pm-type-input);
 	}
 	.workspace-context-header button {
 		min-width: 44px;
 		min-height: 44px;
+		padding: 6px;
 		border: 0;
-		font-size: 24px;
 	}
-	.workspace-context-content .annotation-properties > h3 {
-		display: none;
+	.workspace-context-dialog[data-minimal-header="true"]
+		.workspace-context-header {
+		margin: 0;
 	}
-	.workspace-context-content .annotation-list {
-		max-height: 140px;
+	.workspace-context-dialog[data-minimal-header="true"]
+		.workspace-context-header
+		h2 {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
 	}
-	.workspace-context-content input,
-	.workspace-context-content select,
-	.workspace-context-content textarea {
-		font-size: 16px;
-	}
-	.workspace-redesign .annotation-toolbar {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-	}
-	.workspace-redesign .annotation-toolbar button {
-		padding: 10px 6px;
+	.workspace-context-dialog[data-minimal-header="true"]
+		.workspace-context-header
+		> button {
+		position: absolute;
+		top: 16px;
+		right: 14px;
+		z-index: 1;
 	}
 }
-
-.workspace-context-content .annotation-properties:not([hidden]),
-.workspace-context-content .issue-popup-main,
-.workspace-context-content .issue-actions {
-	animation: workspace-context-enter calc(200ms * var(--workspace-motion, 1))
-		ease;
+@media (prefers-reduced-motion: reduce) {
+	.workspace-context-dialog[data-phase],
+	.workspace-context-dialog[data-phase]::backdrop {
+		animation: none;
+	}
 }

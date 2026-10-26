@@ -13,8 +13,8 @@ export function storage(signal?:AbortSignal) {
 		global: { fetch: (input, init) => fetch(input, { ...init, signal: AbortSignal.any([...(init?.signal ? [init.signal] : []), ...(signal ? [signal] : []), AbortSignal.timeout(60000)]) }) },
 	}).storage;
 }
-export async function uploadGrant(path: string) {
-	const { data, error } = await timed("storage_sign", () => storage()
+export async function uploadGrant(path: string, signal?: AbortSignal) {
+	const { data, error } = await timed("storage_sign", () => storage(signal)
 		.from(quarantine)
 		.createSignedUploadUrl(path, { upsert: false }));
 	if (error || !data) throw new AppError("STORAGE_UNAVAILABLE", 503);

@@ -47,6 +47,8 @@ export function AnnotationEditor({
 	propertiesOnly = false,
 	panelHidden = false,
 	onOpenProperties,
+	onSelectionChange,
+	selectionRevision = 0,
 }: {
 	base: string;
 	fileId: string;
@@ -61,18 +63,30 @@ export function AnnotationEditor({
 	propertiesOnly?: boolean;
 	panelHidden?: boolean;
 	onOpenProperties?: () => boolean;
+	onSelectionChange?: (id: string | null) => void;
+	selectionRevision?: number;
 }) {
 	const changes = useRef({ annotation: false, request: false });
 	const canonicalSrc = `${base}/files/${fileId}/preview`;
 	const [imageHint] = useState(() => imagePreviewHint(canonicalSrc));
 	useEffect(() => {
 		if (propertiesOnly || !imageHint) return;
-		let active = true, lease: { release: () => void } | undefined;
+		let active = true,
+			lease: { release: () => void } | undefined;
 		const controller = new AbortController();
-		void privateImage(canonicalSrc, imageHint.hash, controller.signal).then(value => {
-			if (active) lease = value; else value.release();
-		}).catch(() => { /* The canvas owns error reporting and retry. */ });
-		return () => { active = false; controller.abort(); lease?.release(); };
+		void privateImage(canonicalSrc, imageHint.hash, controller.signal)
+			.then((value) => {
+				if (active) lease = value;
+				else value.release();
+			})
+			.catch(() => {
+				/* The canvas owns error reporting and retry. */
+			});
+		return () => {
+			active = false;
+			controller.abort();
+			lease?.release();
+		};
 	}, [canonicalSrc, imageHint, propertiesOnly]);
 	const [requestDirty, setRequestDirty] = useState(false);
 	const [collaborationVersion, setCollaborationVersion] = useState(0);
@@ -105,17 +119,20 @@ export function AnnotationEditor({
 	const initialSelection = useRef("");
 	useEffect(() => {
 		if (
-			!initialAnnotationId ||
+			(!initialAnnotationId && selectionRevision === 0) ||
 			session.loading ||
-			initialSelection.current === initialAnnotationId
+			initialSelection.current ===
+				`${initialAnnotationId ?? ""}:${selectionRevision}`
 		)
 			return;
-		initialSelection.current = initialAnnotationId;
-		if (session.items.some((item) => item.id === initialAnnotationId))
+		initialSelection.current = `${initialAnnotationId ?? ""}:${selectionRevision}`;
+		if (!initialAnnotationId) session.setSelected(null);
+		else if (session.items.some((item) => item.id === initialAnnotationId))
 			session.setSelected(initialAnnotationId);
 		else session.setError("标注已不可用，请重新选择。");
 	}, [
 		initialAnnotationId,
+		selectionRevision,
 		session.loading,
 		session.items,
 		session.setSelected,
@@ -153,6 +170,11 @@ export function AnnotationEditor({
 			return;
 		if (id && onOpenProperties?.() === false) return;
 		session.setSelected(id);
+		onSelectionChange?.(
+			id && session.heads.some((head) => head.id === id && !head.deleted)
+				? id
+				: null,
+		);
 		setListOpen(false);
 		setPreview(null);
 		setHistory([]);
@@ -193,7 +215,9 @@ export function AnnotationEditor({
 	if (session.loading)
 		return (
 			<div className="annotation-editor">
-				{!propertiesOnly ? <CachedPhotoPreview preview={imageHint?.preview} /> : null}
+				{!propertiesOnly ? (
+					<CachedPhotoPreview preview={imageHint?.preview} />
+				) : null}
 				<WorkspaceSideContent>
 					<section className="editor-loading">
 						<p role="status">读取标注和图片记录…</p>
@@ -273,14 +297,69 @@ export function AnnotationEditor({
 			data-properties-only={propertiesOnly}
 			className={`annotation-editor ${guest ? "read-only-editor" : ""}`}
 			onKeyDown={(event) => {
-				if (guest || event.defaultPrevented || event.nativeEvent.isComposing) return;
-				if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
+				if (guest || event.defaultPrevented || event.nativeEvent.isComposing)
+					return;
+				if (
+					(event.ctrlKey || event.metaKey) &&
+					event.key.toLowerCase() === "s"
+				) {
 					event.preventDefault();
-					if (!preview && !session.saving && !session.conflict && (session.dirty || session.blocked))
+					if (
+						!preview &&
+						!session.saving &&
+						!session.conflict &&
+						(session.dirty || session.blocked)
+					)
 						void save();
 				}
 			}}
 		>
+			{!propertiesOnly ? (
+				<header className="editor-main-toolbar">
+					<p role="status">
+						{preview
+							? `历史修订 #${preview.revision}`
+							: session.saving
+								? "保存中…"
+								: session.blocked
+									? "保存结果待确认"
+									: session.dirty
+										? "未保存"
+										: guest
+											? "客户只读标注"
+											: "已保存"}
+					</p>
+					<div className="actions">
+						<button
+							type="button"
+							className="editor-properties-trigger"
+							onClick={onOpenProperties}
+						>
+							标注与属性
+						</button>
+						{!guest ? (
+							<button
+								type="button"
+								className="primary"
+								disabled={
+									archived ||
+									session.saving ||
+									session.conflict ||
+									!!preview ||
+									(!session.dirty && !session.blocked)
+								}
+								onClick={() => void save()}
+							>
+								{session.saving
+									? "保存中…"
+									: session.blocked
+										? "重试保存"
+										: "保存修改"}
+							</button>
+						) : null}
+					</div>
+				</header>
+			) : null}
 			{!propertiesOnly ? (
 				<Canvas
 					preview={imageHint?.preview}
@@ -358,7 +437,8 @@ export function AnnotationEditor({
 									title="保存标注（Ctrl+S / ⌘S）"
 									type="button"
 									disabled={
-										archived || session.saving ||
+										archived ||
+										session.saving ||
 										session.conflict ||
 										!!preview ||
 										(!session.dirty && !session.blocked)

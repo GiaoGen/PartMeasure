@@ -20,6 +20,8 @@ const messages: Record<string, string> = {
 	OTP_INVALID_OR_EXPIRED: "验证码不正确或已过期。",
 	REGISTRATION_UNAVAILABLE: "暂时无法注册。请检查邮箱、密码或稍后重试。",
 	RATE_LIMITED: "操作较频繁，请稍后重试。",
+	TRANSFER_BUSY: "正在读取的文件较多，请等待已有下载完成后重试。",
+	REQUEST_TIMEOUT: "请求传输超时，请重试；正在填写的内容已保留。",
 	UNSUPPORTED_FORMAT: "不支持此格式。照片请使用 JPG、PNG 或 WebP，HEIC 请先转换。",
 	FILE_TOO_LARGE: "文件超过此格式的大小上限。",
 	QUOTA_EXCEEDED: "项目、账户或今日上传配额不足，请联系工程师。",

@@ -1,0 +1,160 @@
+/* One small opacity/transform transition per surface; no image/canvas or layout animation. */
+.pm-ui {
+	--pm-enter: 160ms;
+	--pm-exit: 120ms;
+	--pm-ease: cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+@keyframes pm-content-enter {
+	from {
+		opacity: 0;
+		transform: translateY(4px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+@keyframes pm-content-exit {
+	to {
+		opacity: 0;
+		transform: translateY(-3px);
+	}
+}
+.pm-ui
+	:is(
+		.pm-hero,
+		.pm-home-steps,
+		.pm-auth-panel,
+		.projects-heading,
+		.projects-list,
+		.projects-empty
+	) {
+	animation: pm-content-enter var(--pm-enter) var(--pm-ease);
+}
+.pm-ui .pm-form-state[data-phase="open"] {
+	animation: pm-content-enter var(--pm-enter) var(--pm-ease);
+}
+.pm-ui .pm-form-state[data-phase="closing"] {
+	animation: pm-content-exit var(--pm-exit) ease forwards;
+}
+.pm-ui :is(button, .button, summary) {
+	transition:
+		background-color 120ms ease,
+		color 120ms ease,
+		border-color 120ms ease;
+}
+.pm-ui :is(button, .button):active:not(:disabled) {
+	transform: translateY(1px);
+}
+.pm-ui details::details-content {
+	transition:
+		opacity var(--pm-enter) ease,
+		content-visibility var(--pm-exit) allow-discrete;
+	opacity: 0;
+}
+.pm-ui details[open]::details-content {
+	opacity: 1;
+}
+.pm-ui .projects-drawer[data-phase="enter"] {
+	animation: pm-drawer-enter var(--pm-enter) var(--pm-ease);
+}
+.pm-ui .projects-drawer[data-phase="exit"] {
+	animation: pm-drawer-exit var(--pm-exit) ease forwards;
+}
+.pm-ui .projects-dialog[data-phase="enter"] {
+	animation: pm-content-enter var(--pm-enter) var(--pm-ease);
+}
+.pm-ui .projects-dialog[data-phase="exit"] {
+	animation: pm-content-exit var(--pm-exit) ease forwards;
+}
+.pm-ui :is(.projects-dialog, .projects-drawer)[data-phase="enter"]::backdrop {
+	animation: pm-backdrop-enter var(--pm-enter) ease;
+}
+.pm-ui :is(.projects-dialog, .projects-drawer)[data-phase="exit"]::backdrop {
+	animation: pm-backdrop-exit var(--pm-exit) ease forwards;
+}
+@keyframes pm-drawer-enter {
+	from {
+		opacity: 0;
+		transform: translateX(-6px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+@keyframes pm-drawer-exit {
+	to {
+		opacity: 0;
+		transform: translateX(-6px);
+	}
+}
+@keyframes pm-backdrop-enter {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+@keyframes pm-backdrop-exit {
+	to {
+		opacity: 0;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.pm-ui {
+		--pm-enter: 0ms;
+		--pm-exit: 0ms;
+	}
+	.pm-ui
+		:is(
+			.pm-hero,
+			.pm-home-steps,
+			.pm-auth-panel,
+			.projects-heading,
+			.projects-list,
+			.projects-empty,
+			.pm-form-state[data-phase],
+			.projects-drawer[data-phase],
+			.projects-dialog[data-phase]
+		) {
+		animation: none;
+	}
+	.pm-ui :is(.projects-dialog, .projects-drawer)[data-phase]::backdrop {
+		animation: none;
+	}
+	.pm-ui details::details-content {
+		transition: none;
+	}
+	.pm-ui :is(button, .button):active:not(:disabled) {
+		transform: none;
+	}
+}
+.pm-ui .pm-confirm[open][data-phase="open"],
+.pm-disclosure-region[data-phase="open"] {
+	animation: pm-content-enter var(--pm-enter) var(--pm-ease);
+}
+.pm-ui .pm-confirm[open][data-phase="closing"],
+.pm-disclosure-region[data-phase="closing"] {
+	animation: pm-content-exit var(--pm-exit) ease forwards;
+}
+.pm-ui .pm-confirm[open][data-phase="open"]::backdrop {
+	animation: pm-backdrop-enter var(--pm-enter) ease;
+}
+.pm-ui .pm-confirm[open][data-phase="closing"]::backdrop {
+	animation: pm-backdrop-exit var(--pm-exit) ease forwards;
+}
+.pm-disclosure-region[hidden] {
+	display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+	.pm-ui .pm-confirm[open][data-phase],
+	.pm-ui .pm-confirm[open][data-phase]::backdrop,
+	.pm-disclosure-region[data-phase] {
+		animation: none;
+	}
+	.pm-ui :is(button, .button, summary) {
+		transition: none;
+	}
+}

@@ -1,0 +1,166 @@
+{
+  "scope": "actual CSS token contrast only; no browser or device tested",
+  "systemMatchesDark": true,
+  "checks": [
+    {
+      "mode": "light",
+      "label": "正文/工作面",
+      "foreground": "#1f2933",
+      "background": "#fff",
+      "minimum": 4.5,
+      "ratio": 14.76
+    },
+    {
+      "mode": "light",
+      "label": "辅助文字/工作面",
+      "foreground": "#526171",
+      "background": "#fff",
+      "minimum": 4.5,
+      "ratio": 6.35
+    },
+    {
+      "mode": "light",
+      "label": "正文/页面",
+      "foreground": "#1f2933",
+      "background": "#f7f8fa",
+      "minimum": 4.5,
+      "ratio": 13.89
+    },
+    {
+      "mode": "light",
+      "label": "辅助文字/页面",
+      "foreground": "#526171",
+      "background": "#f7f8fa",
+      "minimum": 4.5,
+      "ratio": 5.98
+    },
+    {
+      "mode": "light",
+      "label": "链接/工作面",
+      "foreground": "#2459b8",
+      "background": "#fff",
+      "minimum": 4.5,
+      "ratio": 6.57
+    },
+    {
+      "mode": "light",
+      "label": "主按钮文字/背景",
+      "foreground": "#fff",
+      "background": "#2459b8",
+      "minimum": 4.5,
+      "ratio": 6.57
+    },
+    {
+      "mode": "light",
+      "label": "选中项文字/背景",
+      "foreground": "#2459b8",
+      "background": "#edf3fc",
+      "minimum": 4.5,
+      "ratio": 5.89
+    },
+    {
+      "mode": "light",
+      "label": "错误文字/背景",
+      "foreground": "#a5222a",
+      "background": "#fff0f0",
+      "minimum": 4.5,
+      "ratio": 6.63
+    },
+    {
+      "mode": "light",
+      "label": "归档提示/背景",
+      "foreground": "#885512",
+      "background": "#fff5e7",
+      "minimum": 4.5,
+      "ratio": 5.8
+    },
+    {
+      "mode": "light",
+      "label": "输入边线/工作面",
+      "foreground": "#7d8a9a",
+      "background": "#fff",
+      "minimum": 3,
+      "ratio": 3.52
+    },
+    {
+      "mode": "dark",
+      "label": "正文/工作面",
+      "foreground": "#e5ebf2",
+      "background": "#19222d",
+      "minimum": 4.5,
+      "ratio": 13.38
+    },
+    {
+      "mode": "dark",
+      "label": "辅助文字/工作面",
+      "foreground": "#aab9c9",
+      "background": "#19222d",
+      "minimum": 4.5,
+      "ratio": 8.02
+    },
+    {
+      "mode": "dark",
+      "label": "正文/页面",
+      "foreground": "#e5ebf2",
+      "background": "#11171f",
+      "minimum": 4.5,
+      "ratio": 15
+    },
+    {
+      "mode": "dark",
+      "label": "辅助文字/页面",
+      "foreground": "#aab9c9",
+      "background": "#11171f",
+      "minimum": 4.5,
+      "ratio": 9
+    },
+    {
+      "mode": "dark",
+      "label": "链接/工作面",
+      "foreground": "#a2c4ff",
+      "background": "#19222d",
+      "minimum": 4.5,
+      "ratio": 9.08
+    },
+    {
+      "mode": "dark",
+      "label": "主按钮文字/背景",
+      "foreground": "#19222d",
+      "background": "#a2c4ff",
+      "minimum": 4.5,
+      "ratio": 9.08
+    },
+    {
+      "mode": "dark",
+      "label": "选中项文字/背景",
+      "foreground": "#a2c4ff",
+      "background": "#223954",
+      "minimum": 4.5,
+      "ratio": 6.67
+    },
+    {
+      "mode": "dark",
+      "label": "错误文字/背景",
+      "foreground": "#ffafb5",
+      "background": "#3c252d",
+      "minimum": 4.5,
+      "ratio": 8.06
+    },
+    {
+      "mode": "dark",
+      "label": "归档提示/背景",
+      "foreground": "#f1ca80",
+      "background": "#383023",
+      "minimum": 4.5,
+      "ratio": 8.36
+    },
+    {
+      "mode": "dark",
+      "label": "输入边线/工作面",
+      "foreground": "#657b92",
+      "background": "#19222d",
+      "minimum": 3,
+      "ratio": 3.67
+    }
+  ]
+}

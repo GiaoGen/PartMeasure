@@ -1,0 +1,96 @@
+{
+  "checkedAt": "2026-10-25T08:43:39.227Z",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "scope": "Direct process/native HTTPS; no login, no business writes. OS VPN/TUN/routes not changed or certified absent.",
+  "userDeclaredTunOff": true,
+  "fakeIpObserved": false,
+  "resolverServers": [
+    "127.0.0.1"
+  ],
+  "nodeEnvProxyEnabled": false,
+  "results": [
+    {
+      "name": "resolver_a",
+      "errors": [
+        "ECONNREFUSED",
+        "Error"
+      ]
+    },
+    {
+      "name": "resolver_aaaa",
+      "errors": [
+        "ECONNREFUSED",
+        "Error"
+      ]
+    },
+    {
+      "name": "os_lookup",
+      "ms": 54,
+      "values": [
+        {
+          "address": "104.18.38.10",
+          "family": 4
+        },
+        {
+          "address": "172.64.149.246",
+          "family": 4
+        }
+      ]
+    },
+    {
+      "name": "native_https_family_0",
+      "ms": 12019,
+      "phases": {
+        "dnsMs": 29,
+        "tcpMs": 270
+      },
+      "errors": [
+        "PROBE_TIMEOUT",
+        "Error"
+      ]
+    },
+    {
+      "name": "native_https_family_4",
+      "ms": 334,
+      "phases": {
+        "dnsMs": 24,
+        "tcpMs": 264
+      },
+      "errors": [
+        "ECONNRESET",
+        "Error"
+      ]
+    },
+    {
+      "name": "node_fetch",
+      "ms": 10737,
+      "errors": [
+        "TypeError",
+        "UND_ERR_CONNECT_TIMEOUT",
+        "ConnectTimeoutError"
+      ]
+    },
+    {
+      "name": "storage_https_without_user",
+      "ms": 304,
+      "phases": {
+        "dnsMs": 4,
+        "tcpMs": 240
+      },
+      "errors": [
+        "ECONNRESET",
+        "Error"
+      ]
+    },
+    {
+      "name": "database_tls_no_credentials",
+      "ms": 12003,
+      "phases": {
+        "tcpMs": 137
+      },
+      "errors": [
+        "PROBE_TIMEOUT"
+      ]
+    }
+  ]
+}

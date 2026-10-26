@@ -6,6 +6,9 @@ import {
 	useState,
 	useSyncExternalStore,
 } from "react";
+import { motionDuration } from "./ui-motion";
+import { lockBodyScroll } from "./body-scroll-lock";
+import { revealFocusedDialogControl } from "./dialog-viewport";
 
 const query = "(max-width: 700px)";
 function subscribe(change: () => void) {
@@ -33,7 +36,7 @@ export function WorkspaceContextDialog({
 }) {
 	const mobile = useSyncExternalStore(subscribe, snapshot, serverSnapshot);
 	const dialog = useRef<HTMLDialogElement>(null);
-	const [phase, setPhase] = useState("open");
+	const [phase, setPhase] = useState("closed");
 	const titleId = useId();
 	const shouldOpen = active && (!mobile || mobileOpen);
 	useEffect(() => {
@@ -55,6 +58,7 @@ export function WorkspaceContextDialog({
 				"--context-visible-top",
 				`${viewport?.offsetTop ?? 0}px`,
 			);
+			revealFocusedDialogControl(element);
 		};
 		const schedule = () => {
 			cancelAnimationFrame(frame);
@@ -63,10 +67,12 @@ export function WorkspaceContextDialog({
 		sync();
 		viewport?.addEventListener("resize", schedule);
 		viewport?.addEventListener("scroll", schedule);
+		element?.addEventListener("focusin", schedule);
 		return () => {
 			cancelAnimationFrame(frame);
 			viewport?.removeEventListener("resize", schedule);
 			viewport?.removeEventListener("scroll", schedule);
+			element?.removeEventListener("focusin", schedule);
 		};
 	}, [mobile, shouldOpen]);
 	useEffect(() => {
@@ -77,26 +83,27 @@ export function WorkspaceContextDialog({
 			if (element.open && element.matches(":modal") !== mobile) element.close();
 			if (!element.open) {
 				if (mobile) element.showModal();
-				else element.show();
+				else {
+					const focused = document.activeElement;
+					element.show();
+					if (focused instanceof HTMLElement && focused.isConnected)
+						focused.focus({ preventScroll: true });
+				}
 			}
 			return;
 		}
 		if (!element.open) return;
 		setPhase("closing");
-		const timer = setTimeout(
-			() => element.close(),
-			window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 180,
-		);
+		const timer = setTimeout(() => {
+			element.close();
+			setPhase("closed");
+		}, motionDuration("exit"));
 		return () => clearTimeout(timer);
 	}, [mobile, shouldOpen]);
 	useEffect(() => {
-		if (!mobile || !shouldOpen) return;
-		const previous = document.body.style.overflow;
-		document.body.style.overflow = "hidden";
-		return () => {
-			document.body.style.overflow = previous;
-		};
-	}, [mobile, shouldOpen]);
+		if (!mobile || (!shouldOpen && phase !== "closing")) return;
+		return lockBodyScroll();
+	}, [mobile, shouldOpen, phase]);
 	return (
 		<dialog
 			ref={dialog}

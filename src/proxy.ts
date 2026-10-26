@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 import { appOrigin } from "./lib/server/origin";
+import { authFetch } from "./lib/server/auth-fetch";
 
 export async function proxy(request: NextRequest) {
 	const nonce = randomBytes(16).toString("base64");
@@ -21,6 +22,7 @@ export async function proxy(request: NextRequest) {
 			supabaseUrl,
 			process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
 			{
+				global: { fetch: authFetch },
 				cookieOptions: {
 					httpOnly: true,
 					sameSite: "lax",

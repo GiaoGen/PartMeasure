@@ -60,8 +60,11 @@ export function parseFolderColor(
 		: undefined;
 }
 
-export function projectWorkspaceHref(id: string, color?: FolderColor) {
-	return `/projects/${encodeURIComponent(id)}${color ? `?theme=${color}` : ""}`;
+export function projectWorkspaceHref(id: string, color?: FolderColor, from?: string) {
+	const params = new URLSearchParams();
+	if (color) params.set("theme", color);
+	if (from && /^\/projects(?:\?[^#\\]*)?$/.test(from)) params.set("from", from);
+	return `/projects/${encodeURIComponent(id)}${params.size ? `?${params}` : ""}`;
 }
 
 const themeInk: Record<FolderColor, string> = {

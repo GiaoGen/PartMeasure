@@ -1,23 +1,23 @@
 # 无 Docker 测试部署与运行
 
+2026-10-26更新：本文件的部署ID和当时测试结果保留为历史。**当前启动、故障、维护与恢复以[运行手册](../operations/runbook.md)为准**；普通运行不再启动Worker/ClamAV，不把旧Preview作为当前源码验收。
+
 只允许 Supabase `rvysclscetfqicpnzlra` 与 Vercel `partmeasure-staging`（team `messup-s-projects`，project `prj_rf7HXAsGzV6khGK5hxPkadCKhhAC`）。不使用既有生产项目；不推送、不升级套餐。测试数据以 P0-4 标记，脚本不清理已有项目资料。
 
 ## 本地可复现运行
 
-Node24/npm11，`npm ci`，从 `.env.example` 准备 ignored `.env.local`。runtime 与 worker 用各自受限账号及严格 TLS CA，不能换成 postgres。本机DATABASE_CA_FILE模式不设置DATABASE_CA_PEM（不要保留一个空字符串覆盖文件选项）；托管只配置非空PEM，不引用本机路径。沿用 P0-1 的 ClamAV/独立图片处理/孤儿清理，不在网页进程内运行扫描。
+Node24/npm11，`npm ci`，从 `.env.example` 准备 ignored `.env.local`。普通业务只用runtime及Auth/Storage，严格TLS CA，不能换成postgres。本机DATABASE_CA_FILE模式不设置DATABASE_CA_PEM；托管只配置非空PEM，不引用本机路径。上传改为有界请求内format-only-v2校验/图片处理，不运行病毒扫描或独立消费者。维护角色仅显式操作时使用。
 
 ```powershell
 npm run build
-# 独立终端：ClamAV（本机已安装时）
-& ./tmp/p0-1/clamav/clamav-1.5.4.win.x64/clamd.exe --config-file=D:/PartMeasure/tmp/p0-1/clamd.conf
-# 独立终端：安全处理 worker
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/p0-1/run.ps1 -Action worker
-# 独立终端：正式构建测试服务器，APP_URL 与端口一致
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/p0-4/run.ps1 -Action start
-# http://127.0.0.1:3001
+# 仅需要启动时，APP_URL与端口一致；不启动其他处理进程
+npm run start
+# http://127.0.0.1:3000
 ```
 
-本次恢复后3000端口被其他应用占用，没有停止它。P0-4脚本固定本地3001，基础Playwright仍独立使用3100。旧阶段脚本仍沿用当时3000，不应未经调整指向其他应用。需要试用期间后台运行时，可执行 `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/p0-4/start-local.ps1 -Web`；窗口隐藏、日志/PID仅在ignored tmp，检查已有监听/worker后才启动，不停止其他应用。它不是系统常驻托管或开机监督服务。
+历史P0-4使用3001、基础Playwright使用3100；这些脚本的端口/目标必须在复跑前重新核对，不要未经调整指向其他应用。当前正常启动使用上方npm命令，不能因旧脚本说明启动退休消费者。需要后台托管/监督时按当前运行手册及实际授权另行配置。
+
+以下保留当时的验收命令，仅在明确授权并核对目标后运行，常规启动不执行：
 
 ```powershell
 npm run lint
@@ -49,11 +49,11 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/p0-4/run.ps1 -Action
 
 官方REST文档 target支持staging/production，省略代表preview（[官方API](https://vercel.com/docs/rest-api/deployments/create-a-new-deployment)；[MCP说明](https://vercel.com/docs/agent-resources/vercel-mcp/tools/deployments/create_deployment)）。自动审批曾拒绝省略target/staging源码上传及恢复项目；收到用户分别明确授权后才继续，没有绕过拒绝改用其他通道。暂停期间正确staging请求返回BLOCKED，未把它记成功。本机没有Vercel CLI或其登录凭据；浏览器管理页也未登录，没有假装CLI备用成功。
 
-当前最新非生产部署：`dpl_CpXV93iLkWV9Gm1pFpbD9ABSBfTw`，target已核对staging、READY，入口 [测试登录](https://partmeasure-staging-em72unjso-messup-s-projects.vercel.app/login)。构建 `npm ci`/`npm run build`、Node24；source allowlist排除.env/tmp/docs/.git/.next/worker凭据，清单/hash见deploy-manifest.json。先前staging主闭环通过后，发现If-Match PATCH提交后412，专用X-PM-Revision修复版在这个最新部署专项200/409和未知结果幂等恢复均通过；最终业务结果见03报告，不用READY代替。
+当时最新非生产部署：`dpl_CpXV93iLkWV9Gm1pFpbD9ABSBfTw`，target已核对staging、READY，入口 [历史测试登录](https://partmeasure-staging-em72unjso-messup-s-projects.vercel.app/login)。构建 `npm ci`/`npm run build`、Node24；source allowlist排除.env/tmp/docs/.git/.next/worker凭据，清单/hash见deploy-manifest.json。先前staging主闭环通过后，发现If-Match PATCH提交后412，专用X-PM-Revision修复版在当时部署专项200/409和未知结果幂等恢复均通过；最终业务结果见03报告，不用READY代替，也不代表当前源码。
 
 复跑使用不可变HTTPS主机：`$env:PM_TEST_URL='https://partmeasure-staging-em72unjso-messup-s-projects.vercel.app'`，再执行api/browser/workflow/transfer/seed。只允许本地3001或已核对staging主机格式；不能随意给测试脚本换成生产。确认Secure Cookie、SSR刷新、CSRF精确Origin、私有Range与>6MiB直传；appOrigin只信Vercel运行时VERCEL_URL，不信请求Host。使用上面的不可变主机，避免别名Origin不一致；若换别名先明确契约，不能降低校验。
 
-当前worker仍是本机受控测试进程；网页部署不等于文件处理常驻托管。电脑/进程关闭时上传停在安全处理，fail closed。持续托管、OS监督重启/告警、资源预算与扫描病毒库更新需在正式上线前落地，未擅自创建收费VM。大陆真机测试期间须保证worker在线。有限重试可恢复短暂依赖错误，不能代替OS监督或证明长时间稳定。
+历史上传消费者已经退休，当前网页请求完成处理，页面关闭后靠下次进入/显式重试恢复，不承诺后台无限执行。孤儿清理使用P3-03的一次性受控工具，调度及真实执行条件按当前手册安排；没有为此新增VM/收费资源。真实手机与长期运行仍需对应证据。
 
 ## 下载与隐私限制
 

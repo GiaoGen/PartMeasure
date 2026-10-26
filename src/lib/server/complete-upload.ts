@@ -47,7 +47,7 @@ export async function claimUpload(actor: Actor, projectId: string, id: string) {
 }
 
 // This verifier runs once over a bounded stream, independently of transport declarations.
-export async function verifySource(response: Response, target: string, upload: Pick<Upload, "byte_size" | "sha256" | "filename" | "extension" | "declared_mime">) {
+export async function verifySource(response: Response, target: string, upload: Pick<Upload, "byte_size" | "sha256" | "filename" | "extension" | "declared_mime">, signal?: AbortSignal) {
 	if (!response.ok || !response.body) throw new AppError("UPLOAD_OBJECT_NOT_FOUND", 503);
 	const expected = Number(upload.byte_size);
 	if (expected > effectiveFileLimit()) throw new AppError("FILE_TOO_LARGE", 413);
@@ -58,7 +58,7 @@ export async function verifySource(response: Response, target: string, upload: P
 		received += chunk.length;
 		if (received > expected) return callback(new AppError("HASH_OR_SIZE_MISMATCH", 422));
 		hash.update(chunk); callback(null, chunk);
-	} }), createWriteStream(target, { flags: "wx" }));
+	} }), createWriteStream(target, { flags: "wx" }), { signal });
 	if (received !== expected || hash.digest("hex") !== upload.sha256) throw new AppError("HASH_OR_SIZE_MISMATCH", 422);
 	sniff(await readFile(target), upload.extension);
 }
@@ -120,7 +120,7 @@ export async function completeUpload(actor: Actor, projectId: string, id: string
 		const source = path.join(directory, "source"), canonical = path.join(directory, "canonical");
 		const signed = await storage(deadline).from(quarantine).createSignedUrl(upload.quarantine_key, 60);
 		if (signed.error || !signed.data) throw new AppError("UPLOAD_OBJECT_NOT_FOUND", 503);
-		await verifySource(await fetch(signed.data.signedUrl, { signal: deadline, cache: "no-store" }), source, upload);
+		await verifySource(await fetch(signed.data.signedUrl, { signal: deadline, cache: "no-store" }), source, upload, deadline);
 		deadline.throwIfAborted();
 		const image = imageExtensions.has(upload.extension);
 		let meta = null;

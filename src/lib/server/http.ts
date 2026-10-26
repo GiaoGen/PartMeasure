@@ -7,6 +7,7 @@ import { appWriteOrigins } from "./origin";
 import { writeOriginAllowed } from "../request-origin";
 import { withRequestTiming } from "./timing";
 import { dependencyHint } from "./dependency-hint";
+import { readWithSignal } from "./bounded-stream";
 export const uuid = z.uuid();
 export function sameOrigin(req: Request) {
 	if (!writeOriginAllowed(req, appWriteOrigins(), !process.env.VERCEL && !process.env.VERCEL_ENV))
@@ -25,21 +26,30 @@ export async function csrf(req: Request) {
 		throw new AppError("CSRF_INVALID", 403);
 }
 export async function body<T>(req: Request, schema: z.ZodType<T>): Promise<T> {
-	if (!req.headers.get("content-type")?.startsWith("application/json"))
+	if (req.headers.get("content-type")?.split(";", 1)[0]?.trim().toLowerCase() !== "application/json")
 		throw new AppError("INVALID_INPUT", 415);
+	const declared = req.headers.get("content-length");
+	if (declared !== null && (!/^\d+$/.test(declared) || Number(declared) > 65536))
+		throw new AppError("BODY_TOO_LARGE", 413);
 	const reader = req.body?.getReader();
 	if (!reader) throw new AppError("INVALID_INPUT", 400);
+	const deadline = AbortSignal.any([req.signal, AbortSignal.timeout(15000)]);
 	const chunks: Uint8Array[] = [];
 	let size = 0;
-	for (;;) {
-		const { done, value } = await reader.read();
-		if (done) break;
-		size += value.length;
-		if (size > 65536) {
-			await reader.cancel();
-			throw new AppError("BODY_TOO_LARGE", 413);
+	try {
+		for (;;) {
+			const { done, value } = await readWithSignal(reader, deadline);
+			if (done) break;
+			size += value.length;
+			if (size > 65536) throw new AppError("BODY_TOO_LARGE", 413);
+			chunks.push(value);
 		}
-		chunks.push(value);
+	} catch (error) {
+		void reader.cancel().catch(() => {});
+		if (deadline.aborted) throw new AppError("REQUEST_TIMEOUT", 408);
+		throw error;
+	} finally {
+		reader.releaseLock();
 	}
 	try {
 		return schema.parse(JSON.parse(Buffer.concat(chunks).toString("utf8")));

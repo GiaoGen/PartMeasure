@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-10-25T09:03:03.605Z",
+  "scope": "Current TUN, restricted read-only database connection comparison. No configuration changes.",
+  "results": [
+    {
+      "name": "configured_pooler",
+      "ms": 8007,
+      "phases": {
+        "tcpMs": 11
+      },
+      "code": "TIMEOUT"
+    },
+    {
+      "name": "official_direct_database",
+      "ms": 155,
+      "phases": {
+        "tcpMs": 5
+      },
+      "code": "CONNECTION_FAILED"
+    }
+  ]
+}

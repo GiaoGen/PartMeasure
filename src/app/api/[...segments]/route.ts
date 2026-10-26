@@ -10,6 +10,7 @@ import {
 import { folderInput, projectFiltersSchema } from "@/lib/project-folders";
 import * as folders from "@/lib/server/folder-service";
 import { authClient, guest, owner } from "@/lib/server/auth";
+import { throttleAuth } from "@/lib/server/auth-throttle";
 import { digest, rate, token, transaction } from "@/lib/server/db";
 import {
 	body,
@@ -20,9 +21,10 @@ import {
 	uuid,
 } from "@/lib/server/http";
 import * as service from "@/lib/server/service";
-import { storage, uploadGrant } from "@/lib/server/storage";
+import { grantUpload } from "@/lib/server/upload-grant";
 import { effectiveFileLimit } from "@/lib/server/file-limits";
 import { fileResponse } from "@/lib/server/file-response";
+import { fileAuthorizer } from "@/lib/server/file-authorizer";
 import {
 	createAnnotationSchema,
 	updateAnnotationSchema,
@@ -93,14 +95,14 @@ async function handle(req: Request, context: Context) {
 			if (method !== "POST") throw new AppError("NOT_FOUND", 404);
 			if (action === "register" || action === "login") {
 				const input = await body(req, credentials);
-				await transaction(null, (db) => rate(db, "auth:global", 100, 600));
-				await transaction(null, (db) =>
-					rate(db, `auth:${digest(input.email.toLowerCase())}`, 5, 600),
-				);
+				await throttleAuth("auth", input.email);
 				const result = await timed("auth", () =>
 					action === "register"
 						? client.auth.signUp(input)
 						: client.auth.signInWithPassword(input));
+				if (result.error && (result.error.name === "AuthRetryableFetchError" || result.error.status === 0 || (result.error.status ?? 0) >= 500))
+					throw new AppError("AUTH_UNAVAILABLE", 503);
+				if (result.error?.status === 429) throw new AppError("RATE_LIMITED", 429);
 				if (result.error)
 					throw new AppError(
 						action === "login"
@@ -124,10 +126,7 @@ async function handle(req: Request, context: Context) {
 						})
 						.strict(),
 				);
-				await transaction(null, (db) => rate(db, "verify:global", 100, 600));
-				await transaction(null, (db) =>
-					rate(db, `verify:${digest(input.email.toLowerCase())}`, 10, 600),
-				);
+				await throttleAuth("verify", input.email);
 				const { error } = await timed("auth", () => client.auth.verifyOtp({
 					...input,
 					type: "signup",
@@ -394,7 +393,7 @@ async function handle(req: Request, context: Context) {
 						throw new AppError("NOT_FOUND", 404);
 					return fileResponse(
 						req,
-						() => service.fileForRead(actor, projectId, fileId.data),
+						fileAuthorizer(actor, projectId, fileId.data),
 					);
 				}
 			}
@@ -562,26 +561,7 @@ async function handle(req: Request, context: Context) {
 					return response(state);
 				}
 				if (method === "POST" && parts[4] === "grant") {
-					const r = await service.reservation(actor, projectId, objectId);
-					if (r.state !== "reserved") return response({ state: r.state });
-					const existing = await storage()
-						.from("partmeasure-quarantine")
-						.info(r.path);
-					if (!existing.error && existing.data)
-						return response({ state: "uploaded" });
-					await transaction(actor, async (db) => {
-						await service.access(db, actor, projectId);
-						const { rowCount } = await db.query(
-							"update pm.upload_reservations set grant_expires_at=now()+interval '2 hours',cleanup_after=now()+interval '27 hours' where id=$1 and project_id=$2 and actor_key=$3 and state='reserved' and created_at>now()-interval '15 minutes'",
-							[objectId, projectId, service.actorKey(actor)],
-						);
-						if (!rowCount) throw new AppError("UPLOAD_WINDOW_EXPIRED", 409);
-					});
-					return response({
-						...(await uploadGrant(r.path)),
-						bucket: "partmeasure-quarantine",
-						supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
-					});
+					return response(await grantUpload(actor, projectId, objectId, req.signal));
 				}
 			}
 		}
@@ -637,7 +617,7 @@ async function handle(req: Request, context: Context) {
 				const original = url.searchParams.get("original") === "1";
 				const variant = url.searchParams.get("variant");
 				if (variant !== null && (parts[4] !== "preview" || !["320","640"].includes(variant) || url.searchParams.getAll("variant").length !== 1)) throw new AppError("INVALID_INPUT",422);
-				const authorize = () => service.fileForRead(
+				const authorize = fileAuthorizer(
 					actor,
 					projectId,
 					objectId,

@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-10-25T08:51:16.487Z",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "scope": "Current user-provided TUN path, process HTTP proxy disabled; independent normal test-account Auth login and restricted SELECT only. Not mainland no-TUN verification.",
+  "results": [
+    {
+      "name": "independent_auth_test_account",
+      "ms": 4539,
+      "authenticated": true
+    },
+    {
+      "name": "restricted_database_select",
+      "ms": 10007,
+      "phases": {
+        "tcpMs": 31
+      },
+      "errors": [
+        "Error",
+        "TIMEOUT"
+      ]
+    }
+  ]
+}

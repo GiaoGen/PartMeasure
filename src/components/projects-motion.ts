@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useRef } from "react";
 import type { PointerEvent, SyntheticEvent } from "react";
+import { motionDuration } from "./ui-motion";
+import { lockBodyScroll } from "./body-scroll-lock";
 
 export function prefersReducedMotion() {
 	return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -12,6 +14,29 @@ export function useProjectDialog() {
 	const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const closing = useRef(false);
 	const continuation = useRef<(() => void) | undefined>(undefined);
+	const unlock = useRef<(() => void) | undefined>(undefined);
+	useEffect(() => {
+		const dialog = ref.current;
+		const closed = () => {
+			if (dialog?.open) return;
+			unlock.current?.();
+			unlock.current = undefined;
+			if (timer.current) clearTimeout(timer.current);
+			timer.current = null;
+			closing.current = false;
+			continuation.current = undefined;
+		};
+		dialog?.addEventListener("close", closed);
+		return () => {
+			dialog?.removeEventListener("close", closed);
+			unlock.current?.();
+			unlock.current = undefined;
+			if (timer.current) clearTimeout(timer.current);
+			timer.current = null;
+			closing.current = false;
+			continuation.current = undefined;
+		};
+	}, []);
 	useEffect(
 		() => () => {
 			if (timer.current) clearTimeout(timer.current);
@@ -21,9 +46,16 @@ export function useProjectDialog() {
 	);
 	function open() {
 		const dialog = ref.current;
-		if (!dialog || closing.current) return;
+		if (!dialog) return;
+		if (timer.current) clearTimeout(timer.current);
+		timer.current = null;
+		closing.current = false;
+		continuation.current = undefined;
 		dialog.dataset.phase = "enter";
-		if (!dialog.open) dialog.showModal();
+		if (!dialog.open) {
+			dialog.showModal();
+			unlock.current ??= lockBodyScroll();
+		}
 	}
 	function close(after?: () => void) {
 		const dialog = ref.current;
@@ -34,22 +66,18 @@ export function useProjectDialog() {
 		}
 		closing.current = true;
 		continuation.current = after;
-		const appearance = getComputedStyle(dialog);
-		dialog.style.setProperty("--projects-exit-from", appearance.transform);
-		dialog.style.setProperty("--projects-exit-opacity", appearance.opacity);
 		dialog.dataset.phase = "exit";
-		timer.current = setTimeout(
-			() => {
-				dialog.close();
-				dialog.dataset.phase = "idle";
-				closing.current = false;
-				timer.current = null;
-				const next = continuation.current;
-				continuation.current = undefined;
-				next?.();
-			},
-			prefersReducedMotion() ? 0 : 220,
-		);
+		timer.current = setTimeout(() => {
+			dialog.close();
+			unlock.current?.();
+			unlock.current = undefined;
+			dialog.dataset.phase = "idle";
+			closing.current = false;
+			timer.current = null;
+			const next = continuation.current;
+			continuation.current = undefined;
+			next?.();
+		}, motionDuration("exit"));
 	}
 	function cancel(event: SyntheticEvent, blocked = false) {
 		event.preventDefault();

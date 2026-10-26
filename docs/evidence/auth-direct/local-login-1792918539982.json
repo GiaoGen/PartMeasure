@@ -1,0 +1,24 @@
+{
+  "checkedAt": "2026-10-25T08:55:39.981Z",
+  "scope": "Existing localhost app, current TUN, test account normal login. No server start or browser.",
+  "results": [
+    {
+      "step": "local_health",
+      "httpStatus": 200,
+      "ms": 697
+    },
+    {
+      "step": "csrf",
+      "httpStatus": 200,
+      "ms": 814,
+      "requestId": "014a815f-2776-4315-abac-229b2e24a062"
+    },
+    {
+      "step": "local_login",
+      "httpStatus": 503,
+      "ms": 10256,
+      "errorCode": "DEPENDENCY_UNAVAILABLE",
+      "requestId": "357578ea-7b26-4418-a1d4-a9bc3890672b"
+    }
+  ]
+}

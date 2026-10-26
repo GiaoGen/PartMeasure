@@ -1,0 +1,23 @@
+{
+  "scope": "Disposable local PostgreSQL, migrated schema, restricted runtime role, synthetic Auth/schema metadata. Not isolated Supabase/Auth/Storage/HTTP acceptance.",
+  "results": [
+    {
+      "status": "PASS",
+      "evidence": {
+        "role": "partmeasure_runtime (explicitly asserted inside fixture)",
+        "scope": "Real isolated Postgres RLS/triggers with server identity contexts; synthetic metadata only, not Auth/Storage HTTP acceptance",
+        "results": [
+          "browser roles lack private schema; runtime has no RLS bypass",
+          "runtime-only synthetic upload/finalize metadata and two atomic immutable versions",
+          "Owner B cannot read/write Owner A project/files/versions/revisions",
+          "Guest sees both published versions and fixed issue snapshot, no private draft/revision/other project",
+          "Guest annotation/forged-author writes denied; real appended numeric reply atomically completes; reply immutable",
+          "Guest can withdraw own receipt only; draft feedback denied",
+          "Owner cannot overwrite published versions/fixed revisions or hide protected attachment",
+          "archive preserves reads/blocks writes; revoke on archive persists after restore and denies existing-session reads/writes"
+        ],
+        "disposition": "all fixture writes rolled back"
+      }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-10-26T03:53:45.148Z",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "scope": "Real isolated runtime PostgreSQL contexts/RLS/triggers; synthetic file metadata only. Not Auth identity, Storage HTTP, browser or phone acceptance.",
+  "results": [
+    {
+      "stage": "inspector_read_existing_test_identities",
+      "status": "NOT_PASSED",
+      "code": "ENOTFOUND"
+    }
+  ]
+}

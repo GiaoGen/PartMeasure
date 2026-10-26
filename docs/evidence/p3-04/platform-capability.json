@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-10-26",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "plan": "free",
+  "databaseVersion": "17.11.0.003",
+  "status": "ACTIVE_HEALTHY",
+  "source": "Supabase get_project + get_organization; official Database Backups guide",
+  "documentation": "https://supabase.com/docs/guides/platform/backups",
+  "boundaries": {
+    "freePlanAutomaticDailyBackups": "not assumed; official guide recommends operator exports",
+    "storageBytesInDatabaseBackup": false,
+    "providerActualBackupInventory": "not available through enabled tools; not claimed",
+    "newResourcesOrPurchases": false,
+    "cloudRestorePerformed": false
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-10-25T08:57:35.272Z",
+  "scope": "Previously verified isolated nonproduction preview, same test account normal login only. No deployment/browser/business writes.",
+  "results": [
+    {
+      "step": "preview_health",
+      "httpStatus": 200,
+      "ms": 2209,
+      "buildId": "perf-20261022-17a0278bcf25d676"
+    },
+    {
+      "step": "preview_csrf",
+      "httpStatus": 200,
+      "ms": 1226
+    },
+    {
+      "step": "preview_login",
+      "httpStatus": 200,
+      "ms": 1291
+    }
+  ]
+}

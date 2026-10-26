@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { privateImage, cachedPrivateImage } from "./private-image-cache";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { motionDuration } from "./ui-motion";
 
 export function WorkspaceIcon({
 	kind,
@@ -79,14 +80,11 @@ export function useWorkspaceDisclosure() {
 		currentPhase.current = "closing";
 		if (timer.current) clearTimeout(timer.current);
 		setPhase((current) => (current === "closed" ? current : "closing"));
-		timer.current = setTimeout(
-			() => {
-				currentPhase.current = "closed";
-				setPhase("closed");
-				timer.current = null;
-			},
-			window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 180,
-		);
+		timer.current = setTimeout(() => {
+			currentPhase.current = "closed";
+			setPhase("closed");
+			timer.current = null;
+		}, motionDuration("exit"));
 	}, []);
 	function show() {
 		currentPhase.current = "open";
@@ -104,15 +102,31 @@ export function useWorkspaceDisclosure() {
 }
 
 /** A transition only leases an existing thumbnail; it never starts a second download. */
-export function CachedPhotoPreview({ preview }: { preview?: { src: string; version: string } | undefined }) {
+export function CachedPhotoPreview({
+	preview,
+}: {
+	preview?: { src: string; version: string } | undefined;
+}) {
 	const [url, setUrl] = useState("");
-	const src = preview?.src, version = preview?.version;
+	const src = preview?.src,
+		version = preview?.version;
 	useEffect(() => {
 		const lease = src && version ? cachedPrivateImage(src, version) : undefined;
 		setUrl(lease?.url ?? "");
 		return () => lease?.release();
 	}, [src, version]);
-	return url ? <div className="photo-transition"><Image unoptimized src={url} alt="已载入的照片预览，正在准备高清图" fill sizes="100vw" style={{ objectFit: "contain" }} /></div> : null;
+	return url ? (
+		<div className="photo-transition">
+			<Image
+				unoptimized
+				src={url}
+				alt="已载入的照片预览，正在准备高清图"
+				fill
+				sizes="100vw"
+				style={{ objectFit: "contain" }}
+			/>
+		</div>
+	) : null;
 }
 
 export function MaterialThumbnail({
@@ -120,38 +134,87 @@ export function MaterialThumbnail({
 	version,
 	onReady,
 	name,
+	defer = false,
 }: {
 	src?: string | undefined;
 	version?: string | undefined;
-	onReady?: ((ready:boolean)=>void)|undefined;
+	onReady?: ((ready: boolean) => void) | undefined;
 	name: string;
+	defer?: boolean;
 }) {
- const [failed,setFailed]=useState(false),[objectUrl,setObjectUrl]=useState("");
- useEffect(()=>{
-  let active=true,lease:{url:string;release:()=>void}|undefined;
-  const controller = new AbortController();
-  setObjectUrl("");setFailed(false);onReady?.(false);
-  if(src && version)void privateImage(src,version,controller.signal).then(value=>{if(!active){value.release();return;}lease=value;setObjectUrl(value.url);}).catch(()=>{if(active)setFailed(true);});
-  return()=>{active=false;controller.abort();lease?.release();};
- },[src,version,onReady]);
- return failed || !objectUrl ? (
-		<span className="workspace-image-fallback">
-			<WorkspaceIcon kind="album" />
-			<span>{failed ? "图片预览暂不可用" : "图片预览准备中"}</span>
-			<small>点击查看详情或重试</small>
+	const host = useRef<HTMLSpanElement>(null);
+	const readyCallback = useRef(onReady);
+	readyCallback.current = onReady;
+	const [visible, setVisible] = useState(!defer);
+	useEffect(() => {
+		if (!defer || !host.current) return;
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				setVisible(!!entry?.isIntersecting);
+			},
+			{ rootMargin: "80px" },
+		);
+		observer.observe(host.current);
+		return () => observer.disconnect();
+	}, [defer]);
+	const activeSrc = !defer || visible ? src : undefined;
+	const [failed, setFailed] = useState(false),
+		[objectUrl, setObjectUrl] = useState("");
+	useEffect(() => {
+		let active = true,
+			lease: { url: string; release: () => void } | undefined;
+		const controller = new AbortController();
+		setObjectUrl("");
+		setFailed(false);
+		readyCallback.current?.(false);
+		if (activeSrc && version)
+			void privateImage(activeSrc, version, controller.signal)
+				.then((value) => {
+					if (!active) {
+						value.release();
+						return;
+					}
+					lease = value;
+					setObjectUrl(value.url);
+				})
+				.catch(() => {
+					if (active) setFailed(true);
+				});
+		return () => {
+			active = false;
+			controller.abort();
+			lease?.release();
+		};
+	}, [activeSrc, version]);
+	const content =
+		failed || !objectUrl ? (
+			<span className="workspace-image-fallback">
+				<WorkspaceIcon kind="album" />
+				<span>{failed ? "图片预览暂不可用" : "图片预览准备中"}</span>
+				<small>点击查看详情或重试</small>
+			</span>
+		) : (
+			<Image
+				unoptimized
+				src={objectUrl}
+				alt={name}
+				width={600}
+				height={440}
+				loading="lazy"
+				decoding="async"
+				referrerPolicy="no-referrer"
+				onLoad={() => readyCallback.current?.(true)}
+				onError={() => {
+					setFailed(true);
+					readyCallback.current?.(false);
+				}}
+			/>
+		);
+	return defer ? (
+		<span ref={host} className="material-thumbnail">
+			{content}
 		</span>
 	) : (
-		<Image
-			unoptimized
-			src={objectUrl}
-			alt={name}
-			width={600}
-			height={440}
-			loading="lazy"
-			decoding="async"
-			referrerPolicy="no-referrer"
-			onLoad={() => onReady?.(true)}
-			onError={() => {setFailed(true);onReady?.(false);}}
-		/>
+		content
 	);
 }

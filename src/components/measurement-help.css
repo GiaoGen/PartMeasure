@@ -23,18 +23,18 @@
 	content: "›";
 	flex: 0 0 8px;
 	font-size: 18px;
-	color: #627080;
+	color: var(--pm-muted);
 }
 .measurement-help[open] > summary::before,
 .measurement-help-reading[open] > summary::before { transform: rotate(90deg); }
 .measurement-help summary:focus-visible,
-.measurement-help button:focus-visible { outline: 2px solid #245dcb; outline-offset: 2px; }
+.measurement-help button:focus-visible { outline: 2px solid var(--pm-accent); outline-offset: 2px; }
 .measurement-help-body { padding-bottom: 12px; overflow-wrap: anywhere; }
 .measurement-help h5 { margin: 10px 0; font-size: 14px; font-weight: 600; }
 .measurement-help-illustration { display: block; width: 100%; max-width: 640px; height: auto; }
 .measurement-help ol { margin: 12px 0; padding-left: 23px; }
 .measurement-help li + li { margin-top: 8px; }
-.measurement-help .measurement-help-note { margin: 8px 0; color: #627080; font-size: 13px; }
+.measurement-help .measurement-help-note { margin: 8px 0; color: var(--pm-muted); font-size: 13px; }
 .measurement-help-note button {
 	border: 0;
 	background: transparent;

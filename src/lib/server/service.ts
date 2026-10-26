@@ -472,6 +472,7 @@ export async function fileForRead(
 		);
 		if (!rows[0]) throw new AppError("NOT_FOUND", 404);
 		rows[0].image_cache_scope = imageCacheScope(actor, id);
+		rows[0].transfer_scope = actorKey(actor);
 		if (variant !== null) {
 			if (original || rows[0].purpose !== "material" || ![320,640].includes(variant)) throw new AppError("INVALID_INPUT",422);
 			if (!rows[0].thumbnail_key) throw new AppError("IMAGE_NOT_READY",409);

@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { api } from "./api";
-import { EntryShell } from "./entry-shell";
+import { ProductEntry } from "./product-entry";
+import { motionDuration } from "./ui-motion";
 export function AuthForm() {
 	const [mode, setMode] = useState<"login" | "register" | "verify">("login");
 	const [leaving, setLeaving] = useState(false);
@@ -24,14 +25,15 @@ export function AuthForm() {
 			transition.current = null;
 			setError("");
 			setPassword("");
+			setShowPassword(false);
 			setOtp("");
 			setMode(next);
 			setLeaving(false);
 		};
-		if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) commit();
+		if (!motionDuration("exit")) commit();
 		else {
 			setLeaving(true);
-			transition.current = setTimeout(commit, 130);
+			transition.current = setTimeout(commit, motionDuration("exit"));
 		}
 	}
 	const [email, setEmail] = useState(""),
@@ -39,8 +41,12 @@ export function AuthForm() {
 		[otp, setOtp] = useState("");
 	const [busy, setBusy] = useState(false),
 		[error, setError] = useState("");
+	const [showPassword, setShowPassword] = useState(false);
+	const submitting = useRef(false);
 	async function submit(event: React.SubmitEvent<HTMLFormElement>) {
 		event.preventDefault();
+		if (submitting.current) return;
+		submitting.current = true;
 		setBusy(true);
 		setError("");
 		try {
@@ -56,18 +62,15 @@ export function AuthForm() {
 		} catch (e) {
 			setError(e instanceof Error ? e.message : "网络中断，请重试。");
 		} finally {
+			submitting.current = false;
 			setBusy(false);
 		}
 	}
 	return (
-		<EntryShell
-			eyebrow="工程师入口"
-			title="每份资料，都有清楚的去处。"
-			description="整理项目，标注测量位置，将成果交给客户。"
-		>
+		<ProductEntry>
 			<div
 				key={mode}
-				className="entry-form-state"
+				className="pm-form-state"
 				data-phase={leaving ? "closing" : "open"}
 				inert={leaving}
 			>
@@ -81,9 +84,16 @@ export function AuthForm() {
 				<p className="muted">
 					{mode === "verify"
 						? "输入邮件中的数字验证码，确认后即可使用邮箱和密码登录。"
-						: "整理零件资料，与客户清楚地交接。"}
+						: mode === "register"
+							? "创建账号，开始整理项目资料与交付成果。"
+							: "继续整理资料，与客户清楚交接。"}
 				</p>
-				<form onSubmit={submit} className="stack" aria-busy={busy}>
+				<form
+					onSubmit={submit}
+					className="pm-auth-form"
+					aria-busy={busy}
+					aria-describedby={error ? "auth-error" : undefined}
+				>
 					<label>
 						邮箱
 						<input
@@ -97,23 +107,42 @@ export function AuthForm() {
 						/>
 					</label>
 					{mode !== "verify" ? (
-						<label>
-							密码
-							<input
-								type="password"
-								name="password"
-								value={password}
-								autoComplete={
-									mode === "login" ? "current-password" : "new-password"
-								}
-								minLength={12}
-								maxLength={128}
-								required
-								disabled={busy}
-								onChange={(e) => setPassword(e.target.value)}
-							/>
-							<small>至少 12 位；注册后需确认邮箱。</small>
-						</label>
+						<div className="pm-field">
+							<label htmlFor="auth-password">密码</label>
+							<span className="pm-password">
+								<input
+									id="auth-password"
+									type={showPassword ? "text" : "password"}
+									name="password"
+									value={password}
+									autoComplete={
+										mode === "login" ? "current-password" : "new-password"
+									}
+									minLength={12}
+									maxLength={128}
+									required
+									disabled={busy}
+									aria-describedby={
+										mode === "register" ? "auth-password-help" : undefined
+									}
+									onChange={(e) => setPassword(e.target.value)}
+								/>
+								<button
+									type="button"
+									disabled={busy}
+									aria-label={showPassword ? "隐藏密码" : "显示密码"}
+									aria-pressed={showPassword}
+									onClick={() => setShowPassword((value) => !value)}
+								>
+									{showPassword ? "隐藏" : "显示"}
+								</button>
+							</span>
+							{mode === "register" ? (
+								<small id="auth-password-help">
+									至少 12 位；注册后需用邮件中的数字验证码确认邮箱。
+								</small>
+							) : null}
+						</div>
 					) : (
 						<label>
 							数字验证码
@@ -132,13 +161,17 @@ export function AuthForm() {
 						</label>
 					)}
 					{error ? (
-						<p role="alert" className="error">
+						<p id="auth-error" role="alert" className="pm-notice error">
 							{error}
 						</p>
 					) : null}
-					<button type="submit" className="primary" disabled={busy}>
+					<button type="submit" className="primary pm-busy" disabled={busy}>
 						{busy
-							? "正在处理…"
+							? mode === "login"
+								? "正在登录…"
+								: mode === "register"
+									? "正在发送验证码…"
+									: "正在确认邮箱…"
 							: mode === "login"
 								? "登录"
 								: mode === "register"
@@ -158,8 +191,8 @@ export function AuthForm() {
 						{mode === "login" ? "没有账号？注册" : "已有账号？登录"}
 					</button>
 				) : (
-					<p>
-						未收到邮件？先检查垃圾邮件；请勿连续注册。
+					<div className="pm-auth-support">
+						<p className="muted">未收到邮件？先检查垃圾邮件；请勿连续注册。</p>
 						<button
 							type="button"
 							className="text-button"
@@ -170,10 +203,13 @@ export function AuthForm() {
 						>
 							返回登录
 						</button>
-					</p>
+					</div>
 				)}
-				<p className="muted">客户无需注册，请直接打开工程师分享的链接。</p>
+				<div className="pm-auth-foot">
+					<p>客户无需注册</p>
+					<p className="muted">请打开工程师发送的项目链接。</p>
+				</div>
 			</div>
-		</EntryShell>
+		</ProductEntry>
 	);
 }

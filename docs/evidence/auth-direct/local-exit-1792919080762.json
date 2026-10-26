@@ -1,0 +1,7 @@
+{
+  "checkedAt": "2026-10-25T09:04:40.762Z",
+  "scope": "Explicit existing localhost HTTP CONNECT diagnostic, no system/TUN changes, no database credentials",
+  "result": {
+    "error": "TIMEOUT"
+  }
+}

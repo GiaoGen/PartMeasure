@@ -43,7 +43,7 @@ describe("private server byte cache (unit authorization boundary)", () => {
 		expect(await first.text()).toBe("abcd");
 		const second = await fileResponse(req(), authorize, true);
 		expect(await second.text()).toBe("abcd");
-		expect(authorize).toHaveBeenCalledTimes(2);
+		expect(authorize).toHaveBeenCalledTimes(4);
 		expect(fetch).toHaveBeenCalledTimes(1);
 		expect(second.headers.get("cache-control")).toBe("private, no-store");
 		expect(second.headers.get("location")).toBeNull();

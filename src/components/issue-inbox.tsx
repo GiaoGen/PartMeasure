@@ -1,5 +1,13 @@
 "use client";
-import { useCallback, useEffect, useId, useRef, useState, useMemo, useSyncExternalStore } from "react";
+import {
+	useCallback,
+	useEffect,
+	useId,
+	useRef,
+	useState,
+	useMemo,
+	useSyncExternalStore,
+} from "react";
 import type { IssueCurrent, IssueSummary } from "@/lib/issues";
 import { api, ApiError, readCached, onApiSessionCleared } from "./api";
 import { useApiRevalidation } from "./use-api-revalidation";
@@ -7,6 +15,7 @@ import { IssueDetail } from "./issue-detail";
 import { useProjectDialog } from "./projects-motion";
 import { WorkspaceSideTarget } from "./workspace-side-content";
 import { WorkspaceIcon } from "./workspace-ui";
+import { revealFocusedDialogControl } from "./dialog-viewport";
 import { taskInboxState } from "./task-inbox-state";
 import { groupTaskCards, type TaskCard } from "./task-inbox-groups";
 import { TaskCardRows } from "./task-card-rows";
@@ -32,12 +41,20 @@ export function IssueInbox({
 }) {
 	const popup = useProjectDialog();
 	const url = `${base}/issues`;
-	const [initial] = useState(() => readCached<{ items: IssueSummary[]; counts: Record<string, number>; nextCursor: string | null }>(url));
+	const [initial] = useState(() =>
+		readCached<{
+			items: IssueSummary[];
+			counts: Record<string, number>;
+			nextCursor: string | null;
+		}>(url),
+	);
 	const titleId = useId();
 	const [opened, setOpened] = useState(false);
 	const [selected, setSelected] = useState<TaskCard | null>(null);
 	const [items, setItems] = useState<IssueSummary[]>(initial?.items ?? []);
-	const [counts, setCounts] = useState<Record<string, number>>(initial?.counts ?? {});
+	const [counts, setCounts] = useState<Record<string, number>>(
+		initial?.counts ?? {},
+	);
 	const [loading, setLoading] = useState(!initial);
 	const [loaded, setLoaded] = useState(!!initial);
 	const [error, setError] = useState("");
@@ -50,15 +67,28 @@ export function IssueInbox({
 		dirty.current = value;
 		callbacks.current.onDirty(value);
 	}, []);
-	const reader = useMemo(() => new InboxReader(base, () => callbacks.current.onInvalid()), [base]);
-	const batch = useSyncExternalStore(reader.subscribe, reader.getSnapshot, reader.getSnapshot);
+	const reader = useMemo(
+		() => new InboxReader(base, () => callbacks.current.onInvalid()),
+		[base],
+	);
+	const batch = useSyncExternalStore(
+		reader.subscribe,
+		reader.getSnapshot,
+		reader.getSnapshot,
+	);
 	useEffect(() => {
 		reader.activate();
 		const off = onApiSessionCleared(() => reader.clear(true));
-		return () => { off(); reader.dispose(); };
+		return () => {
+			off();
+			reader.dispose();
+		};
 	}, [reader]);
-	useEffect(() => { if (opened) reader.open(); else reader.close(); }, [reader, opened]);
-	useProjectUpdates(updates => reader.updates(updates));
+	useEffect(() => {
+		if (opened) reader.open();
+		else reader.close();
+	}, [reader, opened]);
+	useProjectUpdates((updates) => reader.updates(updates));
 	const load = useCallback(
 		async (next: string | null = null) => {
 			const run = ++generation.current;
@@ -104,7 +134,10 @@ export function IssueInbox({
 		},
 		[url],
 	);
-	useApiRevalidation(() => { void load(); reader.refresh(); });
+	useApiRevalidation(() => {
+		void load();
+		reader.refresh();
+	});
 	useEffect(() => {
 		void refreshKey;
 		void load();
@@ -122,8 +155,6 @@ export function IssueInbox({
 		if (!opened) return;
 		const element = popup.ref.current;
 		const viewport = window.visualViewport;
-		const previousOverflow = document.body.style.overflow;
-		document.body.style.overflow = "hidden";
 		let frame = 0;
 		const update = () => {
 			element?.style.setProperty(
@@ -134,6 +165,7 @@ export function IssueInbox({
 				"--task-visible-top",
 				`${viewport?.offsetTop ?? 0}px`,
 			);
+			revealFocusedDialogControl(element);
 		};
 		const schedule = () => {
 			cancelAnimationFrame(frame);
@@ -142,11 +174,12 @@ export function IssueInbox({
 		update();
 		viewport?.addEventListener("resize", schedule);
 		viewport?.addEventListener("scroll", schedule);
+		element?.addEventListener("focusin", schedule);
 		return () => {
 			cancelAnimationFrame(frame);
 			viewport?.removeEventListener("resize", schedule);
 			viewport?.removeEventListener("scroll", schedule);
-			document.body.style.overflow = previousOverflow;
+			element?.removeEventListener("focusin", schedule);
 		};
 	}, [opened, popup.ref]);
 	useEffect(() => {
@@ -173,17 +206,35 @@ export function IssueInbox({
 		popup.close(() => setOpened(false));
 	}
 	const shownItems = opened && batch.loaded ? batch.items : items;
-	const shownError = opened ? batch.error || (!batch.loaded ? error : "") : error;
-	const badge = taskInboxState(opened && batch.loaded ? batch.counts : counts, guest, !!shownError || !loaded);
+	const shownError = opened
+		? batch.error || (!batch.loaded ? error : "")
+		: error;
+	const badge = taskInboxState(
+		opened && batch.loaded ? batch.counts : counts,
+		guest,
+		!!shownError || !loaded,
+	);
 	const groups = groupTaskCards(shownItems);
 	const current = selected
-		? (groupTaskCards([...shownItems, ...selected.items.map(item => batch.views.get(item.id) ?? item)])
+		? (groupTaskCards([
+				...shownItems,
+				...selected.items.map((item) => batch.views.get(item.id) ?? item),
+			])
 				.flatMap((group) => group.cards)
-				.find((card) => card.id === selected.id) ?? { ...selected, items: selected.items.map(item => batch.views.get(item.id) ?? item) })
+				.find((card) => card.id === selected.id) ?? {
+				...selected,
+				items: selected.items.map((item) => batch.views.get(item.id) ?? item),
+			})
 		: null;
-	const selectedIds = current?.items.map(item => item.id).join(",") ?? "";
-	useEffect(() => { void batch.epoch; handleDirty(false); }, [handleDirty, batch.epoch]);
-	useEffect(() => { void batch.epoch; reader.select(selectedIds ? selectedIds.split(",") : []); }, [reader, selectedIds, batch.epoch]);
+	const selectedIds = current?.items.map((item) => item.id).join(",") ?? "";
+	useEffect(() => {
+		void batch.epoch;
+		handleDirty(false);
+	}, [handleDirty, batch.epoch]);
+	useEffect(() => {
+		void batch.epoch;
+		reader.select(selectedIds ? selectedIds.split(",") : []);
+	}, [reader, selectedIds, batch.epoch]);
 	return (
 		<div className="task-inbox">
 			<button
@@ -247,7 +298,11 @@ export function IssueInbox({
 					<span data-tone="done">已补充</span>
 				</section>
 				<div className="task-inbox-list">
-					{batch.loading ? <p role="status">{batch.loaded ? "正在准备其余待办…" : "正在准备待办与填写信息…"}</p> : null}
+					{batch.loading ? (
+						<p role="status">
+							{batch.loaded ? "正在准备其余待办…" : "正在准备待办与填写信息…"}
+						</p>
+					) : null}
 					{shownError ? (
 						<p className="error" role="alert">
 							{shownError}
@@ -314,25 +369,57 @@ type CardDetailProps = {
 	onCollapse: () => void;
 };
 function TaskCardDetail(props: CardDetailProps) {
-	const issue = props.card.items.map(item => props.views.get(item.id)).find(Boolean) ?? null;
+	const issue =
+		props.card.items.map((item) => props.views.get(item.id)).find(Boolean) ??
+		null;
 	// Retain the photo while an unprepared target loads, without retaining the old annotation.
-	const image = issue?.target?.image ?? (props.card.items[0]?.kind === "measurement"
-		? [...props.views.values()].find(view => view.fileId === props.card.items[0]?.fileId && view.target)?.target?.image : null);
+	const image =
+		issue?.target?.image ??
+		(props.card.items[0]?.kind === "measurement"
+			? [...props.views.values()].find(
+					(view) => view.fileId === props.card.items[0]?.fileId && view.target,
+				)?.target?.image
+			: null);
 	const status = {
-		pending: props.card.items.filter(item => !item.closedAt && item.state === "awaiting_response").length,
-		remeasure: props.card.items.filter(item => !item.closedAt && item.state === "remeasure_requested").length,
-		submitted: props.card.items.filter(item => !item.closedAt && item.state === "submitted").length,
+		pending: props.card.items.filter(
+			(item) => !item.closedAt && item.state === "awaiting_response",
+		).length,
+		remeasure: props.card.items.filter(
+			(item) => !item.closedAt && item.state === "remeasure_requested",
+		).length,
+		submitted: props.card.items.filter(
+			(item) => !item.closedAt && item.state === "submitted",
+		).length,
 	};
 	return (
 		<section className="task-selected-detail" aria-label={props.card.label}>
 			<header className="task-selected-heading">
 				<h3>{props.card.label}</h3>
-				<button type="button" aria-label="收起当前事项" onClick={props.onCollapse}>
+				<button
+					type="button"
+					aria-label="收起当前事项"
+					onClick={props.onCollapse}
+				>
 					<WorkspaceIcon kind="chevron" />
 				</button>
 			</header>
-			{image ? <IssueTargetPreview key={image.imageHash} base={props.base} issue={issue} image={image} status={status} onInvalid={props.onInvalid} /> : null}
-			{issue && !issue.target ? <p className="task-file-download"><a href={`${props.base}/files/${issue.fileId}/download`}>下载 {issue.file.filename}</a></p> : null}
+			{image ? (
+				<IssueTargetPreview
+					key={image.imageHash}
+					base={props.base}
+					issue={issue}
+					image={image}
+					status={status}
+					onInvalid={props.onInvalid}
+				/>
+			) : null}
+			{issue && !issue.target ? (
+				<p className="task-file-download">
+					<a href={`${props.base}/files/${issue.fileId}/download`}>
+						下载 {issue.file.filename}
+					</a>
+				</p>
+			) : null}
 			<TaskCardForms key={props.card.id} {...props} />
 		</section>
 	);
@@ -361,12 +448,7 @@ function TaskCardForms(props: CardDetailProps) {
 	return (
 		<>
 			{rows.map((item) => (
-				<TaskCardIssue
-					key={item.id}
-					{...props}
-					item={item}
-					report={report}
-				/>
+				<TaskCardIssue key={item.id} {...props} item={item} report={report} />
 			))}
 		</>
 	);
@@ -383,7 +465,8 @@ function TaskCardIssue({
 		(value: boolean) => report(item.id, value),
 		[report, item.id],
 	);
-	if (props.unavailable.has(item.id)) return <p role="alert">该事项已不可用，请选择其他事项。</p>;
+	if (props.unavailable.has(item.id))
+		return <p role="alert">该事项已不可用，请选择其他事项。</p>;
 	return (
 		<IssueDetail
 			base={props.base}
@@ -394,7 +477,9 @@ function TaskCardIssue({
 			showTarget={false}
 			managedByInbox
 			onReadRequest={props.onReadRequest}
-			{...(props.views.get(item.id) ? { currentView: props.views.get(item.id) as IssueCurrent } : {})}
+			{...(props.views.get(item.id)
+				? { currentView: props.views.get(item.id) as IssueCurrent }
+				: {})}
 			onSnapshot={props.onSnapshot}
 			targetStatus={{
 				pending: props.card.items.filter(

@@ -1,0 +1,70 @@
+{
+  "checkedAt": "2026-10-25T08:33:49.538Z",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "scope": "Direct process/native HTTPS; no login, no business writes. OS VPN/TUN/routes not changed or certified absent.",
+  "nodeEnvProxyEnabled": false,
+  "results": [
+    {
+      "name": "resolver_a",
+      "errors": [
+        "ECONNREFUSED",
+        "Error"
+      ]
+    },
+    {
+      "name": "resolver_aaaa",
+      "errors": [
+        "ECONNREFUSED",
+        "Error"
+      ]
+    },
+    {
+      "name": "os_lookup",
+      "ms": 0,
+      "values": [
+        {
+          "address": "198.18.0.151",
+          "family": 4
+        }
+      ]
+    },
+    {
+      "name": "native_https_family_0",
+      "ms": 664,
+      "phases": {
+        "dnsMs": 29,
+        "tcpMs": 33,
+        "tlsMs": 172,
+        "headersMs": 664
+      },
+      "httpStatus": 200
+    },
+    {
+      "name": "native_https_family_4",
+      "ms": 798,
+      "phases": {
+        "dnsMs": 24,
+        "tcpMs": 27,
+        "tlsMs": 277,
+        "headersMs": 650
+      },
+      "httpStatus": 200
+    },
+    {
+      "name": "native_https_family_6",
+      "ms": 23,
+      "phases": {
+        "dnsMs": 23
+      },
+      "errors": [
+        "ENOTFOUND",
+        "Error"
+      ]
+    },
+    {
+      "name": "node_fetch",
+      "httpStatus": 200,
+      "ms": 799
+    }
+  ]
+}

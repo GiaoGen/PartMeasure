@@ -1,0 +1,85 @@
+{
+  "checkedAt": "2026-10-25T08:38:36.349Z",
+  "projectRef": "rvysclscetfqicpnzlra",
+  "scope": "Direct process/native HTTPS; no login, no business writes. OS VPN/TUN/routes not changed or certified absent.",
+  "userDeclaredTunOff": false,
+  "fakeIpObserved": true,
+  "resolverServers": [
+    "127.0.0.1"
+  ],
+  "nodeEnvProxyEnabled": false,
+  "results": [
+    {
+      "name": "resolver_a",
+      "errors": [
+        "ECONNREFUSED",
+        "Error"
+      ]
+    },
+    {
+      "name": "resolver_aaaa",
+      "errors": [
+        "ECONNREFUSED",
+        "Error"
+      ]
+    },
+    {
+      "name": "os_lookup",
+      "ms": 8,
+      "values": [
+        {
+          "address": "198.18.0.151",
+          "family": 4
+        }
+      ]
+    },
+    {
+      "name": "native_https_family_0",
+      "ms": 1349,
+      "phases": {
+        "dnsMs": 31,
+        "tcpMs": 34,
+        "tlsMs": 609,
+        "headersMs": 1348
+      },
+      "httpStatus": 200
+    },
+    {
+      "name": "native_https_family_4",
+      "ms": 1343,
+      "phases": {
+        "dnsMs": 25,
+        "tcpMs": 29,
+        "tlsMs": 616,
+        "headersMs": 1343
+      },
+      "httpStatus": 200
+    },
+    {
+      "name": "node_fetch",
+      "httpStatus": 200,
+      "ms": 1344
+    },
+    {
+      "name": "storage_https_without_user",
+      "ms": 1020,
+      "phases": {
+        "dnsMs": 4,
+        "tcpMs": 8,
+        "tlsMs": 579,
+        "headersMs": 1019
+      },
+      "httpStatus": 200
+    },
+    {
+      "name": "database_tls_no_credentials",
+      "ms": 10161,
+      "phases": {
+        "tcpMs": 3
+      },
+      "errors": [
+        "CONNECTION_CLOSED"
+      ]
+    }
+  ]
+}

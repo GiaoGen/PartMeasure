@@ -1,0 +1,63 @@
+{
+  "projectRef": "rvysclscetfqicpnzlra",
+  "scope": "Real isolated cloud metadata inspection only; not ordinary-role Auth/DAL/Storage verification.",
+  "inspection": {
+    "checkedAt": "2026-10-26T04:01:17.753957+00:00",
+    "privateBuckets": [
+      {
+        "id": "partmeasure-quarantine",
+        "public": false
+      },
+      {
+        "id": "partmeasure-private",
+        "public": false
+      }
+    ],
+    "runtimeNoBypass": true,
+    "storagePolicies": [
+      {
+        "name": "p0_lab_storage_select",
+        "check": null,
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "using": "((bucket_id = 'p0-0-service-lab'::text) AND ((storage.foldername(name))[1] = (( SELECT auth.uid() AS uid))::text))",
+        "command": "SELECT"
+      },
+      {
+        "name": "p0_lab_storage_insert",
+        "check": "((bucket_id = 'p0-0-service-lab'::text) AND ((storage.foldername(name))[1] = (( SELECT auth.uid() AS uid))::text))",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "using": null,
+        "command": "INSERT"
+      },
+      {
+        "name": "p0_lab_storage_delete",
+        "check": null,
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "using": "((bucket_id = 'p0-0-service-lab'::text) AND ((storage.foldername(name))[1] = (( SELECT auth.uid() AS uid))::text))",
+        "command": "DELETE"
+      }
+    ],
+    "browserSchemaUsage": {
+      "anon": false,
+      "authenticated": false
+    },
+    "businessTableCount": 24,
+    "allBusinessTablesRls": true,
+    "exposedDefinerFunctions": 0
+  },
+  "advisory": {
+    "name": "auth_leaked_password_protection",
+    "level": "WARN",
+    "status": "disabled; not changed",
+    "remediation": "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection"
+  }
+}

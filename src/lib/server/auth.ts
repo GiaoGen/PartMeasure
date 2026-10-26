@@ -5,6 +5,7 @@ import { AppError } from "../policy";
 import { digest, type Actor } from "./db";
 import { appOrigin } from "./origin";
 import { timed } from "./timing";
+import { authFetch } from "./auth-fetch";
 export function authConfig() {
 	const url = process.env.NEXT_PUBLIC_SUPABASE_URL,
 		key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
@@ -15,6 +16,7 @@ export async function authClient() {
 	const { url, key } = authConfig();
 	const jar = await cookies();
 	return createServerClient(url, key, {
+		global: { fetch: authFetch },
 		cookieOptions: {
 			httpOnly: true,
 			sameSite: "lax",

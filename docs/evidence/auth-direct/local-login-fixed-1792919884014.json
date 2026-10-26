@@ -1,0 +1,28 @@
+{
+  "checkedAt": "2026-10-25T09:18:04.013Z",
+  "scope": "Existing localhost development server, current TUN unchanged. Test-account normal Auth login/session and read-only project API.",
+  "results": [
+    {
+      "step": "csrf",
+      "httpStatus": 200,
+      "ms": 131
+    },
+    {
+      "step": "login_after_fix",
+      "httpStatus": 200,
+      "ms": 1723
+    },
+    {
+      "step": "verified_session",
+      "httpStatus": 200,
+      "ms": 660,
+      "authenticated": true
+    },
+    {
+      "step": "business_database_boundary",
+      "httpStatus": 503,
+      "ms": 10626,
+      "errorCode": "DEPENDENCY_UNAVAILABLE"
+    }
+  ]
+}

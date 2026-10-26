@@ -1,0 +1,30 @@
+{
+  "checkedAt": "2026-10-25T09:06:58.757Z",
+  "scope": "DNS-discovered public Pooler IPv4 diagnostic, preserved hostname/certificate checks, no credentials or settings changes",
+  "results": [
+    {
+      "ip": "54.64.190.72",
+      "phases": {
+        "tcpMs": 1
+      },
+      "ms": 8004,
+      "error": "TIMEOUT"
+    },
+    {
+      "ip": "35.79.125.133",
+      "phases": {
+        "tcpMs": 1
+      },
+      "ms": 8004,
+      "error": "TIMEOUT"
+    },
+    {
+      "ip": "52.68.3.1",
+      "phases": {
+        "tcpMs": 1
+      },
+      "ms": 8004,
+      "error": "TIMEOUT"
+    }
+  ]
+}

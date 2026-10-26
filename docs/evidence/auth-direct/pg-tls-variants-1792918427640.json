@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-10-25T08:53:47.640Z",
+  "scope": "Current TUN, no credentials or queries; verified TLS only",
+  "results": [
+    {
+      "name": "runtime_direct_tls_no_credentials",
+      "phases": {
+        "tcpMs": 27
+      },
+      "ms": 10035,
+      "error": "TIMEOUT"
+    },
+    {
+      "name": "event_postgres_tls_no_credentials",
+      "phases": {
+        "tcpMs": 7
+      },
+      "ms": 10011,
+      "error": "TIMEOUT"
+    }
+  ]
+}

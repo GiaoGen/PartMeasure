@@ -2,9 +2,12 @@
   "recordedAt": "2026-10-27T17:12:52.669Z",
   "id": "dpl_9DbeFcnX6Fm6WpvZn5XT2HBxipSj",
   "url": "partmeasure-staging-cb3o8awbd-messup-s-projects.vercel.app",
-  "readyState": "INITIALIZING",
+  "readyState": "READY",
   "target": null,
   "sourceDigest": "290f63ef910d8cc359f624bee13b344179d97def5c1aad97d77e1e6864670adc",
   "creationRequests": 1,
-  "productionAssigned": false
+  "productionAssigned": false,
+  "stateCheckedAt": "2026-10-27T17:23:49.142Z",
+  "providerBuildId": "p3-05-477226bc7c4011e1a96f",
+  "healthMatchedBeforeRealLogin": true
 }

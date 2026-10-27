@@ -1,0 +1,24 @@
+{
+  "run": "12dcb7c3-1dde-4ba1-a451-23edd13cb7ad",
+  "checkedAt": "2026-10-27T10:46:35.623Z",
+  "milliseconds": 1471,
+  "exitCode": 1,
+  "records": [
+    {
+      "event": "backup_progress",
+      "phase": "connecting"
+    },
+    {
+      "event": "backup_maintenance_failed",
+      "phase": "connecting",
+      "kind": "connection_closed",
+      "code": "DEPENDENCY_FAILED"
+    }
+  ],
+  "diagnostic": {
+    "unhandledClientError": false,
+    "unhandledAbort": false,
+    "stderrPresent": true
+  },
+  "scope": "Actual isolated cloud database snapshot and referenced private bytes encrypted locally; no cloud data writes, restore, session invalidation or object deletion; not off-device backup or hosted restore acceptance."
+}

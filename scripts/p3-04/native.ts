@@ -132,8 +132,10 @@ try {
 	finally { await empty.end(); }
 	await assert.rejects(stat(path.join(runRoot, "damaged/private-objects")));
 	checks.push("tampered encrypted object rejected before database restore or private-file publication");
-	await mkdir("docs/evidence/p3-04", { recursive: true });
-	await writeFile("docs/evidence/p3-04/native-recovery.json", JSON.stringify({ checkedAt: new Date().toISOString(), scope: "Disposable native PG18 plus actual filesystem private bytes, synthetic identities/data only; not Supabase Auth/Storage/cloud recovery acceptance", status: "PASS", objects: backup.objects.length, objectBytes: backup.objects.reduce((n,o) => n+o.bytes,0), tables: Object.keys(backup.tables).length, restoreMs, totalMs: Math.round(performance.now()-started), checks }, null, 2));
+	const evidence = process.env.PM_RECOVERY_EVIDENCE ?? "docs/evidence/p3-04/native-recovery.json";
+	if (process.env.PM_RECOVERY_EVIDENCE && !/^docs\/evidence\/fix-e\/[a-f0-9-]{36}-native\.json$/.test(evidence)) throw Error("INVALID_RECOVERY_EVIDENCE_PATH");
+	await mkdir(path.dirname(evidence), { recursive: true });
+	await writeFile(evidence, JSON.stringify({ checkedAt: new Date().toISOString(), scope: "Disposable native PG18 plus actual filesystem private bytes, synthetic identities/data only; not Supabase Auth/Storage/cloud recovery acceptance", status: "PASS", objects: backup.objects.length, objectBytes: backup.objects.reduce((n,o) => n+o.bytes,0), tables: Object.keys(backup.tables).length, restoreMs, totalMs: Math.round(performance.now()-started), checks }, null, 2));
 	console.log(JSON.stringify({ status: "PASS", checks: checks.length, objects: backup.objects.length, restoreMs }));
 } catch (error) {
 	const value = error as { code?: string; message?: string };

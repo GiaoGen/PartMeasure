@@ -1,0 +1,101 @@
+{
+  "mailSent": false,
+  "cloudWrites": false,
+  "networkChanged": false,
+  "localPostgresStopped": true,
+  "localSyntheticRestore": "PASS_24_tables_5_objects",
+  "files": [
+    {
+      "sha256": "c5cad18a7c5d51f3b6d25376aad69cc7f2a322613648b0ebfca6f379af271dac",
+      "path": ".env.example"
+    },
+    {
+      "sha256": "2392ce114fcc3fddf3f024e670b63bd9a4af349459a5818d89e728ea2aae0561",
+      "path": "scripts/maintenance/backup-cli.ts"
+    },
+    {
+      "sha256": "671186bfb0410375a7469a58e07acd93b4eda64611d7a6e1403a11483a271cfd",
+      "path": "scripts/maintenance/backup-model.ts"
+    },
+    {
+      "sha256": "3eb4370fe1f595fb7d2520369e0ecbb8f6f1c3724ed8956b9f80421c88159f1e",
+      "path": "scripts/maintenance/backup.ts"
+    },
+    {
+      "sha256": "e3e18d2252a16a11499632facb1e1c23dfc2086ea62797d7ebe91947ec980dd4",
+      "path": "scripts/maintenance/restore.ts"
+    },
+    {
+      "sha256": "c5c06bd34fcba5f60062276e34162b3155b93933ab41d6ce9891c999dc0747d4",
+      "path": "scripts/maintenance/postgres-tools.ts"
+    },
+    {
+      "sha256": "5e6b2a82ad4730f461dfe80765df2a7c27844ce36075c702f7b032f3043a4dbd",
+      "path": "scripts/maintenance/backup-copy.ts"
+    },
+    {
+      "sha256": "d6b7316b88f6a90ce645ef3c16acef8cc2dbc80039799fba5edcdf0b0bd2c7b3",
+      "path": "scripts/fix-e/real-backup.ts"
+    },
+    {
+      "sha256": "87fbe150aa2b527084bc0ca4a21cb09a5013d03418366a4478b31c571a613386",
+      "path": "scripts/fix-e/archive-inspection.ts"
+    },
+    {
+      "sha256": "567923175e767946f422af1884226a77d0802f272e87110337e3094fdbbda077",
+      "path": "scripts/backend-alignment/check-local.ps1"
+    },
+    {
+      "sha256": "880572414cce1cf6e6cde8cc5546f812b21300c18d3d4bf5cec32e178f0f82ce",
+      "path": "scripts/p3-04/native.ts"
+    },
+    {
+      "sha256": "71ceb1b627efb1c82468517e9c276569a0be2ace753b834853d4eca6e18cb7e2",
+      "path": "tests/unit/backup-inspection.test.ts"
+    },
+    {
+      "sha256": "19bff54c00bbfea0041026420394bf7a7bb8a51f2b593f175fce57539e3b6312",
+      "path": "tests/unit/backup-session.test.ts"
+    },
+    {
+      "sha256": "0fec3f8887b75cb75afb47b6473e156eabe217464fbe4ed8d8b1ce861b9a5100",
+      "path": "tests/unit/backup-recovery.test.ts"
+    }
+  ],
+  "realCloudRestore": false,
+  "head": "1c6979f39178c62f77b2edd8e48c88ef4a335a87",
+  "checks": [
+    {
+      "files": 461,
+      "status": "PASS",
+      "command": "npm run lint"
+    },
+    {
+      "status": "PASS",
+      "command": "npm run typecheck"
+    },
+    {
+      "testFiles": 77,
+      "status": "PASS",
+      "command": "npm test",
+      "tests": 472
+    },
+    {
+      "checkedRuntimeInputsMatchFixD": true,
+      "status": "REUSED_FIX_D",
+      "command": "npm run build",
+      "reason": "Only maintenance scripts, tests, documentation and env comments changed; application runtime and dependencies unchanged"
+    }
+  ],
+  "previousP304EvidencePreserved": true,
+  "deployment": false,
+  "uncommittedWorkspace": true,
+  "createdAt": "2026-10-27T10:58:13.6724360Z",
+  "realArchiveInventoryRun": false,
+  "offDeviceCopy": false,
+  "cloudCleanup": false,
+  "completeRealCloudBackup": false,
+  "browserOrE2E": false,
+  "independentKeyCustody": false,
+  "realBackupCopyRun": false
+}

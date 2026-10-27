@@ -11,6 +11,7 @@ import type { ProjectFilters } from "../project-folders";
 import { eventCursor } from "./event-cursor";
 import { imageCacheScope } from "./image-cache-scope";
 import type { ImageAccess } from "../image-access";
+import type { FileMetadata } from "../file-metadata";
 import { type FileFilters, fileFiltersSchema, defaultFileFilters } from "../archive-filters";
 import { cursorScope, cursorId, queryCursor } from "./query-cursor";
 
@@ -454,6 +455,15 @@ export async function files(
 			nextCursor: rows.length > 30 ? queryCursor(rows[29].id, scope) : null,
 		};
 	});
+}
+/** A single bounded lookup through the exact download visibility policy, independent of list filters. */
+export async function fileMetadata(actor: Actor, projectId: string, fileId: string): Promise<FileMetadata> {
+	const file = await fileForRead(actor, projectId, fileId);
+	return {
+		id: file.id, filename: file.filename, mime: file.mime, extension: file.extension,
+		byteSize: Number(file.byte_size), uploaderType: file.uploader_type,
+		createdAt: file.created_at instanceof Date ? file.created_at.toISOString() : file.created_at,
+	};
 }
 export async function fileForRead(
 	actor: Actor,

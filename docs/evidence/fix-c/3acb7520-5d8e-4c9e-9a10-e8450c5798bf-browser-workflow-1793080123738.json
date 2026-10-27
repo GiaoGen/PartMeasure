@@ -1,0 +1,226 @@
+{
+  "checkedAt": "2026-10-27T05:50:39.817Z",
+  "run": "3acb7520-5d8e-4c9e-9a10-e8450c5798bf",
+  "mode": "workflow",
+  "browser": "155.0.8059.85",
+  "apiSourceDigest": "fffa21103650d358557ae4bca7f856bd0117ba5babbab7cc2399f49b04488f33",
+  "browserDriverSha256": "bb4dc3695fcb4a9b54e5694c02176b019013f832c566bce5829ea9fd23045d10",
+  "driverUnchanged": true,
+  "scope": "Actual local Chrome + isolated normal Owner/Guest Auth/API/Storage; real IndexedDB. Desktop only, synthetic fixtures, no phone/mainland/hosted/real engineering acceptance.",
+  "results": [
+    {
+      "name": "normal_owner_browser_session",
+      "status": "PASS",
+      "milliseconds": 24858
+    },
+    {
+      "name": "normal_guest_browser_session_and_deep_link",
+      "status": "PASS",
+      "milliseconds": 30305
+    },
+    {
+      "name": "live_events_preserve_unsaved_delivery_draft_and_guest_comment",
+      "status": "NOT_PASSED",
+      "errorClass": "TimeoutError",
+      "line": 181,
+      "milliseconds": 60124
+    }
+  ],
+  "traffic": [
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 45
+    },
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 8827
+    },
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 9262
+    },
+    {
+      "role": "owner",
+      "kind": "issues",
+      "status": 200,
+      "timeToHeadersMs": 10279
+    },
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 10647
+    },
+    {
+      "role": "owner",
+      "kind": "events",
+      "status": 200,
+      "timeToHeadersMs": 13498
+    },
+    {
+      "role": "owner",
+      "kind": "annotations",
+      "status": 200,
+      "timeToHeadersMs": 6414
+    },
+    {
+      "role": "guest",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 87
+    },
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 457
+    },
+    {
+      "role": "guest",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 6642
+    },
+    {
+      "role": "guest",
+      "kind": "issues",
+      "status": 200,
+      "timeToHeadersMs": 7741
+    },
+    {
+      "role": "guest",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 12833
+    },
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 12440
+    },
+    {
+      "role": "owner",
+      "kind": "issues",
+      "status": 200,
+      "timeToHeadersMs": 15517
+    },
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 15640
+    },
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 15731
+    },
+    {
+      "role": "guest",
+      "kind": "annotations",
+      "status": 200,
+      "timeToHeadersMs": 11834
+    },
+    {
+      "role": "owner",
+      "kind": "events",
+      "status": 200,
+      "timeToHeadersMs": 17891
+    },
+    {
+      "role": "guest",
+      "kind": "events",
+      "status": 503,
+      "timeToHeadersMs": 25191
+    },
+    {
+      "role": "guest",
+      "kind": "preview",
+      "status": 503,
+      "timeToHeadersMs": 18478
+    },
+    {
+      "role": "guest",
+      "kind": "preview",
+      "status": 503,
+      "timeToHeadersMs": 18479
+    },
+    {
+      "role": "owner",
+      "kind": "deliveries",
+      "status": 503,
+      "timeToHeadersMs": 487
+    },
+    {
+      "role": "owner",
+      "kind": "events",
+      "status": 503,
+      "timeToHeadersMs": 396
+    },
+    {
+      "role": "owner",
+      "kind": "annotations",
+      "status": 200,
+      "timeToHeadersMs": 11852
+    },
+    {
+      "role": "guest",
+      "kind": "preview",
+      "status": 503,
+      "timeToHeadersMs": 9718
+    },
+    {
+      "role": "owner",
+      "kind": "image-access",
+      "status": 503,
+      "timeToHeadersMs": 316
+    },
+    {
+      "role": "owner",
+      "kind": "events",
+      "status": 503,
+      "timeToHeadersMs": 624
+    },
+    {
+      "role": "guest",
+      "kind": "events",
+      "status": 200,
+      "timeToHeadersMs": 3640
+    },
+    {
+      "role": "owner",
+      "kind": "events",
+      "status": 503,
+      "timeToHeadersMs": 320
+    },
+    {
+      "role": "owner",
+      "kind": "events",
+      "status": 503,
+      "timeToHeadersMs": 1583
+    },
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 503,
+      "timeToHeadersMs": 321
+    },
+    {
+      "role": "owner",
+      "kind": "events",
+      "status": 503,
+      "timeToHeadersMs": 319
+    }
+  ],
+  "errors": [],
+  "blocked": [],
+  "downloads": []
+}

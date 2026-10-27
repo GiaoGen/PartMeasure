@@ -17,5 +17,6 @@ backups/
 *.backup-key
 output/pdf/
 output/zip/
+output/fix-c/
 experiments/konva/public/fixtures/
 public/cv/

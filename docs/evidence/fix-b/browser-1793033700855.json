@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-26T16:56:40.103Z",
+  "browser": "155.0.8059.85",
+  "scope": "Explicitly authorized current local app + real Owner read session; unsaved edits only, all other API writes blocked. Current Chrome, with a masked Navigation API feature-path subcase; narrow viewport is not a real phone/soft keyboard/old Safari test.",
+  "authResponses": [
+    200
+  ],
+  "blockedWrites": [],
+  "pageErrors": 0,
+  "consoleErrors": [],
+  "results": [
+    {
+      "name": "photo_and_nonphoto_deep_links_across_filter_and_reload",
+      "status": "PASS",
+      "milliseconds": 72078
+    }
+  ]
+}

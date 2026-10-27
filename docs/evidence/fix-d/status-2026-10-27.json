@@ -1,0 +1,22 @@
+{
+  "scope": "Actual restricted maintenance role, verified TLS, read-only transactions against original isolated cloud. Synthetic outage model is tested separately. Local alert output only, no message sent or scheduler installed.",
+  "sandboxAttempt": {"phase":"database","kind":"dns","transportCode":"ENOTFOUND","recordedStatus":"unknown"},
+  "hostBefore": {
+    "checkedAt":"2026-10-27T09:51:19.319Z",
+    "data":{"pending":6,"expired_processing":0,"cleanup_due":44,"cleanup_eligible":44,"cleanup_needs_operator":0,"oldest_pending_seconds":693687,"oldest_cleanup_overdue_seconds":695034,"reserved_bytes":"755695065","used_bytes":"69648759","largest_account_bytes":"825076358"},
+    "status":"critical",
+    "raised":["UPLOAD_PENDING_2H","CLEANUP_READY","CLEANUP_BACKLOG"],
+    "cleared":["MAINTENANCE_DEPENDENCY_UNAVAILABLE"]
+  },
+  "hostAfterAuthorizedSyntheticCleanup": {
+    "checkedAt":"2026-10-27T10:02:40.144Z",
+    "data":{"pending":6,"expired_processing":0,"cleanup_due":44,"cleanup_eligible":44,"cleanup_needs_operator":0,"oldest_pending_seconds":694368,"oldest_cleanup_overdue_seconds":695716,"reserved_bytes":"755695065","used_bytes":"69648872","largest_account_bytes":"825076471"},
+    "status":"critical",
+    "raised":[],"cleared":[],
+    "oldEligibleCountUnchanged":true,
+    "oldReservedTotalUnchanged":true,
+    "retainedNewReadyFileBytes":113
+  },
+  "nonzeroNpmExitExpectedForAlerts":true,
+  "actualProviderStorageAndEgressMeasuredByStatusTool":false
+}

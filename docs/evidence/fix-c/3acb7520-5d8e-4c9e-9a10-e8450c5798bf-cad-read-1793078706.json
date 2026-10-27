@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-10-27T05:25:00.476765+00:00",
+  "run": "3acb7520-5d8e-4c9e-9a10-e8450c5798bf",
+  "scope": "Local native SolidWorks read-only open, no save/export/rebuild",
+  "downloadedCopy": false,
+  "status": "NOT_PASSED",
+  "errorClass": "TypeError",
+  "sourceUnchanged": true
+}

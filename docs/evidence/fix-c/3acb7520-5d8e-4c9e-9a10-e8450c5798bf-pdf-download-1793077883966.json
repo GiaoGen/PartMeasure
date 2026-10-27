@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-10-27T05:11:02.877Z",
+  "run": "3acb7520-5d8e-4c9e-9a10-e8450c5798bf",
+  "scope": "One normal Owner download of this batch's ready synthetic PDF",
+  "status": "NOT_PASSED",
+  "httpStatus": 200,
+  "headersMs": 16056,
+  "totalMs": 21088,
+  "bytes": 591143,
+  "expectedBytes": 2619007,
+  "timing": "auth;dur=3397.7, auth_count;desc=\"2\", pool;dur=2825.4, pool_count;desc=\"3\", sql;dur=6432.0, sql_count;desc=\"14\", preflight;dur=4570.8, preflight_count;desc=\"1\", storage_sign;dur=1212.0, storage_sign_count;desc=\"1\", storage_fetch;dur=1473.3, storage_fetch_count;desc=\"1\", app;dur=15358.0",
+  "transportCode": "UND_ERR_SOCKET"
+}

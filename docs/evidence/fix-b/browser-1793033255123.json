@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-10-26T16:48:36.130Z",
+  "browser": "155.0.8059.85",
+  "scope": "Explicitly authorized current local app + real Owner read session; unsaved edits only, all other API writes blocked. Current Chrome, with a masked Navigation API feature-path subcase; narrow viewport is not a real phone/soft keyboard/old Safari test.",
+  "authResponses": [],
+  "blockedWrites": [],
+  "pageErrors": 0,
+  "results": [
+    {
+      "name": "browser_setup",
+      "status": "NOT_PASSED",
+      "code": "SETUP_OR_AUTH_FAILED",
+      "stage": "wait_for_projects",
+      "errorType": "TimeoutError"
+    }
+  ]
+}

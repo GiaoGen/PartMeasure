@@ -30,7 +30,9 @@ export function getPool(worker = false) {
 			: undefined);
 	const created = new pg.Pool({
 		connectionString: connection.href,
-		max: 2,
+		// Two-role page loads need room for short preflight/read transactions.
+		// Keep a small per-process ceiling; maintenance retains its original cap.
+		max: worker ? 2 : 4,
 		ssl: { rejectUnauthorized: true, ...(ca ? { ca } : {}) },
 		connectionTimeoutMillis: 10000,
 		idleTimeoutMillis: 10000,

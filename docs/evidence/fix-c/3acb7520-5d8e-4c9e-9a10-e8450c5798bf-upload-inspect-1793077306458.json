@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-10-27T05:01:46.457Z",
+  "run": "3acb7520-5d8e-4c9e-9a10-e8450c5798bf",
+  "scope": "Read-only normal Owner API upload status; no retry/write/admin/Storage enumeration",
+  "results": [
+    {
+      "asset": "image",
+      "httpStatus": 200,
+      "state": "ready",
+      "errorCode": null,
+      "milliseconds": 9893,
+      "timing": null
+    },
+    {
+      "asset": "v1",
+      "httpStatus": 200,
+      "state": "queued",
+      "errorCode": "PROCESSING_INTERRUPTED",
+      "milliseconds": 5607,
+      "timing": null
+    }
+  ]
+}

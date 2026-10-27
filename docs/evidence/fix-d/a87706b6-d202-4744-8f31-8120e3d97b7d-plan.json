@@ -1,0 +1,17 @@
+{
+  "run": "a87706b6-d202-4744-8f31-8120e3d97b7d",
+  "preparedAt": "2026-10-27T09:56:20.910Z",
+  "offlineOnly": true,
+  "sourceDigest": "ccef647b974655e38e47c6928900acb3eef4351babc7e59d7b47e16dd3e1fa16",
+  "projectCount": 1,
+  "reservations": 2,
+  "maximumStoredBytes": 1024,
+  "expectedStoredBytes": 454,
+  "objects": "two quarantine sources and two private sources, including the ready copy created by normal completeUpload",
+  "uploadGrantsMinted": false,
+  "failure": "one exact DELETE locally returns 503 before reaching Storage; real DB reservation must stay charged",
+  "cleanup": "only the two new reservations; three synthetic objects removed, ready private source retained and hash checked",
+  "timestamps": "only these never-granted test reservations are made eligible; one failed fixture lease reset; no global timing policy change",
+  "noOldDataChanges": true,
+  "noBrowserMailDeployOrNetworkChange": true
+}

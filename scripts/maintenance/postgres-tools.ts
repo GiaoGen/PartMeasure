@@ -2,6 +2,23 @@ import { spawn } from "node:child_process";
 import type { Readable } from "node:stream";
 import path from "node:path";
 import type pg from "pg";
+import { AppError } from "../../src/lib/policy";
+
+/** Keep the exporting session alive throughout slow dump/Storage reads; losing it invalidates the whole set. */
+export function guardSnapshotSession(db: pg.Client, parent: AbortSignal) {
+	const lost = new AbortController();
+	const signal = AbortSignal.any([parent, lost.signal]);
+	const unavailable = () => lost.abort(new AppError("BACKUP_SNAPSHOT_LOST", 503));
+	db.on("error", unavailable);
+	let busy = false;
+	const heartbeat = setInterval(async () => {
+		if (busy || signal.aborted) return;
+		busy = true;
+		try { await db.query("select 1"); } catch { unavailable(); } finally { busy = false; }
+	}, 20000);
+	heartbeat.unref();
+	return { signal, stop: () => { clearInterval(heartbeat); db.off("error", unavailable); } };
+}
 
 export function pgEnvironment(url: URL, caFile: string) {
 	return { ...process.env, PGHOST: url.hostname, PGPORT: url.port || "5432", PGDATABASE: decodeURIComponent(url.pathname.slice(1)),

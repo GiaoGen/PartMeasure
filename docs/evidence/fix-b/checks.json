@@ -1,0 +1,107 @@
+{
+  "checkedAt": "2026-10-26T17:20:33.643Z",
+  "baseline": "1c6979f39178c62f77b2edd8e48c88ef4a335a87",
+  "status": "CODE_AND_APPLICABLE_CHECKS_COMPLETE_PENDING_VALIDATION",
+  "source": [
+    {
+      "path": "src/app/api/[...segments]/route.ts",
+      "sha256": "14da2a0826075e235a436bbef9185f6abb535175334c76dafaec0fe8e08e3fb4"
+    },
+    {
+      "path": "src/app/layout.tsx",
+      "sha256": "5d6711614d7bcc8908bb300300a20752e23d3f689402df6be655313070e16cc1"
+    },
+    {
+      "path": "src/components/workspace.tsx",
+      "sha256": "566231764089d68dccb4aaa7fff7591b6cd8c21e6ea3212c6f2120c420750745"
+    },
+    {
+      "path": "src/components/workspace-history.ts",
+      "sha256": "7b69f6f1d49d6e04a8c9bdb205bdc976946e333091517eb40258ad18966c9f87"
+    },
+    {
+      "path": "src/components/application-history.tsx",
+      "sha256": "9932d7a00319ebb1a9e373aa98209e2714a679b28f7f483e594d7b76eafa02fd"
+    },
+    {
+      "path": "src/components/history-position.ts",
+      "sha256": "ddf7dfde68417f31d24693fdf8b5b8ee9726fdfad6b78d5c447de995b9c28b53"
+    },
+    {
+      "path": "src/lib/file-metadata.ts",
+      "sha256": "11f243cb5ceae849b25c4aa1740265c93285616a5b8c07dec6c5436d17c919f3"
+    },
+    {
+      "path": "src/lib/server/service.ts",
+      "sha256": "2fba1b73cc1bfc6be1f22e8172f3bcd453fcd3f3da9ab04862663e5d9d309fbb"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "b6007dcaf0ed5ddcc915816973c87f8f6917829bd81d9010df4b46ff30cabd73"
+    }
+  ],
+  "sourceDigest": "494011aa71191e1973c7501aabd48ccbfb53b6fd8580076c433f1912883af33f",
+  "differencesFromRealRead": [
+    "src/components/workspace.tsx"
+  ],
+  "changeAfterRealBrowser": "Only the workspace non-image category label changed after real browser runs; full lint/types/unit/build ran on the final production code. Test-harness-only lint cleanup does not affect production code.",
+  "checks": {
+    "lint": {
+      "status": "PASS",
+      "files": 439
+    },
+    "typecheck": {
+      "status": "PASS",
+      "commands": [
+        "npm run typecheck",
+        "npx tsc --noEmit"
+      ]
+    },
+    "unit": {
+      "status": "PASS",
+      "files": 72,
+      "tests": 448
+    },
+    "build": {
+      "status": "PASS",
+      "command": "npm run build",
+      "deployment": false
+    },
+    "nativeMetadata": {
+      "status": "PASS",
+      "scope": "Disposable native PG strict TLS, formal migrations, restricted runtime and synthetic identity/file metadata; not real Auth/Storage"
+    },
+    "realOwnerMetadata": {
+      "status": "PASS",
+      "report": "real-metadata-read.json"
+    },
+    "realBrowserPassed": {
+      "reports": [
+        "browser-1793033700855.json",
+        "browser-1793033939610.json"
+      ],
+      "scope": "Only the three explicitly PASS scenarios; later failures retained"
+    },
+    "isolatedBrowserComponents": {
+      "status": "PASS",
+      "report": "local-browser-1793034683252.json",
+      "authOrApiRequests": 0,
+      "realPhone": false
+    },
+    "configuredSecretScan": {
+      "status": "PASS",
+      "filesScanned": 29,
+      "flaggedFiles": []
+    }
+  },
+  "notClaimed": [
+    "Whole FIX-B accepted",
+    "real Guest UI",
+    "old Safari/actual target legacy browser",
+    "real mobile/soft keyboard/gestures/readability",
+    "unmarked pre-initialization history limitation accepted",
+    "whole app CV acceptance",
+    "full E2E",
+    "deployment/other packages/P3-05"
+  ]
+}

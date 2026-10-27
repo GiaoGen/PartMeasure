@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-10-26T17:11:25.488Z",
+  "browser": "155.0.8059.85",
+  "scope": "Isolated component fixture only: actual ApplicationHistory/WorkspaceHistory, MeasurementHelp, useProjectDialog and useCvAssistance plus generated CV Worker/runtime. Current Chrome with Navigation API masked. Local synthetic pixels; no Auth/API or real mobile/soft keyboard/old Safari acceptance, no new HTTP service.",
+  "unauthorizedRequests": 0,
+  "results": [
+    {
+      "name": "real_browser_legacy_feature_path_cancels_both_directions_without_truncating_forward",
+      "status": "PASS",
+      "milliseconds": 308
+    },
+    {
+      "name": "help_open_close_and_reduced_motion_modal_keep_input_and_unlock",
+      "status": "PASS",
+      "milliseconds": 510
+    },
+    {
+      "name": "actual_cv_hook_worker_first_load_cancel_retry_local_pixels",
+      "status": "PASS",
+      "milliseconds": 906
+    }
+  ]
+}

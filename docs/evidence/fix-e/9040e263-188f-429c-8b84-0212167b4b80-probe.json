@@ -1,0 +1,8 @@
+{
+  "checkedAt": "2026-10-27T10:21:03.678Z",
+  "scope": "Real isolated session connection, verified TLS, read-only export snapshot. Not application permission or restore acceptance.",
+  "status": "PASS",
+  "serverVersion": "17.11",
+  "businessTables": 24,
+  "milliseconds": 3330
+}

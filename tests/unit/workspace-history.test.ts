@@ -7,6 +7,7 @@ import {
 	parseWorkspaceView,
 	sameWorkspaceContext,
 } from "../../src/components/workspace-navigation";
+import { historyPosition, retainHistoryPositions } from "../../src/components/history-position";
 
 const origin = "https://app.test",
 	project = `${origin}/projects/demo`;
@@ -78,43 +79,44 @@ function setup(modern: boolean, allowed: boolean) {
 		restore: vi.fn(),
 		travel: vi.fn(),
 	};
+	const nativePush = host.history.pushState;
 	const controller = new WorkspaceHistory(
 		host as unknown as Window,
 		"/api/projects/demo",
 		false,
 		() => callbacks,
 	);
-	return { host, callbacks, controller };
+	return { host, callbacks, controller, nativePush };
 }
 describe("workspace history cancellation", () => {
 	it("cancels a native traversal before committing without truncating the forward branch", () => {
-		const { host, callbacks, controller } = setup(true, false);
+		const { host, callbacks, controller, nativePush } = setup(true, false);
 		host.move(-1);
 		expect(host.index).toBe(1);
 		expect(host.entries).toHaveLength(2);
-		expect(host.history.pushState).not.toHaveBeenCalled();
+		expect(nativePush).not.toHaveBeenCalled();
 		expect(callbacks.canLeave).toHaveBeenCalledTimes(1);
 		expect(callbacks.restore).not.toHaveBeenCalled();
 		controller.dispose();
 	});
 	it("uses native entry positions to undo an uncancelable traversal to an unmarked entry", () => {
-		const { host, callbacks, controller } = setup(true, false);
+		const { host, callbacks, controller, nativePush } = setup(true, false);
 		host.move(-1, false);
 		expect(host.index).toBe(1);
 		expect(host.history.go).toHaveBeenCalledWith(1);
-		expect(host.history.pushState).not.toHaveBeenCalled();
+		expect(nativePush).not.toHaveBeenCalled();
 		expect(callbacks.restore).not.toHaveBeenCalled();
 		controller.dispose();
 	});
 	it("restores a known workspace entry on legacy browsers without another prompt", () => {
-		const { host, callbacks, controller } = setup(false, false);
+		const { host, callbacks, controller, nativePush } = setup(false, false);
 		controller.write(
 			parseWorkspaceView(new URLSearchParams("section=deliveries")),
 		);
 		host.move(-1);
 		expect(host.index).toBe(2);
 		expect(host.entries).toHaveLength(3);
-		expect(host.history.pushState).toHaveBeenCalledTimes(1);
+		expect(nativePush).toHaveBeenCalledTimes(1);
 		expect(callbacks.canLeave).toHaveBeenCalledTimes(1);
 		expect(callbacks.restore).not.toHaveBeenCalled();
 		controller.dispose();
@@ -160,5 +162,51 @@ describe("workspace history cancellation", () => {
 			false,
 		);
 		expect(sameWorkspaceContext(a, { ...a, type: "pdf" })).toBe(false);
+	});
+});
+
+describe("root-tracked application entries on browsers without Navigation API", () => {
+	function tracked() {
+		const host = new HistoryHost(false);
+		host.entries = [{ href: `${origin}/projects`, state: { __NA: true, tree: "framework-tree", pmListScroll: 120 } }];
+		host.index = 0; host.location.href = host.entries[0]?.href ?? origin;
+		Object.defineProperty(host.history, "state", { get: () => host.entries[host.index]?.state });
+		const rootOff = retainHistoryPositions(host as unknown as Window);
+		host.history.pushState({ __NA: true, tree: "framework-tree" }, "", `${project}?section=files`);
+		host.history.pushState({ __NA: true }, "", `${origin}/projects?status=archived`);
+		host.move(-1);
+		const callbacks = { canLeave: vi.fn(() => false), restore: vi.fn() };
+		const controller = new WorkspaceHistory(host as unknown as Window, "/api/projects/demo", false, () => callbacks);
+		return { host, callbacks, controller, rootOff };
+	}
+	it("cancels back to the unmarked project list and preserves the existing forward branch", () => {
+		const { host, callbacks, controller, rootOff } = tracked();
+		const entries = structuredClone(host.entries);
+		host.move(-1);
+		expect(host.index).toBe(1);
+		expect(host.entries).toEqual(entries);
+		expect(host.history.go).toHaveBeenLastCalledWith(1);
+		expect(callbacks.canLeave).toHaveBeenCalledOnce();
+		controller.dispose(); rootOff();
+	});
+	it("cancels forward to another route with the actual negative recovery offset", () => {
+		const { host, controller, rootOff } = tracked();
+		host.move(1);
+		expect(host.index).toBe(1);
+		expect(host.entries).toHaveLength(3);
+		expect(host.history.go).toHaveBeenLastCalledWith(-1);
+		controller.dispose(); rootOff();
+	});
+	it("keeps Next state and numbers a new branch from its actual position", () => {
+		const { host, controller, rootOff } = tracked();
+		const prior = historyPosition(host.history.state);
+		controller.write(parseWorkspaceView(new URLSearchParams("section=deliveries")));
+		expect(host.entries).toHaveLength(3);
+		expect(host.history.state).toMatchObject({ tree: "framework-tree" });
+		expect(historyPosition(host.history.state)).toEqual({ chain: prior?.chain, position: (prior?.position ?? 0) + 1 });
+		controller.dispose();
+		host.history.pushState({}, "", `${origin}/projects`);
+		expect(historyPosition(host.history.state)?.position).toBe((prior?.position ?? 0) + 2);
+		rootOff();
 	});
 });

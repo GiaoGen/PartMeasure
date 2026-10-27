@@ -1,4 +1,4 @@
-param([string]$PostgresBin='C:\Program Files\PostgreSQL\18\bin')
+param([string]$PostgresBin='C:\Program Files\PostgreSQL\18\bin', [ValidateSet('alignment','recovery')][string]$Scenario='alignment')
 $ErrorActionPreference='Stop'
 $pmRoot=(Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 Set-Location -LiteralPath $pmRoot
@@ -17,13 +17,14 @@ $pmKey=(Join-Path $pmRun 'server.key').Replace('\','/')
 Add-Content -LiteralPath (Join-Path $pmData 'postgresql.conf') -Value "`nssl=on`nssl_cert_file='$pmCert'`nssl_key_file='$pmKey'"
 $pmStarted=$false
 $pmPrevious=@{}
-foreach($pmEnvName in @('DATABASE_URL','DATABASE_CA_FILE','DATABASE_CA_PEM','PM_ALIGNMENT_LOCAL','APP_URL')){$pmPrevious[$pmEnvName]=[Environment]::GetEnvironmentVariable($pmEnvName,'Process')}
+foreach($pmEnvName in @('DATABASE_URL','DATABASE_CA_FILE','DATABASE_CA_PEM','PM_ALIGNMENT_LOCAL','PM_EVENTS_LOCAL','PM_RECOVERY_EVIDENCE','PGSSLMODE','PGSSLROOTCERT','APP_URL')){$pmPrevious[$pmEnvName]=[Environment]::GetEnvironmentVariable($pmEnvName,'Process')}
 try{
  $pmStart=Start-Process -FilePath (Join-Path $PostgresBin 'pg_ctl.exe') -WindowStyle Hidden -PassThru -ArgumentList @('-D',$pmData,'-l',(Join-Path $pmRun 'server.log'),'-o',"`"-h 127.0.0.1 -p $pmPort`"",'-w','start') -RedirectStandardOutput (Join-Path $pmRun 'start.log') -RedirectStandardError (Join-Path $pmRun 'start-error.log')
  $pmStarted=$true
  if(-not $pmStart.WaitForExit(30000)){throw 'LOCAL_START_FAILED'}
  & (Join-Path $PostgresBin 'pg_ctl.exe') -D $pmData status > (Join-Path $pmRun 'status.log')
  if($LASTEXITCODE -ne 0){throw 'LOCAL_START_FAILED'}
+ if($Scenario -eq 'recovery'){$env:PGSSLMODE='verify-full';$env:PGSSLROOTCERT=$pmCert}
  # The only auth/Storage stand-ins live inside this new disposable local cluster.
  $pmBootstrap="create role anon nologin; create role authenticated nologin; create schema auth; create table auth.users(id uuid primary key); create schema storage; create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint);"
  $pmBootstrap | & (Join-Path $PostgresBin 'psql.exe') -X -q -h 127.0.0.1 -p $pmPort -U postgres -d postgres -v ON_ERROR_STOP=1 > (Join-Path $pmRun 'bootstrap.log')
@@ -37,7 +38,13 @@ try{
  $env:DATABASE_CA_PEM=$null
  $env:PM_ALIGNMENT_LOCAL='disposable-native-pg'
  $env:APP_URL='http://127.0.0.1:3105'
- & node --conditions=react-server --import tsx scripts/backend-alignment/local-service.ts
+ if($Scenario -eq 'recovery'){
+  $env:PM_EVENTS_LOCAL='disposable-native-pg'
+  $env:PM_RECOVERY_EVIDENCE='docs/evidence/fix-e/'+[guid]::NewGuid().ToString()+'-native.json'
+  & node --conditions=react-server --import tsx scripts/p3-04/native.ts
+ }else{
+  & node --conditions=react-server --import tsx scripts/backend-alignment/local-service.ts
+ }
  if($LASTEXITCODE -ne 0){throw 'LOCAL_SERVICE_CHECK_FAILED'}
 }finally{
  foreach($pmEnvName in $pmPrevious.Keys){[Environment]::SetEnvironmentVariable($pmEnvName,$pmPrevious[$pmEnvName],'Process')}

@@ -4,6 +4,7 @@ import {
 	workspaceHref,
 	type WorkspaceView,
 } from "./workspace-navigation";
+import { historyPosition, retainHistoryPositions, type HistoryPosition } from "./history-position";
 
 type NavigationSurface = {
 	currentEntry?: { index: number };
@@ -14,6 +15,14 @@ type TraverseEvent = Event & {
 	navigationType?: string;
 	destination?: { url: string; sameDocument: boolean };
 };
+function viewState(value: unknown, scope: string, index: number) {
+	const state = value && typeof value === "object" ? { ...value } as Record<string, unknown> : {};
+	// Let Next's native History integration copy its current tree and synchronize search params.
+	// Its __NA/_N flags mean an internal router write and would skip that integration.
+	delete state.__NA;
+	delete state._N;
+	return { ...state, pmWorkspace: { scope, index } };
+}
 export type WorkspaceHistoryCallbacks = {
 	canLeave: (target: URL) => boolean;
 	restore: (view: WorkspaceView) => void;
@@ -27,16 +36,19 @@ export class WorkspaceHistory {
 		index: number;
 		state: unknown;
 		position: number | null;
+		applicationPosition: HistoryPosition | null;
 	};
 	private recovering = false;
 	private approved: string | null = null;
 	private navigation: NavigationSurface | undefined;
+	private releasePositions: () => void;
 	constructor(
 		private host: Window,
 		private scope: string,
 		private guest: boolean,
 		private callbacks: () => WorkspaceHistoryCallbacks,
 	) {
+		this.releasePositions = retainHistoryPositions(host);
 		this.navigation = (
 			host as Window & { navigation?: NavigationSurface }
 		).navigation;
@@ -48,6 +60,7 @@ export class WorkspaceHistory {
 			index,
 			state,
 			position: this.position(),
+			applicationPosition: historyPosition(host.history.state),
 		};
 		host.addEventListener("popstate", this.pop, { capture: true });
 		this.navigation?.addEventListener("navigate", this.traverse);
@@ -87,7 +100,8 @@ export class WorkspaceHistory {
 		const target = new URL(this.host.location.href),
 			saved = this.current;
 		const marker = historyMarker(event.state, this.scope),
-			position = this.position();
+			position = this.position(),
+			applicationPosition = historyPosition(event.state);
 		if (
 			this.recovering &&
 			target.href === saved.href &&
@@ -106,6 +120,8 @@ export class WorkspaceHistory {
 			const delta =
 				saved.position !== null && position !== null
 					? saved.position - position
+				: saved.applicationPosition && applicationPosition?.chain === saved.applicationPosition.chain
+					? saved.applicationPosition.position - applicationPosition.position
 					: marker
 						? saved.index - marker.index
 						: 0;
@@ -126,8 +142,8 @@ export class WorkspaceHistory {
 			return;
 		event.stopImmediatePropagation();
 		const index = marker?.index ?? saved.index - 1;
-		const state = { pmWorkspace: { scope: this.scope, index } };
-		this.current = { href: target.href, index, state, position };
+		const state = viewState(event.state, this.scope, index);
+		this.current = { href: target.href, index, state, position, applicationPosition };
 		this.host.history.replaceState(state, "", target.href);
 		this.callbacks().restore(parseWorkspaceView(target.searchParams));
 	};
@@ -144,6 +160,7 @@ export class WorkspaceHistory {
 			index: historyMarker(this.host.history.state, this.scope)?.index ?? 0,
 			state: this.host.history.state,
 			position: this.position(),
+			applicationPosition: historyPosition(this.host.history.state),
 		};
 		this.callbacks().restore(parseWorkspaceView(new URLSearchParams(search)));
 	}
@@ -152,7 +169,7 @@ export class WorkspaceHistory {
 			href = workspaceHref(url, view, this.guest);
 		if (`${url.pathname}${url.search}` === href) return;
 		const index = this.current.index + (replace ? 0 : 1),
-			state = { pmWorkspace: { scope: this.scope, index } };
+			state = viewState(this.host.history.state, this.scope, index);
 		if (replace) this.host.history.replaceState(state, "", href);
 		else this.host.history.pushState(state, "", href);
 		this.current = {
@@ -160,9 +177,11 @@ export class WorkspaceHistory {
 			index,
 			state,
 			position: this.position(),
+			applicationPosition: historyPosition(this.host.history.state),
 		};
 	}
 	dispose() {
+		this.releasePositions();
 		this.host.removeEventListener("popstate", this.pop, { capture: true });
 		this.navigation?.removeEventListener("navigate", this.traverse);
 		this.navigation?.removeEventListener("navigateerror", this.clearApproval);

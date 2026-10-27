@@ -1,0 +1,256 @@
+{
+  "run": "3acb7520-5d8e-4c9e-9a10-e8450c5798bf",
+  "checkedAt": "2026-10-27T05:23:46.381Z",
+  "sourceDigest": "4ed4863a624635317650f0cabfa97de57f703231b55d957311252df118fdf129",
+  "phase": "seed",
+  "scope": "Current loopback app + normal Auth/Guest sessions + isolated restricted database/private Storage; synthetic API flow only. Not browser/real engineering/phone/mainland/hosted acceptance.",
+  "networkChanged": false,
+  "proxyTunAbsenceCertified": false,
+  "results": [
+    {
+      "name": "normal_owner_A_login",
+      "status": "PASS",
+      "milliseconds": 2809
+    },
+    {
+      "name": "normal_owner_B_login",
+      "status": "PASS",
+      "milliseconds": 1187
+    },
+    {
+      "name": "create_only_one_new_FIX_C_project",
+      "status": "PASS",
+      "milliseconds": 1
+    },
+    {
+      "name": "one_new_share",
+      "status": "PASS",
+      "milliseconds": 0
+    },
+    {
+      "name": "G1_normal_guest_bootstrap",
+      "status": "PASS",
+      "milliseconds": 0
+    },
+    {
+      "name": "G2_normal_guest_bootstrap",
+      "status": "PASS",
+      "milliseconds": 0
+    },
+    {
+      "name": "upload_image_ready_and_original_hash",
+      "status": "PASS",
+      "milliseconds": 12979
+    },
+    {
+      "name": "upload_v1_ready_and_original_hash",
+      "status": "PASS",
+      "milliseconds": 11190
+    },
+    {
+      "name": "upload_v2_ready_and_original_hash",
+      "status": "PASS",
+      "milliseconds": 55420
+    },
+    {
+      "name": "upload_private_ready_and_original_hash",
+      "status": "PASS",
+      "milliseconds": 54686
+    },
+    {
+      "name": "save_line_annotation",
+      "status": "PASS",
+      "milliseconds": 11751
+    },
+    {
+      "name": "save_circle_annotation",
+      "status": "PASS",
+      "milliseconds": 11095
+    },
+    {
+      "name": "save_angle_annotation",
+      "status": "PASS",
+      "milliseconds": 14664
+    },
+    {
+      "name": "save_arc_annotation",
+      "status": "PASS",
+      "milliseconds": 11493
+    },
+    {
+      "name": "save_ellipse_annotation",
+      "status": "PASS",
+      "milliseconds": 11909
+    },
+    {
+      "name": "save_point_annotation",
+      "status": "PASS",
+      "milliseconds": 10023
+    },
+    {
+      "name": "save_text_annotation",
+      "status": "PASS",
+      "milliseconds": 10306
+    },
+    {
+      "name": "delivery_v1",
+      "status": "PASS",
+      "milliseconds": 22884
+    },
+    {
+      "name": "delivery_v2",
+      "status": "PASS",
+      "milliseconds": 21968
+    },
+    {
+      "name": "delivery_private",
+      "status": "PASS",
+      "milliseconds": 11316
+    },
+    {
+      "name": "ordinary_roles_private_draft_original_revision_and_wrong_version_boundaries",
+      "status": "PASS",
+      "milliseconds": 50901
+    },
+    {
+      "name": "old_version_attachment_hash_and_history_identity",
+      "status": "PASS",
+      "milliseconds": 23181
+    },
+    {
+      "name": "source_unchanged",
+      "status": "PASS",
+      "milliseconds": 88
+    }
+  ],
+  "progress": [
+    {
+      "name": "project",
+      "status": "done"
+    },
+    {
+      "name": "share",
+      "status": "done"
+    },
+    {
+      "name": "session-G1",
+      "status": "done"
+    },
+    {
+      "name": "session-G2",
+      "status": "done"
+    },
+    {
+      "name": "reserve-image",
+      "status": "done"
+    },
+    {
+      "name": "grant-image",
+      "status": "done"
+    },
+    {
+      "name": "put-image",
+      "status": "done"
+    },
+    {
+      "name": "complete-image",
+      "status": "done"
+    },
+    {
+      "name": "reserve-v1",
+      "status": "done"
+    },
+    {
+      "name": "grant-v1",
+      "status": "done"
+    },
+    {
+      "name": "put-v1",
+      "status": "done"
+    },
+    {
+      "name": "complete-v1",
+      "status": "done"
+    },
+    {
+      "name": "reserve-v2",
+      "status": "done"
+    },
+    {
+      "name": "grant-v2",
+      "status": "done"
+    },
+    {
+      "name": "put-v2",
+      "status": "done"
+    },
+    {
+      "name": "complete-v2",
+      "status": "done"
+    },
+    {
+      "name": "reserve-private",
+      "status": "done"
+    },
+    {
+      "name": "grant-private",
+      "status": "done"
+    },
+    {
+      "name": "put-private",
+      "status": "done"
+    },
+    {
+      "name": "complete-private",
+      "status": "done"
+    },
+    {
+      "name": "annotation-line",
+      "status": "done"
+    },
+    {
+      "name": "annotation-circle",
+      "status": "done"
+    },
+    {
+      "name": "annotation-angle",
+      "status": "done"
+    },
+    {
+      "name": "annotation-arc",
+      "status": "done"
+    },
+    {
+      "name": "annotation-ellipse",
+      "status": "done"
+    },
+    {
+      "name": "annotation-point",
+      "status": "done"
+    },
+    {
+      "name": "annotation-text",
+      "status": "done"
+    },
+    {
+      "name": "draft-v1",
+      "status": "done"
+    },
+    {
+      "name": "publish-v1",
+      "status": "done"
+    },
+    {
+      "name": "draft-v2",
+      "status": "done"
+    },
+    {
+      "name": "publish-v2",
+      "status": "done"
+    },
+    {
+      "name": "draft-private",
+      "status": "done"
+    }
+  ]
+}

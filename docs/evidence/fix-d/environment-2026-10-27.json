@@ -1,0 +1,34 @@
+{
+  "scope": "Read-only control-plane and restricted maintenance counts. No ordinary-role permission acceptance, browser, production, network change or hosted test request.",
+  "supabase": {
+    "projectRef": "rvysclscetfqicpnzlra",
+    "plan": "free",
+    "postgresVersion": "17.11.0.003",
+    "securityAdvisors": [{"name":"auth_leaked_password_protection","level":"WARN","count":1}],
+    "leakedPasswordProtectionRequires": "Pro or above, verified against official password-security documentation",
+    "providerPasswordMinimumRead": false,
+    "adminCapacityMetadata": {"publicBuckets":0,"objectCount":244,"storageBytesMetadata":"98435602","databaseBytes":"17348275","cleanupNeedsOperator":0},
+    "actualBillingCycleEgressMeasured": false
+  },
+  "vercel": {
+    "projectName": "partmeasure-staging",
+    "projectId": "prj_rf7HXAsGzV6khGK5hxPkadCKhhAC",
+    "latestPreviewDeploymentId": "dpl_7opFWE1LF8eihAUnvGB1ZqEZdwEF",
+    "currentSourceDeployed": false,
+    "teamMemberCount": 1,
+    "teamRoles": ["OWNER"],
+    "runtimeLogWindow": "30m",
+    "runtimeLogGroupsReturned": 0,
+    "emptyWindowProvesRedaction": false,
+    "oneHourQuery": "400 plan retention boundary; corrected once to 30m",
+    "drainRead": "404; configuration unknown, not proof of no external export",
+    "documentedHobbyRuntimeRetention": "1 hour",
+    "newHostedShareRequestSent": false,
+    "settingsChanged": false
+  },
+  "references": [
+    "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection",
+    "https://vercel.com/docs/logs/runtime",
+    "https://vercel.com/docs/spend-management"
+  ]
+}

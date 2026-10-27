@@ -1,0 +1,40 @@
+{
+  "checkedAt": "2026-10-26T16:09:08.176Z",
+  "scope": "FIX-A tool/configuration checks and evidence hygiene; not full candidate regression/browser/mainland acceptance",
+  "checks": {
+    "lint": {
+      "command": "npm run lint",
+      "status": "PASS",
+      "files": 431
+    },
+    "types": {
+      "commands": [
+        "npm run typecheck",
+        "npx tsc --noEmit"
+      ],
+      "status": "PASS"
+    },
+    "targetedUnit": {
+      "command": "npx vitest run tests/unit/connection-diagnostics.test.ts tests/unit/local-login.test.ts tests/unit/auth-throttle.test.ts tests/unit/private-transfer.test.ts",
+      "status": "PASS",
+      "files": 4,
+      "tests": 20
+    },
+    "applicationAndMigrationFingerprintsUnchangedAcrossProbeReadWriteFinal": true,
+    "readWriteSameSourceDigest": true,
+    "sourceDigestAtFinalConfiguration": "dcdb40abf7775b235c3572f1d68ccacef7ac56c29e4f9788513fc789a8a986dc",
+    "configuredSecretScan": {
+      "status": "PASS",
+      "filesScanned": 14,
+      "flaggedFiles": []
+    }
+  },
+  "notRun": [
+    "browser/E2E",
+    "mail/OTP",
+    "Docker",
+    "build (no application/bundling changes)",
+    "mainland phone/no-TUN verification",
+    "cleanup/restore/deployment"
+  ]
+}

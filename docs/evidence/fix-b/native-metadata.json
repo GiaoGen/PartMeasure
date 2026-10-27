@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-10-26T16:38:11.674Z",
+  "scope": "Strict TLS disposable native PG, formal migrations and actual restricted runtime DAL/RLS. Synthetic identities and metadata only; not Supabase Auth/Storage or browser/phone acceptance.",
+  "results": [
+    {
+      "name": "photo_and_attachment_outside_first_page_and_filter_have_exact_identity",
+      "status": "PASS"
+    },
+    {
+      "name": "other_owner_wrong_project_unknown_and_hidden_metadata_are_denied",
+      "status": "PASS"
+    },
+    {
+      "name": "guest_private_draft_denied_and_published_attachment_visible",
+      "status": "PASS"
+    },
+    {
+      "name": "archive_keeps_metadata_readable_and_revoked_session_cannot_reuse_it",
+      "status": "PASS"
+    }
+  ]
+}

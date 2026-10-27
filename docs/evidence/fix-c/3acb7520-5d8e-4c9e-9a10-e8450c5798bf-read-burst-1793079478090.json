@@ -1,0 +1,71 @@
+{
+  "checkedAt": "2026-10-27T05:37:58.089Z",
+  "run": "3acb7520-5d8e-4c9e-9a10-e8450c5798bf",
+  "scope": "Exactly eight GETs representing initial current Owner/Guest page reads, normal real sessions, no retries/writes; local dev, not hosted load test",
+  "results": [
+    {
+      "role": "A",
+      "name": "project",
+      "status": 200,
+      "timing": "auth;dur=1394.4, auth_count;desc=\"1\", pool;dur=16184.9, pool_count;desc=\"2\", sql;dur=4875.1, sql_count;desc=\"9\", preflight;dur=12501.5, preflight_count;desc=\"1\", app;dur=22488.6",
+      "errorCode": null,
+      "milliseconds": 22847
+    },
+    {
+      "role": "A",
+      "name": "files",
+      "status": 503,
+      "timing": "auth;dur=1535.8, auth_count;desc=\"1\", pool;dur=10002.1, pool_count;desc=\"1\", preflight;dur=10002.1, preflight_count;desc=\"1\", app;dur=11565.4",
+      "errorCode": "DEPENDENCY_UNAVAILABLE",
+      "milliseconds": 11914
+    },
+    {
+      "role": "A",
+      "name": "issues",
+      "status": 200,
+      "timing": "auth;dur=1148.2, auth_count;desc=\"1\", pool;dur=15695.1, pool_count;desc=\"2\", sql;dur=6715.5, sql_count;desc=\"9\", preflight;dur=10983.5, preflight_count;desc=\"1\", app;dur=23590.3",
+      "errorCode": null,
+      "milliseconds": 23933
+    },
+    {
+      "role": "A",
+      "name": "annotations",
+      "status": 503,
+      "timing": "auth;dur=1176.1, auth_count;desc=\"1\", pool;dur=10010.6, pool_count;desc=\"1\", preflight;dur=10010.6, preflight_count;desc=\"1\", app;dur=11212.1",
+      "errorCode": "DEPENDENCY_UNAVAILABLE",
+      "milliseconds": 11572
+    },
+    {
+      "role": "G1",
+      "name": "project",
+      "status": 200,
+      "timing": "pool;dur=13758.1, pool_count;desc=\"2\", sql;dur=6494.3, sql_count;desc=\"12\", preflight;dur=11179.8, preflight_count;desc=\"1\", app;dur=20258.3",
+      "errorCode": null,
+      "milliseconds": 20644
+    },
+    {
+      "role": "G1",
+      "name": "files",
+      "status": 200,
+      "timing": "pool;dur=8833.5, pool_count;desc=\"2\", sql;dur=5931.5, sql_count;desc=\"12\", preflight;dur=6385.2, preflight_count;desc=\"1\", app;dur=14786.7",
+      "errorCode": null,
+      "milliseconds": 15144
+    },
+    {
+      "role": "G1",
+      "name": "issues",
+      "status": 200,
+      "timing": "pool;dur=9734.4, pool_count;desc=\"2\", sql;dur=7487.6, sql_count;desc=\"12\", preflight;dur=7737.1, preflight_count;desc=\"1\", app;dur=17239.3",
+      "errorCode": null,
+      "milliseconds": 17602
+    },
+    {
+      "role": "G1",
+      "name": "annotations",
+      "status": 200,
+      "timing": "pool;dur=11335.7, pool_count;desc=\"2\", sql;dur=7809.7, sql_count;desc=\"13\", preflight;dur=9792.4, preflight_count;desc=\"1\", app;dur=19170.9",
+      "errorCode": null,
+      "milliseconds": 19537
+    }
+  ]
+}

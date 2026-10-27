@@ -30,7 +30,7 @@ import {
 	type WorkspaceView,
 } from "./workspace-navigation";
 import { useWorkspaceNavigation } from "./use-workspace-navigation";
-import type { AnnotationDocument } from "@/lib/annotations";
+import type { FileMetadata } from "@/lib/file-metadata";
 import "./workspace.css";
 import "./workspace-measurement.css";
 import "./workspace-popup.css";
@@ -166,6 +166,8 @@ function WorkspaceContent({
 	const [pendingView, setPendingView] = useState<WorkspaceView | null>(
 		initialView.fileId ? initialView : null,
 	);
+	const [locationError, setLocationError] = useState("");
+	const [locationAttempt, setLocationAttempt] = useState(0);
 	const [selectionRevision, setSelectionRevision] = useState(0);
 	const viewAnnotation = useRef(initialView.annotationId);
 	const materialPicker = useRef<HTMLInputElement>(null);
@@ -524,7 +526,6 @@ function WorkspaceContent({
 	async function selectSection(next: WorkspaceView["section"]) {
 		if (exportBusy || next === section) return;
 		// Both sections stay mounted; changing only the tab does not discard their drafts.
-		setPendingView(null);
 		changeView(() => {
 			setSection(next);
 			navigation.write(view({ section: next }));
@@ -802,6 +803,7 @@ function WorkspaceContent({
 		return true;
 	}
 	function view(patch: Partial<WorkspaceView> = {}): WorkspaceView {
+		if (pendingView) return { ...pendingView, ...fileFilters, section, ...patch };
 		return {
 			...fileFilters,
 			section,
@@ -827,7 +829,7 @@ function WorkspaceContent({
 				: { type: target.type, sort: target.sort },
 		);
 		if (sectionOnly) {
-			setPendingView(null);
+			setPendingView(old => old ? target : null);
 			return;
 		}
 		viewAnnotation.current = target.annotationId;
@@ -871,6 +873,7 @@ function WorkspaceContent({
 	const applyFileView = useCallback(
 		(target: WorkspaceView, file: SelectedAsset) => {
 			setPendingView(null);
+			setLocationError("");
 			setSelectedIssue(null);
 			setOverlayIssue(null);
 			viewAnnotation.current = target.annotationId;
@@ -912,12 +915,8 @@ function WorkspaceContent({
 	});
 	useEffect(() => {
 		void fileListEpoch;
-		if (
-			!pendingView ||
-			loading ||
-			section !== "files" ||
-			fileListReading.current
-		)
+		void locationAttempt;
+		if (!pendingView || section !== "files")
 			return;
 		if (pendingView.issueId) {
 			setSelectedIssue(pendingView.issueId);
@@ -935,42 +934,41 @@ function WorkspaceContent({
 			return;
 		}
 		const controller = new AbortController();
-		void api<AnnotationDocument>(
-			`${base}/files/${fileId}/annotations`,
+		const valid = viewActions.capture();
+		setLocationError("");
+		void api<FileMetadata>(
+			`${base}/files/${fileId}`,
 			"GET",
 			undefined,
-			{ signal: controller.signal },
+			{ signal: controller.signal, cacheMs: 0 },
 		)
-			.then((document) => {
-				if (controller.signal.aborted) return;
-				if (document.image.id !== fileId)
+			.then((file) => {
+				if (controller.signal.aborted || !valid()) return;
+				if (file.id !== fileId)
 					throw new Error("资料定位结果不一致，请重新选择。");
-				applyFileView(pendingView, {
-					id: fileId,
-					filename: "照片资料（链接定位）",
-					mime: "image/webp",
-					extension: "webp",
-				});
+				applyFileView(pendingView, file);
 			})
 			.catch((error) => {
-				if (controller.signal.aborted) return;
-				setPendingView(null);
+				if (controller.signal.aborted || !valid()) return;
 				if (error instanceof ApiError && error.status === 401) onInvalid();
 				else
-					setError(
-						"未能定位这项资料。可在当前列表加载更多、调整筛选或重新选择；不会扫描全部资料。",
+					setLocationError(
+						error instanceof ApiError && [403, 404].includes(error.status)
+							? "这项资料不存在或无权访问，请重新选择或向工程师确认。"
+							: "资料定位暂未完成，可以重试；当前筛选和其他输入已保留。",
 					);
 			});
 		return () => controller.abort();
 	}, [
 		pendingView,
-		loading,
 		assets,
 		base,
 		onInvalid,
 		applyFileView,
 		section,
 		fileListEpoch,
+		locationAttempt,
+		viewActions,
 	]);
 	function showInfo(mode: typeof infoMode, trigger: HTMLButtonElement) {
 		infoTrigger.current = trigger;
@@ -1586,9 +1584,10 @@ function WorkspaceContent({
 									</div>
 								) : null}
 								{pendingView ? (
-									<p className="workspace-location-status" role="status">
-										正在定位资料…
-									</p>
+									<div className="workspace-location-status" role={locationError ? "alert" : "status"}>
+										<p>{locationError || "正在定位资料…"}</p>
+										{locationError ? <button type="button" onClick={() => setLocationAttempt(value => value + 1)}>重试定位</button> : null}
+									</div>
 								) : null}
 								{loading ? (
 									<p role="status">加载资料…</p>
@@ -1744,7 +1743,7 @@ function WorkspaceContent({
 										<div className="detail-heading">
 											<h2>{selected.filename}</h2>
 											<span className="workspace-editor-kind">
-												{guest ? "只读标注 · 可补充测量" : "照片标注"}
+												{selected.mime.startsWith("image/") ? (guest ? "只读标注 · 可补充测量" : "照片标注") : "附件资料"}
 											</span>
 											<details className="workspace-file-menu">
 												<summary aria-label="文件操作">···</summary>

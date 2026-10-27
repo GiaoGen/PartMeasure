@@ -1,0 +1,48 @@
+{
+  "checkedAt": "2026-10-26T17:03:31.015Z",
+  "browser": "155.0.8059.85",
+  "scope": "Explicitly authorized current local app + real Owner read session; unsaved edits only, all other API writes blocked. Current Chrome, with a masked Navigation API feature-path subcase; narrow viewport is not a real phone/soft keyboard/old Safari test.",
+  "authResponses": [
+    200
+  ],
+  "blockedWrites": [],
+  "pageErrors": 0,
+  "consoleErrors": [
+    {
+      "kind": "CONSOLE_ERROR"
+    }
+  ],
+  "results": [
+    {
+      "name": "pending_deep_link_survives_tab_switch",
+      "status": "PASS",
+      "milliseconds": 22422
+    },
+    {
+      "name": "dirty_annotation_tabs_and_native_history_keep_input",
+      "status": "PASS",
+      "milliseconds": 33626
+    },
+    {
+      "name": "legacy_feature_path_cancels_back_to_root_tracked_project_list",
+      "status": "NOT_PASSED",
+      "code": "BROWSER_ASSERTION_FAILED",
+      "assertionLine": 121,
+      "milliseconds": 64475
+    },
+    {
+      "name": "cv_first_load_cancel_retry_and_manual_fallback",
+      "status": "NOT_PASSED",
+      "code": "BROWSER_ASSERTION_FAILED",
+      "assertionLine": 51,
+      "milliseconds": 55771
+    },
+    {
+      "name": "theme_help_and_narrow_dialog_keep_unsaved_input",
+      "status": "NOT_PASSED",
+      "code": "BROWSER_ASSERTION_FAILED",
+      "assertionLine": 51,
+      "milliseconds": 71169
+    }
+  ]
+}

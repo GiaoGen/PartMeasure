@@ -3,7 +3,7 @@ vi.mock("server-only", () => ({}));
 const m = vi.hoisted(() => ({ query: vi.fn(), remove: vi.fn(), info: vi.fn(), from: vi.fn() }));
 vi.mock("../../src/lib/server/db", () => ({ transaction: (_actor: unknown, work: (db: unknown) => unknown, worker: boolean) => { if (!worker) throw Error("RESTRICTED_MAINTENANCE_REQUIRED"); return work({ query: m.query }); } }));
 vi.mock("../../src/lib/server/storage", () => ({ privateBucket: "private", quarantine: "quarantine", storage: () => ({ from: m.from }) }));
-import { cleanupUploads } from "../../src/lib/server/upload-cleanup";
+import { cleanupScopeSchema, cleanupUploads } from "../../src/lib/server/upload-cleanup";
 const row = { id: "U", project_id: "P", owner_id: "A", quarantine_key: "P/U/source", state: "queued", reserved_bytes: "100" };
 function fixture(state = "queued") {
 	m.query.mockImplementation(async (sql: string) => {
@@ -44,4 +44,18 @@ it("refuses stored arbitrary object paths before issuing any destructive request
 	m.query.mockResolvedValue({ rows: [{ ...row, quarantine_key: "other/project/source" }] });
 	expect(await cleanupUploads(true)).toMatchObject({ failed: 1 });
 	expect(m.remove).not.toHaveBeenCalled();
+});
+it("restricts candidate selection to the exact project and explicit reservations", async () => {
+	const scope = { projectId: "11111111-1111-4111-8111-111111111111", reservationIds: ["22222222-2222-4222-8222-222222222222"] };
+	await cleanupUploads(false, 20, new AbortController().signal, scope);
+	expect(m.query.mock.calls[0]?.[1]).toEqual([20, scope.projectId, scope.reservationIds]);
+	expect(m.query.mock.calls[0]?.[0]).toContain("r.project_id=$2 and r.id=any($3::uuid[])");
+	for (const value of [{ ...scope, reservationIds: [] }, { ...scope, reservationIds: [...scope.reservationIds, ...scope.reservationIds] }, { ...scope, path: "other" }])
+		expect(() => cleanupScopeSchema.parse(value)).toThrow();
+});
+it("reports an interrupted batch and never settles quota when Storage cancellation aborts it", async () => {
+	const abort = new AbortController();
+	m.remove.mockImplementation(async () => { abort.abort(); throw Error("stopped"); });
+	expect(await cleanupUploads(true, 20, abort.signal)).toMatchObject({ failed: 1, cleaned: 0, interrupted: true });
+	expect(m.query.mock.calls.some(([sql]) => sql.startsWith("update pm.owner_usage"))).toBe(false);
 });

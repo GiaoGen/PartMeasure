@@ -1,0 +1,21 @@
+{
+  "checkedAt": "2026-10-27T06:03:47.691Z",
+  "run": "3acb7520-5d8e-4c9e-9a10-e8450c5798bf",
+  "scope": "Normal password Auth/API for the single freshly registered mailbox; user independently confirmed email delivery and entered the correct code in the actual local app; no signup/resend/admin/config changes",
+  "actualTimeExpiryTested": false,
+  "results": [
+    {
+      "name": "normal_new_account_password_login",
+      "status": "PASS"
+    },
+    {
+      "name": "new_confirmed_session_and_empty_normal_project_list",
+      "status": "PASS"
+    },
+    {
+      "name": "wrong_numeric_signup_code_rejected_without_sending_mail",
+      "status": "PASS",
+      "httpStatus": 422
+    }
+  ]
+}

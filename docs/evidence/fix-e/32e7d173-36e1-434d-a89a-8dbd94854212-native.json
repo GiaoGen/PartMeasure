@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-10-27T10:50:19.480Z",
+  "scope": "Disposable native PG18 plus actual filesystem private bytes, synthetic identities/data only; not Supabase Auth/Storage/cloud recovery acceptance",
+  "status": "PASS",
+  "objects": 5,
+  "objectBytes": 469,
+  "tables": 24,
+  "restoreMs": 590,
+  "totalMs": 1595,
+  "checks": [
+    "synthetic fixed replies/revisions, two immutable versions, private draft and archive seeded through current DAL",
+    "one PostgreSQL snapshot; encrypted schema/data plus five exact private byte objects and migration sources",
+    "default authentication-only run writes no database or recovered object set",
+    "fresh marked local database restored atomically and all pm table row hashes matched before access invalidation",
+    "all restored private files match expected byte size and SHA-256 at their original references",
+    "restored runtime role preserves Owner isolation, fixed response/history, published and private draft boundaries; old Guest is denied",
+    "source project/session remains intact; restoring target never revokes or overwrites source",
+    "tampered encrypted object rejected before database restore or private-file publication"
+  ]
+}

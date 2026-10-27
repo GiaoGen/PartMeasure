@@ -6,35 +6,54 @@ import { decryptFile } from "./encrypted-file";
 import { databaseClient } from "./backup";
 import { databaseFingerprints, pgEnvironment, postgresTool, cancelDatabaseOnAbort } from "./postgres-tools";
 import { privateDirectory } from "./private-directory";
+import { AppError } from "../../src/lib/policy";
 
 export type RestoreOptions = { directory: string; workspace: string; targetUrl: URL; caFile: string; postgresBin: string; key: Buffer; apply: boolean; signal: AbortSignal };
+export type InspectOptions = Pick<RestoreOptions, "directory" | "workspace" | "key" | "signal">;
 async function regularFile(root: string, name: string) {
 	const file = path.join(root, name), info = await lstat(file);
 	if (!info.isFile() || info.isSymbolicLink() || path.dirname(await realpath(file)) !== root) throw Error("UNSAFE_BACKUP_PATH");
 	return file;
 }
-/** Only a new local marked database is writable. Cloud/in-place restore is intentionally not implemented. */
-export async function restoreBackup(options: RestoreOptions) {
-	if (!restoreAllowed(options.targetUrl)) throw Error("UNAPPROVED_RESTORE_TARGET");
+/** Authenticate without requiring database credentials, a CA or PostgreSQL binaries. */
+export async function authenticatedBackup<T>(options: InspectOptions, work: (value: { manifest: BackupManifest; staging: string; workspace: string }) => Promise<T>) {
 	options.signal.throwIfAborted();
 	const directory = await realpath(options.directory);
 	await privateDirectory(options.workspace);
 	const workspace = await realpath(options.workspace);
 	if (workspace === directory || directory.startsWith(`${workspace}${path.sep}`) || workspace.startsWith(`${directory}${path.sep}`)) throw Error("RESTORE_PATH_OVERLAP");
 	const staging = await mkdtemp(path.join(workspace, "staging-"));
-	const db = databaseClient(options.targetUrl, await readFile(options.caFile, "utf8"));
-	const stopCancellation = cancelDatabaseOnAbort(db, options.signal);
-	let connected = false;
 	try {
 		const manifestPath = path.join(staging, "manifest.json");
-		await decryptFile(await regularFile(directory, "manifest.pmb"), manifestPath, "manifest", options.key, null, backupLimits.manifestBytes, options.signal);
+		const encryptedManifest = await regularFile(directory, "manifest.pmb").catch(error => {
+			if ((error as NodeJS.ErrnoException).code === "ENOENT") throw new AppError("BACKUP_INCOMPLETE", 422);
+			throw error;
+		});
+		await decryptFile(encryptedManifest, manifestPath, "manifest", options.key, null, backupLimits.manifestBytes, options.signal);
 		const manifest = manifestSchema.parse(JSON.parse(await readFile(manifestPath, "utf8")));
 		// Authenticate EVERY file first. No restore or private-object publication precedes this.
 		for (const entry of [manifest.database, ...manifest.objects, ...manifest.migrations]) {
 			options.signal.throwIfAborted();
 			await decryptFile(await regularFile(directory, entry.file), path.join(staging, entry.file), entry.name, options.key, entry, entry.bytes, options.signal);
 		}
-		if (!options.apply) return { applied: false as const, objects: manifest.objects.length, tables: Object.keys(manifest.tables).length };
+		return await work({ manifest, staging, workspace });
+	} finally {
+		const resolved = await realpath(staging).catch(() => "");
+		if (resolved && path.dirname(resolved) === workspace && path.basename(resolved).startsWith("staging-")) await rm(resolved, { recursive: true, force: true });
+	}
+}
+export async function inspectBackup(options: InspectOptions) {
+	return authenticatedBackup(options, async ({ manifest }) => ({ applied: false as const, ...recoveryCounts(manifest) }));
+}
+/** Only a new local marked database is writable. Cloud/in-place restore is intentionally not implemented. */
+export async function restoreBackup(options: RestoreOptions) {
+	if (!restoreAllowed(options.targetUrl)) throw Error("UNAPPROVED_RESTORE_TARGET");
+	if (!options.apply) return inspectBackup(options);
+	return authenticatedBackup(options, async ({ manifest, staging, workspace }) => {
+	const db = databaseClient(options.targetUrl, await readFile(options.caFile, "utf8"));
+	const stopCancellation = cancelDatabaseOnAbort(db, options.signal);
+	let connected = false;
+	try {
 		await db.connect();
 		connected = true;
 		const guard = (await db.query<{ marker: string; tables: number; name: string }>(`select current_database() as name,
@@ -64,10 +83,8 @@ export async function restoreBackup(options: RestoreOptions) {
 	} finally {
 		stopCancellation();
 		if (connected) await db.query("rollback").catch(() => {}); await db.end().catch(() => {});
-		// A random directory created above, resolved and verified inside the newly-created workspace.
-		const resolved = await realpath(staging).catch(() => "");
-		if (resolved && path.dirname(resolved) === workspace && path.basename(resolved).startsWith("staging-")) await rm(resolved, { recursive: true, force: true });
 	}
+	});
 }
 
 async function invalidateRestoredAccess(db: ReturnType<typeof databaseClient>) {

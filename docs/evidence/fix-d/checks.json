@@ -1,0 +1,79 @@
+{
+  "devRestored": "http://127.0.0.1:3000",
+  "mailSent": false,
+  "fullE2E": false,
+  "head": "1c6979f39178c62f77b2edd8e48c88ef4a335a87",
+  "uncommittedWorkspace": true,
+  "remaining": [
+    "12 Free provider feature and unaccepted limitation",
+    "13 real egress/replay budget and continuous operations",
+    "14 hosted path test/configuration or accepted access-retention limit"
+  ],
+  "checkedAt": "2026-10-27T10:07:13.1070919Z",
+  "deployment": false,
+  "files": [
+    {
+      "path": "next.config.ts",
+      "sha256": "1ac11a76e18a1a0d3a7b32bca899dbf7dbd9971853e0798156952c120f67d4d6"
+    },
+    {
+      "path": "scripts/maintenance/status-cli.ts",
+      "sha256": "44ae78f273ac3192f84c9c6073ee54a0fdab92ba3e8a6bba66b71584f1adf0ca"
+    },
+    {
+      "path": "scripts/maintenance/status-model.ts",
+      "sha256": "54b4b2d009419b3176b69d563d8c905a5fa3b02610dd19903fbbdbf85c70739f"
+    },
+    {
+      "path": "scripts/maintenance/target.ts",
+      "sha256": "84746f31673bfe3d76ef2a979fb49f4b82ee0ddbb44deede380157f137a78ab2"
+    },
+    {
+      "path": "scripts/p3-03/cleanup-uploads.ts",
+      "sha256": "0c445a7dc2e8478b8b8d566761245525dc20551b7188ead93a4deb8fb482303a"
+    },
+    {
+      "path": "src/lib/server/upload-cleanup.ts",
+      "sha256": "7d9abb20994187ecf67158f17fc79b3e5b4f3d6471c50947cb2ed256875d3a1d"
+    },
+    {
+      "path": "scripts/fix-d/cleanup-check.ts",
+      "sha256": "ef0656dbcd223e284677aa1987e0614b99e68afed47188ae1e53e482df0e1995"
+    },
+    {
+      "path": "tests/unit/maintenance-status.test.ts",
+      "sha256": "478a988ee5b0982aa76641076289ef90310d75e6a3bd65c23e59817720e646ce"
+    },
+    {
+      "path": "tests/unit/upload-cleanup-boundary.test.ts",
+      "sha256": "a02b6700c7ae6d46d45efbe0e638fdbf2eae01749bd6dbdd3f004e941418168e"
+    }
+  ],
+  "oldBacklogCleaned": false,
+  "browserUsed": false,
+  "cloudSourceDigest": "dd511a2c37999da436709138a84a609fd310ba9b604c95be15563120e4187bf0",
+  "cloudBatch": "7c381d82-9ee7-4283-b161-70d583651a8a",
+  "networkSettingsChanged": false,
+  "cloudSettingsChanged": false,
+  "checks": [
+    {
+      "command": "npm run lint",
+      "files": 456,
+      "status": "PASS"
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "PASS"
+    },
+    {
+      "command": "npm test",
+      "testFiles": 75,
+      "status": "PASS",
+      "tests": 463
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-10-27T05:05:31.889Z",
+  "run": "3acb7520-5d8e-4c9e-9a10-e8450c5798bf",
+  "scope": "Exactly one queued PDF retry after read-only status reconciliation; original signed upload is not repeated",
+  "beforeState": "queued",
+  "httpStatus": 200,
+  "errorCode": null,
+  "state": "ready",
+  "milliseconds": 48233,
+  "timing": "auth;dur=888.9, auth_count;desc=\"1\", pool;dur=4774.7, pool_count;desc=\"2\", sql;dur=10725.8, sql_count;desc=\"22\", app;dur=46797.1"
+}

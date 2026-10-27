@@ -1,0 +1,28 @@
+{
+  "checkedAt": "2026-10-27T05:28:37.331Z",
+  "run": "3acb7520-5d8e-4c9e-9a10-e8450c5798bf",
+  "apiSourceDigest": "4ed4863a624635317650f0cabfa97de57f703231b55d957311252df118fdf129",
+  "driverSha256": "7db9b54fc8d38672547f0667c05050a412c37601cfb51101d70c08847d1440db",
+  "scope": "User-approved real low-resolution photo and native CAD, same isolated FIX-C project; ordinary sessions; no inferred dimensions",
+  "results": [
+    {
+      "name": "real_photo_upload_and_original_hash",
+      "status": "PASS",
+      "bytes": 13672,
+      "sha256": "02108cf9ba0557f0e60b3108bec1898437fe30ce20dc51f769f0a0253469bd21",
+      "milliseconds": 74544
+    },
+    {
+      "name": "real_cad_upload_and_original_hash",
+      "status": "PASS",
+      "bytes": 311748,
+      "sha256": "437a805b57356d30f85a8c402e07bf0140f85dd128dd1c5b7edc2f5eafa42b2b",
+      "milliseconds": 63753
+    },
+    {
+      "name": "real_photo_seven_explicit_test_annotations",
+      "status": "PASS",
+      "realDimensionsFilled": false
+    }
+  ]
+}

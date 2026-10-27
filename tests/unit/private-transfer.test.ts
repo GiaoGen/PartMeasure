@@ -6,7 +6,16 @@ import { fileResponse } from "../../src/lib/server/file-response";
 const file = { mime: "application/pdf", filename: "part.pdf", byte_size: "4", original_bytes: "4", storage_key: "P/F/source", original_key: "P/F/source", sha256: "a".repeat(64), transfer_scope: "owner:A" };
 const req = (signal?: AbortSignal) => new Request("https://app.invalid/download", { signal: signal ?? null });
 beforeEach(() => { sign.mockResolvedValue({ data: { signedUrl: "https://storage.invalid/ephemeral" }, error: null }); });
-afterEach(() => { vi.unstubAllGlobals(); vi.useRealTimers(); vi.restoreAllMocks(); });
+afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); vi.useRealTimers(); vi.restoreAllMocks(); });
+it("records only fixed stage/code and byte progress for an interrupted diagnostic stream", async () => {
+	vi.stubEnv("PM_SERVER_TIMING", "1");
+	const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+	vi.stubGlobal("fetch", vi.fn(async () => new Response(new ReadableStream({ pull() { throw Error("private https://host/s/capability?secret=password"); } }, { highWaterMark: 0 }))));
+	const response = await fileResponse(req(), async () => file);
+	await expect(response.text()).rejects.toThrow("PRIVATE_DOWNLOAD_INTERRUPTED");
+	expect(warn).toHaveBeenCalledWith(JSON.stringify({ event: "private_transfer_interrupted", phase: "read", code: "STREAM_INTERRUPTED", receivedBytes: 0, expectedBytes: 4, nextBytes: 0, upstreamDone: false, aborted: false }));
+	expect(JSON.stringify(warn.mock.calls)).not.toMatch(/capability|secret|password/);
+});
 it("denies a revocation committed during Storage fetch before any response is returned", async () => {
 	let permitted = true;
 	vi.stubGlobal("fetch", vi.fn(async () => { permitted = false; return new Response("abcd"); }));

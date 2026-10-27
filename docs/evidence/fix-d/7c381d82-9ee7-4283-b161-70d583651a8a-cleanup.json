@@ -1,0 +1,27 @@
+{
+  "run": "7c381d82-9ee7-4283-b161-70d583651a8a",
+  "checkedAt": "2026-10-27T09:59:57.000Z",
+  "sourceDigest": "dd511a2c37999da436709138a84a609fd310ba9b604c95be15563120e4187bf0",
+  "scope": "Normal confirmed Owner Auth + real runtime service DAL; scoped maintenance-role DB + private Storage. Maintenance fixtures without issued upload grants; locally injected failure, not an observed provider outage. No browser or old-data cleanup.",
+  "results": [
+    {
+      "name": "injected_failure_preserves_real_database_charge",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_absence_before_quota_settlement_and_ready_preserved",
+      "status": "PASS"
+    }
+  ],
+  "cleanup": {
+    "candidates": 2,
+    "readyDuplicates": 1,
+    "cleaned": 2,
+    "skipped": 0,
+    "failed": 0,
+    "interrupted": false
+  },
+  "readyPrivateHashVerified": true,
+  "quotaReleasedBytes": "114",
+  "projectRetained": true
+}

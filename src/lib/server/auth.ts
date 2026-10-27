@@ -37,7 +37,10 @@ export async function authClient() {
 	});
 }
 export async function owner(): Promise<Actor & { kind: "owner" }> {
-	const client = await authClient();
+	return verifiedOwner(await authClient());
+}
+/** A request-bound client can be retained by a stream; identity is still verified remotely on every call. */
+export async function verifiedOwner(client: Awaited<ReturnType<typeof authClient>>): Promise<Actor & { kind: "owner" }> {
 	const { data, error } = await timed("auth", () => client.auth.getUser());
 	if (error) {
 		const transient =

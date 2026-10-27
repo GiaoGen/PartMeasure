@@ -6,7 +6,7 @@ const config: NextConfig = {
   generateBuildId: async () => buildId,
   reactStrictMode: true,
   poweredByHeader: false,
-  logging: { incomingRequests: false },
+  logging: { incomingRequests: false, serverFunctions: false, browserToTerminal: false },
   async headers() {
     return [{ source: '/:path*', headers: [
       { key: 'Referrer-Policy', value: 'no-referrer' },

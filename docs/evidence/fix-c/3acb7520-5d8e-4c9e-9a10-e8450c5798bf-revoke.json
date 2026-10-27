@@ -1,0 +1,313 @@
+{
+  "run": "3acb7520-5d8e-4c9e-9a10-e8450c5798bf",
+  "checkedAt": "2026-10-27T05:58:27.281Z",
+  "sourceDigest": "fffa21103650d358557ae4bca7f856bd0117ba5babbab7cc2399f49b04488f33",
+  "phase": "revoke",
+  "scope": "Current loopback app + normal Auth/Guest sessions + isolated restricted database/private Storage; synthetic API flow only. Not browser/real engineering/phone/mainland/hosted acceptance.",
+  "networkChanged": false,
+  "proxyTunAbsenceCertified": false,
+  "results": [
+    {
+      "name": "normal_owner_A_login",
+      "status": "PASS",
+      "milliseconds": 2261
+    },
+    {
+      "name": "normal_owner_B_login",
+      "status": "PASS",
+      "milliseconds": 6015
+    },
+    {
+      "name": "archive_readonly_revoke_restore_old_sessions_stay_denied",
+      "status": "PASS",
+      "milliseconds": 139900
+    },
+    {
+      "name": "source_unchanged",
+      "status": "PASS",
+      "milliseconds": 43
+    }
+  ],
+  "progress": [
+    {
+      "name": "project",
+      "status": "done"
+    },
+    {
+      "name": "share",
+      "status": "done"
+    },
+    {
+      "name": "session-G1",
+      "status": "done"
+    },
+    {
+      "name": "session-G2",
+      "status": "done"
+    },
+    {
+      "name": "reserve-image",
+      "status": "done"
+    },
+    {
+      "name": "grant-image",
+      "status": "done"
+    },
+    {
+      "name": "put-image",
+      "status": "done"
+    },
+    {
+      "name": "complete-image",
+      "status": "done"
+    },
+    {
+      "name": "reserve-v1",
+      "status": "done"
+    },
+    {
+      "name": "grant-v1",
+      "status": "done"
+    },
+    {
+      "name": "put-v1",
+      "status": "done"
+    },
+    {
+      "name": "complete-v1",
+      "status": "done"
+    },
+    {
+      "name": "reserve-v2",
+      "status": "done"
+    },
+    {
+      "name": "grant-v2",
+      "status": "done"
+    },
+    {
+      "name": "put-v2",
+      "status": "done"
+    },
+    {
+      "name": "complete-v2",
+      "status": "done"
+    },
+    {
+      "name": "reserve-private",
+      "status": "done"
+    },
+    {
+      "name": "grant-private",
+      "status": "done"
+    },
+    {
+      "name": "put-private",
+      "status": "done"
+    },
+    {
+      "name": "complete-private",
+      "status": "done"
+    },
+    {
+      "name": "annotation-line",
+      "status": "done"
+    },
+    {
+      "name": "annotation-circle",
+      "status": "done"
+    },
+    {
+      "name": "annotation-angle",
+      "status": "done"
+    },
+    {
+      "name": "annotation-arc",
+      "status": "done"
+    },
+    {
+      "name": "annotation-ellipse",
+      "status": "done"
+    },
+    {
+      "name": "annotation-point",
+      "status": "done"
+    },
+    {
+      "name": "annotation-text",
+      "status": "done"
+    },
+    {
+      "name": "draft-v1",
+      "status": "done"
+    },
+    {
+      "name": "publish-v1",
+      "status": "done"
+    },
+    {
+      "name": "draft-v2",
+      "status": "done"
+    },
+    {
+      "name": "publish-v2",
+      "status": "done"
+    },
+    {
+      "name": "draft-private",
+      "status": "done"
+    },
+    {
+      "name": "real-reserve-photo",
+      "status": "done"
+    },
+    {
+      "name": "real-grant-photo",
+      "status": "done"
+    },
+    {
+      "name": "real-put-photo",
+      "status": "done"
+    },
+    {
+      "name": "real-complete-photo",
+      "status": "done"
+    },
+    {
+      "name": "real-hash-photo",
+      "status": "done"
+    },
+    {
+      "name": "real-reserve-cad",
+      "status": "done"
+    },
+    {
+      "name": "real-grant-cad",
+      "status": "done"
+    },
+    {
+      "name": "real-put-cad",
+      "status": "done"
+    },
+    {
+      "name": "real-complete-cad",
+      "status": "done"
+    },
+    {
+      "name": "real-hash-cad",
+      "status": "done"
+    },
+    {
+      "name": "real-annotation-line",
+      "status": "done"
+    },
+    {
+      "name": "real-annotation-circle",
+      "status": "done"
+    },
+    {
+      "name": "real-annotation-angle",
+      "status": "done"
+    },
+    {
+      "name": "real-annotation-arc",
+      "status": "done"
+    },
+    {
+      "name": "real-annotation-ellipse",
+      "status": "done"
+    },
+    {
+      "name": "real-annotation-point",
+      "status": "done"
+    },
+    {
+      "name": "real-annotation-text",
+      "status": "done"
+    },
+    {
+      "name": "issue-selection",
+      "status": "done"
+    },
+    {
+      "name": "snapshot-line",
+      "status": "done"
+    },
+    {
+      "name": "reply-line",
+      "status": "done"
+    },
+    {
+      "name": "change-line-target",
+      "status": "done"
+    },
+    {
+      "name": "snapshot-circle",
+      "status": "done"
+    },
+    {
+      "name": "reply-circle",
+      "status": "done"
+    },
+    {
+      "name": "snapshot-angle",
+      "status": "done"
+    },
+    {
+      "name": "reply-angle",
+      "status": "done"
+    },
+    {
+      "name": "remeasure",
+      "status": "done"
+    },
+    {
+      "name": "resubmit",
+      "status": "done"
+    },
+    {
+      "name": "comment",
+      "status": "done"
+    },
+    {
+      "name": "received",
+      "status": "done"
+    },
+    {
+      "name": "accepted",
+      "status": "done"
+    },
+    {
+      "name": "other-guest-withdraw-denied",
+      "status": "done"
+    },
+    {
+      "name": "owner-feedback-denied",
+      "status": "done"
+    },
+    {
+      "name": "withdrawn",
+      "status": "done"
+    },
+    {
+      "name": "archive",
+      "status": "done"
+    },
+    {
+      "name": "archived-owner-write-denied",
+      "status": "done"
+    },
+    {
+      "name": "archived-guest-write-denied",
+      "status": "done"
+    },
+    {
+      "name": "revoke-own-share",
+      "status": "done"
+    },
+    {
+      "name": "restore",
+      "status": "done"
+    }
+  ]
+}

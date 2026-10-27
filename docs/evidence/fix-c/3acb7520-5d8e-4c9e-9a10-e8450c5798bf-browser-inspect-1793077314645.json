@@ -1,0 +1,132 @@
+{
+  "checkedAt": "2026-10-27T05:03:29.607Z",
+  "run": "3acb7520-5d8e-4c9e-9a10-e8450c5798bf",
+  "mode": "inspect",
+  "browser": "155.0.8059.85",
+  "apiSourceDigest": "728d5b60e765be060530f746c5d9377b35e9de683d187ddd3f90c617dba11662",
+  "browserDriverSha256": "4f5d1001e2489fc06135940252e86be15f07fdcec3db3221db0e1df1364731fd",
+  "scope": "Actual local Chrome + isolated normal Owner/Guest Auth/API/Storage; real IndexedDB. Desktop only, synthetic fixtures, no phone/mainland/hosted/real engineering acceptance.",
+  "results": [
+    {
+      "name": "normal_owner_browser_session",
+      "status": "PASS",
+      "milliseconds": 42721
+    },
+    {
+      "name": "actual_IndexedDB_saved_bytes_hash",
+      "status": "PASS",
+      "milliseconds": 18074
+    },
+    {
+      "name": "reopen_request_counts",
+      "preview": 1,
+      "freshAccess": 1
+    },
+    {
+      "name": "actual_browser_process_reopen_requires_fresh_auth_before_cached_bytes",
+      "status": "PASS",
+      "milliseconds": 33629
+    }
+  ],
+  "traffic": [
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 239
+    },
+    {
+      "role": "owner",
+      "kind": "issues",
+      "status": 200,
+      "timeToHeadersMs": 11958
+    },
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 13732
+    },
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 14701
+    },
+    {
+      "role": "owner",
+      "kind": "annotations",
+      "status": 200,
+      "timeToHeadersMs": 5975
+    },
+    {
+      "role": "owner",
+      "kind": "events",
+      "status": 200,
+      "timeToHeadersMs": 25907
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timeToHeadersMs": 16941
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timeToHeadersMs": 17396
+    },
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 55
+    },
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 9597
+    },
+    {
+      "role": "owner",
+      "kind": "issues",
+      "status": 200,
+      "timeToHeadersMs": 11144
+    },
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 13060
+    },
+    {
+      "role": "owner",
+      "kind": "events",
+      "status": 200,
+      "timeToHeadersMs": 15278
+    },
+    {
+      "role": "owner",
+      "kind": "annotations",
+      "status": 200,
+      "timeToHeadersMs": 8844
+    },
+    {
+      "role": "owner",
+      "kind": "image-access",
+      "status": 200,
+      "timeToHeadersMs": 5721
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timeToHeadersMs": 15191
+    }
+  ],
+  "errors": [],
+  "blocked": [],
+  "downloads": []
+}

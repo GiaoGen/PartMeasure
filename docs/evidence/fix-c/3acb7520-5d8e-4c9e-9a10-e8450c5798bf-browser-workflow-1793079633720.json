@@ -1,0 +1,36 @@
+{
+  "checkedAt": "2026-10-27T05:41:55.827Z",
+  "run": "3acb7520-5d8e-4c9e-9a10-e8450c5798bf",
+  "mode": "workflow",
+  "browser": "155.0.8059.85",
+  "apiSourceDigest": "fffa21103650d358557ae4bca7f856bd0117ba5babbab7cc2399f49b04488f33",
+  "browserDriverSha256": "282e73505dc5b2cee6ba81666d82bd41b8995fe6691db2ec8c09a71dd4c7c9ec",
+  "driverUnchanged": true,
+  "scope": "Actual local Chrome + isolated normal Owner/Guest Auth/API/Storage; real IndexedDB. Desktop only, synthetic fixtures, no phone/mainland/hosted/real engineering acceptance.",
+  "results": [
+    {
+      "name": "normal_owner_browser_session",
+      "status": "NOT_PASSED",
+      "errorClass": "Error",
+      "line": 84,
+      "milliseconds": 81700
+    }
+  ],
+  "traffic": [
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 287
+    },
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 15595
+    }
+  ],
+  "errors": [],
+  "blocked": [],
+  "downloads": []
+}

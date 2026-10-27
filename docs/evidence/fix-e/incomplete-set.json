@@ -1,0 +1,16 @@
+{
+  "checkedOn": "2026-10-27",
+  "scope": "Offline rejection of the first actual cloud backup's encrypted fragments. No DB connection, recovery or publication.",
+  "sourceRun": "9040e263-188f-429c-8b84-0212167b4b80",
+  "partialSetId": "668a191e-b8aa-41ad-aa48-94346145592b",
+  "encryptedFilesObserved": 88,
+  "encryptedBytesObserved": 42896357,
+  "manifestExists": false,
+  "completeBackup": false,
+  "inspection": {"exitCode":1,"phase":"authenticate","code":"BACKUP_INCOMPLETE"},
+  "restoreTargetRequired": false,
+  "databaseCaRequired": false,
+  "postgresBinaryRequired": false,
+  "copyOfRealBackupPerformed": false,
+  "cloudRestorePerformed": false
+}

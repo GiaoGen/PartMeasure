@@ -1,0 +1,198 @@
+{
+  "checkedAt": "2026-10-27T05:33:05.209Z",
+  "run": "3acb7520-5d8e-4c9e-9a10-e8450c5798bf",
+  "mode": "workflow",
+  "browser": "155.0.8059.85",
+  "apiSourceDigest": "f6089b54b2460d994fb0ae398123e510724f9bae39706407b530001849c1864c",
+  "browserDriverSha256": "d6fd50c4632bac1109a6c837e647b1f8260f697eb5c675dcc220bacc1db0f2cb",
+  "scope": "Actual local Chrome + isolated normal Owner/Guest Auth/API/Storage; real IndexedDB. Desktop only, synthetic fixtures, no phone/mainland/hosted/real engineering acceptance.",
+  "results": [
+    {
+      "name": "normal_owner_browser_session",
+      "status": "PASS",
+      "milliseconds": 44231
+    },
+    {
+      "name": "normal_guest_browser_session_and_deep_link",
+      "status": "NOT_PASSED",
+      "errorClass": "Error",
+      "line": 73,
+      "milliseconds": 107219
+    }
+  ],
+  "traffic": [
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 309
+    },
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 14447
+    },
+    {
+      "role": "owner",
+      "kind": "issues",
+      "status": 200,
+      "timeToHeadersMs": 16194
+    },
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 17773
+    },
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 18942
+    },
+    {
+      "role": "owner",
+      "kind": "annotations",
+      "status": 200,
+      "timeToHeadersMs": 8166
+    },
+    {
+      "role": "owner",
+      "kind": "events",
+      "status": 200,
+      "timeToHeadersMs": 30264
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timeToHeadersMs": 21381
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timeToHeadersMs": 23738
+    },
+    {
+      "role": "guest",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 55
+    },
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 52
+    },
+    {
+      "role": "owner",
+      "kind": "events",
+      "status": 503,
+      "timeToHeadersMs": 11286
+    },
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 503,
+      "timeToHeadersMs": 10795
+    },
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 503,
+      "timeToHeadersMs": 11538
+    },
+    {
+      "role": "guest",
+      "kind": "issues",
+      "status": 200,
+      "timeToHeadersMs": 15572
+    },
+    {
+      "role": "guest",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 18131
+    },
+    {
+      "role": "guest",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 20216
+    },
+    {
+      "role": "owner",
+      "kind": "other",
+      "status": 200,
+      "timeToHeadersMs": 19644
+    },
+    {
+      "role": "owner",
+      "kind": "issues",
+      "status": 200,
+      "timeToHeadersMs": 21853
+    },
+    {
+      "role": "guest",
+      "kind": "events",
+      "status": 200,
+      "timeToHeadersMs": 25801
+    },
+    {
+      "role": "owner",
+      "kind": "events",
+      "status": 200,
+      "timeToHeadersMs": 16785
+    },
+    {
+      "role": "guest",
+      "kind": "annotations",
+      "status": 503,
+      "timeToHeadersMs": 20354
+    },
+    {
+      "role": "guest",
+      "kind": "preview",
+      "status": 503,
+      "timeToHeadersMs": 20338
+    },
+    {
+      "role": "guest",
+      "kind": "preview",
+      "status": 503,
+      "timeToHeadersMs": 21634
+    },
+    {
+      "role": "owner",
+      "kind": "annotations",
+      "status": 200,
+      "timeToHeadersMs": 21339
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timeToHeadersMs": 29222
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timeToHeadersMs": 32313
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timeToHeadersMs": 11403
+    }
+  ],
+  "errors": [],
+  "blocked": [],
+  "downloads": [],
+  "laterFileHashReportedAtRuntime": "614b36f771f05aa96486309e6b2682ff32c670ef8e9974525245ee0fa120dcf3",
+  "driverAttribution": "Corrected to first completed-stage/startup driver digest preserved in .initial.json; later diagnostic-only browser edits were not loaded by this process"
+}

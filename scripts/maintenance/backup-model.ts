@@ -23,9 +23,13 @@ export type BackupManifest = z.infer<typeof manifestSchema>;
 export type ObjectReference = { key: string; bytes: number; sha256: string; mime: string };
 
 export function sourceAllowed(url: URL, native: boolean) {
+	if (!["postgres:", "postgresql:"].includes(url.protocol) || url.hash ||
+		[...url.searchParams.keys()].some(key => key !== "sslmode") ||
+		(url.searchParams.has("sslmode") && !["require", "verify-ca", "verify-full"].includes(url.searchParams.get("sslmode") ?? ""))) return false;
 	if (native) return process.env.PM_EVENTS_LOCAL === "disposable-native-pg" && url.hostname === "127.0.0.1" && url.port === "55448" && url.username === "postgres";
-	return decodeURIComponent(url.username) === "postgres.rvysclscetfqicpnzlra" && url.hostname.endsWith(".pooler.supabase.com") && url.port === "5432";
+	return decodeURIComponent(url.username) === "postgres.rvysclscetfqicpnzlra" && /^aws-[a-z0-9-]+\.pooler\.supabase\.com$/.test(url.hostname) && url.port === "5432" && url.pathname === "/postgres" && Boolean(url.password);
 }
 export function restoreAllowed(url: URL) {
-	return url.hostname === "127.0.0.1" && url.port === "55448" && url.username === "postgres" && /^\/pm_restore_[a-f0-9]{12}$/.test(url.pathname);
+	return ["postgres:", "postgresql:"].includes(url.protocol) && !url.hash && !url.search &&
+		url.hostname === "127.0.0.1" && url.port === "55448" && url.username === "postgres" && /^\/pm_restore_[a-f0-9]{12}$/.test(url.pathname);
 }

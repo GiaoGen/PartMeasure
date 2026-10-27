@@ -54,5 +54,11 @@ describe("authenticated private backup files", () => {
 		for (const url of ["postgresql://postgres@127.0.0.1:55448/postgres", "postgresql://postgres@127.0.0.1:5432/pm_restore_aabbccddeeff", "postgresql://postgres@db.example/pm_restore_aabbccddeeff"])
 			expect(restoreAllowed(new URL(url))).toBe(false);
 		expect(sourceAllowed(new URL("postgresql://postgres.other@a.pooler.supabase.com:5432/postgres"), false)).toBe(false);
+		const allowed = "postgresql://postgres.rvysclscetfqicpnzlra:test@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres";
+		expect(sourceAllowed(new URL(allowed), false)).toBe(true);
+		for (const value of [allowed.replace("postgresql:", "https:"), `${allowed}?host=other.example`, `${allowed}?sslmode=disable`, allowed.replace("/postgres", "/other")])
+			expect(sourceAllowed(new URL(value), false)).toBe(false);
+		expect(restoreAllowed(new URL("http://postgres@127.0.0.1:55448/pm_restore_aabbccddeeff"))).toBe(false);
+		expect(restoreAllowed(new URL("postgresql://postgres@127.0.0.1:55448/pm_restore_aabbccddeeff?host=other.example"))).toBe(false);
 	});
 });

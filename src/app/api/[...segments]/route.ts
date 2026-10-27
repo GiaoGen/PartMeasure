@@ -393,7 +393,7 @@ async function handle(req: Request, context: Context) {
 						throw new AppError("NOT_FOUND", 404);
 					return fileResponse(
 						req,
-						fileAuthorizer(actor, projectId, fileId.data),
+						await fileAuthorizer(actor, projectId, fileId.data),
 					);
 				}
 			}
@@ -566,6 +566,10 @@ async function handle(req: Request, context: Context) {
 			}
 		}
 		if (resource === "files") {
+			if (method === "GET" && objectId && parts.length === 4) {
+				if ([...url.searchParams].length) throw new AppError("INVALID_INPUT", 422);
+				return response(await service.fileMetadata(actor, projectId, objectId));
+			}
 			if (method === "GET" && objectId && parts[4] === "annotated-export" && parts.length === 5) {
 				if (!uuid.safeParse(objectId).success || url.searchParams.size !== 0) throw new AppError("INVALID_INPUT", 422);
 				return response(await annotatedExport(actor, projectId, objectId));
@@ -617,7 +621,7 @@ async function handle(req: Request, context: Context) {
 				const original = url.searchParams.get("original") === "1";
 				const variant = url.searchParams.get("variant");
 				if (variant !== null && (parts[4] !== "preview" || !["320","640"].includes(variant) || url.searchParams.getAll("variant").length !== 1)) throw new AppError("INVALID_INPUT",422);
-				const authorize = fileAuthorizer(
+				const authorize = await fileAuthorizer(
 					actor,
 					projectId,
 					objectId,

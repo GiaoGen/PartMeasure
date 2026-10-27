@@ -20,32 +20,38 @@
 | `PM_SERVER_TIMING` | 默认0；临时诊断仅固定阶段耗时/次数，不记URL、身份、正文、SQL或参数 |
 | `WORKER_DATABASE_URL` | 仅显式维护工具的受限维护角色，不是网页或后台上传Worker的运行必需项，不把它上传到网页部署配置 |
 
-Resend SMTP凭据、数字Token模板、Auth站点/确认策略留供应商安全设置中；本手册不包含凭据。新注册数字OTP送达/确认尚待真实证据，不能用已有账号密码登录代替。
+SMTP凭据、Token模板、Auth站点/确认策略留供应商安全设置中，本手册不含凭据。用户2026-10-27配置QQ SMTP/Token模板，完成一次真实注册收码确认、密码登录/刷新及错误码拒绝；实际过期/已用码重放未验。见[配置单](otp-smtp-setup.md)及[FIX-C证据](../FIX-C-real-flows-2026-10-27.md)，不自动追加发信。
 
 ## 2. 发现故障时
 
 先运行`npm run ops:status`。默认只输出必需变量是否存在、Node主版本、TLS配置是否存在及当前上传政策，不接触网络、不发信。变量存在不代表值正确；`GET /api/health`仅liveness，也不证明数据库/Auth/Storage/权限通过。
+
+连接问题的当前源码复跑入口为`npm run diagnose:connection`：默认只校验原隔离项目/受限角色/端口配置并记录源码SHA-256清单，不联网。`-- --probe`显式探测Auth settings HTTPS、实际应用runtime严格TLS/SELECT及事件session LISTEN，不发事件、不写业务资料。`-- --api`在现有`http://127.0.0.1:3000`开发服务上，用ignored既有测试账号正常登录、读取旧合成项目和私有字节/hash，并验证另一Owner拒绝；密码登录会产生正常Auth会话，业务GET仍会更新原有限流计数，它不是完全无副作用的离线检查。
+
+只有已明确获准一次合成云写入时才用`-- --api --apply`：新建一个`FIX-A-<run>`项目和一个小型私有STEP附件，走真实预留/签名/上传/完成/下载hash及跨Owner拒绝。不能指定既有项目为写目标，不覆盖旧资料、不创建分享、不自动清理；一次授权不能当作无限次复跑授权。生成的ID/字节hash在ignored`tmp/fix-a/<run>.json`，脱敏结果/源码清单在`docs/evidence/fix-a/`。正常账号配置沿用ignored`tmp/p0-1/test-accounts.json`，只读旧样本沿用`tmp/p0-4/fixture.json`，不把任何密码、Cookie或签名URL放报告/命令行。
+
+此入口只支持本轮原隔离pooler组合（业务6543、事件5432）及loopback开发服务；其他合法部署拓扑需另行核对，配置拒绝不代表供应商不支持。它不自动启动服务、不改变代理/TUN/DNS、不关闭TLS、不回退管理员。脚本和服务应在同一工作区及环境加载方式下运行；脚本采用Next development环境优先级。证据记文件清单而非旧buildId，期间源码变更会失败；它不能证明旧Preview、生产、浏览器、手机或无TUN链路。失败在首个阶段停止，不重复轰炸；若本地HTTP中断先确认服务是否退出，再区分云连接问题。
 
 | 现象/错误码 | 应对 |
 |---|---|
 | 本地登录成功、项目读失败 | Auth和业务数据库是不同链路；保留已批准loopback本地限流修复，不切换假认证或把postgres塞入应用连接 |
 | `ENOTFOUND` / 已知无TUN HTTPS问题 | 记录环境/时间/阶段和脱敏错误码；沿用既有欠项，不重复切换代理/TUN/DNS或扩大排查 |
 | `ORIGIN_MISMATCH` / `CSRF_INVALID` | 核对浏览器实际Origin及APP_URL/可信Preview地址；必要时重新进入页面取得新凭据，不扩大CORS、不禁用CSRF |
-| `DATABASE_BUSY/TIMEOUT/CAPACITY` | 保留输入，待重试；核对实例数×每实例2连接与事件session连接，检查连接/锁/容量，不不断扩大池或关超时 |
+| `DATABASE_BUSY/TIMEOUT/CAPACITY` | 保留输入，待重试；核对实例数×每网页进程最多4连接（维护池2）与事件session连接，检查连接/锁/容量，不不断扩大池或关超时 |
 | `PROCESSING_ACTIVE/EXPIRED/INTERRUPTED` | 页面关闭/断线后可能中断；保留队列，下次进入或显式重试。不要启动退休Worker来消费同一预留 |
 | `TRANSFER_BUSY` / `RATE_LIMITED` | 等待已有任务或窗口释放后重试，不刷新轰炸；数据库共享限流继续生效，托管不可自动降为内存限流 |
 | `LINK_UNAVAILABLE` / `PROJECT_ARCHIVED` | 正常权限/只读边界；Owner检查分享/归档，不能靠客户端改状态或跳过核权 |
 | 孤儿文件/额度长期占用 | 使用下面只读查看和受控清理。存在历史引用、Storage状态未知或租约尚有效时不能先减配额 |
 
-日志保留请求ID、有限错误码、阶段、时间和动作即可，不记录密码、OTP、Cookie、分享路径/token、签名URL、连接串、私有文件名/正文。托管访问日志可能记录`/s/<token>`，发布前仍需核对脱敏与受控保留；应用no-referrer不等于托管日志已脱敏。故障证据进入普通文档前再次去敏。
+日志保留请求ID、有限错误码、阶段、时间和动作即可，不记录密码、OTP、Cookie、分享路径/token、签名URL、连接串、私有文件名/正文。FIX-D明确关闭Next开发Server Function参数日志及浏览器日志转发；Vercel当前仅1名Owner、Hobby运行日志文档保留1小时，30分钟查询为空不证明脱敏，Drain接口404仍未知。发布前仍需专用路径/实际日志源验证；应用no-referrer不等于托管日志已脱敏。具体配置、访问/保留和密码保护Free限制见[安全维护操作单](security-maintenance.md)。
 
 ## 3. 一次性维护
 
-`npm run ops:status -- --database`在显式提供原隔离项目维护角色后，只读输出待处理、过期处理、待清理、需人工处理计数和预留字节。它不通过RLS空上下文下的零行冒充“没有积压”，也不读项目正文。未配置/网络失败会明确失败，不回退管理员角色。
+`npm run ops:status -- --database`在显式提供原隔离项目维护角色后，只读输出待处理、过期/空处理租约、到期/实际可清理、需人工、最老积压年龄及应用已用/预留字节，并给出warning/critical。加`--record`只在本机受限目录记录有限告警码，输出新增/恢复；连接失败记unknown而非零积压。直接CLI退出0为本次完成、2为需处置、1为检查失败（npm可能归一非零为1）。不回退管理员、不读取正文、不外发消息；应用账户预算不等于供应商Storage/egress容量。
 
-`npm run ops:cleanup -- --dry-run`只查看；`npm run ops:cleanup -- --apply`才删除符合条件的对象。当前CLI只允许原隔离项目及非生产目标，不能直接作为生产维护任务。每批≤20、工作信号120秒、租约5分钟；需等待上传凭证/处理/旧任务租约过期并留余量，逐个确切对象确认404后才释放预留。ready资料仅清隔离重复副本，失败保留额度，5次失败后人工接管。详见[P3-03边界](../P3-03-server-security-2026-10-26.md)。
+`npm run ops:cleanup -- --dry-run`只查看；实际执行必须提供`--apply --scope-file <已批准范围JSON>`，仅一个指定项目及最多20个明确预留ID，缺scope会拒绝。先同范围dry-run，技术scope不代替删除授权。当前CLI只允许原隔离项目、精确维护角色/pooler及非生产目标；每批≤20、工作信号120秒、租约5分钟。等待上传凭证/处理/旧租约安全窗口，逐确切对象404后才释放预留；ready仅清隔离副本，失败保留额度，5次失败人工接管，取消/超时明确interrupted及非零退出。格式及步骤见[操作单](security-maintenance.md)。
 
-没有自动Cron或云端清理部署。本轮未删除已有云对象。运行者应在明确目标后安排一次受控维护，再根据实际积压决定频率，不因“无Worker”省略维护责任。旧缩略图/事件/限流表的保留维护不能随意执行整表DELETE；任何涉及历史/幂等重试窗口的清理需明确保留规则。当前工具只处理已定义的上传孤儿，不宣称覆盖全部数据库维护。
+没有自动Cron或云端清理部署。FIX-D用户单独批准后，只对一个新合成项目的两个无上传签名预留验证：本机注入503后真实额度不减，随后删除本批三份对象、确切不存在后结算114字节，保留ready私有文件/hash。已有44项积压未清理；新批次不能授权全局清理。开发维护者每次集中测试前/后及遇到积压/503时按操作单巡检；对外持续服务前还需落实实际执行位置/责任人与接收方式。旧缩略图/事件/限流表不得整表DELETE；历史/幂等窗口维护另明确保留规则，本工具只处理定义的上传孤儿。
 
 ## 4. 备份覆盖与当前能力
 
@@ -77,9 +83,10 @@ Resend SMTP凭据、数字Token模板、Auth站点/确认策略留供应商安�
 1. 在ignored`tmp/maintenance-keys/`为`PM_BACKUP_KEY_FILE`选择全新`.backup-key`路径，`npm run ops:backup -- keygen`只写文件、不打印key、不覆盖。将密钥安全保管到独立密码库，CLI不负责上传密钥。
 2. 设置`PM_POSTGRES_BIN`、`DATABASE_CA_FILE`、`PM_BACKUP_DATABASE_URL_FILE`，保留真实Storage服务端环境。`npm run ops:backup -- create`生成`tmp/backups/<setId>/`；只输出setId、计数/字节和快照时间，无敏感正文或路径。
 3. 只有有`manifest.pmb`的集合才是候选完整备份。原云端受限直连/文件读取条件未闭合时，创建应失败，不能以空备份代替。失败残集保持私有，解决条件后新建集合重试，不覆盖原集。
-4. 设`PM_BACKUP_SET`，准备下节目标文件后运行`npm run ops:backup -- inspect`。默认逐项认证/大小/hash检查，删除临时明文，数据库不写入，也不发布恢复文件。通过后复制加密备份到另一受控位置并核对副本，再记录保留期限。
+4. 设`PM_BACKUP_SET`和`PM_BACKUP_KEY_FILE`后运行`npm run ops:backup -- inspect`。FIX-E已解除inspect对恢复URL/CA/PostgreSQL工具的依赖；默认逐项GCM认证/大小/hash检查、移除临时明文，不连接或写数据库，不发布恢复文件。缺manifest明确报`BACKUP_INCOMPLETE`，不能把残集算成功。
+5. 只有完整集认证通过后，设置`PM_BACKUP_COPY_DIRECTORY`为一个全新、明确获准的私有目标，再`npm run ops:backup -- copy`。只复制清单密文、比较源/副本密文hash并独立认证整集，最后才写copy-verified；不复制key、不覆盖旧目标。该工具不能认证目标是否异设备；同机副本必须按同机记账，key另由独立密码库/保管位置保存。没有完整集时不得复制残集并标通过。
 
-本轮没有备份真实工程资料或云端所有数据。当前真实数据库连接存在已知DNS欠项，不重复盲目排查；工具与本地恢复先交付，云端创建/恢复保持待验证。
+FIX-E实际源session严格TLS/快照探测通过，首次真实create完成数据库dump并读取部分188对象清单后退出，无manifest；补快照连接保活/异步错误处理后唯一一次重验在connecting返回connection_closed，已停止重试。当前仍没有完整真实备份，不以残集或本地小样代验。用户确认暂无新云恢复目标、异设备副本/key保管位置；详见[FIX-E记录](../FIX-E-backup-recovery-2026-10-27.md)。源凭据/密钥只存本机受限ignored位置，未改云配置、网络或清理源对象。
 
 ## 6. 全新隔离位置恢复
 

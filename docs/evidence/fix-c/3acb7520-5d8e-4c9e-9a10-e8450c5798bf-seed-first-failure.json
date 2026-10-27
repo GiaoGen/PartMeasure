@@ -1,0 +1,104 @@
+{
+  "run": "3acb7520-5d8e-4c9e-9a10-e8450c5798bf",
+  "checkedAt": "2026-10-27T04:58:40.548Z",
+  "sourceDigest": "728d5b60e765be060530f746c5d9377b35e9de683d187ddd3f90c617dba11662",
+  "phase": "seed",
+  "scope": "Current loopback app + normal Auth/Guest sessions + isolated restricted database/private Storage; synthetic API flow only. Not browser/real engineering/phone/mainland/hosted acceptance.",
+  "networkChanged": false,
+  "proxyTunAbsenceCertified": false,
+  "results": [
+    {
+      "name": "normal_owner_A_login",
+      "status": "PASS",
+      "milliseconds": 8330
+    },
+    {
+      "name": "normal_owner_B_login",
+      "status": "PASS",
+      "milliseconds": 3243
+    },
+    {
+      "name": "create_only_one_new_FIX_C_project",
+      "status": "PASS",
+      "milliseconds": 13751
+    },
+    {
+      "name": "one_new_share",
+      "status": "PASS",
+      "milliseconds": 9371
+    },
+    {
+      "name": "G1_normal_guest_bootstrap",
+      "status": "PASS",
+      "milliseconds": 10594
+    },
+    {
+      "name": "G2_normal_guest_bootstrap",
+      "status": "PASS",
+      "milliseconds": 9898
+    },
+    {
+      "name": "upload_image_ready_and_original_hash",
+      "status": "PASS",
+      "milliseconds": 68757
+    },
+    {
+      "name": "upload_v1_ready_and_original_hash",
+      "status": "NOT_PASSED",
+      "milliseconds": 61023,
+      "kind": "check_failed",
+      "code": "API_REQUEST_FAILED",
+      "httpStatus": 503
+    }
+  ],
+  "progress": [
+    {
+      "name": "project",
+      "status": "done"
+    },
+    {
+      "name": "share",
+      "status": "done"
+    },
+    {
+      "name": "session-G1",
+      "status": "done"
+    },
+    {
+      "name": "session-G2",
+      "status": "done"
+    },
+    {
+      "name": "reserve-image",
+      "status": "done"
+    },
+    {
+      "name": "grant-image",
+      "status": "done"
+    },
+    {
+      "name": "put-image",
+      "status": "done"
+    },
+    {
+      "name": "complete-image",
+      "status": "done"
+    },
+    {
+      "name": "reserve-v1",
+      "status": "done"
+    },
+    {
+      "name": "grant-v1",
+      "status": "done"
+    },
+    {
+      "name": "put-v1",
+      "status": "done"
+    },
+    {
+      "name": "complete-v1",
+      "status": "pending"
+    }
+  ]
+}

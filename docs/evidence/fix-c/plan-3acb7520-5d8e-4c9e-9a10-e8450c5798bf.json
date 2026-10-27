@@ -1,0 +1,47 @@
+{
+  "run": "3acb7520-5d8e-4c9e-9a10-e8450c5798bf",
+  "preparedAt": "2026-10-27T04:53:01.749Z",
+  "sourceDigest": "728d5b60e765be060530f746c5d9377b35e9de683d187ddd3f90c617dba11662",
+  "offlineOnly": true,
+  "assets": [
+    {
+      "key": "image",
+      "filename": "FIX-C-合成照片.png",
+      "mime": "image/png",
+      "purpose": "material",
+      "bytes": 40073,
+      "sha256": "b03c3c8b1833054fd5424e4f7224b2a89e9e603ed4b1a91d9fbf806d74e2781f"
+    },
+    {
+      "key": "v1",
+      "filename": "FIX-C-合成报告.pdf",
+      "mime": "application/pdf",
+      "purpose": "delivery",
+      "bytes": 2619007,
+      "sha256": "988e965d6360220f33fcd419d67e8febd909d45abaf68d808d5246653111091a"
+    },
+    {
+      "key": "v2",
+      "filename": "FIX-C-合成空结构.step",
+      "mime": "application/octet-stream",
+      "purpose": "delivery",
+      "bytes": 117,
+      "sha256": "c69c9611d85baf25583dca3df4969cdf493875afc1cf0ecfd597742986d3ffae"
+    },
+    {
+      "key": "private",
+      "filename": "FIX-C-私有草稿.step",
+      "mime": "application/octet-stream",
+      "purpose": "delivery",
+      "bytes": 121,
+      "sha256": "83f55a92a328c144ba0468563b606d21b78c250090b4bcd6f5df80ec20e2ed31"
+    }
+  ],
+  "totalBytes": 2659318,
+  "phases": [
+    "seed: one new project/share/two real Guest sessions/four uploads/seven annotations/two published versions/private draft",
+    "workflow: three response kinds/remeasure/fixed snapshot/version receipts/ordinary-role denials",
+    "revoke: archive/read-only/revoke this share/restore/old sessions stay denied"
+  ],
+  "excluded": "No OTP/mail/admin/old fixture writes/delete/cleanup/browser/device/deploy/network changes. Browser and actual exports require separate explicit authorization; pause before revoke."
+}

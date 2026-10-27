@@ -5,14 +5,14 @@ vi.mock("../../src/lib/server/auth", () => ({ owner: vi.fn(), guest: vi.fn(), au
 vi.mock("../../src/lib/server/db", async importOriginal => ({ ...await importOriginal<object>(), transaction: vi.fn(), rate: vi.fn() }));
 vi.mock("../../src/lib/server/interaction-reads", async importOriginal => ({ ...await importOriginal<object>(), layers: vi.fn(), currentIssues: vi.fn(), fileInteraction: vi.fn(), historyPage: vi.fn(), inboxPage: vi.fn() }));
 vi.mock("../../src/lib/server/issue-service", async importOriginal => ({ ...await importOriginal<object>(), detailIssue: vi.fn() }));
-vi.mock("../../src/lib/server/service", async importOriginal => ({ ...await importOriginal<object>(), imageAccess: vi.fn() }));
+vi.mock("../../src/lib/server/service", async importOriginal => ({ ...await importOriginal<object>(), imageAccess: vi.fn(), fileMetadata: vi.fn() }));
 
 import { GET } from "../../src/app/api/[...segments]/route";
 import { owner } from "../../src/lib/server/auth";
 import { transaction, rate } from "../../src/lib/server/db";
 import * as reads from "../../src/lib/server/interaction-reads";
 import { detailIssue } from "../../src/lib/server/issue-service";
-import { imageAccess } from "../../src/lib/server/service";
+import { imageAccess, fileMetadata } from "../../src/lib/server/service";
 
 const project = "00000000-0000-4000-8000-000000000001";
 const file = "00000000-0000-4000-8000-000000000002";
@@ -28,6 +28,17 @@ beforeEach(() => {
 	vi.mocked(rate).mockResolvedValue(undefined);
 });
 describe("aggregate routes preserve one auth/rate preflight and old detail contracts", () => {
+	it("reads single-file metadata through normal preflight, validates IDs and disallows list query semantics", async () => {
+		vi.mocked(fileMetadata).mockResolvedValue({ id: file, filename: "中文工程.step" } as never);
+		const response = await get(`files/${file}`);
+		expect(response.status).toBe(200);
+		expect(response.headers.get("cache-control")).toBe("private, no-store");
+		expect(fileMetadata).toHaveBeenCalledWith(actor, project, file);
+		expect(owner).toHaveBeenCalledOnce(); expect(rate).toHaveBeenCalledOnce();
+		expect((await get(`files/${file}?cursor=x`)).status).toBe(422);
+		expect((await get("files/invalid")).status).toBe(404);
+		expect(fileMetadata).toHaveBeenCalledOnce();
+	});
 	it("reads an entire inbox page with one preflight and rejects invalid update batches", async () => {
 		vi.mocked(reads.inboxPage).mockResolvedValue({ items: [], files: {}, images: {}, targets: {}, counts: {}, nextCursor: null, removedIds: [] });
 		expect((await get("inbox")).status).toBe(200);

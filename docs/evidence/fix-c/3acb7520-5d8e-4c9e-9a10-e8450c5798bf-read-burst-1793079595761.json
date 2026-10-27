@@ -1,0 +1,71 @@
+{
+  "checkedAt": "2026-10-27T05:39:55.760Z",
+  "run": "3acb7520-5d8e-4c9e-9a10-e8450c5798bf",
+  "scope": "Exactly eight GETs representing initial current Owner/Guest page reads, normal real sessions, no retries/writes; local dev, not hosted load test",
+  "results": [
+    {
+      "role": "A",
+      "name": "project",
+      "status": 200,
+      "timing": "auth;dur=1329.0, auth_count;desc=\"1\", pool;dur=10102.5, pool_count;desc=\"2\", sql;dur=4247.1, sql_count;desc=\"9\", preflight;dur=9277.8, preflight_count;desc=\"1\", app;dur=15694.7",
+      "errorCode": null,
+      "milliseconds": 19336
+    },
+    {
+      "role": "A",
+      "name": "files",
+      "status": 200,
+      "timing": "auth;dur=1464.0, auth_count;desc=\"1\", pool;dur=11569.0, pool_count;desc=\"2\", sql;dur=4291.8, sql_count;desc=\"9\", preflight;dur=9460.7, preflight_count;desc=\"1\", app;dur=17355.4",
+      "errorCode": null,
+      "milliseconds": 20978
+    },
+    {
+      "role": "A",
+      "name": "issues",
+      "status": 200,
+      "timing": "auth;dur=1160.3, auth_count;desc=\"1\", pool;dur=7154.1, pool_count;desc=\"2\", sql;dur=4847.0, sql_count;desc=\"9\", preflight;dur=7608.7, preflight_count;desc=\"1\", app;dur=13197.0",
+      "errorCode": null,
+      "milliseconds": 16838
+    },
+    {
+      "role": "A",
+      "name": "annotations",
+      "status": 200,
+      "timing": "auth;dur=1302.0, auth_count;desc=\"1\", pool;dur=9383.7, pool_count;desc=\"2\", sql;dur=5706.8, sql_count;desc=\"10\", preflight;dur=8645.6, preflight_count;desc=\"1\", app;dur=16429.8",
+      "errorCode": null,
+      "milliseconds": 20052
+    },
+    {
+      "role": "G1",
+      "name": "project",
+      "status": 200,
+      "timing": "pool;dur=7228.6, pool_count;desc=\"2\", sql;dur=9605.8, sql_count;desc=\"12\", preflight;dur=9786.0, preflight_count;desc=\"1\", app;dur=16874.0",
+      "errorCode": null,
+      "milliseconds": 20498
+    },
+    {
+      "role": "G1",
+      "name": "files",
+      "status": 200,
+      "timing": "pool;dur=6423.5, pool_count;desc=\"2\", sql;dur=7049.2, sql_count;desc=\"12\", preflight;dur=6154.1, preflight_count;desc=\"1\", app;dur=13518.4",
+      "errorCode": null,
+      "milliseconds": 17140
+    },
+    {
+      "role": "G1",
+      "name": "issues",
+      "status": 200,
+      "timing": "pool;dur=5671.3, pool_count;desc=\"2\", sql;dur=7839.5, sql_count;desc=\"12\", preflight;dur=8461.7, preflight_count;desc=\"1\", app;dur=13557.1",
+      "errorCode": null,
+      "milliseconds": 17178
+    },
+    {
+      "role": "G1",
+      "name": "annotations",
+      "status": 200,
+      "timing": "pool;dur=5308.9, pool_count;desc=\"2\", sql;dur=9859.3, sql_count;desc=\"13\", preflight;dur=7143.1, preflight_count;desc=\"1\", app;dur=15215.0",
+      "errorCode": null,
+      "milliseconds": 18837
+    }
+  ]
+}

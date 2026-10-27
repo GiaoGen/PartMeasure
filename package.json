@@ -9,10 +9,12 @@
     "npm": ">=11.12.1 <12"
   },
   "scripts": {
+    "verify:fix-c": "node --conditions=react-server --import tsx scripts/fix-c/verify.ts",
     "ops:status": "node --conditions=react-server --import tsx scripts/maintenance/status-cli.ts",
     "ops:backup": "node --conditions=react-server --import tsx scripts/maintenance/backup-cli.ts",
     "ops:cleanup": "node --conditions=react-server --import tsx scripts/p3-03/cleanup-uploads.ts",
     "diagnose:direct": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/performance/auth-direct.ps1",
+    "diagnose:connection": "node --conditions=react-server --import tsx scripts/maintenance/connection-cli.ts",
     "cv:build": "node scripts/build-cv.mjs",
     "predev": "npm run cv:build",
     "prebuild": "npm run cv:build",

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ApplicationHistory } from "@/components/application-history";
 import "./globals.css";
 import "./product-ui.css";
 import "./product-motion.css";
@@ -14,7 +15,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
 	return (
 		<html lang="zh-CN">
-			<body>{children}</body>
+			<body><ApplicationHistory />{children}</body>
 		</html>
 	);
 }

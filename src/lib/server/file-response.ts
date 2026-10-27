@@ -83,10 +83,15 @@ export async function fileResponse(
 		const stream = new ReadableStream<Uint8Array>({
 			start(controller) { sink = controller; },
 			async pull(controller) {
+				let phase = "read";
+				let nextBytes = 0, upstreamDone = false;
 				try {
 					const next = await readWithSignal(input, signal);
+					nextBytes = next.value?.length ?? 0; upstreamDone = next.done;
 					signal.throwIfAborted();
+					phase = "reauthorize";
 					if (Date.now() - checkedAt >= 5000 || sinceCheck >= 8 * 1024 * 1024) await recheck();
+					phase = "length";
 					if (next.done) {
 						if (received !== expected) throw new AppError("STORAGE_UNAVAILABLE", 503);
 						controller.close(); finish();
@@ -95,7 +100,14 @@ export async function fileResponse(
 						received += next.value.length; sinceCheck += next.value.length;
 						controller.enqueue(next.value);
 					}
-				} catch {
+				} catch (error) {
+					if (process.env.PM_SERVER_TIMING === "1") {
+						const known = ["AUTH_REQUIRED", "LINK_UNAVAILABLE", "NOT_FOUND", "IMAGE_VERSION_CONFLICT", "STORAGE_UNAVAILABLE", "DATABASE_TIMEOUT", "DATABASE_BUSY", "DEPENDENCY_UNAVAILABLE", "DEPENDENCY_TIMEOUT"];
+						const contextUnavailable = error instanceof Error && /cookies|request scope|request store/i.test(error.message);
+						console.warn(JSON.stringify({ event: "private_transfer_interrupted", phase,
+							code: error instanceof AppError && known.includes(error.code) ? error.code : contextUnavailable ? "REQUEST_CONTEXT_UNAVAILABLE" : "STREAM_INTERRUPTED",
+							receivedBytes: received, expectedBytes: expected, nextBytes, upstreamDone, aborted: signal.aborted }));
+					}
 					if (!ended) controller.error(new Error("PRIVATE_DOWNLOAD_INTERRUPTED"));
 					finish();
 				}

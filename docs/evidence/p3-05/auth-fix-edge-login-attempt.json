@@ -1,0 +1,33 @@
+{
+  "checkedAt": "2026-10-27T17:16:06.989Z",
+  "source": "290f63ef910d8cc359f624bee13b344179d97def5c1aad97d77e1e6864670adc",
+  "origin": "https://partmeasure-staging-cb3o8awbd-messup-s-projects.vercel.app",
+  "status": "NOT_PASSED",
+  "scope": "Installed Edge normal hydrated Owner UI login and existing project read only",
+  "traffic": [
+    {
+      "path": "/api/csrf",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/login",
+      "status": 200
+    }
+  ],
+  "blocked": [
+    {
+      "method": "GET",
+      "reason": "outside-read-only-scope"
+    },
+    {
+      "method": "GET",
+      "reason": "outside-read-only-scope"
+    }
+  ],
+  "pageErrors": [],
+  "projectReadStatus": 200,
+  "error": {
+    "name": "AssertionError",
+    "code": "ERR_ASSERTION"
+  }
+}

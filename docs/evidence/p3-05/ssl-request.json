@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-10-27T14:43:37.479Z",
+  "scope": "One pre-auth SSLRequest per configured runtime/session port; no credentials/SQL; does not certify TLS handshake or ongoing reliability",
+  "results": [
+    {
+      "endpoint": "DATABASE_URL",
+      "milliseconds": 674,
+      "classification": "POSTGRES_ERROR_BEFORE_TLS",
+      "sqlState": "08P01",
+      "reason": "unclassified"
+    },
+    {
+      "endpoint": "EVENT_DATABASE_URL",
+      "milliseconds": 618,
+      "classification": "SSL_SUPPORTED",
+      "bytes": 1
+    }
+  ]
+}

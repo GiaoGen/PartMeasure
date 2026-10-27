@@ -1,0 +1,222 @@
+{
+  "checkedAt": "2026-10-27T15:56:52.586Z",
+  "run": "c82d9295-c010-4fd9-8a7d-e58c0c6d7cef",
+  "mode": "increment",
+  "source": "8044849d678df5a24ea12b0bd9f47bdbd044665e177e115784df8b18da54910d",
+  "sourceUnchanged": true,
+  "driverSha256": "5220d6a1df409030680d248cc3985681a46c9292486045cfb9d3d05530139a39",
+  "driverUnchanged": true,
+  "browser": "155.0.8059.85",
+  "origin": "https://partmeasure-staging-gre1b1crp-messup-s-projects.vercel.app",
+  "scope": "Actual candidate application + real isolated Auth/runtime/Storage; desktop Chrome only. Each scenario records environment; no phone/cloud restore acceptance.",
+  "results": [
+    {
+      "name": "normal_owner_auth_and_continuous_representative_reads",
+      "status": "PASS",
+      "milliseconds": 1595
+    },
+    {
+      "name": "create_one_new_share_and_normal_guest",
+      "status": "PASS",
+      "milliseconds": 15928
+    },
+    {
+      "name": "actual_event_preserves_unsaved_owner_and_guest_delivery_input",
+      "status": "NOT_PASSED",
+      "milliseconds": 37393,
+      "errorClass": "TimeoutError",
+      "code": "BROWSER_OR_ASSERTION_FAILED",
+      "httpStatus": null,
+      "line": 236
+    },
+    {
+      "name": "revoke_after_incomplete_increment",
+      "status": "PASS",
+      "milliseconds": 1956
+    }
+  ],
+  "traffic": [
+    {
+      "role": "owner",
+      "kind": "auth",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "api",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "share",
+      "status": 201,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "api",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "events",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "preview",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "preview",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "preview",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "events",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "share",
+      "status": 200,
+      "timing": null
+    }
+  ],
+  "downloads": [],
+  "errors": [],
+  "blocked": [],
+  "operations": {
+    "share": "done",
+    "guest1": "done",
+    "revoke": "done"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "run": "d700b91c-ea96-4114-8fad-d5f14f1b25b0",
+  "approvedAt": "2026-10-27T16:05:17.497Z",
+  "limits": {
+    "shares": 1,
+    "guests": 1,
+    "comments": 1,
+    "commentCharacters": 200,
+    "uploads": 0,
+    "newVersions": 0,
+    "cleanup": 0,
+    "mail": 0,
+    "deploy": 0
+  }
+}

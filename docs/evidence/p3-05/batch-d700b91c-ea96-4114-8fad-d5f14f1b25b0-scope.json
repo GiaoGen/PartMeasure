@@ -1,0 +1,40 @@
+{
+  "run": "d700b91c-ea96-4114-8fad-d5f14f1b25b0",
+  "root": "https://partmeasure-staging-gre1b1crp-messup-s-projects.vercel.app",
+  "source": "8044849d678df5a24ea12b0bd9f47bdbd044665e177e115784df8b18da54910d",
+  "project": {
+    "id": "98493feb-2b6f-4454-81ae-7960e84efff8",
+    "name": "FIX-C-3acb7520-5d8e-4c9e-9a10-e8450c5798bf",
+    "description": "合成收口验证；不是客户工程资料；不自动删除",
+    "revision": 1,
+    "createdAt": "2026-10-27T04:55:54.998Z",
+    "archivedAt": null,
+    "folderId": null,
+    "folder": null
+  },
+  "photo": "b03de3d3-6a8e-4278-aa74-b7e95dffd17b",
+  "syntheticPhoto": "2c1d2af6-15e5-495f-99eb-a7d47b27bedb",
+  "cad": "3b8391b0-f4aa-4c97-879f-e05a8cfe73d6",
+  "v1": "bc6dbf42-fc56-4306-be2b-9e0186e7bea9",
+  "v2": "3cb242be-75d5-4398-b7a8-e4d637d81375",
+  "privateDraft": "cd0e5a49-1607-4ded-a040-93f1859b605c",
+  "privateFile": "87979567-ab21-407d-93de-8ec90f303e23",
+  "pdf": {
+    "id": "4bcfb4e7-905e-4e04-9aca-216051c1280a",
+    "duplicate": false
+  },
+  "limits": {
+    "shares": 1,
+    "guests": 1,
+    "comments": 1,
+    "commentCharacters": 200,
+    "uploads": 0,
+    "newVersions": 0,
+    "cleanup": 0,
+    "mail": 0,
+    "deploy": 0
+  },
+  "approvalStatus": "PROPOSED_NOT_AUTHORIZED",
+  "reusesReadEvidenceFrom": "c82d9295-c010-4fd9-8a7d-e58c0c6d7cef",
+  "approval": "Requires explicit new human authorization before increment; no old authorization reused"
+}

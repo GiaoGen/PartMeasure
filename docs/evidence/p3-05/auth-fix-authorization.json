@@ -1,0 +1,10 @@
+{
+  "recordedAt": "2026-10-27T17:12:34.769Z",
+  "status": "APPROVED",
+  "sourceDigest": "290f63ef910d8cc359f624bee13b344179d97def5c1aad97d77e1e6864670adc",
+  "maximumDeployments": 1,
+  "ownerUILogins": 1,
+  "businessWrites": 0,
+  "scope": "Existing staging Preview only; native POST security fix; installed Edge normal Owner login and existing project read. Human explicit approval in current chat; no production, env/domain/plan/migration changes.",
+  "environmentMetadataSha256": "9ca006929eb7c8989c459d0915c2c552c9d38f43fef9bab83d2df71e39790b73"
+}

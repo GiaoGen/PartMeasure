@@ -1,0 +1,204 @@
+{
+  "checkedAt": "2026-10-27T14:37:38.622Z",
+  "run": "c82d9295-c010-4fd9-8a7d-e58c0c6d7cef",
+  "mode": "read",
+  "source": "05c6fe04e0fa4c086ef18e8ca5a598b417956590d5ac7415585ad1c77f478c0c",
+  "sourceUnchanged": true,
+  "driverSha256": "743be0caf7cbc0b19d2c227a38bb9dc62de4f3393e9d5570177bb5bfbbca7946",
+  "driverUnchanged": true,
+  "browser": "155.0.8059.85",
+  "scope": "Current local production candidate, real isolated Auth/runtime/Storage; desktop Chrome only. No phone/hosted/cloud restore acceptance.",
+  "results": [
+    {
+      "name": "normal_owner_auth_and_continuous_representative_reads",
+      "status": "PASS",
+      "milliseconds": 38120
+    },
+    {
+      "name": "saved_photo_and_actual_png_jpg_pdf_exports",
+      "status": "PASS",
+      "milliseconds": 119691
+    },
+    {
+      "name": "actual_selected_zip_with_originals_and_existing_version",
+      "status": "NOT_PASSED",
+      "milliseconds": 30017,
+      "errorClass": "TimeoutError",
+      "code": "BROWSER_OR_ASSERTION_FAILED",
+      "httpStatus": null,
+      "line": 154
+    }
+  ],
+  "traffic": [
+    {
+      "role": "owner",
+      "kind": "auth",
+      "status": 200,
+      "timing": "pool;dur=3749.4, pool_count;desc=\"2\", sql;dur=4363.0, sql_count;desc=\"8\", auth;dur=3591.3, auth_count;desc=\"1\", app;dur=11716.2"
+    },
+    {
+      "role": "owner",
+      "kind": "auth",
+      "status": 200,
+      "timing": "auth;dur=1180.2, auth_count;desc=\"1\", app;dur=1182.1"
+    },
+    {
+      "role": "owner",
+      "kind": "api",
+      "status": 200,
+      "timing": "auth;dur=543.4, auth_count;desc=\"1\", pool;dur=0.3, pool_count;desc=\"2\", sql;dur=6466.0, sql_count;desc=\"9\", preflight;dur=1654.5, preflight_count;desc=\"1\", app;dur=7011.8"
+    },
+    {
+      "role": "owner",
+      "kind": "api",
+      "status": 200,
+      "timing": "auth;dur=1016.6, auth_count;desc=\"1\", pool;dur=0.3, pool_count;desc=\"2\", sql;dur=4921.9, sql_count;desc=\"9\", preflight;dur=2447.2, preflight_count;desc=\"1\", app;dur=5941.1"
+    },
+    {
+      "role": "owner",
+      "kind": "api",
+      "status": 200,
+      "timing": "auth;dur=1838.8, auth_count;desc=\"1\", pool;dur=0.3, pool_count;desc=\"2\", sql;dur=5078.8, sql_count;desc=\"10\", preflight;dur=2342.5, preflight_count;desc=\"1\", app;dur=6920.2"
+    },
+    {
+      "role": "owner",
+      "kind": "api",
+      "status": 200,
+      "timing": "auth;dur=952.0, auth_count;desc=\"1\", pool;dur=0.4, pool_count;desc=\"2\", sql;dur=4166.9, sql_count;desc=\"10\", preflight;dur=1535.4, preflight_count;desc=\"1\", app;dur=5121.3"
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": "app;dur=0.7"
+    },
+    {
+      "role": "owner",
+      "kind": "events",
+      "status": 503,
+      "timing": "auth;dur=1330.3, auth_count;desc=\"1\", pool;dur=2841.7, pool_count;desc=\"1\", sql;dur=2749.2, sql_count;desc=\"4\", app;dur=7860.5"
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": "auth;dur=1348.4, auth_count;desc=\"1\", pool;dur=1777.3, pool_count;desc=\"2\", sql;dur=5178.6, sql_count;desc=\"9\", preflight;dur=3126.5, preflight_count;desc=\"1\", app;dur=8306.5"
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": "auth;dur=2080.3, auth_count;desc=\"1\", pool;dur=2995.3, pool_count;desc=\"2\", sql;dur=3721.0, sql_count;desc=\"9\", preflight;dur=4157.5, preflight_count;desc=\"1\", app;dur=8799.3"
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": "auth;dur=1336.6, auth_count;desc=\"1\", pool;dur=3440.1, pool_count;desc=\"2\", sql;dur=4479.2, sql_count;desc=\"9\", preflight;dur=5483.5, preflight_count;desc=\"1\", app;dur=9257.3"
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": "auth;dur=1013.8, auth_count;desc=\"1\", pool;dur=0.4, pool_count;desc=\"2\", sql;dur=7138.2, sql_count;desc=\"10\", preflight;dur=2848.4, preflight_count;desc=\"1\", app;dur=8154.9"
+    },
+    {
+      "role": "owner",
+      "kind": "events",
+      "status": 200,
+      "timing": "auth;dur=1027.7, auth_count;desc=\"1\", pool;dur=0.4, pool_count;desc=\"2\", sql;dur=4517.1, sql_count;desc=\"9\", app;dur=8967.1"
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timing": "auth;dur=3344.9, auth_count;desc=\"2\", pool;dur=2.1, pool_count;desc=\"3\", sql;dur=8140.6, sql_count;desc=\"14\", preflight;dur=2918.4, preflight_count;desc=\"1\", storage_sign;dur=1778.6, storage_sign_count;desc=\"1\", storage_fetch;dur=848.1, storage_fetch_count;desc=\"1\", app;dur=14443.3"
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timing": "auth;dur=2535.5, auth_count;desc=\"2\", pool;dur=0.7, pool_count;desc=\"3\", sql;dur=8314.6, sql_count;desc=\"14\", preflight;dur=3422.9, preflight_count;desc=\"1\", storage_sign;dur=2663.9, storage_sign_count;desc=\"1\", storage_fetch;dur=1023.2, storage_fetch_count;desc=\"1\", app;dur=14540.3"
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": "auth;dur=720.0, auth_count;desc=\"1\", pool;dur=0.3, pool_count;desc=\"2\", sql;dur=9312.3, sql_count;desc=\"13\", preflight;dur=2263.6, preflight_count;desc=\"1\", app;dur=10049.8"
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timing": "auth;dur=1844.8, auth_count;desc=\"2\", pool;dur=0.9, pool_count;desc=\"3\", sql;dur=7912.2, sql_count;desc=\"14\", preflight;dur=2252.2, preflight_count;desc=\"1\", storage_sign;dur=1101.1, storage_sign_count;desc=\"1\", storage_fetch;dur=1192.0, storage_fetch_count;desc=\"1\", app;dur=12053.3"
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timing": "auth;dur=2033.1, auth_count;desc=\"2\", pool;dur=0.8, pool_count;desc=\"3\", sql;dur=8943.8, sql_count;desc=\"14\", preflight;dur=3841.7, preflight_count;desc=\"1\", storage_sign;dur=3886.4, storage_sign_count;desc=\"1\", storage_fetch;dur=921.2, storage_fetch_count;desc=\"1\", app;dur=15787.6"
+    },
+    {
+      "role": "owner",
+      "kind": "image-access",
+      "status": 200,
+      "timing": "auth;dur=692.5, auth_count;desc=\"1\", pool;dur=0.1, pool_count;desc=\"2\", sql;dur=4645.8, sql_count;desc=\"9\", preflight;dur=1915.7, preflight_count;desc=\"1\", app;dur=5340.3"
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": "auth;dur=1411.9, auth_count;desc=\"1\", pool;dur=0.4, pool_count;desc=\"2\", sql;dur=10779.3, sql_count;desc=\"13\", preflight;dur=4006.4, preflight_count;desc=\"1\", app;dur=12195.1"
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timing": "auth;dur=1759.2, auth_count;desc=\"1\", pool;dur=0.5, pool_count;desc=\"3\", sql;dur=8150.3, sql_count;desc=\"14\", preflight;dur=1879.0, preflight_count;desc=\"1\", storage_sign;dur=1439.0, storage_sign_count;desc=\"1\", storage_fetch;dur=773.5, storage_fetch_count;desc=\"1\", app;dur=12124.6"
+    },
+    {
+      "role": "owner",
+      "kind": "image-access",
+      "status": 200,
+      "timing": "auth;dur=928.9, auth_count;desc=\"1\", pool;dur=0.2, pool_count;desc=\"2\", sql;dur=6135.9, sql_count;desc=\"9\", preflight;dur=3886.1, preflight_count;desc=\"1\", app;dur=7066.0"
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": "auth;dur=1575.2, auth_count;desc=\"1\", pool;dur=0.4, pool_count;desc=\"2\", sql;dur=8740.6, sql_count;desc=\"14\", preflight;dur=1953.3, preflight_count;desc=\"1\", app;dur=10324.7"
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timing": "auth;dur=812.9, auth_count;desc=\"1\", pool;dur=0.6, pool_count;desc=\"3\", sql;dur=6969.8, sql_count;desc=\"14\", preflight;dur=1842.8, preflight_count;desc=\"1\", storage_sign;dur=977.0, storage_sign_count;desc=\"1\", storage_fetch;dur=912.5, storage_fetch_count;desc=\"1\", app;dur=9674.8"
+    },
+    {
+      "role": "owner",
+      "kind": "image-access",
+      "status": 200,
+      "timing": "auth;dur=1447.6, auth_count;desc=\"1\", pool;dur=0.3, pool_count;desc=\"2\", sql;dur=5003.9, sql_count;desc=\"9\", preflight;dur=2511.8, preflight_count;desc=\"1\", app;dur=6453.0"
+    }
+  ],
+  "downloads": [
+    {
+      "name": "annotated.png",
+      "bytes": 1221839,
+      "sha256": "25de400ccf142c2ca73f48c22f099ae7d9c32309ecaf30bbcd7d725f906e15df"
+    },
+    {
+      "name": "annotated.jpg",
+      "bytes": 1268706,
+      "sha256": "fdf9ed1fab3e79cd8d1b45a3071368e7913aa2ad15a823f38198e4890f9ed047"
+    },
+    {
+      "name": "annotated.pdf",
+      "bytes": 3336014,
+      "sha256": "ca90c7c8a5d14f91c18e94cf73b06fe5521475ef3e37eee3e8ad8b493f5cec1d"
+    }
+  ],
+  "errors": [],
+  "blocked": [],
+  "operations": {}
+}

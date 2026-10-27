@@ -131,6 +131,9 @@ async function handle(req: Request, context: Context) {
 					...input,
 					type: "signup",
 				}));
+				if (error && (error.name === "AuthRetryableFetchError" || error.status === 0 || (error.status ?? 0) >= 500))
+					throw new AppError("AUTH_UNAVAILABLE", 503);
+				if (error?.status === 429) throw new AppError("RATE_LIMITED", 429);
 				if (error) throw new AppError("OTP_INVALID_OR_EXPIRED", 422);
 				return response({ verified: true });
 			}

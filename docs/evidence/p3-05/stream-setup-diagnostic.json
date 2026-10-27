@@ -1,0 +1,8 @@
+{
+  "checkedAt": "2026-10-27T16:10:15.338Z",
+  "run": "d700b91c-ea96-4114-8fad-d5f14f1b25b0",
+  "scope": "One normal real Owner HTTP verification and local restricted DAL metadata read. No Storage bytes, business writes, new session/share or network changes; not Guest/inflight acceptance.",
+  "status": "PASS",
+  "byteSize": 2619007,
+  "milliseconds": 6270
+}

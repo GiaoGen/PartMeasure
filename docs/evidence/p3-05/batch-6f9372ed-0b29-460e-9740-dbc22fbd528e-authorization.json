@@ -1,0 +1,15 @@
+{
+  "run": "6f9372ed-0b29-460e-9740-dbc22fbd528e",
+  "approvedAt": "2026-10-27T16:35:10.353Z",
+  "limits": {
+    "shares": 1,
+    "guests": 1,
+    "comments": 0,
+    "commentCharacters": 200,
+    "uploads": 0,
+    "newVersions": 0,
+    "cleanup": 0,
+    "mail": 0,
+    "deploy": 0
+  }
+}

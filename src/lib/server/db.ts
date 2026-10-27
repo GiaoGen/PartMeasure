@@ -51,6 +51,11 @@ async function oneTransaction<T>(
 ): Promise<T> {
 	const client = observedClient(await timed("pool", () => getPool(worker).connect()));
 	let broken = false;
+	let connectionError: Error | undefined;
+	// Pool handles errors only while a client is idle. A leased client can emit
+	// between queries; retain that failure instead of crashing the Next process.
+	const failed = (error: Error) => { broken = true; connectionError = error; };
+	client.on("error", failed);
 	try {
 		await client.query("begin");
 		const { rows } = await client.query(
@@ -65,7 +70,9 @@ async function oneTransaction<T>(
 		)
 			throw new AppError("UNSAFE_DATABASE_ROLE", 503);
 		const value = await work(client);
+		if (connectionError) throw connectionError;
 		await client.query("commit");
+		if (connectionError) throw connectionError;
 		return value;
 	} catch (error) {
 		try {
@@ -75,6 +82,7 @@ async function oneTransaction<T>(
 		}
 		throw error;
 	} finally {
+		client.removeListener("error", failed);
 		client.release(broken);
 	}
 }

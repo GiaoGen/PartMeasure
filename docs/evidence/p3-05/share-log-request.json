@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-27T16:25:04.362Z",
+  "run": "d700b91c-ea96-4114-8fad-d5f14f1b25b0",
+  "tokenHash": "f41132f0024a3c34b1d9aed0834a18f1d97c0b507ba721ba6e195c018fcac190",
+  "scope": "Exactly one GET of this batch already-revoked share landing URL, no JS/bootstrap/new Guest or writes. Then inspect hosted logs; raw URL/token never enters evidence.",
+  "risk": "The hosting provider may collect the revoked capability in its request path logs. This is the specific additional exposure requiring approval.",
+  "status": "REQUEST_SENT_LOG_REVIEW_PENDING",
+  "requestsSent": 1,
+  "httpStatus": 200,
+  "requestId": "sfo1::hnd1::kxfhp-1793118305429-0c94169a4b20",
+  "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+  "referrerPolicy": "no-referrer"
+}

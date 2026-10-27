@@ -1,0 +1,11 @@
+{
+  "run": "d700b91c-ea96-4114-8fad-d5f14f1b25b0",
+  "source": "8044849d678df5a24ea12b0bd9f47bdbd044665e177e115784df8b18da54910d",
+  "scope": "Real authenticated Guest session, actual fileResponse/fileAuthorizer/RLS/Storage; controlled paused consumer, real time. Service-layer stream, not browser HTTP/phone/hosted evidence.",
+  "status": "NOT_PASSED",
+  "failure": {
+    "stage": "authorize_and_open",
+    "kind": "unclassified",
+    "code": "DEPENDENCY_FAILED"
+  }
+}

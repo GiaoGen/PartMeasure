@@ -1,0 +1,68 @@
+{
+  "checkedAt": "2026-10-27T14:40:33.781Z",
+  "run": "c82d9295-c010-4fd9-8a7d-e58c0c6d7cef",
+  "mode": "read",
+  "source": "05c6fe04e0fa4c086ef18e8ca5a598b417956590d5ac7415585ad1c77f478c0c",
+  "sourceUnchanged": true,
+  "driverSha256": "a86f28e4610c9dc63c017a51f52c2699861bb560cba48365f1cf44bb8411ae0c",
+  "driverUnchanged": true,
+  "browser": "155.0.8059.85",
+  "scope": "Current local production candidate, real isolated Auth/runtime/Storage; desktop Chrome only. No phone/hosted/cloud restore acceptance.",
+  "results": [
+    {
+      "name": "normal_owner_auth_and_continuous_representative_reads",
+      "status": "REUSED_PASS",
+      "source": "05c6fe04e0fa4c086ef18e8ca5a598b417956590d5ac7415585ad1c77f478c0c"
+    },
+    {
+      "name": "saved_photo_and_actual_png_jpg_pdf_exports",
+      "status": "REUSED_PASS",
+      "source": "05c6fe04e0fa4c086ef18e8ca5a598b417956590d5ac7415585ad1c77f478c0c"
+    },
+    {
+      "name": "actual_selected_zip_with_originals_and_existing_version",
+      "status": "NOT_PASSED",
+      "milliseconds": 56406,
+      "errorClass": "Error",
+      "code": "BROWSER_OR_ASSERTION_FAILED",
+      "httpStatus": null,
+      "line": 158
+    }
+  ],
+  "traffic": [
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": "app;dur=0.2"
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 503,
+      "timing": "auth;dur=1826.8, auth_count;desc=\"1\", pool;dur=10016.2, pool_count;desc=\"1\", preflight;dur=10016.3, preflight_count;desc=\"1\", app;dur=11844.2"
+    },
+    {
+      "role": "owner",
+      "kind": "events",
+      "status": 503,
+      "timing": "auth;dur=1149.6, auth_count;desc=\"1\", pool;dur=0.2, pool_count;desc=\"1\", sql;dur=2371.2, sql_count;desc=\"4\", app;dur=13528.0"
+    },
+    {
+      "role": "owner",
+      "kind": "events",
+      "status": 503,
+      "timing": "auth;dur=10644.3, auth_count;desc=\"1\", app;dur=10645.7"
+    },
+    {
+      "role": "owner",
+      "kind": "events",
+      "status": 503,
+      "timing": "auth;dur=10632.3, auth_count;desc=\"1\", app;dur=10633.3"
+    }
+  ],
+  "downloads": [],
+  "errors": [],
+  "blocked": [],
+  "operations": {}
+}

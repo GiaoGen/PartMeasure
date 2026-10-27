@@ -1,0 +1,18 @@
+{
+  "results": [
+    {
+      "path": "public/cv/LICENSE.txt",
+      "status": 200,
+      "bytes": 11357,
+      "localSha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "remoteSha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    {
+      "path": "public/cv/worker-v1.js",
+      "status": 200,
+      "bytes": 468260,
+      "localSha256": "9f0c8ab8024212c226a2da2a2e29ebd58c203dab79834302c85825b6b96519c9",
+      "remoteSha256": "9f0c8ab8024212c226a2da2a2e29ebd58c203dab79834302c85825b6b96519c9"
+    }
+  ]
+}

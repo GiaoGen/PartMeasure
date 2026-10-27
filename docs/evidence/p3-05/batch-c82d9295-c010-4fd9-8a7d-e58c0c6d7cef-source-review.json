@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-27T15:47:40.757Z",
+  "previousSource": "b6bc6e22d40d09ee92dfe900246967efa0398857d84b6b1df02800084a2b8e31",
+  "currentSource": "8044849d678df5a24ea12b0bd9f47bdbd044665e177e115784df8b18da54910d",
+  "previousRoot": "https://partmeasure-staging-6cqdtoujr-messup-s-projects.vercel.app",
+  "newRoot": "https://partmeasure-staging-gre1b1crp-messup-s-projects.vercel.app",
+  "changed": [
+    "next.config.ts"
+  ],
+  "evidenceReuse": "Actual local PNG/JPG/PDF bytes/visual checks remain valid: no renderer/snapshot/authorization contract changed. Hosted representative reads and unfinished scenarios must run anew."
+}

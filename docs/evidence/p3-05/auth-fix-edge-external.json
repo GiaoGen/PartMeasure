@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-10-27T17:17:12.150Z",
+  "scope": "Anonymous read-only diagnosis; all external requests aborted, no credentials or login",
+  "external": [
+    {
+      "origin": "https://vercel.live",
+      "path": "/_next-live/feedback/feedback.js",
+      "method": "GET"
+    }
+  ]
+}

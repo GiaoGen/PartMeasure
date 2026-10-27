@@ -1,9 +1,18 @@
 import type { NextConfig } from 'next';
-import { buildId } from './src/lib/build-info';
+import { releaseSource } from './scripts/release/fingerprint';
 import { CV_WORKER_CSP, CV_WORKER_URL } from './src/lib/cv/protocol';
 
+const release = releaseSource();
+// Public build inputs only. Per-file checksums make platform/cache transformations
+// diagnosable without exposing environment variables or guessing from an opaque ID.
+if (process.env.VERCEL === '1') {
+  console.info(JSON.stringify({ event: 'release_build_source', digest: release.digest, buildId: release.buildId, count: release.files.length }));
+  for (let index = 0; index < release.files.length; index += 15)
+    console.info(JSON.stringify({ event: 'release_build_inputs', digest: release.digest, files: release.files.slice(index, index + 15) }));
+}
 const config: NextConfig = {
-  generateBuildId: async () => buildId,
+  generateBuildId: async () => release.buildId,
+  env: { PM_BUILD_ID: release.buildId },
   reactStrictMode: true,
   poweredByHeader: false,
   logging: { incomingRequests: false, serverFunctions: false, browserToTerminal: false },

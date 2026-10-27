@@ -17,6 +17,7 @@ describe("migrated entry server rendering", () => {
 	});
 	it("keeps real password login and client registration guidance", () => {
 		const html = renderToStaticMarkup(createElement(AuthForm));
+		expect(html).toMatch(/<form[^>]*method="post"/);
 		expect(html).toContain('type="password"');
 		expect(html).toContain('autoComplete="current-password"');
 		expect(html).toContain("显示密码");

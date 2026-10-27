@@ -1,0 +1,31 @@
+{
+  "run": "c82d9295-c010-4fd9-8a7d-e58c0c6d7cef",
+  "scope": "Independent Pillow/pypdf/zipfile on actual browser downloads. Visual PDF page review recorded separately; not phone/hosted evidence.",
+  "results": [
+    {
+      "name": "png_independent_decode",
+      "status": "PASS",
+      "width": 1280,
+      "height": 3035,
+      "sha256": "25de400ccf142c2ca73f48c22f099ae7d9c32309ecaf30bbcd7d725f906e15df"
+    },
+    {
+      "name": "jpg_independent_decode",
+      "status": "PASS",
+      "width": 1280,
+      "height": 3035,
+      "sha256": "fdf9ed1fab3e79cd8d1b45a3071368e7913aa2ad15a823f38198e4890f9ed047"
+    },
+    {
+      "name": "actual_pdf_all_pages_A4_raster",
+      "status": "PASS",
+      "pages": 5,
+      "sha256": "ca90c7c8a5d14f91c18e94cf73b06fe5521475ef3e37eee3e8ad8b493f5cec1d"
+    },
+    {
+      "name": "actual_zip_CRC_UTF8_all_hashes_selected_scope",
+      "status": "PASS",
+      "entries": 9
+    }
+  ]
+}

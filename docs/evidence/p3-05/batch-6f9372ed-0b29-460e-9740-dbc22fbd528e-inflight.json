@@ -1,0 +1,23 @@
+{
+  "run": "6f9372ed-0b29-460e-9740-dbc22fbd528e",
+  "source": "8044849d678df5a24ea12b0bd9f47bdbd044665e177e115784df8b18da54910d",
+  "scope": "Real authenticated Guest session, actual fileResponse/fileAuthorizer/RLS/Storage; controlled paused consumer, real time. Service-layer stream, not browser HTTP/phone/hosted evidence.",
+  "authorizationChecks": [
+    {
+      "status": "PASS",
+      "milliseconds": 8009
+    },
+    {
+      "status": "PASS",
+      "milliseconds": 3265
+    }
+  ],
+  "firstChunkBytes": 36875,
+  "authorizationFailure": {
+    "code": "LINK_UNAVAILABLE",
+    "status": 401
+  },
+  "status": "PASS",
+  "elapsedMsAfterFirstChunk": 8603,
+  "additionalChunkReleased": false
+}

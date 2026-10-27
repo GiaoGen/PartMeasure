@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-10-27T16:11:51.986Z",
+  "run": "d700b91c-ea96-4114-8fad-d5f14f1b25b0",
+  "scope": "Normal Owner identity freshly verified over candidate HTTP; actual local fileResponse/RLS/private Storage first chunk, then canceled. Diagnostic only, not Guest or periodic Auth/revocation acceptance.",
+  "status": "PASS",
+  "byteSize": 2619007,
+  "firstChunkBytes": 40960,
+  "milliseconds": 14304
+}

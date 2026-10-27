@@ -1,0 +1,15 @@
+{
+  "recordedAt": "2026-10-27T17:20:40.986Z",
+  "drainApi": {
+    "status": 404,
+    "code": "not_found",
+    "endpoint": "GET /v1/drains",
+    "requestId": "iad1:sfo1:iad1:sfo1::kck65-1793121545933-49eb9b4a6610",
+    "provesNoDrains": false
+  },
+  "browserControl": {
+    "initialization": "failed to write kernel assets: path not found",
+    "nativeFallback": "Initialized installed computer-use runtime; app inventory exposed only Chrome Remote Desktop, no hosting dashboard window. No input actions."
+  },
+  "nextFalsifiableAction": "With an accessible authenticated Vercel dashboard, Agent reads existing project/team Drains/Integrations, log retention/access and Usage once; no setting change, no token-bearing probe or repeat of failed API."
+}

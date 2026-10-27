@@ -1,0 +1,204 @@
+{
+  "checkedAt": "2026-10-27T15:51:25.041Z",
+  "run": "c82d9295-c010-4fd9-8a7d-e58c0c6d7cef",
+  "mode": "read",
+  "source": "8044849d678df5a24ea12b0bd9f47bdbd044665e177e115784df8b18da54910d",
+  "sourceUnchanged": true,
+  "driverSha256": "4a5274296837cbf6570f444b4f8fe7aacbd706dc1ea06894624b4336fa48437c",
+  "driverUnchanged": true,
+  "browser": "155.0.8059.85",
+  "origin": "https://partmeasure-staging-gre1b1crp-messup-s-projects.vercel.app",
+  "scope": "Actual candidate application + real isolated Auth/runtime/Storage; desktop Chrome only. Each scenario records environment; no phone/cloud restore acceptance.",
+  "results": [
+    {
+      "name": "normal_owner_auth_and_continuous_representative_reads",
+      "status": "REUSED_PASS",
+      "checkedSource": "05c6fe04e0fa4c086ef18e8ca5a598b417956590d5ac7415585ad1c77f478c0c",
+      "reviewedCompatibleWith": "8044849d678df5a24ea12b0bd9f47bdbd044665e177e115784df8b18da54910d"
+    },
+    {
+      "name": "saved_photo_and_actual_png_jpg_pdf_exports",
+      "status": "REUSED_PASS",
+      "checkedSource": "05c6fe04e0fa4c086ef18e8ca5a598b417956590d5ac7415585ad1c77f478c0c",
+      "reviewedCompatibleWith": "8044849d678df5a24ea12b0bd9f47bdbd044665e177e115784df8b18da54910d"
+    },
+    {
+      "name": "actual_selected_zip_with_originals_and_existing_version",
+      "status": "PASS",
+      "milliseconds": 19392
+    },
+    {
+      "name": "desktop_unsaved_annotation_tab_history_theme_help_cv_cancel_manual_fallback",
+      "status": "PASS",
+      "milliseconds": 7312
+    }
+  ],
+  "traffic": [
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "events",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 206,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 206,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 206,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 206,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 206,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 206,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "events",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "image-access",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timing": null
+    }
+  ],
+  "downloads": [
+    {
+      "name": "package.zip",
+      "bytes": 517337,
+      "sha256": "92ff218a2ee16b4c4c68d748d1fdaf1445b03e97270a9308c8d22ce5085c9c35"
+    }
+  ],
+  "errors": [],
+  "blocked": [],
+  "operations": {}
+}

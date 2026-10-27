@@ -1,0 +1,33 @@
+{
+  "recordedAt": "2026-10-27T17:20:40.984Z",
+  "sourceDigest": "290f63ef910d8cc359f624bee13b344179d97def5c1aad97d77e1e6864670adc",
+  "fullAfterDbFix": {
+    "unitFiles": 78,
+    "unitTests": 475,
+    "status": "PASS",
+    "logSha256": "d3b25ced90cc0e02c95c862f751aa6574fd02eb006d9546c95929029486604f0"
+  },
+  "afterNativePostFix": {
+    "lint": {
+      "status": "PASS",
+      "files": 474
+    },
+    "strictTypes": "PASS",
+    "affectedUnitTests": {
+      "count": 8,
+      "status": "PASS"
+    },
+    "productionBuild": {
+      "status": "PASS",
+      "id": "p3-05-290f63ef910d8cc359f6",
+      "logSha256": "0bc8420c35917167b37d8973480b01f5fc236aa21463a2473d67565e0a05db7e"
+    },
+    "entrySecurityE2E": {
+      "status": "PASS",
+      "count": 8,
+      "logSha256": "7cd1a2f89422f961d3ed54a72fb328e26b815b91eccf1ccbba13b0329f624b26"
+    }
+  },
+  "coverageBoundary": "E2E default suite is entry/security only. Business evidence uses separately approved real Auth/runtime/Storage driver. Narrow viewport is not an actual phone.",
+  "nativeIdentityRequiredReason": "Five backup ACL tests initially EPERM in sandbox; native full suite passed without weakening ACL."
+}

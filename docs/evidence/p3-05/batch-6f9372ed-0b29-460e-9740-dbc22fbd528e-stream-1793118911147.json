@@ -1,0 +1,104 @@
+{
+  "checkedAt": "2026-10-27T16:35:50.687Z",
+  "run": "6f9372ed-0b29-460e-9740-dbc22fbd528e",
+  "mode": "stream",
+  "source": "8044849d678df5a24ea12b0bd9f47bdbd044665e177e115784df8b18da54910d",
+  "sourceUnchanged": true,
+  "driverSha256": "54917bf0e2a85da1f74ec837caf106a87cacc0a508e5360ad6253aeeb2d5368f",
+  "driverUnchanged": true,
+  "browser": "155.0.8059.85",
+  "origin": "https://partmeasure-staging-gre1b1crp-messup-s-projects.vercel.app",
+  "scope": "Actual candidate application + real isolated Auth/runtime/Storage; desktop Chrome only. Each scenario records environment; no phone/cloud restore acceptance.",
+  "results": [
+    {
+      "name": "normal_owner_auth_and_continuous_representative_reads",
+      "status": "PASS",
+      "milliseconds": 2944
+    },
+    {
+      "name": "create_one_new_share_and_normal_guest",
+      "status": "PASS",
+      "milliseconds": 10041
+    },
+    {
+      "name": "real_service_inflight_setup",
+      "status": "PASS",
+      "milliseconds": 14248,
+      "scope": "Actual source service/RLS/Storage, paused consumer; not hosted HTTP stream"
+    },
+    {
+      "name": "revoke_this_share_then_new_reads_and_browser_cached_access_fail_closed",
+      "status": "PASS",
+      "milliseconds": 3709
+    },
+    {
+      "name": "actual_service_stream_revoked_before_next_chunk",
+      "status": "PASS",
+      "scope": "Real authenticated Guest session, actual fileResponse/fileAuthorizer/RLS/Storage; controlled paused consumer, real time. Service-layer stream, not browser HTTP/phone/hosted evidence."
+    }
+  ],
+  "traffic": [
+    {
+      "role": "owner",
+      "kind": "auth",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "api",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "share",
+      "status": 201,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "api",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "api",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "share",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "api",
+      "status": 401,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "api",
+      "status": 401,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "api",
+      "status": 401,
+      "timing": null
+    }
+  ],
+  "downloads": [],
+  "errors": [],
+  "blocked": [],
+  "operations": {
+    "share": "done",
+    "guest1": "done",
+    "revoke": "done"
+  }
+}

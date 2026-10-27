@@ -1,0 +1,165 @@
+{
+  "checkedAt": "2026-10-27T16:00:14.970Z",
+  "run": "c82d9295-c010-4fd9-8a7d-e58c0c6d7cef",
+  "mode": "preflight",
+  "source": "8044849d678df5a24ea12b0bd9f47bdbd044665e177e115784df8b18da54910d",
+  "sourceUnchanged": true,
+  "driverSha256": "1d7ccc40d7ec347236385e66eb4833f03c0fe6480169dd7ccd98b80e43331ed1",
+  "driverUnchanged": true,
+  "browser": "155.0.8059.85",
+  "origin": "https://partmeasure-staging-gre1b1crp-messup-s-projects.vercel.app",
+  "scope": "Actual candidate application + real isolated Auth/runtime/Storage; desktop Chrome only. Each scenario records environment; no phone/cloud restore acceptance.",
+  "results": [
+    {
+      "name": "normal_owner_auth_and_continuous_representative_reads",
+      "status": "PASS",
+      "milliseconds": 1344
+    },
+    {
+      "name": "owner_inline_delivery_input_and_history_selectors_preflight_unsaved_only",
+      "status": "PASS",
+      "milliseconds": 10696
+    },
+    {
+      "name": "already_revoked_guest_exact_API_and_page_denial_no_new_session",
+      "status": "PASS",
+      "milliseconds": 5296
+    }
+  ],
+  "traffic": [
+    {
+      "role": "owner",
+      "kind": "auth",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "events",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "api",
+      "status": 401,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "api",
+      "status": 401,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "api",
+      "status": 401,
+      "timing": null
+    }
+  ],
+  "downloads": [],
+  "errors": [],
+  "blocked": [],
+  "operations": {
+    "share": "done",
+    "guest1": "done",
+    "revoke": "done"
+  }
+}

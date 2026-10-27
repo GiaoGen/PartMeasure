@@ -1,0 +1,421 @@
+{
+  "checkedAt": "2026-10-27T16:06:16.434Z",
+  "run": "d700b91c-ea96-4114-8fad-d5f14f1b25b0",
+  "mode": "increment",
+  "source": "8044849d678df5a24ea12b0bd9f47bdbd044665e177e115784df8b18da54910d",
+  "sourceUnchanged": true,
+  "driverSha256": "5f318f643f3a79c4c64038816ea8e2a7f3f19922f663c4713753e951dc3c60ca",
+  "driverUnchanged": true,
+  "browser": "155.0.8059.85",
+  "origin": "https://partmeasure-staging-gre1b1crp-messup-s-projects.vercel.app",
+  "scope": "Actual candidate application + real isolated Auth/runtime/Storage; desktop Chrome only. Each scenario records environment; no phone/cloud restore acceptance.",
+  "results": [
+    {
+      "name": "normal_owner_auth_and_continuous_representative_reads",
+      "status": "PASS",
+      "milliseconds": 2279
+    },
+    {
+      "name": "create_one_new_share_and_normal_guest",
+      "status": "PASS",
+      "milliseconds": 12001
+    },
+    {
+      "name": "actual_event_preserves_unsaved_owner_and_guest_delivery_input",
+      "status": "PASS",
+      "milliseconds": 14195
+    },
+    {
+      "name": "real_guest_cache_is_authenticated_before_reuse",
+      "status": "PASS",
+      "milliseconds": 12406
+    },
+    {
+      "name": "real_service_inflight_setup",
+      "status": "NOT_PASSED",
+      "milliseconds": 10097,
+      "scope": "Actual source service/RLS/Storage, paused consumer; not hosted HTTP stream"
+    },
+    {
+      "name": "revoke_this_share_then_new_reads_and_browser_cached_access_fail_closed",
+      "status": "PASS",
+      "milliseconds": 5174
+    },
+    {
+      "name": "actual_service_stream_revoked_before_next_chunk",
+      "status": "NOT_PASSED",
+      "scope": "Real authenticated Guest session, actual fileResponse/fileAuthorizer/RLS/Storage; controlled paused consumer, real time. Service-layer stream, not browser HTTP/phone/hosted evidence."
+    }
+  ],
+  "traffic": [
+    {
+      "role": "owner",
+      "kind": "auth",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "api",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "share",
+      "status": 201,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "api",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "events",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "preview",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "preview",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "preview",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "events",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "preview",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "api",
+      "status": 201,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "events",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "preview",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "preview",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "events",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "preview",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "preview",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "image-access",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "share",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "api",
+      "status": 401,
+      "timing": null
+    },
+    {
+      "role": "owner",
+      "kind": "business-read",
+      "status": 200,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "api",
+      "status": 401,
+      "timing": null
+    },
+    {
+      "role": "guest",
+      "kind": "api",
+      "status": 401,
+      "timing": null
+    }
+  ],
+  "downloads": [],
+  "errors": [],
+  "blocked": [],
+  "operations": {
+    "share": "done",
+    "guest1": "done",
+    "comment": "done",
+    "revoke": "done"
+  }
+}

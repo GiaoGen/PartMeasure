@@ -1,0 +1,236 @@
+{
+  "checkedAt": "2026-10-27T14:37:19.629Z",
+  "project": "rvysclscetfqicpnzlra",
+  "scope": "Admin read-only metadata; never ordinary-role acceptance, no business writes/config changes",
+  "migrations": {
+    "applied": [
+      {
+        "version": "20261016093639",
+        "name": "p0_0_isolated_service_lab"
+      },
+      {
+        "version": "20261016104229",
+        "name": "p0_1_auth_projects_shares_files"
+      },
+      {
+        "version": "20261016110618",
+        "name": "p0_1_pipeline_recovery"
+      },
+      {
+        "version": "20261016112509",
+        "name": "p0_1_upload_grant_window"
+      },
+      {
+        "version": "20261016112632",
+        "name": "p0_1_policy_indexes"
+      },
+      {
+        "version": "20261016113046",
+        "name": "p0_1_worker_share_lock"
+      },
+      {
+        "version": "20261016115841",
+        "name": "p0_1_file_rls_and_context"
+      },
+      {
+        "version": "20261016132859",
+        "name": "p0_2_annotations_file_issues"
+      },
+      {
+        "version": "20261017145122",
+        "name": "p0_3_measurement_workflow"
+      },
+      {
+        "version": "20261017152616",
+        "name": "p0_3_issue_response_index"
+      },
+      {
+        "version": "20261017162310",
+        "name": "p0_4_deliveries"
+      },
+      {
+        "version": "20261018010435",
+        "name": "p0_4_worker_purpose_guard"
+      },
+      {
+        "version": "20261019025932",
+        "name": "frontend_backend_alignment"
+      },
+      {
+        "version": "20261019085929",
+        "name": "performance_realtime_thumbnails"
+      },
+      {
+        "version": "20261019093322",
+        "name": "performance_event_visibility_hardening"
+      },
+      {
+        "version": "20261020052757",
+        "name": "lightweight_request_uploads"
+      },
+      {
+        "version": "20261020073647",
+        "name": "annotation_collaboration"
+      },
+      {
+        "version": "20261020085909",
+        "name": "extended_annotation_tools"
+      },
+      {
+        "version": "20261025072814",
+        "name": "p2_02_delivery_feedback"
+      },
+      {
+        "version": "20261025100557",
+        "name": "p2_03_archive_filters"
+      }
+    ],
+    "local": [
+      {
+        "version": "20261016085629",
+        "filename": "20261016085629_infrastructure_baseline.sql"
+      },
+      {
+        "version": "20261016104229",
+        "filename": "20261016104229_p0_1_auth_projects_shares_files.sql"
+      },
+      {
+        "version": "20261016110618",
+        "filename": "20261016110618_p0_1_pipeline_recovery.sql"
+      },
+      {
+        "version": "20261016112509",
+        "filename": "20261016112509_p0_1_upload_grant_window.sql"
+      },
+      {
+        "version": "20261016112632",
+        "filename": "20261016112632_p0_1_policy_indexes.sql"
+      },
+      {
+        "version": "20261016113046",
+        "filename": "20261016113046_p0_1_worker_share_lock.sql"
+      },
+      {
+        "version": "20261016115841",
+        "filename": "20261016115841_p0_1_file_rls_and_context.sql"
+      },
+      {
+        "version": "20261016132859",
+        "filename": "20261016132859_p0_2_annotations_file_issues.sql"
+      },
+      {
+        "version": "20261017145122",
+        "filename": "20261017145122_p0_3_measurement_workflow.sql"
+      },
+      {
+        "version": "20261017152616",
+        "filename": "20261017152616_p0_3_issue_response_index.sql"
+      },
+      {
+        "version": "20261017162310",
+        "filename": "20261017162310_p0_4_deliveries.sql"
+      },
+      {
+        "version": "20261018010435",
+        "filename": "20261018010435_p0_4_worker_purpose_guard.sql"
+      },
+      {
+        "version": "20261019025932",
+        "filename": "20261019025932_frontend_backend_alignment.sql"
+      },
+      {
+        "version": "20261019082939",
+        "filename": "20261019082939_performance_realtime_thumbnails.sql"
+      },
+      {
+        "version": "20261019093029",
+        "filename": "20261019093029_performance_event_visibility_hardening.sql"
+      },
+      {
+        "version": "20261020052757",
+        "filename": "20261020052757_lightweight_request_uploads.sql"
+      },
+      {
+        "version": "20261020073647",
+        "filename": "20261020073647_annotation_collaboration.sql"
+      },
+      {
+        "version": "20261020085909",
+        "filename": "20261020085909_extended_annotation_tools.sql"
+      },
+      {
+        "version": "20261025072814",
+        "filename": "20261025072814_p2_02_delivery_feedback.sql"
+      },
+      {
+        "version": "20261025100557",
+        "filename": "20261025100557_p2_03_archive_filters.sql"
+      }
+    ],
+    "missing": [
+      {
+        "version": "20261016085629",
+        "filename": "20261016085629_infrastructure_baseline.sql"
+      },
+      {
+        "version": "20261019082939",
+        "filename": "20261019082939_performance_realtime_thumbnails.sql"
+      },
+      {
+        "version": "20261019093029",
+        "filename": "20261019093029_performance_event_visibility_hardening.sql"
+      }
+    ],
+    "remoteOnly": [
+      {
+        "version": "20261016093639",
+        "name": "p0_0_isolated_service_lab"
+      },
+      {
+        "version": "20261019085929",
+        "name": "performance_realtime_thumbnails"
+      },
+      {
+        "version": "20261019093322",
+        "name": "performance_event_visibility_hardening"
+      }
+    ]
+  },
+  "migrationEquivalence": [
+    {
+      "localVersion": "20261019082939",
+      "remoteVersion": "20261019085929",
+      "localSha256": "7978b1454b0683cc9df0cef671ea25c5cd289d98017d2265b67d6d01014ce28b",
+      "remoteSha256": "7978b1454b0683cc9df0cef671ea25c5cd289d98017d2265b67d6d01014ce28b",
+      "exactNormalizedMatch": true
+    },
+    {
+      "localVersion": "20261019093029",
+      "remoteVersion": "20261019093322",
+      "localSha256": "821a2d9684c5717bb14a06abfa1cbbb24f9d58ed46054b917b1eb0b3b06ce05e",
+      "remoteSha256": "821a2d9684c5717bb14a06abfa1cbbb24f9d58ed46054b917b1eb0b3b06ce05e",
+      "exactNormalizedMatch": true
+    }
+  ],
+  "roles": [
+    {
+      "rolname": "partmeasure_runtime",
+      "rolsuper": false,
+      "rolbypassrls": false,
+      "rolinherit": false,
+      "rolcanlogin": true
+    },
+    {
+      "rolname": "partmeasure_worker",
+      "rolsuper": false,
+      "rolbypassrls": false,
+      "rolinherit": false,
+      "rolcanlogin": true
+    }
+  ],
+  "buckets": {
+    "total": 3,
+    "public": 0
+  },
+  "status": "PASS"
+}

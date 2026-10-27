@@ -89,6 +89,7 @@ export function AuthForm() {
 							: "继续整理资料，与客户清楚交接。"}
 				</p>
 				<form
+					method="post"
 					onSubmit={submit}
 					className="pm-auth-form"
 					aria-busy={busy}

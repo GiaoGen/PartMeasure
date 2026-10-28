@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-28T04:06:46.550Z",
+  "scope": "New recovery source probe, archive, downloaded-copy verifier and secret audit only; application, lock and migrations unchanged",
+  "targetedBiomeLint": "PASS: four files, zero warnings",
+  "typescriptStrict": "PASS: npx tsc --noEmit",
+  "realSourceBackup": "PASS: reused 8a60a0b7 create evidence",
+  "localCompleteArchiveAuthentication": "PASS: reused recovery-backup-authentication.json",
+  "downloadedCopyVerifierExecuted": true,
+  "phoneKeyCustodyVerified": true,
+  "cloudRestoreExecuted": false,
+  "applicationRegression": "Unchanged application; reuse candidate cebeecad evidence, no repeated phone/business/full-suite checks",
+  "cloudRecoveryPolicyTests": "PASS: 3 isolation/COPY/parameterization cases",
+  "actualDumpParserPreflight": "PASS: 24 business table counts, users/identities5 each, migrations20; no DB SQL execution"
+}

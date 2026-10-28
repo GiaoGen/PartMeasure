@@ -1,0 +1,18 @@
+{
+  "recordedAt": "2026-10-28T03:15:05.253Z",
+  "authorization": "User selected Google Drive for ciphertext backup and preauthorized subsequent necessary acceptance actions; exact minimal scope stated before execution.",
+  "maxNewFolders": 1,
+  "maxNewFiles": 1,
+  "destination": "Connected Google Drive account, My Drive/root, new PartMeasure-V1-Backups private folder",
+  "archive": {
+    "name": "PartMeasure-V1-8a60a0b7-8450-4e41-8b43-2c58204660a8.zip",
+    "bytes": 71045274,
+    "sha256": "2bca6aa2288d954e5c0391dc578317a007e95a25fa8913e05e1911deb3f8a09f",
+    "md5": "4ab914874a3d4fc3bec0da82a3cbea26",
+    "encryptedArtifacts": 214
+  },
+  "keyIncluded": false,
+  "existingFilesChanged": false,
+  "sharingChanged": false,
+  "verification": "Drive metadata checksums plus raw-file retrieval for independent ciphertext/content authentication if available; no partial-copy success claim"
+}

@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-10-28T04:02:03.194Z",
+  "status": "FAIL_SOURCE_RESUME_REQUIRED_IF_PAUSED",
+  "phase": "offline-import-parser",
+  "objectsUploaded": 0,
+  "objectsVerified": 0,
+  "loginAttempts": 0,
+  "name": "Error",
+  "code": "UNSAFE_RECOVERY_IDENTIFIER",
+  "reason": "UNSAFE_RECOVERY_IDENTIFIER"
+}

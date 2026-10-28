@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-10-28T04:20:29.089Z",
+  "status": "CAUSE_CONFIRMED_OFFLINE",
+  "priorSqlState": "3F000",
+  "namespaceCreateEmitted": false,
+  "historyTableCreateEmitted": true,
+  "fix": "Explicit application-history namespace creation before filtered DDL; target read-only after failure proved zero users/objects/business schemas/custom roles; retry reuses same empty target",
+  "cloudWrites": 0
+}

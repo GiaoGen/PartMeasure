@@ -1,0 +1,40 @@
+{
+  "recordedAt": "2026-10-28T03:51:07.277Z",
+  "status": "APPROVED",
+  "authorization": "User explicitly approved the proposed source test outage and complete lab-data copy; no paid upgrade or production deployment.",
+  "sourceRef": "rvysclscetfqicpnzlra",
+  "organization": "mndzgvsjfzqrejuqldvm",
+  "organizationName": "MESS's Org",
+  "region": "ap-northeast-1",
+  "projectName": "partmeasure-v1-recovery-20261028",
+  "maxNewProjects": 1,
+  "quotedMonthlyUsd": 0,
+  "allowPaidUpgrade": false,
+  "sourceSet": "08c325c3-f646-42d0-b9c2-ad2d7e3cab69",
+  "scope": {
+    "businessTables": 24,
+    "privateReferencedObjects": 192,
+    "privateObjectBytes": 70227973,
+    "authUsers": 5,
+    "identities": 5,
+    "migrations": 20,
+    "normalPasswordLogins": 1,
+    "shareCreation": 0,
+    "mail": 0,
+    "cleanup": 0,
+    "productionDeployments": 0
+  },
+  "exclude": {
+    "authManagedDdl": true,
+    "providerMigrationHistory": true,
+    "oldSessions": true,
+    "oldAmrClaims": 67,
+    "oldUserVerificationAndResetTokens": true
+  },
+  "sourceOutage": {
+    "onlySourceTestProject": true,
+    "expected": "2–4 hours including target provisioning/verification; uncertainty remains",
+    "stopAndResume": "If target prerequisites unavailable or diagnostic window cannot complete, pause target and resume source; retain failed target/evidence. No destructive retry or new target."
+  },
+  "finish": "Pause target, resume original source, verify unchanged source environment and availability. No production or unrelated-project operations."
+}

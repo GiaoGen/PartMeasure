@@ -1,0 +1,11 @@
+{
+  "run": "8a60a0b7-8450-4e41-8b43-2c58204660a8",
+  "preparedAt": "2026-10-28T02:56:06.669Z",
+  "cloudContacted": false,
+  "originalSourceUnchanged": true,
+  "sameLabSessionPortPrepared": true,
+  "newKeyCreatedAndNotPrinted": true,
+  "keyStoredSeparatelyFromBackupSet": true,
+  "independentDeviceCopy": false,
+  "postgresMajor": 18
+}

@@ -1,0 +1,168 @@
+{
+  "run": "8a60a0b7-8450-4e41-8b43-2c58204660a8",
+  "checkedAt": "2026-10-28T03:10:28.094Z",
+  "milliseconds": 784017,
+  "exitCode": 0,
+  "records": [
+    {
+      "event": "backup_progress",
+      "phase": "connecting"
+    },
+    {
+      "event": "backup_progress",
+      "phase": "snapshot"
+    },
+    {
+      "event": "backup_progress",
+      "phase": "database"
+    },
+    {
+      "event": "backup_progress",
+      "phase": "objects",
+      "completed": 0,
+      "total": 192
+    },
+    {
+      "event": "backup_progress",
+      "phase": "objects",
+      "completed": 10,
+      "total": 192
+    },
+    {
+      "event": "backup_progress",
+      "phase": "objects",
+      "completed": 20,
+      "total": 192
+    },
+    {
+      "event": "backup_progress",
+      "phase": "objects",
+      "completed": 30,
+      "total": 192
+    },
+    {
+      "event": "backup_progress",
+      "phase": "objects",
+      "completed": 40,
+      "total": 192
+    },
+    {
+      "event": "backup_progress",
+      "phase": "objects",
+      "completed": 50,
+      "total": 192
+    },
+    {
+      "event": "backup_progress",
+      "phase": "objects",
+      "completed": 60,
+      "total": 192
+    },
+    {
+      "event": "backup_progress",
+      "phase": "objects",
+      "completed": 70,
+      "total": 192
+    },
+    {
+      "event": "backup_progress",
+      "phase": "objects",
+      "completed": 80,
+      "total": 192
+    },
+    {
+      "event": "backup_progress",
+      "phase": "objects",
+      "completed": 90,
+      "total": 192
+    },
+    {
+      "event": "backup_progress",
+      "phase": "objects",
+      "completed": 100,
+      "total": 192
+    },
+    {
+      "event": "backup_progress",
+      "phase": "objects",
+      "completed": 110,
+      "total": 192
+    },
+    {
+      "event": "backup_progress",
+      "phase": "objects",
+      "completed": 120,
+      "total": 192
+    },
+    {
+      "event": "backup_progress",
+      "phase": "objects",
+      "completed": 130,
+      "total": 192
+    },
+    {
+      "event": "backup_progress",
+      "phase": "objects",
+      "completed": 140,
+      "total": 192
+    },
+    {
+      "event": "backup_progress",
+      "phase": "objects",
+      "completed": 150,
+      "total": 192
+    },
+    {
+      "event": "backup_progress",
+      "phase": "objects",
+      "completed": 160,
+      "total": 192
+    },
+    {
+      "event": "backup_progress",
+      "phase": "objects",
+      "completed": 170,
+      "total": 192
+    },
+    {
+      "event": "backup_progress",
+      "phase": "objects",
+      "completed": 180,
+      "total": 192
+    },
+    {
+      "event": "backup_progress",
+      "phase": "objects",
+      "completed": 190,
+      "total": 192
+    },
+    {
+      "event": "backup_progress",
+      "phase": "objects",
+      "completed": 192,
+      "total": 192
+    },
+    {
+      "event": "backup_progress",
+      "phase": "migrations"
+    },
+    {
+      "event": "backup_progress",
+      "phase": "manifest"
+    },
+    {
+      "event": "backup_complete",
+      "setId": "08c325c3-f646-42d0-b9c2-ad2d7e3cab69",
+      "objects": 192,
+      "bytes": 70227973,
+      "tables": 24,
+      "createdAt": "2026-10-28T02:57:27.648Z"
+    }
+  ],
+  "diagnostic": {
+    "unhandledClientError": false,
+    "unhandledAbort": false,
+    "stderrPresent": false
+  },
+  "scope": "Actual isolated cloud database snapshot and referenced private bytes encrypted locally; no cloud data writes, restore, session invalidation or object deletion; not off-device backup or hosted restore acceptance."
+}

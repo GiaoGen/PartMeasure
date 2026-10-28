@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-10-28T03:13:00.488Z",
+  "status": "PASS",
+  "run": "8a60a0b7-8450-4e41-8b43-2c58204660a8",
+  "sourceSet": "08c325c3-f646-42d0-b9c2-ad2d7e3cab69",
+  "bytes": 71045274,
+  "sha256": "2bca6aa2288d954e5c0391dc578317a007e95a25fa8913e05e1911deb3f8a09f",
+  "md5": "4ab914874a3d4fc3bec0da82a3cbea26",
+  "sourceCreatedAt": "2026-10-28T02:57:27.648Z",
+  "files": 214,
+  "tables": 24,
+  "objects": 192,
+  "migrations": 20,
+  "authUsersAndIdentitiesIncluded": true,
+  "activeAuthCapabilityDataExcluded": true,
+  "keyIncluded": false,
+  "allPlaintextHashesAndGcmAuthenticated": true,
+  "scope": "Actual complete source set offline authentication and ciphertext ZIP. No off-device/target restore/key custody claim."
+}

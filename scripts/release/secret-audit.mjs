@@ -10,6 +10,26 @@ for (const line of (await readFile(".env.local", "utf8")).split(/\r?\n/)) {
 }
 for (const file of ["secret-key.txt", "admin-database-url.txt"]) { const value = (await readFile(`tmp/p0-1/${file}`, "utf8")).trim(); add(value); password(value); }
 for (const account of Object.values(JSON.parse(await readFile("tmp/p0-1/test-accounts.json", "utf8")))) add(account.password);
+// Include the newly generated complete real backup key without logging it.
+const backupScope = JSON.parse(await readFile("docs/evidence/p3-05/recovery-backup-scope.json", "utf8"));
+const backupState = JSON.parse(await readFile(`tmp/fix-e/${backupScope.run}/state.json`, "utf8"));
+add((await readFile(backupState.environment.PM_BACKUP_KEY_FILE, "utf8")).trim());
+for (const file of ["target-database-password.txt", "service-key.txt", "database-url.txt", "apply/runtime-database-url.txt"]) {
+	try {
+		const value = (await readFile(`tmp/p3-05/recovery-cloud-8a60a0b7/${file}`, "utf8")).trim(); add(value);
+		// The target URI may deliberately retain the connector's documented
+		// placeholder; the actual generated password is scanned from its own file.
+		let template = false;
+		if (file === "database-url.txt") { try { template = ["[YOUR-PASSWORD]", "[YOUR_PASSWORD]", "YOUR_PASSWORD"].includes(decodeURIComponent(new URL(value).password)); } catch {} }
+		if (!template) password(value);
+	}
+	catch (error) { if (error.code !== "ENOENT") throw error; }
+}
+for (const dir of await readdir("tmp/p3-05/recovery-cloud-8a60a0b7", { withFileTypes: true })) {
+	if (!dir.isDirectory() || !/^apply-[a-f0-9]+$/.test(dir.name)) continue;
+	try { const value = (await readFile(`tmp/p3-05/recovery-cloud-8a60a0b7/${dir.name}/runtime-database-url.txt`, "utf8")).trim(); add(value); password(value); }
+	catch (error) { if (error.code !== "ENOENT") throw error; }
+}
 function collect(value, path = "") {
 	if (!value || typeof value !== "object") return;
 	for (const [key, entry] of Object.entries(value)) {

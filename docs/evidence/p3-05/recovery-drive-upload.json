@@ -1,0 +1,31 @@
+{
+  "checkedAt": "2026-10-28T03:33:08.936Z",
+  "status": "UPLOADED_NOT_ROUNDTRIP_VERIFIED",
+  "fileId": "1utbsOvdp1j_5bs-cIkptlx_n4QAswiRt",
+  "folderId": "1TVgqzh2q5Inq8bqS10bWYbkMaC2Cl-O3",
+  "bytes": 71045274,
+  "filePermissions": [
+    {
+      "type": "user",
+      "role": "owner"
+    }
+  ],
+  "folderPermissions": [
+    {
+      "type": "user",
+      "role": "owner"
+    }
+  ],
+  "keyIncluded": false,
+  "checksumsExposedByConnector": false,
+  "roundtripVerified": false,
+  "phoneKeyCustodyVerified": false,
+  "cloudRestored": false,
+  "nextAction": "Authenticated Drive UI download followed by local SHA256 and complete GCM/plaintext hash authentication using phone-return key. No signed URL persisted.",
+  "automaticReview": {
+    "rejectedAction": "Persisting the short-lived signed raw-download URL in tool patch/private local file",
+    "reason": "Live bearer credential exposure; backup verification authorization does not authorize unsafe credential handling",
+    "performed": false,
+    "alternative": "Authenticated Drive UI download; no signed URL in tool arguments or files"
+  }
+}

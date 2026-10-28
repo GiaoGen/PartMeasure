@@ -1,5 +1,9 @@
 # PartMeasure 工作约束
 
+- 2026-10-28 第二关最新：Drive下载副本71,045,274字节/SHA256 2bca6aa2…与原归档一致，214密文用手机返回key全量认证PASS；用户明确完成独立保管。离线真实dump导入解析24表/5用户/5身份/20应用migration全部行数吻合，仅解析不算DB恢复。新增目标专用cloud恢复驱动/隔离COPY解码3测/lint/strict通过；local-only restore未放宽。发现包内67条mfa_amr_claims与旧session关联，目标仅导入users/identities并清旧验证码/重置字段，绝不导入claims/旧sessions/Auth系统DDL；目标旧幂等行保留但失效旧结果和请求hash。用户已明确批准测试源暂停和完整实验集复制（含照片/CAD）。唯一创建已消费：东京Free目标partmeasure-v1-recovery-20261028，ref xuyghznbcahlauontcyq，MESS's Org，PG17.11，健康/用户会话对象桶pm均0；原源rvysclscetfqicpnzlra现INACTIVE，处于批准的停机窗口。无目标业务导入/文件上传/登录、无付费升级/其他项目/生产。待用户一次配置目标DB新密码/Session URI/服务key到tmp/p3-05/recovery-cloud-8a60a0b7私有文件；工具不返回secret，浏览器初始化失败，不向聊天索密钥。技术验证/恢复由Agent负责，验毕或前提不可用时先暂停此目标再恢复原源，检查源24表暂停前指纹；不无期限停源。控制状态tmp/p3-05/recovery-cloud-controller.json，已创建目标记录tmp/p3-05/recovery-cloud-created.json，批准范围docs/evidence/p3-05/recovery-cloud-scope.json。严禁再建第二个目标或重开备份/手机。
+
+- 2026-10-28 最新状态优先于下方历史：用户已确认8100204/cebeecad…手机角度/圆弧复验通过，第一关COMPLETE，严禁再写触摸待验。第二关IN_PROGRESS：8a60a0b7…新真实备份24业务表/192引用私有对象/20迁移/完整manifest成功，set08c325c3…；214密文全量GCM/明文hash及pg_restore目录认证通过。71,045,274字节ZIP已上传Drive仅owner私有目录，key未上传。副本下载认证、手机独立key取回和新云恢复未过。Free两活跃名额满，免费轮换仅提案；尚未暂停源/创建目标/恢复/升级。自动审批拒绝签名下载URL写入工具patch/文件，动作未执行，不绕过；改已登录Drive页面下载后由Agent本地校验。唯一报告已纠正旧手机欠项/旧备份失败现状；不重跑已过手机/完整检查，不新建备份批次。
+
 - 2026-10-28 手机整轮用户明确反馈1上传、3分享Guest、4回复同步、5手机保存打开、6撤销均正常，仅2角度/三点圆弧第二次触摸提前结束。11fb8cb2…手机批次按已报告撤销关闭，不复用其上传/分享额度；资源ID和错误图形是否保存未独立捕获，不自动修数据/删除。用户反对逐项打断，后续必须一次给整轮内容、一次统一反馈。已用实际生产Canvas+Chrome原生触摸/鼠标全离线复现：tap后兼容mouse click重复计点，触摸提交数0/1/1而鼠标0/0/1，角度/弧退化。最小修复仅在Canvas touchstart取消默认兼容鼠标链，恢复既定三点语义，无新UI/防抖计时/依赖。8项事件/拖画/平移/取消/双指检查、lint/strict类型/build通过。第5次Preview为已有后续预授权下明确最小范围，仅一次dpl_9u42aZAn9GgstP6Sg3JcCw6Us5ho，源码cebeecad…、托管0471aea0…，健康身份/219输入摘要对账通过。入口https://partmeasure-staging-gpv3og6c5-messup-s-projects.vercel.app。只需真实手机一次复验角度与圆弧未保存草稿；原1/3/4/5/6不重跑，未复验不得标整关通过。
 
 

@@ -1,0 +1,26 @@
+{
+  "recordedAt": "2026-10-28T02:56:05.831Z",
+  "status": "AUTHORIZED_READ_ONLY_BACKUP_SCOPE_RECORDED",
+  "authorization": "User started second gate and previously preauthorized subsequent necessary acceptance operations; exact new minimum scope stated before execution. Old FIX-E backup attempts are not reused.",
+  "sourceProject": "rvysclscetfqicpnzlra",
+  "maxNewCompleteBackupAttempts": 1,
+  "maxOfflineInspections": 1,
+  "localOutput": "Fresh private encrypted set and separate fresh key; no old partial overwrite or resume",
+  "coverage": "One consistent pm+auth+available migration snapshot and all referenced immutable private bytes/hashes; active Auth capabilities excluded",
+  "currentObservedStorageMetadata": {
+    "objects": 250,
+    "bytes": 99172191
+  },
+  "newCondition": "New strict TLS/authenticated read-only snapshot + 10-second hold passed; earlier last run stopped connecting",
+  "cloudBusinessWrites": 0,
+  "sourcePause": 0,
+  "newCloudProjects": 0,
+  "restores": 0,
+  "cleanup": 0,
+  "mail": 0,
+  "networkChanges": 0,
+  "stopRule": "Any failure => preserve incomplete set, no manifest-success claim and no same-condition restart",
+  "run": "8a60a0b7-8450-4e41-8b43-2c58204660a8",
+  "privateKey": "Separate newly generated private file, never printed or uploaded",
+  "sourceProbe": "recovery-source-probe.json PASS"
+}

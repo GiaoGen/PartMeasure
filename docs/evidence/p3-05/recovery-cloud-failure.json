@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-10-28T04:26:43.277Z",
+  "status": "FAIL_SOURCE_RESUME_REQUIRED_IF_PAUSED",
+  "phase": "restore-private-object-bytes",
+  "objectsUploaded": 1,
+  "objectsVerified": 0,
+  "loginAttempts": 0,
+  "name": "TimeoutError",
+  "code": 23,
+  "reason": "REDACTED_TECHNICAL_ERROR"
+}

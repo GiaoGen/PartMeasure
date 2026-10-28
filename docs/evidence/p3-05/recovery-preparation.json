@@ -1,0 +1,57 @@
+{
+  "recordedAt": "2026-10-28T02:56:05.831Z",
+  "source": {
+    "project": "rvysclscetfqicpnzlra",
+    "name": "partmeasure-p0-0-lab",
+    "organization": "mndzgvsjfzqrejuqldvm",
+    "region": "ap-northeast-1",
+    "status": "ACTIVE_HEALTHY",
+    "postgres": "17.11"
+  },
+  "organization": {
+    "name": "MESS's Org",
+    "plan": "free",
+    "activeProjects": 2,
+    "otherProjectsUntouched": true
+  },
+  "quote": {
+    "type": "project",
+    "recurrence": "monthly",
+    "amount": 0,
+    "meaning": "Quote does not remove two-active-free-project limit; no upgrade or creation performed"
+  },
+  "inventory": {
+    "businessTables": 24,
+    "databaseBytes": 17503923,
+    "authUsers": 5,
+    "storageMetadataObjects": 250,
+    "storageMetadataBytes": 99172191,
+    "scope": "Read-only metadata counts; referenced snapshot backup set is not yet produced"
+  },
+  "offDevice": {
+    "ciphertextDestination": "Google Drive (user selected)",
+    "keyCustody": "Independent phone storage/password manager (user confirmed possible)",
+    "copyVerified": false,
+    "keyPlacementVerified": false
+  },
+  "freeRoute": {
+    "status": "PROPOSED_NOT_AUTHORIZED_TO_PAUSE_OR_CREATE_YET",
+    "prerequisites": [
+      "Complete authenticated backup",
+      "Verified off-device encrypted copy",
+      "Independent key custody confirmed"
+    ],
+    "sequence": [
+      "Pause only PartMeasure test source",
+      "Create at most one fresh Free recovery project in selected existing organization, same region",
+      "Restore and validate target",
+      "Pause recovery target and resume original test source"
+    ],
+    "sourceOutage": "Temporary during controlled recovery; never pause/delete unrelated projects"
+  },
+  "docs": [
+    "https://supabase.com/docs/guides/platform/billing-faq",
+    "https://supabase.com/docs/guides/platform/migrating-within-supabase/backup-restore"
+  ],
+  "writesPerformed": false
+}

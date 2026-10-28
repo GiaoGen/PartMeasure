@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-10-28T03:47:19.427Z",
+  "status": "PASS",
+  "fileId": "1utbsOvdp1j_5bs-cIkptlx_n4QAswiRt",
+  "folderId": "1TVgqzh2q5Inq8bqS10bWYbkMaC2Cl-O3",
+  "archiveBytes": 71045274,
+  "sha256": "2bca6aa2288d954e5c0391dc578317a007e95a25fa8913e05e1911deb3f8a09f",
+  "files": 214,
+  "applied": false,
+  "objects": 192,
+  "bytes": 70227973,
+  "tables": 24,
+  "createdAt": "2026-10-28T02:57:27.648Z",
+  "allDownloadedFilesGcmAndHashesAuthenticated": true,
+  "keyIncluded": false,
+  "phoneKeyCustodyVerified": true,
+  "cloudRestored": false,
+  "scope": "Operator-reported authenticated Drive UI download; exact original ciphertext hash and all downloaded-file authentication using independently returned phone key. Phone custody origin relies on operator confirmation."
+}

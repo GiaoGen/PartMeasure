@@ -1,0 +1,32 @@
+{
+  "checkedAt": "2026-10-28T04:10:53.730Z",
+  "status": "TARGET_CREATED_EMPTY_READY_FOR_PRIVATE_CREDENTIALS",
+  "sourceRef": "rvysclscetfqicpnzlra",
+  "sourceStatus": "INACTIVE",
+  "sourcePauseRequested": true,
+  "target": {
+    "id": "xuyghznbcahlauontcyq",
+    "name": "partmeasure-v1-recovery-20261028",
+    "organization": "mndzgvsjfzqrejuqldvm",
+    "region": "ap-northeast-1",
+    "postgres": "17.11",
+    "status": "ACTIVE_HEALTHY"
+  },
+  "freshTarget": {
+    "authUsers": 0,
+    "authSessions": 0,
+    "storageObjects": 0,
+    "storageBuckets": 0,
+    "businessSchemas": 0
+  },
+  "maxProjectCreates": 1,
+  "actualProjectCreates": 1,
+  "quotedMonthlyUsd": 0,
+  "planUpgraded": false,
+  "targetBusinessWrites": 0,
+  "targetStorageUploads": 0,
+  "targetAuthLogins": 0,
+  "otherProjectsTouched": false,
+  "credentialHandoff": "Private precreated local files; target-only database password reset and service key configuration by operator. No secrets in chat.",
+  "nextAction": "Agent validates target session-pooler/TLS/service credentials, performs target-only guarded restore, pauses target and resumes original source. If prerequisite unavailable, perform source-resume sequence first."
+}

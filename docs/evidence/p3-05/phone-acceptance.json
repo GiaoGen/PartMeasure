@@ -1,6 +1,6 @@
 {
-  "recordedAt": "2026-10-28T02:20:21.683Z",
-  "status": "IN_PROGRESS",
+  "recordedAt": "2026-10-28T02:56:05.829Z",
+  "status": "COMPLETE",
   "device": {
     "model": "OPPO Find X8s",
     "browser": "Chrome",
@@ -69,8 +69,17 @@
       "status": "FAIL",
       "source": "f4f32f8d58e65f47af7249844bc77dd2877f9a56125470e2a2d3bf813c35004c",
       "detail": "User reports completion after second tap; angle looks like line, arc also ends after two taps."
+    },
+    {
+      "step": 2,
+      "name": "angle_and_arc_three_touch_retest",
+      "status": "PASS",
+      "source": "cebeecad8acca20add7735a4a68756949faaa0207e8a97e50f5f4548907ec0f2",
+      "candidateCommit": "8100204baec13d092eb3bbe58ef06e6e6af2d67e",
+      "method": "User explicitly replied 通过了，进入下一步吧 after the combined two-tool retest request.",
+      "scope": "Actual OPPO Find X8s / Chrome155.0.8059.84 / Android17 / ColorOS17. Earlier 1/3/4/5/6 reused for unaffected code; does not establish other devices/Safari."
     }
   ],
   "businessScopeRun": "11fb8cb2-5705-408d-8726-01886c904ce7",
-  "remaining": "Only actual phone angle and three-point arc retest after touch fix; all other reported phone steps passed and must not be rerun."
+  "remaining": "None within the tested OPPO/Chrome scope; cloud recovery and public operations are separate gates."
 }

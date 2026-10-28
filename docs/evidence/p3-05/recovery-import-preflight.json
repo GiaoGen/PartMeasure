@@ -1,0 +1,43 @@
+{
+  "checkedAt": "2026-10-28T04:02:30.365Z",
+  "status": "OFFLINE_IMPORT_PARSER_PASS_NOT_DATABASE_RESTORE",
+  "businessRows": {
+    "annotation_revisions": 120,
+    "annotations": 82,
+    "audit_events": 798,
+    "deliveries": 25,
+    "delivery_feedback": 6,
+    "delivery_files": 27,
+    "file_assets": 74,
+    "guest_sessions": 95,
+    "idempotency_keys": 647,
+    "image_derivatives": 72,
+    "issue_responses": 53,
+    "issue_reviews": 32,
+    "issues": 105,
+    "jobs": 52,
+    "owner_usage": 2,
+    "project_event_cursors": 85,
+    "project_events": 560,
+    "project_folders": 3,
+    "projects": 85,
+    "rate_limits": 296,
+    "response_attachments": 12,
+    "share_links": 58,
+    "thumbnail_jobs": 20,
+    "upload_reservations": 108
+  },
+  "authRows": {
+    "identities": 5,
+    "users": 5
+  },
+  "historyRows": {
+    "schema_migrations": 20
+  },
+  "batches": 86,
+  "allBusinessRowCountsMatch": true,
+  "managedAuthDdlExcluded": true,
+  "oldSessionsAndAmrClaimsSelected": false,
+  "cloudConnected": false,
+  "sqlExecuted": false
+}

@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-28T04:30:39.040Z",
+  "status": "BOUNDED_READ_DIAGNOSTIC",
+  "targetRef": "xuyghznbcahlauontcyq",
+  "objectKeyHash": "70f6d6b9bf4c236cb57a5a06e6feb92beff715071eaf9af11d61a5a61d97f031",
+  "expectedObjectBytes": 7920110,
+  "httpStatus": 206,
+  "contentLength": "1024",
+  "contentRange": "bytes 0-1023/7920110",
+  "headersMs": 5906,
+  "bytesReceivedBeforeCancel": 1024,
+  "totalMs": 5909,
+  "cloudWrites": 0,
+  "fullHashVerified": false
+}

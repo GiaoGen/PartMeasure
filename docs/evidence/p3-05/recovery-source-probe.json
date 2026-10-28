@@ -1,0 +1,41 @@
+{
+  "checkedAt": "2026-10-28T02:51:19.179Z",
+  "source": "rvysclscetfqicpnzlra",
+  "status": "PASS",
+  "scope": "One strict TLS/session admin connection; read-only snapshot and 10-second hold. No cloud writes/full backup/network changes. Does not prove long-run stability.",
+  "caSha256": "700723581420dd1ac98fd7e9ac529f0ef210eadcaf87fc868a3ad7d114c2f3b7",
+  "phases": [
+    {
+      "phase": "tcp_connected",
+      "milliseconds": 8
+    },
+    {
+      "phase": "tls_requested",
+      "milliseconds": 1110
+    },
+    {
+      "phase": "tls_verified",
+      "milliseconds": 2232
+    },
+    {
+      "phase": "authentication_challenge",
+      "milliseconds": 3109
+    },
+    {
+      "phase": "authenticated",
+      "milliseconds": 4322
+    },
+    {
+      "phase": "snapshot_exported",
+      "milliseconds": 5263
+    },
+    {
+      "phase": "snapshot_hold_verified",
+      "milliseconds": 16056
+    }
+  ],
+  "tlsAuthorized": true,
+  "serverVersion": "17.11",
+  "businessTables": 24,
+  "milliseconds": 17059
+}

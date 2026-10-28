@@ -6,7 +6,7 @@
 
 ## 候选身份与自动检查
 
-- 固定起点：`96c1b82f0f4a609449ae672c485ea27edf698762`，分支`P0`；开工工作树干净。保留全部实际成果，不reset、不覆盖既有工作。上一轮应用候选commit为`f17b81cdc8ca66a314a8b64c35285df05b014f03`。本轮仅Bootstrap错误分类改变应用输入，分享落地修复已固定为adf2b6e59a26d3e85e63f470acf9481fbd315c31；当前另有必要的触摸修复待固定新候选；其余证据按未受影响范围复用，不推送。仓库未配置作者，提交仅命令内使用Codex本地身份，未改全局配置。
+- 固定起点：`96c1b82f0f4a609449ae672c485ea27edf698762`，分支`P0`，原开工工作树干净。保留全部实际成果，无reset/覆盖/推送。分享提示修复固定于`adf2b6e59a26d3e85e63f470acf9481fbd315c31`；当前触摸修复候选commit为`8100204baec13d092eb3bbe58ef06e6e6af2d67e`。后续报告身份追加不改变已验应用输入。仓库作者仅命令内使用Codex本地身份，未改全局Git配置。
 - 当前应用/公开资源/依赖锁/构建配置的219文件输入摘要：`cebeecad8acca20add7735a4a68756949faaa0207e8a97e50f5f4548907ec0f2`；本机构建`p3-05-cebeecad8acca20add77`。[逐文件源码、锁、20份migration及环境指纹](evidence/p3-05/candidate-cebeecad8acca20add77.json)。验证驱动独立计hash；环境只记录摘要/键名/隔离目标/CA指纹，不公开值。自动检查结果及私有原日志摘要另见[检查证据](evidence/p3-05/automatic-checks.json)。
 - Node24.15.0/npm11.12.1，Next16.4.2；无依赖升级、无migration增量。锁文件SHA-256：b6007dcaf0ed5ddcc915816973c87f8f6917829bd81d9010df4b46ff30cabd73；20份migration清单摘要：1f6adf770c56d8fdb0224464f376f2fd4249059c87c8b9e0254fb4735b5626b6。唯一隔离Supabase：`rvysclscetfqicpnzlra`。
 - 首次完整检查：lint/typecheck通过；沙箱单测467/472，5项是备份私有ACL的EPERM，正常本机身份472/472通过；沙箱构建无有效编译错误，正常身份构建通过，未削弱ACL。首轮E2E2/6；修复过时首页/密码定位和错误权限断言后6/6通过。
@@ -39,7 +39,7 @@
 
 Preview环境可回读URL/ref/runtime6543/CA已私下核对，事件凭证为不能回读的sensitive变量。新部署前10个变量的完整版本元数据与已验记录相同，摘要`9ca006929eb7c8989c459d0915c2c552c9d38f43fef9bab83d2df71e39790b73`；804…真实SSE已通过，不能只凭环境元数据声称业务就绪。[版本](evidence/p3-05/preview-environment-version.json)。
 
-本轮分享落地修复已获用户明确开始修复批准：仅精确401/LINK_UNAVAILABLE显示链接失效，其他故障显示暂时无法打开；沿用状态页/隐藏令牌，无新按钮/自动重试。lint、strict类型、生产构建通过，新定向E2E10/10（桌面/模拟窄屏各5）通过，[证据](evidence/p3-05/guest-bootstrap-after.json)。原默认入口/安全8项按未受影响代码复用，不冒称本轮重新全跑。第四次Preview获准创建一次，[授权](evidence/p3-05/bootstrap-fix-authorization.json)/[部署](evidence/p3-05/bootstrap-fix-deployment.json)，READY且全摘要/218份可读hash/真实健康buildId吻合，托管5项全API拦截回归通过，[托管证据](evidence/p3-05/bootstrap-fix-hosted-e2e.json)/[健康身份](evidence/p3-05/bootstrap-fix-health.json)。入口：https://partmeasure-staging-m3tkvhwsb-messup-s-projects.vercel.app。当前本地源码f4f32f8d…、托管a25bf8d4…，只应用已验证vercel.json变换。旧三批分享仍全部关闭；现无新云业务写入，手机已提示使用新候选正常登录，尚待用户反馈。
+本轮分享落地修复已获用户明确开始修复批准：仅精确401/LINK_UNAVAILABLE显示链接失效，其他故障显示暂时无法打开；沿用状态页/隐藏令牌，无新按钮/自动重试。lint、strict类型、生产构建通过，新定向E2E10/10（桌面/模拟窄屏各5）通过，[证据](evidence/p3-05/guest-bootstrap-after.json)。原默认入口/安全8项按未受影响代码复用，不冒称本轮重新全跑。第四次Preview获准创建一次，[授权](evidence/p3-05/bootstrap-fix-authorization.json)/[部署](evidence/p3-05/bootstrap-fix-deployment.json)，READY且全摘要/218份可读hash/真实健康buildId吻合，托管5项全API拦截回归通过，[托管证据](evidence/p3-05/bootstrap-fix-hosted-e2e.json)/[健康身份](evidence/p3-05/bootstrap-fix-health.json)。入口：https://partmeasure-staging-m3tkvhwsb-messup-s-projects.vercel.app。当前本地源码f4f32f8d…、托管a25bf8d4…，只应用已验证vercel.json变换。旧三批分享仍全部关闭；现无新云业务写入，该候选手机登录、项目读取及1/3/4/5/6已获用户确认，触摸2项由第5次Preview修正补验。
 
 ### 授权与实际消耗
 
@@ -61,7 +61,7 @@ Preview环境可回读URL/ref/runtime6543/CA已私下核对，事件凭证为不
 
 | 关口/状态 | 尚缺真实条件与下一步 | 责任与验收停止条件 |
 |---|---|---|
-| 旧候选托管证据复用；同候选真实设备IN_PROGRESS | Agent已完成POST修复新Preview指纹、Edge正常登录及候选commit固定。之后用同候选做实际手机触摸/键盘、原始分享落地、上传/回复/私有下载与PNG/PDF/ZIP保存阅读；复用已有项目/两版，无需重造业务矩阵。已知OPPO Find X8s、Chrome155.0.8059.84且用户可操作；首页/登录页实际通过，系统为Android17/ColorOS17；窄viewport和改UA不能代替。 | Agent固定入口/最短步骤和最小增量、判读请求及修复；用户提供/操作实际设备并确认目标浏览器。全部核心流程有版本/设备/输出证据才COMPLETE；权限、输入丢失或安全失败必须修，不以限制备注放行。 |
+| 同候选真实设备IN_PROGRESS（只剩两工具） | OPPO Find X8s、Chrome155.0.8059.84、Android17/ColorOS17。用户已确认1上传、3分享Guest、4回复同步、5保存打开、6撤销正常。8100204仅修复重复触摸计点，现需同设备一次复验角度/圆弧：第二次不结束、第三次正确生成，不保存草稿、不新增分享或上传。 | Agent负责代码、原生事件回归、候选/Preview对账；用户一次统一反馈两工具。两项真实通过后才可关闭本设备关口；不以桌面/viewport代替。 |
 | 完整真实备份与云恢复：BLOCKED（缺位置与目标） | 源此前读取188对象后退出且无manifest；修后一次connecting/connection_closed，保留私有残集，不再同条件长跑。没有指定全新空云恢复目标、异设备密文副本位置和独立key位置。先确定三个位置与数据范围，再由Agent做严格TLS源兼容/新完整集认证；完整集成功后才副本/云恢复、新Auth登录、私有字节/hash/历史及旧能力失效验收。 | 位置/预算/保管由用户决定；技术兼容、备份、恢复及失败排查由Agent负责。无manifest不开始恢复；不占其他项目、不覆盖源、不以本地替代云。完整集+独立副本/key+真实云恢复全部有证据才COMPLETE。RPO24h/RTO4h仅目标。 |
 | 公开运行与生产隔离：BLOCKED（需明确运行选择） | Free泄露密码保护WARN未获针对风险的决定；日志导出/留存/访问边界未证明；实际流量计费和维护接收人、生产隔离目标未落实。Agent准备现有平台最小方案：先核对只读日志配置/实际Usage、给出WARN可用防护或升级成本、建议单一维护责任/70%记录85%暂停测试95%受控处置及生产独立目标；不做企业级扩建。 | Agent提供证据和具体选项；用户决定支持范围、预算上限、维护/告警接收、WARN处置及生产目标。不是让用户排查代码/网络。配置与运行边界明确且实测通过才COMPLETE；随后单独提交最终发布审批，绝不自动上线。 |
 

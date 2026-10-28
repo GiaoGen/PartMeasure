@@ -1,8 +1,8 @@
 {
-  "recordedAt": "2026-10-28T01:19:52.465Z",
+  "recordedAt": "2026-10-28T01:31:34.199Z",
   "baseline": "96c1b82f0f4a609449ae672c485ea27edf698762",
-  "head": "81c26572cfa7442fcf36e62768739bc6f5f4eed9",
-  "gitStatus": "M docs/P3-05-release-gate-2026-10-27.md\n M next-env.d.ts\n M src/components/workspace.tsx\n?? docs/evidence/p3-05/guest-bootstrap-before.json\n?? tests/e2e/guest-bootstrap.spec.ts",
+  "head": "adf2b6e59a26d3e85e63f470acf9481fbd315c31",
+  "gitStatus": "",
   "node": "24.15.0",
   "npm": "11.12.1",
   "source": {

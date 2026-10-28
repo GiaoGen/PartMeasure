@@ -1,5 +1,8 @@
 # PartMeasure 工作约束
 
+- 2026-10-28 手机整轮用户明确反馈1上传、3分享Guest、4回复同步、5手机保存打开、6撤销均正常，仅2角度/三点圆弧第二次触摸提前结束。11fb8cb2…手机批次按已报告撤销关闭，不复用其上传/分享额度；资源ID和错误图形是否保存未独立捕获，不自动修数据/删除。用户反对逐项打断，后续必须一次给整轮内容、一次统一反馈。已用实际生产Canvas+Chrome原生触摸/鼠标全离线复现：tap后兼容mouse click重复计点，触摸提交数0/1/1而鼠标0/0/1，角度/弧退化。最小修复仅在Canvas touchstart取消默认兼容鼠标链，恢复既定三点语义，无新UI/防抖计时/依赖。8项事件/拖画/平移/取消/双指检查、lint/strict类型/build通过。第5次Preview为已有后续预授权下明确最小范围，仅一次dpl_9u42aZAn9GgstP6Sg3JcCw6Us5ho，源码cebeecad…、托管0471aea0…，健康身份/219输入摘要对账通过。入口https://partmeasure-staging-gpv3og6c5-messup-s-projects.vercel.app。只需真实手机一次复验角度与圆弧未保存草稿；原1/3/4/5/6不重跑，未复验不得标整关通过。
+
+
 - 2026-10-28 第一关真机恢复执行：OPPO Find X8s、Chrome155.0.8059.84，用户已反馈旧候选首页和登录页正常，Android/ColorOS尚未提供，未扩大成手机核心通过。原始分享Bootstrap被实际本机拦截证实把401/503/断网一律显示失效；用户明确开始修复，批准最小提示及一次staging Preview。仅workspace.tsx区分精确401/LINK_UNAVAILABLE与临时故障，沿用状态页/令牌隐藏，不新增按钮或自动重试。lint/strict类型/build、本地10项及托管5项定向E2E通过，无真实Guest写入。新源码f4f32f8d…、托管a25bf8d4…，dpl_8zd3FvVbjhcjrBr3uBG9ujPn8mU9，Preview入口https://partmeasure-staging-m3tkvhwsb-messup-s-projects.vercel.app；配置变换及完整摘要精确匹配、隔离环境版本未变。第4次Preview授权已消费，前3批分享全部关闭；当前无新增分享/上传/回复。下一步用户手机登录后按唯一Release Gate的最小增量做核心业务，设备操作和真实结果不可用桌面或viewport代替。
 
 

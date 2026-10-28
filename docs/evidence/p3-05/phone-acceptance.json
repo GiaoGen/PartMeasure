@@ -1,0 +1,76 @@
+{
+  "recordedAt": "2026-10-28T02:20:21.683Z",
+  "status": "IN_PROGRESS",
+  "device": {
+    "model": "OPPO Find X8s",
+    "browser": "Chrome",
+    "version": "155.0.8059.84",
+    "android": "17",
+    "colorOS": "17"
+  },
+  "evidenceMethod": "User's explicit reports in current chat; Agent did not operate or simulate phone",
+  "observations": [
+    {
+      "name": "home_and_login_pages",
+      "status": "PASS",
+      "source": "290f63ef910d8cc359f624bee13b344179d97def5c1aad97d77e1e6864670adc",
+      "reuse": "Unchanged home/login code in new candidate"
+    },
+    {
+      "name": "normal_owner_login_to_project_list",
+      "status": "PASS",
+      "source": "f4f32f8d58e65f47af7249844bc77dd2877f9a56125470e2a2d3bf813c35004c",
+      "origin": "https://partmeasure-staging-m3tkvhwsb-messup-s-projects.vercel.app"
+    },
+    {
+      "name": "existing_FIX_C_project_and_materials_visible",
+      "status": "PASS",
+      "source": "f4f32f8d58e65f47af7249844bc77dd2877f9a56125470e2a2d3bf813c35004c",
+      "projectId": "98493feb-2b6f-4454-81ae-7960e84efff8"
+    },
+    {
+      "step": 1,
+      "name": "photo_upload_and_open",
+      "status": "PASS",
+      "source": "f4f32f8d58e65f47af7249844bc77dd2877f9a56125470e2a2d3bf813c35004c",
+      "method": "Explicit user report: 1,3,4,5,6 work normally. Device-level acceptance; no invented request IDs/file hashes."
+    },
+    {
+      "step": 3,
+      "name": "raw_share_and_normal_guest_entry",
+      "status": "PASS",
+      "source": "f4f32f8d58e65f47af7249844bc77dd2877f9a56125470e2a2d3bf813c35004c",
+      "method": "Explicit user report: 1,3,4,5,6 work normally. Device-level acceptance; no invented request IDs/file hashes."
+    },
+    {
+      "step": 4,
+      "name": "measurement_reply_input_and_owner_sync",
+      "status": "PASS",
+      "source": "f4f32f8d58e65f47af7249844bc77dd2877f9a56125470e2a2d3bf813c35004c",
+      "method": "Explicit user report: 1,3,4,5,6 work normally. Device-level acceptance; no invented request IDs/file hashes."
+    },
+    {
+      "step": 5,
+      "name": "private_download_and_native_PNG_JPG_PDF_ZIP_save_open",
+      "status": "PASS",
+      "source": "f4f32f8d58e65f47af7249844bc77dd2877f9a56125470e2a2d3bf813c35004c",
+      "method": "Explicit user report: 1,3,4,5,6 work normally. Device-level acceptance; no invented request IDs/file hashes."
+    },
+    {
+      "step": 6,
+      "name": "revoke_this_share_and_phone_access_denial",
+      "status": "PASS",
+      "source": "f4f32f8d58e65f47af7249844bc77dd2877f9a56125470e2a2d3bf813c35004c",
+      "method": "Explicit user report: 1,3,4,5,6 work normally. Device-level acceptance; no invented request IDs/file hashes."
+    },
+    {
+      "step": 2,
+      "name": "touch_angle_and_three_point_arc",
+      "status": "FAIL",
+      "source": "f4f32f8d58e65f47af7249844bc77dd2877f9a56125470e2a2d3bf813c35004c",
+      "detail": "User reports completion after second tap; angle looks like line, arc also ends after two taps."
+    }
+  ],
+  "businessScopeRun": "11fb8cb2-5705-408d-8726-01886c904ce7",
+  "remaining": "Only actual phone angle and three-point arc retest after touch fix; all other reported phone steps passed and must not be rerun."
+}

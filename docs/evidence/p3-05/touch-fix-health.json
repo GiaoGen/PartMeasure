@@ -1,0 +1,10 @@
+{
+  "checkedAt": "2026-10-28T02:25:12.732Z",
+  "status": "PASS",
+  "origin": "https://partmeasure-staging-gpv3og6c5-messup-s-projects.vercel.app",
+  "source": "cebeecad8acca20add7735a4a68756949faaa0207e8a97e50f5f4548907ec0f2",
+  "buildId": "p3-05-0471aea08e0bf49d68d4",
+  "httpStatus": 200,
+  "browser": "156.0.8078.48",
+  "scope": "Hosted liveness and build identity only; actual phone gesture retest is still required"
+}

@@ -1,11 +1,11 @@
 {
-  "recordedAt": "2026-10-28T01:27:36.606Z",
+  "recordedAt": "2026-10-28T02:24:59.930Z",
   "status": "PROVENANCE_RECONCILED",
-  "localSourceDigest": "f4f32f8d58e65f47af7249844bc77dd2877f9a56125470e2a2d3bf813c35004c",
-  "deploymentId": "dpl_8zd3FvVbjhcjrBr3uBG9ujPn8mU9",
-  "origin": "https://partmeasure-staging-m3tkvhwsb-messup-s-projects.vercel.app",
-  "providerSourceDigest": "a25bf8d44c6e649a7a5817bc32f2512cd3a6f2109991e1d955ae7cd1ef677d8a",
-  "providerBuildId": "p3-05-a25bf8d44c6e649a7a58",
+  "localSourceDigest": "cebeecad8acca20add7735a4a68756949faaa0207e8a97e50f5f4548907ec0f2",
+  "deploymentId": "dpl_9u42aZAn9GgstP6Sg3JcCw6Us5ho",
+  "origin": "https://partmeasure-staging-gpv3og6c5-messup-s-projects.vercel.app",
+  "providerSourceDigest": "0471aea08e0bf49d68d41d5131d69315da22aaafa912e8b64c58efdd7975dd70",
+  "providerBuildId": "p3-05-0471aea08e0bf49d68d4",
   "transformation": {
     "path": "vercel.json",
     "inputSha256": "f15b19cb4a14ac45e4652c444a0d96d991427dc508edba6d8634cb1e6212c25b",
@@ -20,12 +20,12 @@
     },
     "effect": "Vercel adds the existing project name and serializes config compactly; schema/region unchanged. No application source/lock/generated asset change."
   },
-  "proof": "Replacing ONLY the previously verified vercel.json hash in the complete 219-file local manifest exactly reproduces the full observed provider digest. All 218 readable per-file hashes match; one connector log row is truncated.",
+  "proof": "Complete 219-input manifest, changing ONLY documented vercel.json hash, exactly reproduces provider build digest; 218 available per-file log hashes match. One long connector log line truncated.",
   "secretValuesInEvidence": false,
   "providerLoggedFileCount": 218,
   "buildLogTruncation": true,
   "applicationDeltaFromPrior": [
-    "src/components/workspace.tsx"
+    "src/components/annotation-canvas.tsx"
   ],
   "applicationAndLockMatchLocalInputs": true
 }

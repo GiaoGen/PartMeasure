@@ -1,0 +1,371 @@
+{
+  "checkedAt": "2026-10-28T02:14:28.863Z",
+  "phase": "before",
+  "browser": "156.0.8078.48",
+  "scope": "Actual AnnotationCanvas/React-Konva/image-cache modules, native browser touchscreen and mouse events, synthetic local pixels, all requests intercepted. Not real phone, Auth or cloud evidence.",
+  "canvasSha256": "dc5d5fb9ddd7e7de26dbe6ca04870ba6abdd3cca2a5b410aadca8f06a3a5fdde",
+  "blocked": 0,
+  "pageErrors": [],
+  "results": [
+    {
+      "tool": "angle",
+      "input": "touch",
+      "steps": [
+        {
+          "count": 0,
+          "hint": [
+            "第3点：第二端点 · "
+          ]
+        },
+        {
+          "count": 1,
+          "hint": []
+        },
+        {
+          "count": 1,
+          "hint": []
+        }
+      ],
+      "geometries": [
+        {
+          "type": "angle",
+          "from": {
+            "x": 0.16954022988505746,
+            "y": 0.6436781609195402
+          },
+          "vertex": {
+            "x": 0.16954022988505746,
+            "y": 0.6436781609195402
+          },
+          "to": {
+            "x": 0.5,
+            "y": 0.2413793103448276
+          },
+          "reflex": false,
+          "arcScale": 0.35
+        }
+      ],
+      "events": [
+        {
+          "type": "touchstart",
+          "fromTouch": true
+        },
+        {
+          "type": "touchend",
+          "fromTouch": true
+        },
+        {
+          "type": "mousedown",
+          "fromTouch": true
+        },
+        {
+          "type": "mouseup",
+          "fromTouch": true
+        },
+        {
+          "type": "click",
+          "fromTouch": true
+        },
+        {
+          "type": "touchstart",
+          "fromTouch": true
+        },
+        {
+          "type": "touchend",
+          "fromTouch": true
+        },
+        {
+          "type": "mousedown",
+          "fromTouch": true
+        },
+        {
+          "type": "mouseup",
+          "fromTouch": true
+        },
+        {
+          "type": "click",
+          "fromTouch": true
+        },
+        {
+          "type": "touchstart",
+          "fromTouch": true
+        },
+        {
+          "type": "touchend",
+          "fromTouch": true
+        },
+        {
+          "type": "mousedown",
+          "fromTouch": true
+        },
+        {
+          "type": "mouseup",
+          "fromTouch": true
+        },
+        {
+          "type": "click",
+          "fromTouch": true
+        }
+      ],
+      "status": "NOT_PASSED"
+    },
+    {
+      "tool": "arc",
+      "input": "touch",
+      "steps": [
+        {
+          "count": 0,
+          "hint": [
+            "第3点：圆弧终点 · "
+          ]
+        },
+        {
+          "count": 1,
+          "hint": []
+        },
+        {
+          "count": 1,
+          "hint": []
+        }
+      ],
+      "geometries": [
+        {
+          "type": "arc",
+          "from": {
+            "x": 0.16954022988505746,
+            "y": 0.6436781609195402
+          },
+          "via": {
+            "x": 0.16954022988505746,
+            "y": 0.6436781609195402
+          },
+          "to": {
+            "x": 0.5,
+            "y": 0.2413793103448276
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "touchstart",
+          "fromTouch": true
+        },
+        {
+          "type": "touchend",
+          "fromTouch": true
+        },
+        {
+          "type": "mousedown",
+          "fromTouch": true
+        },
+        {
+          "type": "mouseup",
+          "fromTouch": true
+        },
+        {
+          "type": "click",
+          "fromTouch": true
+        },
+        {
+          "type": "touchstart",
+          "fromTouch": true
+        },
+        {
+          "type": "touchend",
+          "fromTouch": true
+        },
+        {
+          "type": "mousedown",
+          "fromTouch": true
+        },
+        {
+          "type": "mouseup",
+          "fromTouch": true
+        },
+        {
+          "type": "click",
+          "fromTouch": true
+        },
+        {
+          "type": "touchstart",
+          "fromTouch": true
+        },
+        {
+          "type": "touchend",
+          "fromTouch": true
+        },
+        {
+          "type": "mousedown",
+          "fromTouch": true
+        },
+        {
+          "type": "mouseup",
+          "fromTouch": true
+        },
+        {
+          "type": "click",
+          "fromTouch": true
+        }
+      ],
+      "status": "NOT_PASSED"
+    },
+    {
+      "tool": "angle",
+      "input": "mouse",
+      "steps": [
+        {
+          "count": 0,
+          "hint": [
+            "第2点：角度顶点 · "
+          ]
+        },
+        {
+          "count": 0,
+          "hint": [
+            "第3点：第二端点 · "
+          ]
+        },
+        {
+          "count": 1,
+          "hint": []
+        }
+      ],
+      "geometries": [
+        {
+          "type": "angle",
+          "from": {
+            "x": 0.16954022988505746,
+            "y": 0.6436781609195402
+          },
+          "vertex": {
+            "x": 0.5,
+            "y": 0.2413793103448276
+          },
+          "to": {
+            "x": 0.8304597701149425,
+            "y": 0.6436781609195402
+          },
+          "reflex": false,
+          "arcScale": 0.35
+        }
+      ],
+      "events": [
+        {
+          "type": "mousedown",
+          "fromTouch": false
+        },
+        {
+          "type": "mouseup",
+          "fromTouch": false
+        },
+        {
+          "type": "click",
+          "fromTouch": false
+        },
+        {
+          "type": "mousedown",
+          "fromTouch": false
+        },
+        {
+          "type": "mouseup",
+          "fromTouch": false
+        },
+        {
+          "type": "click",
+          "fromTouch": false
+        },
+        {
+          "type": "mousedown",
+          "fromTouch": false
+        },
+        {
+          "type": "mouseup",
+          "fromTouch": false
+        },
+        {
+          "type": "click",
+          "fromTouch": false
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "tool": "arc",
+      "input": "mouse",
+      "steps": [
+        {
+          "count": 0,
+          "hint": [
+            "第2点：弧上经过点 · "
+          ]
+        },
+        {
+          "count": 0,
+          "hint": [
+            "第3点：圆弧终点 · "
+          ]
+        },
+        {
+          "count": 1,
+          "hint": []
+        }
+      ],
+      "geometries": [
+        {
+          "type": "arc",
+          "from": {
+            "x": 0.16954022988505746,
+            "y": 0.6436781609195402
+          },
+          "via": {
+            "x": 0.5,
+            "y": 0.2413793103448276
+          },
+          "to": {
+            "x": 0.8304597701149425,
+            "y": 0.6436781609195402
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "mousedown",
+          "fromTouch": false
+        },
+        {
+          "type": "mouseup",
+          "fromTouch": false
+        },
+        {
+          "type": "click",
+          "fromTouch": false
+        },
+        {
+          "type": "mousedown",
+          "fromTouch": false
+        },
+        {
+          "type": "mouseup",
+          "fromTouch": false
+        },
+        {
+          "type": "click",
+          "fromTouch": false
+        },
+        {
+          "type": "mousedown",
+          "fromTouch": false
+        },
+        {
+          "type": "mouseup",
+          "fromTouch": false
+        },
+        {
+          "type": "click",
+          "fromTouch": false
+        }
+      ],
+      "status": "PASS"
+    }
+  ]
+}

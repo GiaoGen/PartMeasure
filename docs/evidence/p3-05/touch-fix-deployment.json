@@ -1,0 +1,12 @@
+{
+  "recordedAt": "2026-10-28T02:22:08.966Z",
+  "id": "dpl_9u42aZAn9GgstP6Sg3JcCw6Us5ho",
+  "url": "partmeasure-staging-gpv3og6c5-messup-s-projects.vercel.app",
+  "readyState": "READY",
+  "target": null,
+  "sourceDigest": "cebeecad8acca20add7735a4a68756949faaa0207e8a97e50f5f4548907ec0f2",
+  "creationRequests": 1,
+  "productionAssigned": false,
+  "providerBuildId": "p3-05-0471aea08e0bf49d68d4",
+  "providerSourceDigest": "0471aea08e0bf49d68d41d5131d69315da22aaafa912e8b64c58efdd7975dd70"
+}

@@ -1,0 +1,35 @@
+{
+  "recordedAt": "2026-10-28T01:36:24.725Z",
+  "run": "11fb8cb2-5705-408d-8726-01886c904ce7",
+  "sourceDigest": "f4f32f8d58e65f47af7249844bc77dd2877f9a56125470e2a2d3bf813c35004c",
+  "candidateCommit": "adf2b6e59a26d3e85e63f470acf9481fbd315c31",
+  "providerBuildId": "p3-05-a25bf8d44c6e649a7a58",
+  "origin": "https://partmeasure-staging-m3tkvhwsb-messup-s-projects.vercel.app",
+  "projectId": "98493feb-2b6f-4454-81ae-7960e84efff8",
+  "projectName": "FIX-C-3acb7520-5d8e-4c9e-9a10-e8450c5798bf",
+  "operator": "Human on actual OPPO phone; Agent prepares and read-only verifies",
+  "authorization": "Human explicitly preauthorized subsequent necessary acceptance operations and resumed first gate; this concrete minimum scope is recorded before new actions. No consumed prior batch reused.",
+  "limits": {
+    "photos": 1,
+    "photoBytes": 2097152,
+    "annotations": 1,
+    "measurementReplies": 1,
+    "newShares": 1,
+    "newGuestSessions": 1,
+    "revokeThisShare": 1,
+    "newVersions": 0,
+    "deliveryComments": 0,
+    "cleanup": 0,
+    "mail": 0,
+    "deploy": 0,
+    "newCloudResources": 0
+  },
+  "state": "CLOSED_USER_REPORTED_REVOKED_NO_REUSE",
+  "stopRules": [
+    "No duplicate upload or share if outcome unknown; diagnose/read first",
+    "Only the new share may be revoked",
+    "No phone evidence inferred from desktop or viewport"
+  ],
+  "closedAt": "2026-10-28T02:20:21.685Z",
+  "actualEvidenceBoundary": "Human reports the prescribed upload/share/Guest/reply/download/revoke flow succeeded; exact asset/share IDs and number of saved tool drafts not independently captured. Never infer no writes from absent Agent requests."
+}

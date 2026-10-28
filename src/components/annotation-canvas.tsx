@@ -1071,7 +1071,10 @@ export default function AnnotationCanvas({
 					}}
 					onMouseMove={move}
 					onMouseUp={finish}
-					onTouchStart={() => {
+					onTouchStart={(e) => {
+						// Background taps otherwise synthesize a second mouse click,
+						// counting one physical touch twice in three-point tools.
+						if (e.evt.cancelable) e.evt.preventDefault();
 						if (!multi.current) begin();
 					}}
 					onTouchMove={move}

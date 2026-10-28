@@ -1,0 +1,18 @@
+{
+  "recordedAt": "2026-10-28T02:21:08.184Z",
+  "status": "APPROVED_UNDER_HUMAN_PREAUTHORIZATION",
+  "sourceDigest": "cebeecad8acca20add7735a4a68756949faaa0207e8a97e50f5f4548907ec0f2",
+  "project": "prj_rf7HXAsGzV6khGK5hxPkadCKhhAC",
+  "team": "team_HdERlM3ZEizexkGrjPNJ8sZq",
+  "target": "preview",
+  "maximumNewDeployments": 1,
+  "scope": "Only suppress compatibility mouse events for canvas native touchstart, restoring existing three-point angle/arc semantics. One existing staging Preview; no new cloud business writes, shares, uploads, saved annotations, cleanup, email, resources, env/domain/plan/migration or production changes.",
+  "authorization": "Human preapproved subsequent necessary acceptance operations and reported the two-point touch defect; Agent stated this exact minimal Preview scope before execution. Four earlier Preview approvals are consumed, not reused.",
+  "checks": {
+    "lint": "PASS",
+    "strictTypes": "PASS",
+    "productionBuild": "PASS",
+    "productionCanvasNativeTouchMouseGestures": "8/8 PASS; isolated component, not actual phone"
+  },
+  "environmentMetadataSha256": "9ca006929eb7c8989c459d0915c2c552c9d38f43fef9bab83d2df71e39790b73"
+}

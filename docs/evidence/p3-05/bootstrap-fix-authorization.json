@@ -1,0 +1,19 @@
+{
+  "recordedAt": "2026-10-28T01:22:50.993Z",
+  "status": "APPROVED",
+  "sourceDigest": "f4f32f8d58e65f47af7249844bc77dd2877f9a56125470e2a2d3bf813c35004c",
+  "scope": "Only raw share Bootstrap error classification: exact401/LINK_UNAVAILABLE vs temporary failure. Existing UI and token redaction; no new button or normal flow change. One existing staging Preview, no env/domain/plan/migration change, no production.",
+  "authorization": "Human explicitly replied 开始修复 to the specific UI fix and one Preview proposal; prior consumed deployment approvals not reused.",
+  "maximumNewDeployments": 1,
+  "environmentMetadataSha256": "9ca006929eb7c8989c459d0915c2c552c9d38f43fef9bab83d2df71e39790b73",
+  "checks": {
+    "lint": "PASS",
+    "strictTypes": "PASS",
+    "productionBuild": "PASS",
+    "entryShareE2E": {
+      "passed": 10,
+      "scope": "Four synthetic failure cases and successful navigation, desktop and mobile viewports; no cloud Guest writes",
+      "logSha256": "c09cc1ba2e41e082d10e3776a765fb5cc040b8aea375e896f92d6e6cd681c6d9"
+    }
+  }
+}

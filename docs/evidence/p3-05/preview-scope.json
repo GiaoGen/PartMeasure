@@ -1,12 +1,12 @@
 {
-  "preparedAt": "2026-10-27T17:09:10.910Z",
-  "sourceDigest": "290f63ef910d8cc359f624bee13b344179d97def5c1aad97d77e1e6864670adc",
-  "buildId": "p3-05-290f63ef910d8cc359f6",
+  "preparedAt": "2026-10-28T01:19:53.369Z",
+  "sourceDigest": "f4f32f8d58e65f47af7249844bc77dd2877f9a56125470e2a2d3bf813c35004c",
+  "buildId": "p3-05-f4f32f8d58e65f47af72",
   "projectName": "partmeasure-staging",
   "projectId": "prj_rf7HXAsGzV6khGK5hxPkadCKhhAC",
   "target": "preview",
   "fileCount": 219,
-  "packageSha256": "999e4e2fb07473265c33d6c7f8a7c1ed922534047192d633f1efd03e3e543dd9",
+  "packageSha256": "4f2afb8bbe3e0875be8a389b9f0b16ccb960651ae4b6bac01e1b39e1a98b6da4",
   "include": "Explicit public application/build inputs only; fingerprint helper included for next.config import",
   "exclude": "All .env/credentials/accounts/Guest cookies/capability links/private downloads/backups/.git/docs/test fixtures",
   "requiredReadChecksBeforeDeploy": [

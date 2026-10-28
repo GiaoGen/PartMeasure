@@ -1,0 +1,28 @@
+{
+  "recordedAt": "2026-10-27T17:16:02.101Z",
+  "status": "PROVENANCE_RECONCILED",
+  "localSourceDigest": "290f63ef910d8cc359f624bee13b344179d97def5c1aad97d77e1e6864670adc",
+  "deploymentId": "dpl_9DbeFcnX6Fm6WpvZn5XT2HBxipSj",
+  "origin": "https://partmeasure-staging-cb3o8awbd-messup-s-projects.vercel.app",
+  "providerSourceDigest": "477226bc7c4011e1a96fc98f9dcea04b06658b387f8dcc9cb944ab9b2a6cc36d",
+  "providerBuildId": "p3-05-477226bc7c4011e1a96f",
+  "transformation": {
+    "path": "vercel.json",
+    "inputSha256": "f15b19cb4a14ac45e4652c444a0d96d991427dc508edba6d8634cb1e6212c25b",
+    "providerSha256": "13f7ed724fd0c18d4588bf3df70f795eebac23fc4f85d11fc6368d1ba8c87e2f",
+    "serialization": "JSON.stringify(config) + LF",
+    "providerConfig": {
+      "$schema": "https://openapi.vercel.sh/vercel.json",
+      "regions": [
+        "hnd1"
+      ],
+      "name": "partmeasure-staging"
+    },
+    "effect": "Vercel adds the existing project name and serializes config compactly; schema/region unchanged. No application source/lock/generated asset change."
+  },
+  "proof": "Replacing ONLY the documented vercel.json hash in the complete local 219-file manifest exactly reproduces the full provider digest. All available logged per-file hashes match; connector truncates a long input log line. Health must match this digest.",
+  "applicationAndLockUnchanged": true,
+  "secretValuesInEvidence": false,
+  "providerLoggedFileCount": 218,
+  "buildLogTruncation": true
+}

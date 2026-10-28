@@ -84,7 +84,7 @@ export function Unavailable({ guest = true }: { guest?: boolean }) {
 	);
 }
 export function Bootstrap({ token }: { token: string }) {
-	const [error, setError] = useState(false);
+	const [error, setError] = useState<"unavailable" | "temporary" | null>(null);
 	useEffect(() => {
 		let active = true;
 		void api<{ projectId: string }>("/api/guest/session", "POST", { token })
@@ -92,19 +92,33 @@ export function Bootstrap({ token }: { token: string }) {
 				if (active)
 					window.location.replace(`/s/session?project=${result.projectId}`);
 			})
-			.catch(() => {
+			.catch((failure: unknown) => {
 				if (active) {
 					window.history.replaceState(null, "", "/s/session");
-					setError(true);
+					setError(
+						failure instanceof ApiError &&
+							failure.status === 401 &&
+							failure.code === "LINK_UNAVAILABLE"
+							? "unavailable"
+							: "temporary",
+					);
 				}
 			});
 		return () => {
 			active = false;
 		};
 	}, [token]);
-	return error ? (
-		<Unavailable />
-	) : (
+	if (error === "unavailable") return <Unavailable />;
+	if (error === "temporary")
+		return (
+			<WorkspaceStatus
+				guest
+				homeLink
+				title="暂时无法打开项目"
+				message="连接中断或服务暂时不可用，请稍后重新打开原分享链接。"
+			/>
+		);
+	return (
 		<WorkspaceStatus
 			guest
 			title="正在打开项目…"

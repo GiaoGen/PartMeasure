@@ -1,5 +1,8 @@
 # PartMeasure 工作约束
 
+- 2026-10-28 第一关真机恢复执行：OPPO Find X8s、Chrome155.0.8059.84，用户已反馈旧候选首页和登录页正常，Android/ColorOS尚未提供，未扩大成手机核心通过。原始分享Bootstrap被实际本机拦截证实把401/503/断网一律显示失效；用户明确开始修复，批准最小提示及一次staging Preview。仅workspace.tsx区分精确401/LINK_UNAVAILABLE与临时故障，沿用状态页/令牌隐藏，不新增按钮或自动重试。lint/strict类型/build、本地10项及托管5项定向E2E通过，无真实Guest写入。新源码f4f32f8d…、托管a25bf8d4…，dpl_8zd3FvVbjhcjrBr3uBG9ujPn8mU9，Preview入口https://partmeasure-staging-m3tkvhwsb-messup-s-projects.vercel.app；配置变换及完整摘要精确匹配、隔离环境版本未变。第4次Preview授权已消费，前3批分享全部关闭；当前无新增分享/上传/回复。下一步用户手机登录后按唯一Release Gate的最小增量做核心业务，设备操作和真实结果不可用桌面或viewport代替。
+
+
 - 2026-10-27 用户以`96c1b82`为固定起点明确启动P3-05发布候选准备，保留实际Git全部成果；只维护一份`docs/P3-05-release-gate-2026-10-27.md`，复用FIX-A～E证据，不新增FIX包/依赖/Agent。候选准备、技术修复、真实环境验收、外部依赖分别估算；原240分钟仅是FIX四线集中诊断预算，不是P3-05完成上限。以验收为准，Agent独立技术工作持续负责；区分IN_PROGRESS/BLOCKED/COMPLETE及READY_FOR_RELEASE/BLOCKED，不因到时或部分检查通过结案。任何新增真实云写入/分享/发信/清理/资源/部署/恢复先列最小具体范围取得新授权；不沿用已消费旧授权，不自动上线，前端交互方案变更仍先批准。
 
 - 2026-10-27 P3-05补充决定：用户明确允许当前QQ SMTP，后续SMTP服务商自行更换；验证码/SMTP本轮不再追加排查、注册或邮件验证，也不作为要求用户处理的当前事项。用户明确大陆网络直连问题本轮不用处理，后续真实域名由用户自行接入；停止本轮直连/TUN/DNS排查，不把它列为Agent待用户修网络。域名/服务商决定不等于真实手机业务验收已经通过；保留独立业务/权限/数据恢复门槛。

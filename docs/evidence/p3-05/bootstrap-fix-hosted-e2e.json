@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-28T01:30:27.899Z",
+  "source": "f4f32f8d58e65f47af7249844bc77dd2877f9a56125470e2a2d3bf813c35004c",
+  "providerBuildId": "p3-05-a25bf8d44c6e649a7a58",
+  "deploymentId": "dpl_8zd3FvVbjhcjrBr3uBG9ujPn8mU9",
+  "origin": "https://partmeasure-staging-m3tkvhwsb-messup-s-projects.vercel.app",
+  "status": "PASS",
+  "passed": 5,
+  "scope": "Actual hosted Preview, installed desktop Chrome; all business APIs intercepted with synthetic responses, no actual Guest/business writes. Not phone acceptance.",
+  "cases": [
+    "exact401/LINK_UNAVAILABLE",
+    "503",
+    "unrelated401/AUTH_REQUIRED",
+    "network abort",
+    "normal session navigation"
+  ],
+  "logSha256": "ed62f9a8a16276a0605f2d6e917a233bef9f2af242e2b32a89b44017eb8f4d1d"
+}

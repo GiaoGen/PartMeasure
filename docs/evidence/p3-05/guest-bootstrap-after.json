@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-10-28T01:25:52.474Z",
+  "source": "f4f32f8d58e65f47af7249844bc77dd2877f9a56125470e2a2d3bf813c35004c",
+  "build": "p3-05-f4f32f8d58e65f47af72",
+  "status": "PASS",
+  "scope": "Actual built local application; all API responses intercepted, synthetic raw share only, no actual cloud Auth/Guest/business write",
+  "scenarios": [
+    "exact401/LINK_UNAVAILABLE => unavailable",
+    "503 => temporary",
+    "401/AUTH_REQUIRED => temporary",
+    "network abort => temporary",
+    "success200 => original session navigation"
+  ],
+  "projects": [
+    "chromium-desktop",
+    "chromium-mobile viewport (not phone evidence)"
+  ],
+  "passed": 10,
+  "tokenRemovedOnFailure": true,
+  "automaticGuestRetries": 0,
+  "logSha256": "c09cc1ba2e41e082d10e3776a765fb5cc040b8aea375e896f92d6e6cd681c6d9"
+}

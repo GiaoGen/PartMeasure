@@ -1,0 +1,13 @@
+{
+  "recordedAt": "2026-10-28T01:24:09.736Z",
+  "id": "dpl_8zd3FvVbjhcjrBr3uBG9ujPn8mU9",
+  "url": "partmeasure-staging-m3tkvhwsb-messup-s-projects.vercel.app",
+  "readyState": "READY",
+  "target": null,
+  "sourceDigest": "f4f32f8d58e65f47af7249844bc77dd2877f9a56125470e2a2d3bf813c35004c",
+  "creationRequests": 1,
+  "productionAssigned": false,
+  "uploadMode": "216 exact SHA1/size references; one changed public source file uploaded, unchanged source hashes reused from prior verified deployment.",
+  "providerBuildId": "p3-05-a25bf8d44c6e649a7a58",
+  "providerSourceDigest": "a25bf8d44c6e649a7a5817bc32f2512cd3a6f2109991e1d955ae7cd1ef677d8a"
+}

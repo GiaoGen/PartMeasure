@@ -1,0 +1,123 @@
+{
+  "checkedAt": "2026-10-29T15:31:22.912Z",
+  "status": "PASS",
+  "candidateReadiness": "READY_FOR_RELEASE",
+  "publicationApproved": false,
+  "deploymentCreated": false,
+  "p305Overall": "IN_PROGRESS_PENDING_PUBLICATION_AND_POST_DEPLOY_SMOKE",
+  "applicationCommit": "8100204baec13d092eb3bbe58ef06e6e6af2d67e",
+  "worktreeHead": "0d1828a90814f2e2cbf830eb97f4530f5712bfab",
+  "applicationDigest": "cebeecad8acca20add7735a4a68756949faaa0207e8a97e50f5f4548907ec0f2",
+  "expectedHostedDigest": "6925ea6ac5647fda32a8009c5349359bd5847383261a921096726b05076d7460",
+  "expectedHostedBuildId": "p3-05-6925ea6ac5647fda32a8",
+  "dependencyLockSha256": "b6007dcaf0ed5ddcc915816973c87f8f6917829bd81d9010df4b46ff30cabd73",
+  "maintenanceFiles": [
+    {
+      "file": "scripts/maintenance/project-target.ts",
+      "sha256": "93ef5b2e22f61cdb77ae3ed832589e3e4021c2197e46be659f86dc581900d1dd"
+    },
+    {
+      "file": "scripts/maintenance/target.ts",
+      "sha256": "fb790289a028cbdb02571db3100da7cf53a463eaf5a245cc6321ef1db8c29447"
+    },
+    {
+      "file": "scripts/maintenance/backup-model.ts",
+      "sha256": "01059c2b5e17de0abf7d6009216c18e122d611bafa677434642387d8b8c821d0"
+    },
+    {
+      "file": "scripts/maintenance/backup.ts",
+      "sha256": "f8b963d4ec9446e5056b02745ab4a96f833306f5fad43f45cc69d44229b9f00f"
+    },
+    {
+      "file": "scripts/maintenance/backup-cli.ts",
+      "sha256": "061c872b59b047ecc109e5608fdfdb2f945a1ebe188f612f3c20e210ce4b50e8"
+    },
+    {
+      "file": "scripts/maintenance/production-cli.ts",
+      "sha256": "e6ae18d03423ad4b7b1b7fa16dca05c5726e7ba97af325e36e33f788fc4dca87"
+    },
+    {
+      "file": "scripts/maintenance/status-cli.ts",
+      "sha256": "bfb005c92e11b72b2584cf4b53924797e222da821d892bb8ba3830c683508b90"
+    },
+    {
+      "file": "scripts/release/production-cloud.ts",
+      "sha256": "4eefdccad27bd94ad369b3194ffb54703342774f890f156f98a86f509c5396f2"
+    },
+    {
+      "file": "scripts/release/production-local.ps1",
+      "sha256": "cd0e1b511a1932f70087a5081a2806fa7049fd2a246a22ecc03d9163a50c4245"
+    },
+    {
+      "file": "scripts/release/production-replay.ts",
+      "sha256": "c0c0326d89fa7d44c5784ee84c564c15c95169dfad6cc7608e6e2457b4fce8ae"
+    },
+    {
+      "file": "scripts/release/prepare-production.ts",
+      "sha256": "30577d31228aee3eaa2aebd6ef228c7de17aa4736f2b28c5e5422b21a2153ebe"
+    },
+    {
+      "file": "scripts/release/secret-audit.mjs",
+      "sha256": "36e4ba79480fce2bb759912e73af4fce92bdcea75034e1dede47851642da1722"
+    },
+    {
+      "file": "tests/unit/maintenance-production-target.test.ts",
+      "sha256": "a31ef7791feb4f9ebcdcbfe6f15f0bcebd6c69d0fde0ff3c3f1f90833f711cad"
+    }
+  ],
+  "maintenanceDigest": "b4c07e68bf212cda2de29efb246e35b84fe9d2ceb27d827b48d94e712a9efe81",
+  "productionEnvironmentPayloadSha256": "04b035c5c58804985e743fb1e4da48faa7014281ea25fe20232ba7f8e8744e23",
+  "productionEnvironmentVersionSha256": "f723314ef1c13a715e3595388d2432f89c1a9533b2d56e976d46c7a4e8baedfb",
+  "productionBackup": {
+    "version": 1,
+    "projectRef": "qjiifweyhahowjdluqys",
+    "setId": "334d15cc-350f-4778-86cb-124e0b663011",
+    "snapshotAt": "2026-10-29T15:08:28.899Z",
+    "authenticatedAt": "2026-10-29T15:09:33.904Z",
+    "objects": 0,
+    "bytes": 0,
+    "tables": 24,
+    "authenticated": true,
+    "offDeviceCopyVerified": false,
+    "scope": "One new empty-production backup entrypoint check; old full-data recovery evidence reused, no restore or Drive upload."
+  },
+  "productionMaintenanceStatus": {
+    "version": 1,
+    "checkedAt": "2026-10-29T15:06:53.036Z",
+    "status": "ok",
+    "alerts": []
+  },
+  "productionBuild": {
+    "separateDirectory": true,
+    "pass": true,
+    "originalBuildRetained": true,
+    "artifactFileCount": 219,
+    "artifactPackageSha256": "b4951b2eda19d1964d7c8849579a86f9a309d857dda70ecbe52c33d1c5e5d816",
+    "artifactBytes": 16681466
+  },
+  "secretAudit": {
+    "filesScanned": 1324,
+    "productionStaticScanned": true,
+    "flaggedFiles": []
+  },
+  "validation": {
+    "lint": {
+      "files": 12,
+      "warnings": 0
+    },
+    "strictTypecheck": "PASS",
+    "normalHostMaintenanceTests": "22/22 passed before the extra manifest case; subsequent affected 4 files17/17 passed, including the new manifest/manual-policy case. Unchanged inspection/copy tests reused.",
+    "applicationSuite": "475 unit tests plus prior applicable builds/E2E/real Owner Guest/phone/exports/recovery reused for unchanged application source."
+  },
+  "limits": [
+    "No production web deployment or post-deployment smoke yet.",
+    "New empty-production backup is local only; future important data backups still require the accepted manual off-device copy step.",
+    "No actual email delivery test on new project; QQ SMTP/templates/password12/Site URL rely on explicit user configuration completion, public Auth confirmation switch independently read."
+  ],
+  "publicationTransport": {
+    "uploadedFiles": 216,
+    "prebuildArtifacts": 3,
+    "uploadPackageSha256": "378f0c5cfb8cc9bc4b871e97b2d27271ab7d4643e4721d8c302b000c28805c3d",
+    "uploadBytes": 1544726
+  }
+}

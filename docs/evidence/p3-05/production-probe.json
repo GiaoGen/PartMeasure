@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-29T15:02:39.570Z",
+  "targetRef": "qjiifweyhahowjdluqys",
+  "action": "--probe",
+  "status": "PASS",
+  "noSourceMutation": true,
+  "noUsersOrFilesImported": true,
+  "noEmailOrDeployment": true,
+  "emptyTarget": {
+    "application_schema": 0,
+    "users": 0,
+    "objects": 0,
+    "roles": 0
+  }
+}

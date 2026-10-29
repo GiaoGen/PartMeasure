@@ -1,0 +1,72 @@
+{
+  "preparedAt": "2026-10-29T15:48:57.721Z",
+  "status": "APPROVED_NOT_YET_DEPLOYED",
+  "candidate": "READY_FOR_RELEASE",
+  "applicationCommit": "8100204baec13d092eb3bbe58ef06e6e6af2d67e",
+  "sourceDigest": "cebeecad8acca20add7735a4a68756949faaa0207e8a97e50f5f4548907ec0f2",
+  "packageSha256": "b4951b2eda19d1964d7c8849579a86f9a309d857dda70ecbe52c33d1c5e5d816",
+  "fileCount": 219,
+  "expectedHostedBuildId": "p3-05-6925ea6ac5647fda32a8",
+  "projectId": "prj_Tk3LzDCt2iLIfObnwVyPajjbiX61",
+  "projectName": "partmeasure-production",
+  "teamId": "team_HdERlM3ZEizexkGrjPNJ8sZq",
+  "target": "production",
+  "origin": "https://partmeasure-production.vercel.app",
+  "supabaseRef": "qjiifweyhahowjdluqys",
+  "maximumDeployments": 1,
+  "build": "Node24, pinned package-lock/npm ci, npm run build, hnd1; no dependency upgrade or Git connection/push",
+  "readOnlyAcceptance": [
+    "Exact build/source input provenance and health ID",
+    "Anonymous default production domain homepage/login available",
+    "Anonymous projects API must be exact401/AUTH_REQUIRED; 503 is failure",
+    "Security headers and absence of unexpected production debug scripts"
+  ],
+  "failureAction": "Pause only this new Vercel production project if deployed provenance/public accessibility/security checks fail. Preserve database/config/source data; no delete/reset, lab switch, second deployment or paid fallback.",
+  "optionalFirstUse": {
+    "actor": "Human chooses and normally registers the first formal Owner; no test accounts copied or fake email confirmation",
+    "maximumOwnerRegistrations": 1,
+    "maximumConfirmationEmails": 1,
+    "agentSendsEmailAutomatically": false,
+    "maximumProjects": 1,
+    "projectName": "V1首次流程检查",
+    "maximumUploads": 1,
+    "fixture": {
+      "filename": "v1-first-use.png",
+      "bytes": 1676,
+      "sha256": "8c2af89f92a5e7261ebc9d72c374bc4625a079a0b296cc1b2fb662381adbca23",
+      "width": 320,
+      "height": 240,
+      "sensitiveContent": false
+    },
+    "maximumSavedAnnotations": 1,
+    "maximumShares": 1,
+    "maximumGuestSessions": 1,
+    "maximumGuestReplies": 1,
+    "replyMaxCharacters": 200,
+    "revokeOnlyThisShare": true,
+    "retainRecords": true,
+    "noCleanup": true,
+    "manualHandoff": "One complete short checklist and one consolidated result, no repeated phone/export/recovery tests."
+  },
+  "excluded": [
+    "Custom domain/DNS or plan/fees changes",
+    "New cloud resources beyond the single approved deployment",
+    "Further schema/environment changes",
+    "Migration of old accounts/files",
+    "Unscoped cleanup or additional emails/shares"
+  ],
+  "currentPublicationApproval": true,
+  "transport": {
+    "uploadedFiles": 216,
+    "generatedDuringPrebuild": [
+      "public/cv/LICENSE.txt",
+      "public/cv/opencv-4.12.0-bd0c3e644804.js",
+      "public/cv/worker-v1.js"
+    ],
+    "uploadPackageSha256": "378f0c5cfb8cc9bc4b871e97b2d27271ab7d4643e4721d8c302b000c28805c3d",
+    "uploadBytes": 1544726,
+    "sourceInputsStill": 219,
+    "reason": "Pinned npm prebuild reproduces the three CV artifacts, already verified by isolated build and prior Preview evidence; same 219-file source digest."
+  },
+  "userReply": "批准部署及这批首次流程"
+}

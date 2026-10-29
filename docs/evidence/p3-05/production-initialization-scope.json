@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "preparedDate": "2026-10-29",
+  "status": "APPROVED_PREPARATION_ONLY",
+  "authorization": { "date": "2026-10-29", "userReply": "批准这批免费生产准备", "productionDeploymentApproved": false },
+  "stage": "production isolation and clean initialization; no deployment",
+  "fixedApplicationCommit": "8100204baec13d092eb3bbe58ef06e6e6af2d67e",
+  "applicationDigest": "cebeecad8acca20add7735a4a68756949faaa0207e8a97e50f5f4548907ec0f2",
+  "evidence": {
+    "localEmptyMigrationReplay": "production-empty-replay.json",
+    "migrations": 20,
+    "emptyBusinessTables": 24,
+    "privateBuckets": 2,
+    "roleGuards": "non-superuser / NOINHERIT / NOBYPASSRLS",
+    "cloudAcceptance": false,
+    "lint": "PASS",
+    "strictTypecheck": "PASS"
+  },
+  "organization": {
+    "id": "mndzgvsjfzqrejuqldvm",
+    "name": "MESS's Org",
+    "plan": "free",
+    "quotedNewSupabaseProjectMonthlyUSD": 0,
+    "stopOnAnyPaidUpgrade": true
+  },
+  "resourceDelta": {
+    "pauseOnly": "rvysclscetfqicpnzlra",
+    "pauseReason": "Free limit is two active projects; source and unrelated selfidbox currently occupy both. Paused projects do not count. No other project is changed.",
+    "maximumNewSupabaseProjects": 1,
+    "supabaseName": "partmeasure-v1-production",
+    "region": "ap-northeast-1",
+    "recoveryProjectNotReused": "xuyghznbcahlauontcyq",
+    "maximumNewVercelProjects": 1,
+    "vercelName": "partmeasure-production",
+    "teamId": "team_HdERlM3ZEizexkGrjPNJ8sZq",
+    "vercelRules": "Empty project on existing plan; no Git connection/autodeploy, no paid options, no deployment, no custom domain/DNS. Use its actual platform-assigned default domain only.",
+    "initialize": "After validating the exact newly created empty target: existing 20 migrations in order, 24 empty pm tables, only 2 private application buckets, matching migration history, separately generated runtime/maintenance credentials. No source dump, users, sessions, files or test fixture SQL imported.",
+    "authConfiguration": "New-target only: verified email confirmation, minimum password12; existing approved QQ SMTP and numeric Token templates copied by owner to provider console. No registration or email send; no SMTP provider investigation.",
+    "environmentConfiguration": "Only new production Vercel project's Production scope using new target public key/service key/runtime6543/event5432/CA/ref and actual production origin; separate local maintenance credentials/key. Existing staging and its Preview variables untouched; no production secret in any Preview or Development scope.",
+    "maintenance": "Bind exact new target in local backup/status/scoped-cleanup guards without loosening default lab or local-only restore guard. Necessary local validation and read-only/new-empty-target checks; no cleanup apply, restore, automatic backup schedule or new Drive upload."
+  },
+  "dataBoundaries": {
+    "migrateTestUsers": false,
+    "migrateTestFiles": false,
+    "createShare": false,
+    "createGuest": false,
+    "registerOwner": false,
+    "sendEmail": false,
+    "cleanSourceOrTarget": false,
+    "deploy": false,
+    "productionTraffic": false,
+    "otherProjectsTouched": false
+  },
+  "successState": {
+    "productionDatabase": "ACTIVE_HEALTHY, empty initialized schema",
+    "testLab": "INACTIVE, original data retained; old Preview unavailable until a separately planned free-slot switch",
+    "recoveryTarget": "INACTIVE",
+    "newVercelProject": "Configured only, no deployment"
+  },
+  "failureState": "If target prerequisites are unavailable or creation cannot proceed, pause only the newly created target if any and restore the original lab; preserve new target and diagnostics, no second project, no delete/reset or paid fallback. Agent continues technical preparation.",
+  "manualHandoff": "One bundled credential/configuration handoff after new resource IDs exist. Credentials remain in ignored private files/provider console, never chat; keep new backup key independently on phone. No actual mail/phone business retest.",
+  "remainingApproval": "Separate final publication/deployment approval only after all release gates pass."
+}

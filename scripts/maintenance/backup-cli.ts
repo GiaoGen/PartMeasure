@@ -11,6 +11,7 @@ import { storage, privateBucket } from "../../src/lib/server/storage";
 import { restrictDirectory } from "./private-directory";
 import { connectionFailure } from "./connection-model";
 import { copyBackup } from "./backup-copy";
+import { maintenanceProject } from "./project-target";
 
 let phase = "configuration";
 
@@ -52,13 +53,14 @@ async function main() {
 	const caFile = process.env.DATABASE_CA_FILE, bin = process.env.PM_POSTGRES_BIN;
 	if (!caFile || !bin) throw Error("MAINTENANCE_CONFIGURATION_REQUIRED");
 	if (action === "create") {
+		const projectRef = maintenanceProject(process.env);
 		const sourceFile = process.env.PM_BACKUP_DATABASE_URL_FILE;
-		if (!sourceFile || new URL(process.env.NEXT_PUBLIC_SUPABASE_URL ?? "http://invalid").hostname !== "rvysclscetfqicpnzlra.supabase.co") throw Error("ISOLATED_BACKUP_ONLY");
+		if (!sourceFile || new URL(process.env.NEXT_PUBLIC_SUPABASE_URL ?? "http://invalid").href !== `https://${projectRef}.supabase.co/`) throw Error("APPROVED_BACKUP_TARGET_REQUIRED");
 		const sourceUrl = new URL((await readFile(sourceFile, "utf8")).trim());
 		const password = decodeURIComponent(sourceUrl.password);
 		if (password.startsWith("[") && password.endsWith("]")) sourceUrl.password = encodeURIComponent(password.slice(1, -1));
 		const setId = randomUUID();
-		const manifest = await createBackup({ sourceUrl, caFile, postgresBin: bin, directory: path.join(root, setId), key, native: false, signal,
+		const manifest = await createBackup({ sourceUrl, caFile, postgresBin: bin, directory: path.join(root, setId), key, native: false, projectRef, signal,
 			onProgress: progress => { phase = progress.phase; console.log(JSON.stringify({ event: "backup_progress", ...progress })); },
 			readObject: async (name, deadline) => {
 				const { data, error } = await storage(deadline).from(privateBucket).createSignedUrl(name, 60);

@@ -6,8 +6,9 @@ import { encryptFile, type Fingerprint } from "./encrypted-file";
 import { backupLimits, manifestSchema, sourceAllowed, objectKey, type ObjectReference, type BackupManifest } from "./backup-model";
 import { databaseFingerprints, pgEnvironment, postgresTool, cancelDatabaseOnAbort, guardSnapshotSession } from "./postgres-tools";
 import { privateDirectory } from "./private-directory";
+import { labProjectRef, type MaintenanceProjectRef } from "./project-target";
 
-export type BackupOptions = { sourceUrl: URL; caFile: string; postgresBin: string; directory: string; key: Buffer; native: boolean;
+export type BackupOptions = { sourceUrl: URL; caFile: string; postgresBin: string; directory: string; key: Buffer; native: boolean; projectRef?: MaintenanceProjectRef;
 	readObject: (key: string, signal: AbortSignal) => Promise<Readable>; signal: AbortSignal;
 	onProgress?: (progress: { phase: "connecting" | "snapshot" | "database" | "objects" | "migrations" | "manifest"; completed?: number; total?: number }) => void };
 export function databaseClient(url: URL, ca: string) {
@@ -32,7 +33,8 @@ export async function objectReferences(db: pg.Client): Promise<ObjectReference[]
 	return [...unique.values()];
 }
 export async function createBackup(options: BackupOptions): Promise<BackupManifest> {
-	if (!sourceAllowed(options.sourceUrl, options.native)) throw Error("UNAPPROVED_BACKUP_SOURCE");
+	const projectRef = options.projectRef ?? labProjectRef;
+	if (!sourceAllowed(options.sourceUrl, options.native, projectRef)) throw Error("UNAPPROVED_BACKUP_SOURCE");
 	options.signal.throwIfAborted();
 	await privateDirectory(options.directory);
 	const db = databaseClient(options.sourceUrl, await readFile(options.caFile, "utf8"));
@@ -77,9 +79,9 @@ export async function createBackup(options: BackupOptions): Promise<BackupManife
 		for (const name of (await readdir("supabase/migrations")).filter(n => /^\d{14}_[a-z0-9_]+\.sql$/.test(n)).sort()) {
 			migrations.push({ ...await encrypt(`migration/${name}`, Readable.from(await readFile(path.join("supabase/migrations", name))), 4 * 1024 ** 2), migration: name });
 		}
-		const manifest = manifestSchema.parse({ schemaVersion: 1, source: options.native ? "disposable-native-fixture" : "isolated-supabase", projectRef: "rvysclscetfqicpnzlra", createdAt: snapshot.time.toISOString(), serverVersion: snapshot.version,
+		const manifest = manifestSchema.parse({ schemaVersion: 1, source: options.native ? "disposable-native-fixture" : projectRef === labProjectRef ? "isolated-supabase" : "production-supabase", projectRef, createdAt: snapshot.time.toISOString(), serverVersion: snapshot.version,
 			database, objects, migrations, tables,
-			coverage: { database: "pm+auth+available-migration-history", objects: "referenced-private-objects-including-hidden-and-history", authSessions: "excluded-and-invalidated", quarantine: "not-included-pending-uploads-rejected-on-restore", secrets: "external-vault-not-included", configuration: "manual-provider-and-SMTP-checklist-required", retention: "operator-managed-7-daily-4-weekly", consistency: "shared-database-snapshot+immutable-private-object-hashes" } });
+			coverage: { database: "pm+auth+available-migration-history", objects: "referenced-private-objects-including-hidden-and-history", authSessions: "excluded-and-invalidated", quarantine: "not-included-pending-uploads-rejected-on-restore", secrets: "external-vault-not-included", configuration: "manual-provider-and-SMTP-checklist-required", retention: projectRef === labProjectRef ? "operator-managed-7-daily-4-weekly" : "operator-managed-manual-prechange-or-important-data", consistency: "shared-database-snapshot+immutable-private-object-hashes" } });
 		await db.query("commit");
 		options.onProgress?.({ phase: "manifest" });
 		// The manifest is the commit marker. Incomplete runs cannot be restored.

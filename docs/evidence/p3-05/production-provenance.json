@@ -1,0 +1,24 @@
+{
+  "checkedAt": "2026-10-29T16:08:42.931Z",
+  "status": "PASS_EXACT_FULL_DIGEST_RECONSTRUCTION",
+  "deploymentId": "dpl_8ibkHBdHhn1QzePSXUPiZbUozPsM",
+  "applicationCommit": "8100204baec13d092eb3bbe58ef06e6e6af2d67e",
+  "sourceDigest": "cebeecad8acca20add7735a4a68756949faaa0207e8a97e50f5f4548907ec0f2",
+  "originalPrediction": "6925ea6ac5647fda32a8009c5349359bd5847383261a921096726b05076d7460",
+  "actualHostedDigest": "a2a3658eb9dcd068b3f22b86cebc61da73ec66bbcd5921ee105618821ccaf9d3",
+  "actualHostedBuildId": "p3-05-a2a3658eb9dcd068b3f2",
+  "fileCount": 219,
+  "individuallyVisibleFileCount": 204,
+  "observedConfigSha256": "cfd15e8e6f7b6e01d901f5fa810fa2994bcc7cb151ec9b5c754fdf109a3f240b",
+  "normalizedConfigText": "{\"$schema\":\"https://openapi.vercel.sh/vercel.json\",\"regions\":[\"hnd1\"],\"name\":\"partmeasure-production\"}\n",
+  "explanation": "The original prediction omitted the trailing LF after compact JSON and project-name injection. Replacing only vercel.json in all 219 approved input hashes exactly reproduces the observed full hosted digest. No application input differs. Visible log entries are partial; the full root digest provides whole-input identity.",
+  "precautionaryPause": {
+    "performed": true,
+    "receipt": {
+      "result": null
+    }
+  },
+  "additionalDeployments": 0,
+  "uploadedConfigOriginalSha256": "f15b19cb4a14ac45e4652c444a0d96d991427dc508edba6d8634cb1e6212c25b",
+  "cloudOrSourceModification": false
+}

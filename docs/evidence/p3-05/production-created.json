@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-29",
+  "status": "CREATED_NOT_INITIALIZED_NOT_DEPLOYED",
+  "supabase": {
+    "id": "qjiifweyhahowjdluqys",
+    "name": "partmeasure-v1-production",
+    "organizationId": "mndzgvsjfzqrejuqldvm",
+    "region": "ap-northeast-1",
+    "plan": "free",
+    "quotedUSD": 0
+  },
+  "vercel": {
+    "id": "prj_Tk3LzDCt2iLIfObnwVyPajjbiX61",
+    "name": "partmeasure-production",
+    "teamId": "team_HdERlM3ZEizexkGrjPNJ8sZq",
+    "origin": "https://partmeasure-production.vercel.app",
+    "domainVerified": true,
+    "nodeVersion": "24.x",
+    "deployments": 0,
+    "defaultDeploymentProtection": "enabled; not changed, public release protection must be checked at final deployment approval"
+  },
+  "source": {
+    "id": "rvysclscetfqicpnzlra",
+    "status": "INACTIVE",
+    "dataPreserved": true
+  },
+  "recoveryTarget": {
+    "id": "xuyghznbcahlauontcyq",
+    "status": "INACTIVE",
+    "notReused": true
+  },
+  "scope": "Exactly one new Supabase and one new Vercel project; no upgrade, test-data copy, login, email, share, cleanup or deployment. New production environment configuration not yet written."
+}

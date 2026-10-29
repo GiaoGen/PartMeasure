@@ -86,6 +86,22 @@ SMTP凭据、Token模板、Auth站点/确认策略留供应商安全设置中，
 
 至少一份经验证的加密副本应位于另一设备/受控位置，密钥独立保管。密钥丢失无法恢复；key和备份一起丢失也不是异地备份。原7每日＋4每周留存仅在以后选定定期方案时适用，人工方案不虚报这些备份已存在。
 
+### 4.2 正式目标的独立维护入口（已验证）
+
+2026-10-29正式Supabase `qjiifweyhahowjdluqys`已完成20迁移初始化及独立SQL hash对账，24表空且全RLS/2私有桶，runtime/事件/维护角色实际严格TLS连接通过。与旧lab和恢复目标完全分开，二者均暂停保留资料。独立入口实际status正常、backup创建并全量认证正式空集通过；下列入口仍在`controller.verified=true`前拒绝运行。证据统一见Release Gate；没有部署或恢复。
+
+本机维护配置只在ignored `tmp/p3-05/production/`，独立生产备份key在`tmp/maintenance-keys/production-v1/`。旧recovery目录及旧手机key继续保留，不能拿旧恢复目标的连接串或key替代正式配置。网页只取得runtime/事件/Storage必需配置，管理员URL、维护角色及备份key不写入Vercel。现有`.env.local`与staging Preview不改。
+
+```powershell
+node --conditions=react-server --import tsx scripts/maintenance/production-cli.ts status
+node --conditions=react-server --import tsx scripts/maintenance/production-cli.ts backup
+node --conditions=react-server --import tsx scripts/maintenance/production-cli.ts cleanup-dry-run
+```
+
+`status`只读正式目标，记录在`tmp/maintenance-status/production/last.json`，不覆盖旧lab记录。`backup`仅新建一份本机加密完整集并全量认证，成功后才更新`tmp/p3-05/production/last-backup.json`；失败不清除最后成功记录、不重试整批。回执明确`offDeviceCopyVerified=false`，后续还需按§5保存并验证独立密文副本，不假称已自动上传Drive。该命令不是调度器，不恢复旧每日承诺。`cleanup-dry-run`只读；实际删除仍需明确项目/预留ID及单独授权，不提供无范围自动清理。
+
+保护规则：不指定profile时仍固定旧lab；显式`PM_MAINTENANCE_PROFILE=production`才可用新正式ref。连接角色、5432/6543端口、HTTPS项目地址及严格TLS必须匹配；恢复工具仍仅允许原本机标记空库，不因正式备份可读而放开云覆盖。新正式manifest同时绑定ref和`production-supabase`标签，人工留存标识独立；旧manifest继续按历史格式识别。现有一次性lab云恢复脚本不自动当作正式灾难恢复授权，事故时先确定全新目标、引用本次真实恢复证据及新的精确范围，禁止就地覆盖。
+
 容量先估`数据库实际恢复体积＋私有对象总字节`，另给备份、私有staging、恢复库留足空间，建议≥3倍总体数据＋数据库索引/临时空间余量；pg_dump压缩大小不代表数据库恢复体积。备份读取消耗Storage出口/本地磁盘，按实际套餐检查余额/费率，不默认升级或承诺免费无限容量。旧备份删除由操作员在新备份验证/外部副本确认后按留存表执行；未添加自动删备份程序。
 
 ## 5. 创建和核对加密备份

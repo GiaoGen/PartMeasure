@@ -1,0 +1,125 @@
+{
+  "checkedAt": "2026-10-29T15:12:39.985Z",
+  "status": "PASS",
+  "targetRef": "qjiifweyhahowjdluqys",
+  "migrationHistory": [
+    {
+      "version": "20261016085629",
+      "name": "infrastructure_baseline",
+      "sha256": "25743e291388dd3d522b98a834f2c7d26f439b5b3ff5d8a558bb26114d95c920"
+    },
+    {
+      "version": "20261016104229",
+      "name": "p0_1_auth_projects_shares_files",
+      "sha256": "a5c24ad4368e7e877d159e59f4696efa34a5d1c9b4c270a32e67bdc3bd69c85e"
+    },
+    {
+      "version": "20261016110618",
+      "name": "p0_1_pipeline_recovery",
+      "sha256": "8a902c8b043b3390f56339ad136fda1f1ef2dcb8df5191743a47cde741897197"
+    },
+    {
+      "version": "20261016112509",
+      "name": "p0_1_upload_grant_window",
+      "sha256": "8c03a58cc665aa3e1362c70d62ddfc4338a8282fae27a74fb3365150fdd1f5bf"
+    },
+    {
+      "version": "20261016112632",
+      "name": "p0_1_policy_indexes",
+      "sha256": "7223fd96d5ae026ae4ef3bd7f5d93c8b88f3d0b4990be2c1992d2efcd38a6597"
+    },
+    {
+      "version": "20261016113046",
+      "name": "p0_1_worker_share_lock",
+      "sha256": "4c3cf02336846ef52f3425c09ec210403e6b88e906d0384f7a65a85628671ea9"
+    },
+    {
+      "version": "20261016115841",
+      "name": "p0_1_file_rls_and_context",
+      "sha256": "1f775ef8c81e10c095621f0223ae4606e9d6eae60ed5415acd938193bd7adf61"
+    },
+    {
+      "version": "20261016132859",
+      "name": "p0_2_annotations_file_issues",
+      "sha256": "7493c1d19fcb388e55e64e9e298d1afccb9e95157cf5b53fe51157641f63d340"
+    },
+    {
+      "version": "20261017145122",
+      "name": "p0_3_measurement_workflow",
+      "sha256": "9d43454a14e7a73493660625ea7c0f282f4520862d7a35dc86d44872a7f3d8b3"
+    },
+    {
+      "version": "20261017152616",
+      "name": "p0_3_issue_response_index",
+      "sha256": "a9925ac641f1f69b424c47a97f8a74b53e2df2c5a662e00ae4593c505f1570d6"
+    },
+    {
+      "version": "20261017162310",
+      "name": "p0_4_deliveries",
+      "sha256": "71146abb6d0f6bf626b6aab1b4610da8e5666ffa8c71e194e0541120fd521d68"
+    },
+    {
+      "version": "20261018010435",
+      "name": "p0_4_worker_purpose_guard",
+      "sha256": "022f065ba39ec76a550b898af375843ddff4e8742950c089c2af9e878189a4c6"
+    },
+    {
+      "version": "20261019025932",
+      "name": "frontend_backend_alignment",
+      "sha256": "a76bc97ff9d8f1499bc3058876e218b59d0c91244c6e15b317cd9bf6390bb170"
+    },
+    {
+      "version": "20261019082939",
+      "name": "performance_realtime_thumbnails",
+      "sha256": "e8e520bc39f5d52026fe41653b2dcd874d05fae8457ddea751e69d3786878ce1"
+    },
+    {
+      "version": "20261019093029",
+      "name": "performance_event_visibility_hardening",
+      "sha256": "718e3d860e6c17a9da3372958f28a110858f4210f8a02918ef410cea294b0d21"
+    },
+    {
+      "version": "20261020052757",
+      "name": "lightweight_request_uploads",
+      "sha256": "8ca2c1cd649c6e14cef31268cccd7557407eb43b74bf954b37f195168b828624"
+    },
+    {
+      "version": "20261020073647",
+      "name": "annotation_collaboration",
+      "sha256": "58236d265a7066fede628a437ae0f720d79f33eb0543e3c049f135198577c18b"
+    },
+    {
+      "version": "20261020085909",
+      "name": "extended_annotation_tools",
+      "sha256": "3fd32974b9802d69d152e761cbab425ec7c733f4ce25b35462ef47dde837877b"
+    },
+    {
+      "version": "20261025072814",
+      "name": "p2_02_delivery_feedback",
+      "sha256": "07c867bd67053d071730b3fc4a48f07b119347d6e20bd53b5601d762fa0f1ce9"
+    },
+    {
+      "version": "20261025100557",
+      "name": "p2_03_archive_filters",
+      "sha256": "4dc22760b2cac1444ce164ba24653028acf2b342b4f3d35d4dfd28a88e4e0f15"
+    }
+  ],
+  "all20SqlHashesMatchApprovedSource": true,
+  "privateSchema": {
+    "anonymous_schema_access": false,
+    "browser_authenticated_schema_access": false,
+    "users": 0,
+    "objects": 0
+  },
+  "projectStates": {
+    "source": "INACTIVE",
+    "production": "ACTIVE_HEALTHY",
+    "recovery": "INACTIVE",
+    "unrelatedChanges": []
+  },
+  "stagingEnvironment": {
+    "variables": 10,
+    "allVersionMetadataUnchanged": true
+  },
+  "scope": "Independent read-only cloud migration history/hash and ACL check plus project states and staging variable metadata. No Auth login, cloud writes, file reads or deployment."
+}

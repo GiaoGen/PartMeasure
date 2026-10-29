@@ -1,0 +1,73 @@
+{
+  "checkedAt": "2026-10-29T16:09:31.914Z",
+  "origin": "https://partmeasure-production.vercel.app",
+  "deploymentId": "dpl_8ibkHBdHhn1QzePSXUPiZbUozPsM",
+  "expectedBuildId": "p3-05-a2a3658eb9dcd068b3f2",
+  "authentication": "anonymous; no cookies or bypass",
+  "requests": [
+    {
+      "path": "/api/health",
+      "status": 200,
+      "elapsedMs": 3400,
+      "headers": {
+        "referrer-policy": "no-referrer",
+        "x-frame-options": "DENY",
+        "x-content-type-options": "nosniff",
+        "cache-control": "private, no-store",
+        "content-type": "application/json"
+      },
+      "bodySha256": "a3a7bc17b95cee6b31ff101f6c7168478849ef6998b69fa79aa4c1723b13b72d",
+      "health": {
+        "status": "ok",
+        "scope": "P0-1",
+        "database": "not-probed",
+        "buildId": "p3-05-a2a3658eb9dcd068b3f2"
+      }
+    },
+    {
+      "path": "/",
+      "status": 200,
+      "elapsedMs": 759,
+      "headers": {
+        "referrer-policy": "no-referrer",
+        "x-frame-options": "DENY",
+        "x-content-type-options": "nosniff",
+        "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+        "content-type": "text/html; charset=utf-8"
+      },
+      "bodySha256": "eb35ed0a4a39d31a33d73c9bccbb4d6806957f0fd07820d3455d7b4d36c0742f",
+      "unexpectedFeedbackScript": false
+    },
+    {
+      "path": "/login",
+      "status": 200,
+      "elapsedMs": 697,
+      "headers": {
+        "referrer-policy": "no-referrer",
+        "x-frame-options": "DENY",
+        "x-content-type-options": "nosniff",
+        "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+        "content-type": "text/html; charset=utf-8"
+      },
+      "bodySha256": "322ddd3e9c3c15422adb797ec39f783545802a0045455e2937583ac5128ec752",
+      "unexpectedFeedbackScript": false,
+      "nativePostForm": true
+    },
+    {
+      "path": "/api/projects",
+      "status": 401,
+      "elapsedMs": 1785,
+      "headers": {
+        "referrer-policy": "no-referrer",
+        "x-frame-options": "DENY",
+        "x-content-type-options": "nosniff",
+        "cache-control": "private, no-store",
+        "content-type": "application/json"
+      },
+      "bodySha256": "35dcc4cbfaf51f950c38859cdd88dba4aa4cf3bf547b090abbd791a5952c0da9",
+      "errorCode": "AUTH_REQUIRED"
+    }
+  ],
+  "failures": [],
+  "status": "PASS"
+}

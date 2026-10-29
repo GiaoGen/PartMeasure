@@ -1,0 +1,229 @@
+{
+  "checkedAt": "2026-10-29T14:27:27.152Z",
+  "status": "PASS",
+  "scope": "Fresh disposable native PostgreSQL18 empty migration chain; local auth.users/storage.buckets fixtures only. NOT cloud Auth, Storage, TLS or production acceptance.",
+  "migrations": [
+    {
+      "file": "20261016085629_infrastructure_baseline.sql",
+      "sha256": "25743e291388dd3d522b98a834f2c7d26f439b5b3ff5d8a558bb26114d95c920"
+    },
+    {
+      "file": "20261016104229_p0_1_auth_projects_shares_files.sql",
+      "sha256": "a5c24ad4368e7e877d159e59f4696efa34a5d1c9b4c270a32e67bdc3bd69c85e"
+    },
+    {
+      "file": "20261016110618_p0_1_pipeline_recovery.sql",
+      "sha256": "8a902c8b043b3390f56339ad136fda1f1ef2dcb8df5191743a47cde741897197"
+    },
+    {
+      "file": "20261016112509_p0_1_upload_grant_window.sql",
+      "sha256": "8c03a58cc665aa3e1362c70d62ddfc4338a8282fae27a74fb3365150fdd1f5bf"
+    },
+    {
+      "file": "20261016112632_p0_1_policy_indexes.sql",
+      "sha256": "7223fd96d5ae026ae4ef3bd7f5d93c8b88f3d0b4990be2c1992d2efcd38a6597"
+    },
+    {
+      "file": "20261016113046_p0_1_worker_share_lock.sql",
+      "sha256": "4c3cf02336846ef52f3425c09ec210403e6b88e906d0384f7a65a85628671ea9"
+    },
+    {
+      "file": "20261016115841_p0_1_file_rls_and_context.sql",
+      "sha256": "1f775ef8c81e10c095621f0223ae4606e9d6eae60ed5415acd938193bd7adf61"
+    },
+    {
+      "file": "20261016132859_p0_2_annotations_file_issues.sql",
+      "sha256": "7493c1d19fcb388e55e64e9e298d1afccb9e95157cf5b53fe51157641f63d340"
+    },
+    {
+      "file": "20261017145122_p0_3_measurement_workflow.sql",
+      "sha256": "9d43454a14e7a73493660625ea7c0f282f4520862d7a35dc86d44872a7f3d8b3"
+    },
+    {
+      "file": "20261017152616_p0_3_issue_response_index.sql",
+      "sha256": "a9925ac641f1f69b424c47a97f8a74b53e2df2c5a662e00ae4593c505f1570d6"
+    },
+    {
+      "file": "20261017162310_p0_4_deliveries.sql",
+      "sha256": "71146abb6d0f6bf626b6aab1b4610da8e5666ffa8c71e194e0541120fd521d68"
+    },
+    {
+      "file": "20261018010435_p0_4_worker_purpose_guard.sql",
+      "sha256": "022f065ba39ec76a550b898af375843ddff4e8742950c089c2af9e878189a4c6"
+    },
+    {
+      "file": "20261019025932_frontend_backend_alignment.sql",
+      "sha256": "a76bc97ff9d8f1499bc3058876e218b59d0c91244c6e15b317cd9bf6390bb170"
+    },
+    {
+      "file": "20261019082939_performance_realtime_thumbnails.sql",
+      "sha256": "e8e520bc39f5d52026fe41653b2dcd874d05fae8457ddea751e69d3786878ce1"
+    },
+    {
+      "file": "20261019093029_performance_event_visibility_hardening.sql",
+      "sha256": "718e3d860e6c17a9da3372958f28a110858f4210f8a02918ef410cea294b0d21"
+    },
+    {
+      "file": "20261020052757_lightweight_request_uploads.sql",
+      "sha256": "8ca2c1cd649c6e14cef31268cccd7557407eb43b74bf954b37f195168b828624"
+    },
+    {
+      "file": "20261020073647_annotation_collaboration.sql",
+      "sha256": "58236d265a7066fede628a437ae0f720d79f33eb0543e3c049f135198577c18b"
+    },
+    {
+      "file": "20261020085909_extended_annotation_tools.sql",
+      "sha256": "3fd32974b9802d69d152e761cbab425ec7c733f4ce25b35462ef47dde837877b"
+    },
+    {
+      "file": "20261025072814_p2_02_delivery_feedback.sql",
+      "sha256": "07c867bd67053d071730b3fc4a48f07b119347d6e20bd53b5601d762fa0f1ce9"
+    },
+    {
+      "file": "20261025100557_p2_03_archive_filters.sql",
+      "sha256": "4dc22760b2cac1444ce164ba24653028acf2b342b4f3d35d4dfd28a88e4e0f15"
+    }
+  ],
+  "tables": [
+    {
+      "name": "annotation_revisions",
+      "rls": true,
+      "rows": 0
+    },
+    {
+      "name": "annotations",
+      "rls": true,
+      "rows": 0
+    },
+    {
+      "name": "audit_events",
+      "rls": true,
+      "rows": 0
+    },
+    {
+      "name": "deliveries",
+      "rls": true,
+      "rows": 0
+    },
+    {
+      "name": "delivery_feedback",
+      "rls": true,
+      "rows": 0
+    },
+    {
+      "name": "delivery_files",
+      "rls": true,
+      "rows": 0
+    },
+    {
+      "name": "file_assets",
+      "rls": true,
+      "rows": 0
+    },
+    {
+      "name": "guest_sessions",
+      "rls": true,
+      "rows": 0
+    },
+    {
+      "name": "idempotency_keys",
+      "rls": true,
+      "rows": 0
+    },
+    {
+      "name": "image_derivatives",
+      "rls": true,
+      "rows": 0
+    },
+    {
+      "name": "issue_responses",
+      "rls": true,
+      "rows": 0
+    },
+    {
+      "name": "issue_reviews",
+      "rls": true,
+      "rows": 0
+    },
+    {
+      "name": "issues",
+      "rls": true,
+      "rows": 0
+    },
+    {
+      "name": "jobs",
+      "rls": true,
+      "rows": 0
+    },
+    {
+      "name": "owner_usage",
+      "rls": true,
+      "rows": 0
+    },
+    {
+      "name": "project_event_cursors",
+      "rls": true,
+      "rows": 0
+    },
+    {
+      "name": "project_events",
+      "rls": true,
+      "rows": 0
+    },
+    {
+      "name": "project_folders",
+      "rls": true,
+      "rows": 0
+    },
+    {
+      "name": "projects",
+      "rls": true,
+      "rows": 0
+    },
+    {
+      "name": "rate_limits",
+      "rls": true,
+      "rows": 0
+    },
+    {
+      "name": "response_attachments",
+      "rls": true,
+      "rows": 0
+    },
+    {
+      "name": "share_links",
+      "rls": true,
+      "rows": 0
+    },
+    {
+      "name": "thumbnail_jobs",
+      "rls": true,
+      "rows": 0
+    },
+    {
+      "name": "upload_reservations",
+      "rls": true,
+      "rows": 0
+    }
+  ],
+  "roles": [
+    {
+      "rolname": "partmeasure_runtime",
+      "rolsuper": false,
+      "rolbypassrls": false,
+      "rolinherit": false
+    },
+    {
+      "rolname": "partmeasure_worker",
+      "rolsuper": false,
+      "rolbypassrls": false,
+      "rolinherit": false
+    }
+  ],
+  "privateBuckets": 2,
+  "testUsersSeeded": 0,
+  "labSqlApplied": false,
+  "draftSqlApplied": false,
+  "browserSchemaAccess": false,
+  "cloudWrites": false
+}

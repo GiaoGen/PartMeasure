@@ -7,6 +7,7 @@ import { maintenanceTarget } from "./target";
 import { assessStatus, statusRecord, statusTransition } from "./status-model";
 import { privateDirectory } from "./private-directory";
 import { connectionFailure } from "./connection-model";
+import { maintenanceProject, productionProjectRef } from "./project-target";
 
 const args = process.argv.slice(2);
 const record = args.includes("--record");
@@ -14,15 +15,17 @@ let phase = "arguments";
 async function saveStatus(status: "ok" | "warning" | "critical" | "unknown", alerts: string[]) {
 	if (!record) return;
 	await mkdir("tmp", { recursive: true });
+	const root = maintenanceProject(process.env) === productionProjectRef ? "tmp/maintenance-status/production" : "tmp/maintenance-status";
 	try { await privateDirectory("tmp/maintenance-status"); }
 	catch (error) { if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error; }
-	const path = "tmp/maintenance-status/last.json";
+	if (root.endsWith("/production")) { try { await privateDirectory(root); } catch (error) { if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error; } }
+	const path = `${root}/last.json`;
 	let previous: unknown;
 	try { previous = JSON.parse(await readFile(path, "utf8")); }
 	catch (error) { if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error; }
 	const current = statusRecord.parse({ version: 1, checkedAt: new Date().toISOString(), status, alerts });
 	const transition = statusTransition(previous, current);
-	const staging = `tmp/maintenance-status/${randomUUID()}.json`;
+	const staging = `${root}/${randomUUID()}.json`;
 	await writeFile(staging, `${JSON.stringify(transition.record)}\n`, { mode: 0o600, flag: "wx" });
 	await rename(staging, path);
 	console.log(JSON.stringify({ event: "maintenance_transition", raised: transition.raised, cleared: transition.cleared, notification: "local-output-only" }));

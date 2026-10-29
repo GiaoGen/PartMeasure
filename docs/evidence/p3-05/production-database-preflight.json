@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-29T14:58:25.430Z",
+  "targetRef": "qjiifweyhahowjdluqys",
+  "scope": "One independent strict TLS database credential preflight while service key/phone return files are missing. Read-only; no migration, role creation, Auth login, mail or deployment.",
+  "status": "PASS",
+  "verifiedTLS": true,
+  "emptyTarget": {
+    "role": "postgres",
+    "version": "17.11",
+    "application_schema": 0,
+    "auth_users": 0,
+    "buckets": 0
+  }
+}

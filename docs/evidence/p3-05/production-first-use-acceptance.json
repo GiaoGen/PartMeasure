@@ -1,0 +1,134 @@
+{
+  "checkedAt": "2026-10-29T16:20:09.717Z",
+  "projectRef": "qjiifweyhahowjdluqys",
+  "status": "PASS",
+  "actor": "Human performed first use; Agent executed only read-only DB and deployment checks",
+  "humanReport": {
+    "steps1To5": "User explicitly reported all normal",
+    "revokedGuestRefresh": "User explicitly confirmed 已失效",
+    "noRepeatedDeviceExportOrRecoveryTests": true
+  },
+  "database": {
+    "counts": {
+      "users": 1,
+      "confirmed_users": 1,
+      "projects": 1,
+      "files": 1,
+      "annotations": 1,
+      "shares": 1,
+      "revoked_shares": 1,
+      "guests": 1,
+      "responses": 2,
+      "private_buckets": 2
+    },
+    "first_use": [
+      {
+        "owner_confirmed": true,
+        "project_id": "61b962ea-ccb2-43ef-9ef2-71e3955896c2",
+        "project_created_at": "2026-10-29T16:13:22.937455+00:00",
+        "file": {
+          "id": "62397278-f492-4711-8946-69446036d030",
+          "original_bytes": 13672,
+          "original_sha256": "02108cf9ba0557f0e60b3108bec1898437fe30ce20dc51f769f0a0253469bd21",
+          "bytes": 48850,
+          "sha256": "cdad779251a66dc731abb0a809056e3a7decb7e8d2988dd83d1408740947488d",
+          "width": 447,
+          "height": 447,
+          "visibility": "customer",
+          "deleted": false
+        },
+        "share": {
+          "id": "70ab3a82-729b-4035-92fd-273f9120219f",
+          "revoked_at": "2026-10-29T16:16:02.945597+00:00",
+          "guest_count": 1
+        },
+        "responses": [
+          {
+            "author_type": "guest",
+            "kind": "numeric",
+            "count": 2,
+            "min_body_chars": 0,
+            "max_body_chars": 0
+          }
+        ],
+        "issues": [
+          {
+            "kind": "measurement",
+            "state": "submitted",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "storage": {
+      "objects": 5,
+      "bytes": 89488
+    },
+    "audit": [
+      {
+        "action": "annotation.create",
+        "count": 1
+      },
+      {
+        "action": "annotation.measurement-open",
+        "count": 1
+      },
+      {
+        "action": "file.ready.format-only-v2",
+        "count": 1
+      },
+      {
+        "action": "issue.remeasure",
+        "count": 1
+      },
+      {
+        "action": "issue.respond",
+        "count": 2
+      },
+      {
+        "action": "project.create",
+        "count": 1
+      },
+      {
+        "action": "share.revoke",
+        "count": 1
+      },
+      {
+        "action": "share.rotate",
+        "count": 1
+      },
+      {
+        "action": "upload.reserve",
+        "count": 1
+      }
+    ]
+  },
+  "deployment": {
+    "id": "dpl_8ibkHBdHhn1QzePSXUPiZbUozPsM",
+    "projectId": "prj_Tk3LzDCt2iLIfObnwVyPajjbiX61",
+    "state": "READY",
+    "target": "production",
+    "alias": [
+      "partmeasure-production.vercel.app",
+      "partmeasure-production-messup-s-projects.vercel.app"
+    ]
+  },
+  "differencesFromPreparedPlan": {
+    "image": "Actual human-selected upload is 13672 original bytes, 447x447; not the prepared 1676-byte fixture. No exact prepared-fixture upload/hash claim.",
+    "responses": "Actual two numeric Guest replies with an intervening issue.remeasure. Recorded as human-executed additional interaction; Agent did not create any reply or extra objects."
+  },
+  "evidenceBoundaries": [
+    "DB metadata and references corroborate the real user workflow; no new byte-download SHA verification is claimed for this image.",
+    "Browser interaction and revoked Guest page are human reports; deployment and database are Agent read-only observations.",
+    "No exact email delivery count claimed from database. One confirmed Auth user and successful human normal signup are verified.",
+    "Earlier tested permissions/export/full recovery evidence is reused at its recorded scope."
+  ],
+  "agentMutations": {
+    "businessWrites": 0,
+    "emails": 0,
+    "uploads": 0,
+    "shares": 0,
+    "cleanup": 0,
+    "deployments": 0
+  }
+}

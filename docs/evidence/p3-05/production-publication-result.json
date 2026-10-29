@@ -1,0 +1,55 @@
+{
+  "updatedAt": "2026-10-29T16:21:05.584Z",
+  "publicationAuthorization": "Human explicitly approved deployment and bounded first-use flow",
+  "deploymentCount": 1,
+  "deploymentId": "dpl_8ibkHBdHhn1QzePSXUPiZbUozPsM",
+  "origin": "https://partmeasure-production.vercel.app",
+  "productionTarget": "qjiifweyhahowjdluqys",
+  "status": "RELEASED_ACCEPTANCE_COMPLETE",
+  "candidateDecision": "READY_FOR_RELEASE",
+  "p305Status": "COMPLETE",
+  "provenance": "production-provenance.json",
+  "publicSmoke": "production-public-smoke.json",
+  "sameDeploymentResumedAfterExplainedFingerprintPause": true,
+  "resumeReceipt": {
+    "at": "2026-10-29T16:10:33.976Z",
+    "sameDeployment": true,
+    "additionalDeployments": 0,
+    "response": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"result\": null\n}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  },
+  "firstUse": {
+    "status": "PASS",
+    "evidence": "production-first-use-acceptance.json",
+    "userConfirmedSteps1To5": true,
+    "userConfirmedRevokedGuestUnavailable": true,
+    "actualCounts": {
+      "users": 1,
+      "confirmed_users": 1,
+      "projects": 1,
+      "files": 1,
+      "annotations": 1,
+      "shares": 1,
+      "revoked_shares": 1,
+      "guests": 1,
+      "responses": 2,
+      "private_buckets": 2
+    },
+    "recordsRetained": true
+  },
+  "closeoutFingerprint": {
+    "applicationDigest": "cebeecad8acca20add7735a4a68756949faaa0207e8a97e50f5f4548907ec0f2",
+    "dependencyLockSha256": "b6007dcaf0ed5ddcc915816973c87f8f6917829bd81d9010df4b46ff30cabd73",
+    "maintenanceHashesStillMatch": true
+  },
+  "unmetHardGates": [],
+  "additionalApprovalsRequired": []
+}

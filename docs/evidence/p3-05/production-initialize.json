@@ -1,0 +1,32 @@
+{
+  "checkedAt": "2026-10-29T15:02:57.528Z",
+  "targetRef": "qjiifweyhahowjdluqys",
+  "action": "--initialize",
+  "status": "PASS",
+  "noSourceMutation": true,
+  "noUsersOrFilesImported": true,
+  "noEmailOrDeployment": true,
+  "migrations": [
+    "20261016085629_infrastructure_baseline.sql",
+    "20261016104229_p0_1_auth_projects_shares_files.sql",
+    "20261016110618_p0_1_pipeline_recovery.sql",
+    "20261016112509_p0_1_upload_grant_window.sql",
+    "20261016112632_p0_1_policy_indexes.sql",
+    "20261016113046_p0_1_worker_share_lock.sql",
+    "20261016115841_p0_1_file_rls_and_context.sql",
+    "20261016132859_p0_2_annotations_file_issues.sql",
+    "20261017145122_p0_3_measurement_workflow.sql",
+    "20261017152616_p0_3_issue_response_index.sql",
+    "20261017162310_p0_4_deliveries.sql",
+    "20261018010435_p0_4_worker_purpose_guard.sql",
+    "20261019025932_frontend_backend_alignment.sql",
+    "20261019082939_performance_realtime_thumbnails.sql",
+    "20261019093029_performance_event_visibility_hardening.sql",
+    "20261020052757_lightweight_request_uploads.sql",
+    "20261020073647_annotation_collaboration.sql",
+    "20261020085909_extended_annotation_tools.sql",
+    "20261025072814_p2_02_delivery_feedback.sql",
+    "20261025100557_p2_03_archive_filters.sql"
+  ],
+  "committed": true
+}

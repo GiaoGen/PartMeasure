@@ -1,0 +1,163 @@
+{
+  "checkedAt": "2026-10-29T15:12:40.459Z",
+  "status": "PASS",
+  "projectId": "prj_Tk3LzDCt2iLIfObnwVyPajjbiX61",
+  "teamId": "team_HdERlM3ZEizexkGrjPNJ8sZq",
+  "variables": [
+    {
+      "id": "avBkR7banDhTmLMJ",
+      "key": "APP_URL",
+      "type": "encrypted",
+      "target": [
+        "production"
+      ],
+      "updatedAt": 1793286390623
+    },
+    {
+      "id": "h5DexT7oI5QnCxRb",
+      "key": "DATABASE_CA_PEM",
+      "type": "encrypted",
+      "target": [
+        "production"
+      ],
+      "updatedAt": 1793286390623
+    },
+    {
+      "id": "AzFruXYLlgiDpTH3",
+      "key": "DATABASE_URL",
+      "type": "sensitive",
+      "target": [
+        "production"
+      ],
+      "updatedAt": 1793286390623
+    },
+    {
+      "id": "jHWFbyoqfVLdR3SK",
+      "key": "EVENT_DATABASE_URL",
+      "type": "sensitive",
+      "target": [
+        "production"
+      ],
+      "updatedAt": 1793286390623
+    },
+    {
+      "id": "7FyzypO4gsRmOkJw",
+      "key": "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+      "type": "encrypted",
+      "target": [
+        "production"
+      ],
+      "updatedAt": 1793286390623
+    },
+    {
+      "id": "Au7t7LH6C8qdseQb",
+      "key": "NEXT_PUBLIC_SUPABASE_URL",
+      "type": "encrypted",
+      "target": [
+        "production"
+      ],
+      "updatedAt": 1793286390623
+    },
+    {
+      "id": "ssiN5f0yEAsmkKe3",
+      "key": "PM_SERVER_TIMING",
+      "type": "encrypted",
+      "target": [
+        "production"
+      ],
+      "updatedAt": 1793286390623
+    },
+    {
+      "id": "O6qrcxvHr02Zkens",
+      "key": "STORAGE_MAX_FILE_BYTES",
+      "type": "encrypted",
+      "target": [
+        "production"
+      ],
+      "updatedAt": 1793286390623
+    },
+    {
+      "id": "q6sP8tjgX0cbqGVX",
+      "key": "SUPABASE_PROJECT_REF",
+      "type": "encrypted",
+      "target": [
+        "production"
+      ],
+      "updatedAt": 1793286390623
+    },
+    {
+      "id": "iwCAvHXJiumby7nA",
+      "key": "SUPABASE_SECRET_KEY",
+      "type": "sensitive",
+      "target": [
+        "production"
+      ],
+      "updatedAt": 1793286390623
+    }
+  ],
+  "created": 10,
+  "failed": 0,
+  "productionOnly": true,
+  "previewOrDevelopmentVariables": 0,
+  "nonSensitiveValueChecks": [
+    {
+      "key": "APP_URL",
+      "valueMatches": true,
+      "target": [
+        "production"
+      ],
+      "type": "encrypted"
+    },
+    {
+      "key": "DATABASE_CA_PEM",
+      "valueMatches": true,
+      "target": [
+        "production"
+      ],
+      "type": "encrypted"
+    },
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+      "valueMatches": true,
+      "target": [
+        "production"
+      ],
+      "type": "encrypted"
+    },
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_URL",
+      "valueMatches": true,
+      "target": [
+        "production"
+      ],
+      "type": "encrypted"
+    },
+    {
+      "key": "PM_SERVER_TIMING",
+      "valueMatches": true,
+      "target": [
+        "production"
+      ],
+      "type": "encrypted"
+    },
+    {
+      "key": "STORAGE_MAX_FILE_BYTES",
+      "valueMatches": true,
+      "target": [
+        "production"
+      ],
+      "type": "encrypted"
+    },
+    {
+      "key": "SUPABASE_PROJECT_REF",
+      "valueMatches": true,
+      "target": [
+        "production"
+      ],
+      "type": "encrypted"
+    }
+  ],
+  "sensitiveValueReadback": "Not available by design; API confirmed creation from the private locally verified payload. No value printed or placed in evidence.",
+  "workerAdminOrBackupSecretsUploaded": false,
+  "deploymentCreated": false
+}

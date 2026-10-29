@@ -1,0 +1,140 @@
+{
+  "checkedAt": "2026-10-29T15:03:37.117Z",
+  "targetRef": "qjiifweyhahowjdluqys",
+  "action": "--verify",
+  "status": "PASS",
+  "noSourceMutation": true,
+  "noUsersOrFilesImported": true,
+  "noEmailOrDeployment": true,
+  "tables": [
+    {
+      "name": "annotation_revisions",
+      "rls": true
+    },
+    {
+      "name": "annotations",
+      "rls": true
+    },
+    {
+      "name": "audit_events",
+      "rls": true
+    },
+    {
+      "name": "deliveries",
+      "rls": true
+    },
+    {
+      "name": "delivery_feedback",
+      "rls": true
+    },
+    {
+      "name": "delivery_files",
+      "rls": true
+    },
+    {
+      "name": "file_assets",
+      "rls": true
+    },
+    {
+      "name": "guest_sessions",
+      "rls": true
+    },
+    {
+      "name": "idempotency_keys",
+      "rls": true
+    },
+    {
+      "name": "image_derivatives",
+      "rls": true
+    },
+    {
+      "name": "issue_responses",
+      "rls": true
+    },
+    {
+      "name": "issue_reviews",
+      "rls": true
+    },
+    {
+      "name": "issues",
+      "rls": true
+    },
+    {
+      "name": "jobs",
+      "rls": true
+    },
+    {
+      "name": "owner_usage",
+      "rls": true
+    },
+    {
+      "name": "project_event_cursors",
+      "rls": true
+    },
+    {
+      "name": "project_events",
+      "rls": true
+    },
+    {
+      "name": "project_folders",
+      "rls": true
+    },
+    {
+      "name": "projects",
+      "rls": true
+    },
+    {
+      "name": "rate_limits",
+      "rls": true
+    },
+    {
+      "name": "response_attachments",
+      "rls": true
+    },
+    {
+      "name": "share_links",
+      "rls": true
+    },
+    {
+      "name": "thumbnail_jobs",
+      "rls": true
+    },
+    {
+      "name": "upload_reservations",
+      "rls": true
+    }
+  ],
+  "roles": [
+    {
+      "rolname": "partmeasure_runtime",
+      "rolsuper": false,
+      "rolbypassrls": false,
+      "rolinherit": false
+    },
+    {
+      "rolname": "partmeasure_worker",
+      "rolsuper": false,
+      "rolbypassrls": false,
+      "rolinherit": false
+    }
+  ],
+  "connections": [
+    {
+      "name": "runtime",
+      "verifiedTLS": true,
+      "normalRoleConnection": true
+    },
+    {
+      "name": "event-session",
+      "verifiedTLS": true,
+      "normalRoleConnection": true
+    },
+    {
+      "name": "maintenance",
+      "verifiedTLS": true,
+      "normalRoleConnection": true
+    }
+  ],
+  "privateBuckets": 2,
+  "phoneKeyMatched": true
+}

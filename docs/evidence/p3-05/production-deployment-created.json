@@ -1,0 +1,13 @@
+{
+  "createdAt": "2026-10-29T15:55:03.357Z",
+  "status": "CREATED_AWAITING_BUILD_VERIFICATION",
+  "deploymentId": "dpl_8ibkHBdHhn1QzePSXUPiZbUozPsM",
+  "url": "partmeasure-production-n4q1vdwqx-messup-s-projects.vercel.app",
+  "projectId": "prj_Tk3LzDCt2iLIfObnwVyPajjbiX61",
+  "teamId": "team_HdERlM3ZEizexkGrjPNJ8sZq",
+  "target": "production",
+  "sourceDigest": "cebeecad8acca20add7735a4a68756949faaa0207e8a97e50f5f4548907ec0f2",
+  "transport": "216 SHA1 source references reused from the same team; 3 fixed CV assets generated during prebuild. No file upload retry or second deployment.",
+  "state": "INITIALIZING",
+  "productionPublicAcceptance": false
+}

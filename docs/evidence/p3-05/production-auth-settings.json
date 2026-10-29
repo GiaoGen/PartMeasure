@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-10-29T14:59:11.661Z",
+  "projectRef": "qjiifweyhahowjdluqys",
+  "scope": "Public Auth settings read only; user explicitly reports copying QQ SMTP/Token templates/Site URL and password minimum12. This endpoint does not expose those private control-plane fields; no email sent.",
+  "status": "PASS",
+  "httpStatus": 200,
+  "publicSettings": {
+    "disableSignup": false,
+    "emailAutoConfirm": false,
+    "emailProvider": true
+  }
+}

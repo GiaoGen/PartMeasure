@@ -1,0 +1,25 @@
+{
+  "checkedAt": "2026-10-28T08:34:41.488Z",
+  "appCandidateCommit": "8100204baec13d092eb3bbe58ef06e6e6af2d67e",
+  "appInputDigest": "cebeecad8acca20add7735a4a68756949faaa0207e8a97e50f5f4548907ec0f2",
+  "worktreeHead": "d044dc6e611ce483dea06486d8b2946e4c6592fc",
+  "maintenanceDrivers": {
+    "scripts/release/recovery-source-probe.ts": "6976e93653b90e02241d1b32b0085d265120e9caec0b2eb337c541c4b9d38b63",
+    "scripts/release/recovery-archive.ts": "8e46c0875a562524a0b564ffb71932fb6630f8a18b5aa0d07b441337d93bbddd",
+    "scripts/release/recovery-drive-verify.ts": "a5e13b64ea33ab6c6116a6fd48c81398e352a1457d2d61c834de069c689b6655",
+    "scripts/release/recovery-cloud-plan.ts": "e96bea00c74110601a7e10fe4a832fc2ffa55fb4c1b0a373e8dac9be5ad8af28",
+    "scripts/release/recovery-cloud-apply.ts": "205026b083757a53746a7d24ea8a32cfb8361b7b4e89cb50924fdbbea9d039c2",
+    "scripts/release/recovery-cloud-finish.ts": "db2d79734e17300c5694be2d8cbbbcaa9f0bb02a20aefd6e076eaab1c8f6e83b",
+    "scripts/release/secret-audit.mjs": "453e6c8e7e651e6eb67329441a92d1f20d7e1c26e884e4d0480fb240abfb57f6",
+    "scripts/maintenance/cloud-recovery-model.ts": "cf514484f26e44ec0b05b0d8b44fe3eae627f0d85f63c1f40d83e9c4047c9de2",
+    "scripts/maintenance/stream-object-readback.ts": "ce7dd491d265cda1320b835e77042b249e4ecda01eb8139922809ba07975b814",
+    "scripts/maintenance/upload-confirmation.ts": "b21901fab552b2db1d8354e6144c94d49d95c67fb781c41389ab369604310a36"
+  },
+  "targetedLint": "PASS",
+  "strictTypes": "PASS",
+  "newSecurityAndTransportTests": 9,
+  "secretAudit": "PASS zero flagged files",
+  "appSourceLockMigrationsChanged": false,
+  "cloudEvidence": "recovery-workflow-result.json",
+  "scope": "Maintenance tools/evidence remain preserved in working tree; no push or production deployment"
+}

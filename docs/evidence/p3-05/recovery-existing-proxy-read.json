@@ -1,0 +1,10 @@
+{
+  "checkedAt": "2026-10-28T07:32:07.947Z",
+  "status": "PASS",
+  "scope": "One read-only 1MiB range from existing source object via existing loopback HTTP proxy, task process only. No system proxy/TUN/DNS edits, no new Auth session or cloud write.",
+  "bytes": 1048576,
+  "elapsedMs": 41280,
+  "sha256": "b7b1dc53b2bfe7043857f856e4cc30b4c2522d625a5029bd66c5053f0e3a906b",
+  "fullObjectVerified": false,
+  "processUsesEnvProxy": true
+}

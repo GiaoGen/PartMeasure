@@ -1,0 +1,33 @@
+{
+  "checkedAt": "2026-10-28T08:24:15.313Z",
+  "status": "COMPLETE_WITHIN_RECORDED_FUNCTIONAL_SCOPE",
+  "sourceSet": "08c325c3-f646-42d0-b9c2-ad2d7e3cab69",
+  "backupAuthentication": true,
+  "offDeviceCiphertextRoundtrip": true,
+  "phoneKeyRetrieval": true,
+  "restoredBusinessTables": 24,
+  "privateObjects": 192,
+  "privateBytes": 70227973,
+  "allPrivateHashesMatched": true,
+  "normalAuthLogins": 1,
+  "realOwnerRoleHistoryRows": 116,
+  "realOwnerRoleDeliveryVersions": 25,
+  "crossOwnerAnonymousOldGuestDenied": true,
+  "targetPaused": true,
+  "sourceResumed": true,
+  "all24SourceHashesMatch": true,
+  "scopeLimits": [
+    "70.2MB referenced-object lab snapshot, not a 5GiB capacity/performance claim",
+    "Normal target Auth/Storage and real cloud role SQL verified; native local PG connection not claimed passed",
+    "No production deployment, mail, new shares, data cleanup or additional project"
+  ],
+  "rto": {
+    "firstSourcePauseAt": "2026-10-28T04:05:59.110Z",
+    "targetAllChecksPassedAt": "2026-10-28T08:08:41.480Z",
+    "wallClockSeconds": 14562,
+    "withinFourHourWallClock": false,
+    "note": "Includes unexpected agent usage interruption and development/diagnosis. Do not claim RTO<=4h achieved or extrapolate to 5GiB; engineering target/run operation boundary remains Gate3 decision."
+  },
+  "overallReleaseVerdict": "BLOCKED",
+  "nextGate": "Operating responsibility, budget/security risks and production isolation; no automatic production approval"
+}

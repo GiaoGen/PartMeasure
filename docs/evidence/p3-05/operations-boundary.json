@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "checkedDate": "2026-10-29",
+  "timezone": "Asia/Taipei",
+  "status": "COMPLETE",
+  "scope": "Read-only existing lab/platform configuration and current candidate logging review; no cloud mutation, login, email, share request, new resource, cleanup, deployment or network changes.",
+  "candidate": {
+    "applicationCommit": "8100204baec13d092eb3bbe58ef06e6e6af2d67e",
+    "worktreeHead": "d044dc6e611ce483dea06486d8b2946e4c6592fc",
+    "applicationInputSha256": "cebeecad8acca20add7735a4a68756949faaa0207e8a97e50f5f4548907ec0f2",
+    "applicationLockAndMigrationsUnchanged": true
+  },
+  "supabase": {
+    "projectRef": "rvysclscetfqicpnzlra",
+    "organization": "mndzgvsjfzqrejuqldvm",
+    "plan": "free",
+    "securityAdvisors": [
+      {
+        "name": "auth_leaked_password_protection",
+        "level": "WARN",
+        "count": 1
+      }
+    ],
+    "publicAuthSettings": {
+      "checkedAt": "2026-10-28T17:55:31.019Z",
+      "httpStatus": 200,
+      "disableSignup": false,
+      "emailAutoConfirm": false,
+      "emailProviderEnabled": true,
+      "minimumPasswordLengthExposed": false,
+      "notes": "The public endpoint omits password minimum and HIBP; no inference made. First sandbox attempt ENOTFOUND; one normal-host read succeeded. No login/email."
+    },
+    "capacity": {
+      "readOnlyTransaction": true,
+      "databaseBytes": 17503923,
+      "buckets": 3,
+      "publicBuckets": 0,
+      "objectCount": 250,
+      "objectMetadataBytes": 99172191,
+      "appUsedBytes": 70227973,
+      "appReservedBytes": 755695065,
+      "billingCycleEgressMeasured": false,
+      "notes": "Admin metadata is not role acceptance, usable provider capacity, billed egress, or a fresh backup. Test reservations retained; no cleanup authorization inferred."
+    },
+    "minimumPasswordPolicy": "User reports bundled dashboard checks normal; exact provider minimum not supplied and not inferred. Application input min12/max128 reviewed. Final production Auth baseline belongs to production isolation.",
+    "riskDecision": {
+      "date": "2026-10-29",
+      "userReply": "接受 Free 的这项剩余风险",
+      "accepted": true,
+      "scope": "Keep Free without leaked-password database checks; existing authentication/email confirmation/rate limits/private permissions retained. Not equivalent to HIBP; WARN retained."
+    }
+  },
+  "vercel": {
+    "projectId": "prj_rf7HXAsGzV6khGK5hxPkadCKhhAC",
+    "projectName": "partmeasure-staging",
+    "teamId": "team_HdERlM3ZEizexkGrjPNJ8sZq",
+    "teamMembers": {
+      "total": 1,
+      "returned": 1,
+      "roles": [
+        "OWNER"
+      ],
+      "paginationComplete": true
+    },
+    "currentPlan": "User reports bundled dashboard checks normal; exact plan label not transcribed. Historical Hobby evidence and current official Hobby retention are recorded as conditional, not a fresh API plan read.",
+    "integrationRead": {
+      "status": 403,
+      "code": "forbidden",
+      "requestId": "iad1:sin1:iad1:sfo1::2vxzh-1793209926834-54493b376623",
+      "endpoint": "GET /v1/integrations/configurations",
+      "provedNoIntegrations": false
+    },
+    "billingRead": {
+      "status": 404,
+      "code": "costs_not_found",
+      "requestId": "iad1:sin1:iad1:sfo1::kt4ps-1793209975087-60c124ab9775",
+      "endpoint": "GET /v1/billing/charges",
+      "from": "2026-10-01T00:00:00Z",
+      "to": "2026-10-29T00:00:00Z",
+      "provedZeroCost": false
+    },
+    "cliFallback": {
+      "installed": false,
+      "standardAuthFilePresent": false,
+      "newInstallOrLoginAttempted": false
+    },
+    "priorDrains404Reused": true,
+    "priorEmptyTokenProbeReused": true,
+    "newTokenBearingProbe": false,
+    "documentedHobbyRuntimeLogRetentionHours": 1,
+    "documentedDrainsPlans": [
+      "Pro",
+      "Enterprise"
+    ],
+    "notes": "Documented runtime retention is not a bound on all supplier/security logs. Plan, integrations and effective export settings need dashboard confirmation; no new browser/kernel retry.",
+    "logRiskDecision": {
+      "date": "2026-10-29",
+      "userReply": "接受上述受限的日志风险",
+      "accepted": true,
+      "conditions": "Control-plane access restricted; no external raw-log forwarding; current plan minimum available retention; no raw active links in reports; revoke affected share on exposure. Differences found later require review before applying this decision.",
+      "limits": "Official one-hour Hobby runtime UI retention does not establish retention of all provider/security logs; full supplier redaction is not claimed."
+    }
+  },
+  "applicationLogging": {
+    "reviewed": true,
+    "rawErrorMessagesLogged": false,
+    "fixedStageAndErrorCodes": true,
+    "authEmailHashedForRateLimits": true,
+    "nextIncomingRequestsLogging": false,
+    "serverFunctionArgumentsLogging": false,
+    "browserToTerminalLogging": false,
+    "referrerPolicy": "no-referrer",
+    "privateResponses": "private, no-store",
+    "supplierPathRedactionProven": false,
+    "thirdPartyLoggingSdkFound": false,
+    "secretAudit": {
+      "checkedAt": "2026-10-28T18:04:40.566Z",
+      "filesScanned": 1240,
+      "flaggedFiles": [],
+      "scope": "Current tracked/unignored source and evidence, public assets and browser static bundles; configured/known secret exact matches plus sb_secret format. Not historic Git or pixel OCR."
+    }
+  },
+  "stopConditions": {
+    "agentOwnedReadOnlyChecks": "Complete within stated scope; no new application blocker found.",
+    "riskDecisions": "Explicitly accepted in current chat; do not ask again for unchanged scope.",
+    "dashboardEvidence": "Human reports requested settings normal; granularity explicitly bounded.",
+    "remainingWork": "Final production target/configuration and exact production backup guard binding remain in production-isolation gate. Overall release remains BLOCKED; no production deployment approval."
+  },
+  "references": [
+    "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection",
+    "https://supabase.com/docs/guides/platform/billing-faq#quotas-and-spend-caps",
+    "https://vercel.com/docs/logs/runtime",
+    "https://vercel.com/docs/plans/hobby",
+    "https://vercel.com/docs/drains"
+  ],
+  "completionScope": "Student-project security/operational risk decisions and stated current lab/platform checks only. Not final production resource/configuration or deployment acceptance.",
+  "manualControlPlaneAttestation": {
+    "date": "2026-10-29",
+    "questionScope": [
+      "Supabase Email password minimum/Confirm email",
+      "Supabase organization Members and Usage/restrictions/Egress",
+      "Vercel plan/Drains/Integrations/Usage/Fast Data Transfer"
+    ],
+    "userReply": "都正常的",
+    "source": "Human dashboard check, not API or Agent screenshot",
+    "exactValuesProvided": false,
+    "notes": "No abnormality reported across requested checks. No invented password minimum, membership count, plan label, usage numerator/denominator, or drain inventory. No additional manual read is required for this limited risk-decision subgate; final production configuration needs its own exact baseline."
+  }
+}

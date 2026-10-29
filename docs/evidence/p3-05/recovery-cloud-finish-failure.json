@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-28T07:05:20.176Z",
+  "status": "INCOMPLETE_SOURCE_RESUME_REQUIRED_IF_EXTERNAL_BLOCK",
+  "phase": "upload-remaining-object",
+  "objectsUploaded": 92,
+  "objectsVerified": 92,
+  "reusedUploadedObjects": 1,
+  "loginAttempts": 0,
+  "activeOrdinal": 93,
+  "activeBytes": 0,
+  "name": "AssertionError",
+  "code": "ERR_ASSERTION",
+  "errorMessageHash": "30bd69aa5284a2d1de6daaffc62e74a936ee659becf46dc1533f3ebec5ecec1f",
+  "reason": "REMAINING_OBJECT_UPLOAD_FAILED"
+}

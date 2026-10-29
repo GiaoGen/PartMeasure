@@ -1,0 +1,28 @@
+{
+  "recordedAt": "2026-10-28T07:44:10.829Z",
+  "status": "AUTHORIZED_BY_STANDING_FOLLOWUP_APPROVAL_AND_CURRENT_CONTINUATION",
+  "authorization": "User preapproved subsequent necessary acceptance actions and explicitly requested continuation after usage interruption; this is a newly stated exact scope, not reuse of cycle1 consumed switching actions.",
+  "sourceRef": "rvysclscetfqicpnzlra",
+  "targetRef": "xuyghznbcahlauontcyq",
+  "sourceSet": "08c325c3-f646-42d0-b9c2-ad2d7e3cab69",
+  "switches": {
+    "sourcePause": 1,
+    "targetResume": 1,
+    "targetPause": 1,
+    "sourceResume": 1
+  },
+  "maxNewProjects": 0,
+  "paidChanges": 0,
+  "sqlReimport": 0,
+  "alreadyVerifiedFiles": 92,
+  "alreadyVerifiedBytes": 49947736,
+  "maxRemainingUploads": 100,
+  "remainingBytes": 20280237,
+  "normalPasswordLoginMaxRemaining": 1,
+  "roleVerification": "Existing partmeasure_runtime only; temporary administrator SET membership inside each test transaction, always rolled back; no persistent grant or new role",
+  "noShares": true,
+  "noMail": true,
+  "noCleanup": true,
+  "noDeployment": true,
+  "errorHandling": "Inspect metadata before a retry, never overwrite; preserve completed hashes. One upload error is not an automatic workflow/source switch stop condition."
+}

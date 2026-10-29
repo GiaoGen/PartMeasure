@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-28T08:05:48.777Z",
+  "status": "FILES_AND_AUTH_PASS_ROLE_CHECK_PENDING",
+  "targetRef": "xuyghznbcahlauontcyq",
+  "sourceSet": "08c325c3-f646-42d0-b9c2-ad2d7e3cab69",
+  "objects": 192,
+  "objectsUploaded": 192,
+  "objectsVerified": 192,
+  "reusedUploadedObjects": 93,
+  "loginAttempts": 1,
+  "allObjectReadbackHashesMatch": true,
+  "normalAuthLoginVerified": true,
+  "getUserVerified": true,
+  "anonymousStorageStatus": 400,
+  "anonymousStorageDenied": true,
+  "nativePgConnectionClaim": "NOT_PASSED: local connect closed; ordinary-role SQL verification uses connected provider separately",
+  "sourceResumed": false
+}

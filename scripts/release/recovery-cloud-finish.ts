@@ -11,6 +11,7 @@ import { databaseClient } from "../maintenance/backup";
 import { cancelDatabaseOnAbort } from "../maintenance/postgres-tools";
 import { cloudTargetAllowed, userTokenColumns, recoveryIdentifier } from "../maintenance/cloud-recovery-model";
 import { streamObjectReadback } from "../maintenance/stream-object-readback";
+import { uploadOrConfirm } from "../maintenance/upload-confirmation";
 
 const root = path.resolve("tmp/p3-05/recovery-cloud-8a60a0b7");
 const target = "xuyghznbcahlauontcyq", sourceSet = "08c325c3-f646-42d0-b9c2-ad2d7e3cab69";
@@ -25,6 +26,8 @@ const save = () => writeFile(journalFile, JSON.stringify(journal), { mode: 0o600
 const query = async (db: ReturnType<typeof databaseClient>, text: string, values?: unknown[]) => { signal.throwIfAborted(); return db.query(text, values); };
 
 async function main() {
+	const connectorMode = process.argv.length === 3 && process.argv[2] === "--connector-proof";
+	assert.ok(connectorMode || process.argv.length === 2, "INVALID_FINISH_MODE");
 	const scope = JSON.parse(await readFile("docs/evidence/p3-05/recovery-cloud-scope.json", "utf8"));
 	const created = JSON.parse(await readFile("tmp/p3-05/recovery-cloud-created.json", "utf8"));
 	const previous = JSON.parse(await readFile("docs/evidence/p3-05/recovery-cloud-failure.json", "utf8"));
@@ -47,7 +50,7 @@ async function main() {
 	assert.equal(decodeURIComponent(runtimeUrl.username), url.hostname.includes("pooler") ? `partmeasure_runtime.${target}` : "partmeasure_runtime");
 	const secret = (await readFile(config.serviceKeyFile, "utf8")).trim(), publicKey = (await readFile(config.publishableKeyFile, "utf8")).trim();
 	const endpoint = `https://${target}.supabase.co`;
-	const options = { auth: { persistSession: false, autoRefreshToken: false }, global: { fetch: (input: RequestInfo | URL, init?: RequestInit) => fetch(input, { ...init, signal: AbortSignal.any([signal, AbortSignal.timeout(180000), ...(init?.signal ? [init.signal] : [])]) }) } };
+	const options = { auth: { persistSession: false, autoRefreshToken: false }, global: { fetch: (input: RequestInfo | URL, init?: RequestInit) => fetch(input, { ...init, signal: AbortSignal.any([signal, AbortSignal.timeout(600000), ...(init?.signal ? [init.signal] : [])]) }) } };
 	const api = createClient(endpoint, secret, options);
 	const state = JSON.parse(await readFile("tmp/fix-e/8a60a0b7-8450-4e41-8b43-2c58204660a8/state.json", "utf8"));
 	const key = await backupKey(path.join(path.dirname(state.environment.PM_BACKUP_KEY_FILE), "from-phone.backup-key"));
@@ -56,7 +59,16 @@ async function main() {
 	try {
 		await authenticatedBackup({ directory: copy.directory, workspace: path.join(root, `finish-authenticate-${Date.now()}`), key, signal }, async ({ manifest, staging }) => {
 			assert.equal(manifest.projectRef, scope.sourceRef); assert.equal(manifest.objects.length, 192); assert.equal(manifest.migrations.length, 20); assert.equal(Object.keys(manifest.tables).length, 24);
-			phase = "verify-resumed-database"; await db.connect(); connected = true;
+			let existing: { name: string; bytes: string }[];
+			if (connectorMode) {
+				phase = "verify-connector-snapshot-proof";
+				const proof = JSON.parse(await readFile(path.join(root, "connector-proof.json"), "utf8"));
+				assert.equal(proof.status, "PASS"); assert.equal(proof.targetRef, target); assert.equal(proof.sourceSet, sourceSet);
+				assert.equal(proof.hashesRechecked, 20); assert.equal(proof.rowCountsRechecked, 24);
+				for (const row of proof.tables) { assert.equal(row.rows, manifest.tables[row.name]?.rows); if (row.sha256 !== null) assert.equal(row.sha256, manifest.tables[row.name]?.sha256); }
+				existing = proof.existing;
+			} else {
+			phase = "resume-target-connect"; await db.connect(); connected = true; phase = "verify-resumed-database";
 			await query(db, "begin read only; set local timezone='UTC'; set local statement_timeout='60000'");
 			const intentionallyChanged = new Set(["share_links", "guest_sessions", "upload_reservations", "idempotency_keys"]);
 			const pieces = Object.keys(manifest.tables).map(table => {
@@ -77,12 +89,16 @@ async function main() {
 			 (select count(*)::int from pg_tables where schemaname='pm' and rowsecurity) as rls_tables,
 			 (select count(*)::int from storage.buckets where public) as public_buckets` , [target])).rows[0];
 			assert.deepEqual(gates, { users: 5, identities: 5, sessions: 0, claims: 0, unrevoked: 0, active_guests: 0, pending_uploads: 0, old_replays: 0, old_auth_tokens: 0, migrations: 20, rls_tables: 24, public_buckets: 0 });
-			const existing = (await query(db, "select name,(metadata->>'size')::bigint as bytes from storage.objects where bucket_id='partmeasure-private'")).rows;
+			existing = (await query(db, "select name,(metadata->>'size')::bigint as bytes from storage.objects where bucket_id='partmeasure-private'")).rows;
 			const expected = new Map(manifest.objects.map(o => [o.key, o]));
 			for (const row of existing) { const object = expected.get(row.name); assert.ok(object, "UNEXPECTED_TARGET_OBJECT"); assert.equal(Number(row.bytes), object.bytes, "TARGET_OBJECT_SIZE_MISMATCH"); }
 			await query(db, "rollback");
 			counts.reusedUploadedObjects = existing.length; counts.objectsUploaded = existing.length;
 			await writeFile("docs/evidence/p3-05/recovery-database-resume-verification.json", `${JSON.stringify({ checkedAt: new Date().toISOString(), status: "PASS", targetRef: target, unchangedTableHashesVerified: 20, tableRowCountsVerified: 24, intentionalCapabilityInvalidations: [...intentionallyChanged], gates, existingObjectCount: existing.length, sqlReimported: false }, null, 2)}\n`);
+			}
+			const expectedObjects = new Map(manifest.objects.map(o => [o.key, o]));
+			for (const row of existing) { const object = expectedObjects.get(row.name); assert.ok(object, "UNEXPECTED_TARGET_OBJECT"); assert.equal(Number(row.bytes), object.bytes, "TARGET_OBJECT_SIZE_MISMATCH"); }
+			counts.reusedUploadedObjects = existing.length; counts.objectsUploaded = existing.length;
 			const existingKeys = new Set(existing.map(v => v.name));
 			for (const [index, object] of manifest.objects.entries()) {
 				activeOrdinal = index + 1; activeBytes = 0;
@@ -90,7 +106,11 @@ async function main() {
 				if (journal.verified[fingerprint]) { assert.ok(existingKeys.has(object.key), "VERIFIED_OBJECT_MISSING"); assert.ok(isDeepStrictEqual(journal.verified[fingerprint], { bytes: object.bytes, sha256: object.sha256 })); counts.objectsVerified++; continue; }
 				if (!existingKeys.has(object.key)) {
 					phase = "upload-remaining-object"; const bytes = await readFile(path.join(staging, object.file)); assert.equal(bytes.length, object.bytes);
-					const upload = await api.storage.from(object.bucket).upload(object.key, bytes, { contentType: object.mime, upsert: false }); assert.equal(upload.error, null, "REMAINING_OBJECT_UPLOAD_FAILED"); counts.objectsUploaded++;
+					await uploadOrConfirm({ expectedBytes: object.bytes,
+						write: () => api.storage.from(object.bucket).upload(object.key, bytes, { contentType: object.mime, upsert: false }),
+						inspect: () => api.storage.from(object.bucket).info(object.key),
+						onFailure: failure => console.log(JSON.stringify({ event: "upload_response_failure_inspect_before_retry", activeOrdinal, expectedBytes: object.bytes, ...failure })),
+					}); counts.objectsUploaded++;
 				}
 				phase = "stream-object-readback";
 				await streamObjectReadback({ endpoint, apiKey: secret, bucket: object.bucket, key: object.key, bytes: object.bytes, sha256: object.sha256, signal, onProgress: n => { activeBytes = n; } });
@@ -103,6 +123,16 @@ async function main() {
 			const auth = createClient(endpoint, publicKey, options); const login = await auth.auth.signInWithPassword(account);
 			assert.equal(login.error, null, "RESTORED_PASSWORD_LOGIN_FAILED"); assert.ok(login.data.user && login.data.session);
 			const who = await auth.auth.getUser(); assert.equal(who.error, null); assert.equal(who.data.user?.id, login.data.user.id);
+			if (connectorMode) {
+				phase = "anonymous-private-storage-denial";
+				const sample = manifest.objects[0]; assert.ok(sample);
+				const response = await fetch(`${endpoint}/storage/v1/object/authenticated/${sample.bucket}/${sample.key}`, { headers: { apikey: publicKey, Range: "bytes=0-0" }, redirect: "error", signal: AbortSignal.any([signal, AbortSignal.timeout(30000)]) });
+				assert.ok([400, 401, 403, 404].includes(response.status), "ANONYMOUS_PRIVATE_STORAGE_NOT_DENIED");
+				const denial = await response.json(); assert.match(JSON.stringify(denial), /not.?found|access.?denied|unauthori|permission/i, "UNEXPECTED_STORAGE_DENIAL_CODE");
+				await writeFile(path.join(root, "authenticated-user.json"), JSON.stringify({ id: login.data.user.id, sourceSet, targetRef: target }), { flag: "wx", mode: 0o600 });
+				const result = { checkedAt: new Date().toISOString(), status: "FILES_AND_AUTH_PASS_ROLE_CHECK_PENDING", targetRef: target, sourceSet, objects: 192, ...counts, allObjectReadbackHashesMatch: true, normalAuthLoginVerified: true, getUserVerified: true, anonymousStorageStatus: response.status, anonymousStorageDenied: true, nativePgConnectionClaim: "NOT_PASSED: local connect closed; ordinary-role SQL verification uses connected provider separately", sourceResumed: false };
+				await writeFile("docs/evidence/p3-05/recovery-files-auth.json", `${JSON.stringify(result, null, 2)}\n`, { flag: "wx" }); console.log(JSON.stringify(result)); return;
+			}
 			phase = "restored-owner-history-and-denials";
 			const runtime = databaseClient(runtimeUrl, ca); runtime.on("error", () => {}); const stopRuntime = cancelDatabaseOnAbort(runtime, signal);
 			let historyRows = 0, deliveryRows = 0;
@@ -111,8 +141,8 @@ async function main() {
 				const expectedProjects = (await query(db, "select id from pm.projects where owner_id=$1 order by id", [login.data.user.id])).rows; assert.ok(expectedProjects.length > 0);
 				assert.deepEqual((await query(runtime, "select id from pm.projects order by id")).rows, expectedProjects);
 				for (const table of ["annotation_revisions", "deliveries"]) {
-					const admin = (await query(db, `select count(*)::int as n from pm.${recoveryIdentifier(table)} r join pm.projects p on p.id=r.project_id where p.owner_id=$1`, [login.data.user.id])).rows[0]?.n;
-					const visible = (await query(runtime, `select count(*)::int as n from pm.${recoveryIdentifier(table)}`)).rows[0]?.n; assert.equal(visible, admin); assert.ok(visible > 0);
+					const adminCount: number = (await query(db, `select count(*)::int as n from pm.${recoveryIdentifier(table)} r join pm.projects p on p.id=r.project_id where p.owner_id=$1`, [login.data.user.id])).rows[0]?.n;
+					const visible: number = (await query(runtime, `select count(*)::int as n from pm.${recoveryIdentifier(table)}`)).rows[0]?.n; assert.equal(visible, adminCount); assert.ok(visible > 0);
 					if (table === "annotation_revisions") historyRows = visible; else deliveryRows = visible;
 				}
 				const other = (await query(db, "select id from auth.users where id<>$1 order by id limit 1", [login.data.user.id])).rows[0]; assert.ok(other);
@@ -133,7 +163,8 @@ async function main() {
 }
 main().finally(() => clearInterval(progress)).catch(async error => {
 	const e = error as { name?: string; code?: string; message?: string; cause?: { code?: string } }; const first = e.message?.split(/\r?\n/, 1)[0] ?? "";
+	const diagnostic = /connection.*(?:terminat|closed)/i.test(first) ? "CONNECTION_CLOSED" : /timeout|timed out/i.test(first) ? "CONNECTION_TIMEOUT" : /SASL|SCRAM/i.test(first) ? "SASL_HANDSHAKE_ERROR" : /certificate|SSL|TLS/i.test(first) ? "TLS_ERROR" : undefined;
 	const result = { checkedAt: new Date().toISOString(), status: "INCOMPLETE_SOURCE_RESUME_REQUIRED_IF_EXTERNAL_BLOCK", phase, ...counts, activeOrdinal, activeBytes,
-		name: e.name, code: e.code, causeCode: e.cause?.code, reason: /^[A-Z][A-Z0-9_]+$/.test(first) ? first : "REDACTED_TECHNICAL_ERROR" };
+		name: e.name, code: e.code, causeCode: e.cause?.code, diagnostic, storage: (error as { storage?: unknown }).storage, inspection: (error as { inspection?: unknown }).inspection, errorMessageHash: createHash("sha256").update(e.message ?? "").digest("hex"), reason: /^[A-Z][A-Z0-9_]+$/.test(first) ? first : "REDACTED_TECHNICAL_ERROR" };
 	console.error(JSON.stringify(result)); await writeFile("docs/evidence/p3-05/recovery-cloud-finish-failure.json", `${JSON.stringify(result, null, 2)}\n`); process.exitCode = 1;
 });

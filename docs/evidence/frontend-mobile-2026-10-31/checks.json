@@ -1,0 +1,80 @@
+{
+  "scope": "Actual frontend components; synthetic local data, Next shell shims and intercepted GETs only; no real Auth, backend, cloud write, phone or native soft keyboard claim.",
+  "results": [
+    {
+      "name": "mobile_single_upload_no_normal_live_banner_and_borderless_tabs",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile_more_appearance_escape_filters_and_export",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile_upload_retains_camera_album_file_without_selecting",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop_split_inbox_independent_scroll_and_theme",
+      "status": "PASS"
+    },
+    {
+      "name": "guest_mobile_list_detail_back_reopen_and_unsaved_cancel",
+      "status": "PASS"
+    },
+    {
+      "name": "narrow_layout_and_reduced_visible_height_focus",
+      "status": "PASS"
+    },
+    {
+      "name": "live_error_visible_and_recovery_quiet",
+      "status": "PASS"
+    }
+  ],
+  "writes": [],
+  "unexpected": [],
+  "errors": [],
+  "date": "2026-10-31",
+  "sourceFiles": [
+    {
+      "path": "src/components/workspace-controls.tsx",
+      "sha256": "01573f81a51d376e6980284f63243ce59df0baedf6d187f3003ff6b8aff7952b"
+    },
+    {
+      "path": "src/components/workspace-ui.tsx",
+      "sha256": "b38058f507a09a9c7cb761e9ee1c9a8bb8bd46890849a4538ec5bc673ecb4d06"
+    },
+    {
+      "path": "src/components/workspace.tsx",
+      "sha256": "fb5fcd95f0e12401d475e241512c60aa0c379d7394daf41fecc745677e7bf85c"
+    },
+    {
+      "path": "src/components/upload-queue.tsx",
+      "sha256": "f2b15eaa99776d0a5e8c3a51c41572335fc541e0295d2dae1ad435becd924b12"
+    },
+    {
+      "path": "src/components/issue-inbox.tsx",
+      "sha256": "d36e22e8d3e9b2ac44d4648c133bac78ad87e80fc516756419d8524dd202f25a"
+    },
+    {
+      "path": "src/components/project-live.tsx",
+      "sha256": "42d242dbe98ac1ae9741bf8cd9e1dbf28cfdee0844da37a9433343af3be7db33"
+    },
+    {
+      "path": "src/components/workspace.css",
+      "sha256": "4665ab032b8c158e39d95a4e6047763228c7db9aa352115807be963c9f134e13"
+    },
+    {
+      "path": "src/components/issue-inbox.css",
+      "sha256": "6335aad5420a41286928477e4dc4218292a3748e3550ccbc5f57d703d88b0df7"
+    }
+  ],
+  "checks": {
+    "targetedLint": "PASS: 8 files",
+    "typecheck": "PASS",
+    "unitTests": "PASS: 82 files / 488 tests",
+    "build": "PASS",
+    "diffCheck": "PASS",
+    "fullLint": "BLOCKED: pre-existing output/fix-c directory access denied",
+    "productionDeployment": "NOT_RUN"
+  }
+}

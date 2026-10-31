@@ -32,7 +32,7 @@ export function ProjectLiveProvider({
 	const listeners = useRef(new Set<Listener>());
 	const invalid = useRef(onInvalid);
 	invalid.current = onInvalid;
-	const [state, setState] = useState("连接更新中…");
+	const [state, setState] = useState("");
 	const subscribe = useCallback((listener: Listener) => {
 		listeners.current.add(listener);
 		return () => {
@@ -134,7 +134,7 @@ export function ProjectLiveProvider({
 				failures = 0;
 				clearInterval(fallback);
 				fallback = undefined;
-				setState("实时更新已连接");
+				setState("");
 			});
 			source.addEventListener("unavailable", () => {
 				clearApiSession();

@@ -51,6 +51,9 @@ export function IssueInbox({
 	const titleId = useId();
 	const [opened, setOpened] = useState(false);
 	const [selected, setSelected] = useState<TaskCard | null>(null);
+	const [showMobileList, setShowMobileList] = useState(false);
+	const listPane = useRef<HTMLDivElement>(null);
+	const detailPane = useRef<HTMLElement>(null);
 	const [items, setItems] = useState<IssueSummary[]>(initial?.items ?? []);
 	const [counts, setCounts] = useState<Record<string, number>>(
 		initial?.counts ?? {},
@@ -165,7 +168,7 @@ export function IssueInbox({
 				"--task-visible-top",
 				`${viewport?.offsetTop ?? 0}px`,
 			);
-			revealFocusedDialogControl(element);
+			revealFocusedDialogControl(detailPane.current);
 		};
 		const schedule = () => {
 			cancelAnimationFrame(frame);
@@ -191,6 +194,10 @@ export function IssueInbox({
 				?.focus();
 	}, [opened, popup.ref]);
 	const choose = (card: TaskCard | null) => {
+		if (card && card.id === selected?.id) {
+			setShowMobileList(false);
+			return;
+		}
 		if (
 			dirty.current &&
 			!window.confirm(
@@ -199,8 +206,24 @@ export function IssueInbox({
 		)
 			return;
 		handleDirty(false);
-		setSelected(card?.id === selected?.id ? null : card);
+		setSelected(card);
+		setShowMobileList(false);
 	};
+	useEffect(() => {
+		if (!opened || !selected) return;
+		const frame = requestAnimationFrame(() => {
+			if (showMobileList && window.matchMedia("(max-width: 700px)").matches) {
+				listPane.current?.querySelector<HTMLButtonElement>('[aria-pressed="true"]')?.focus({ preventScroll: true });
+			} else {
+				detailPane.current?.focus({ preventScroll: true });
+			}
+		});
+		return () => cancelAnimationFrame(frame);
+	}, [opened, selected, showMobileList]);
+	useEffect(() => {
+		if (!selected?.id) return;
+		if (detailPane.current) detailPane.current.scrollTop = 0;
+	}, [selected?.id]);
 	function close() {
 		// Keep detail mounted: closing is not discarding its reply/review form.
 		popup.close(() => setOpened(false));
@@ -267,6 +290,7 @@ export function IssueInbox({
 			<dialog
 				ref={popup.ref}
 				className="task-inbox-dialog"
+				data-mobile-view={selected && !showMobileList ? "detail" : "list"}
 				aria-labelledby={titleId}
 				onCancel={(event) => {
 					event.preventDefault();
@@ -286,18 +310,27 @@ export function IssueInbox({
 			>
 				<header className="task-inbox-heading">
 					<h2 id={titleId}>待处理事项</h2>
+					{current ? (
+						<div className="task-inbox-current">
+							<button type="button" onClick={() => setShowMobileList(true)} aria-label="返回待处理事项列表">
+								<span aria-hidden="true">‹</span> 列表
+							</button>
+							<span>{current.items[0]?.fileLabel || "项目资料"} · {current.label}</span>
+						</div>
+					) : null}
 					<div>
 						<button type="button" onClick={close} aria-label="关闭待办">
 							<span aria-hidden="true">×</span>
 						</button>
 					</div>
 				</header>
+				<div className="task-inbox-body">
+				<div className="task-inbox-list" ref={listPane}>
 				<section className="task-inbox-legend" aria-label="状态颜色图例">
 					<span data-tone="redo">待补测</span>
 					<span data-tone="missing">待补充</span>
 					<span data-tone="done">已补充</span>
 				</section>
-				<div className="task-inbox-list">
 					{batch.loading ? (
 						<p role="status">
 							{batch.loaded ? "正在准备其余待办…" : "正在准备待办与填写信息…"}
@@ -332,6 +365,12 @@ export function IssueInbox({
 						</button>
 					) : null}
 				</div>
+				<section className="task-inbox-detail" ref={detailPane} tabIndex={-1} aria-label="当前事项详情">
+				{current && shownError ? (
+					<p className="error task-inbox-detail-error" role="alert">
+						{shownError}<button type="button" onClick={() => reader.refresh()}>重试</button>
+					</p>
+				) : null}
 				<WorkspaceSideTarget value={null}>
 					{current ? (
 						<TaskCardDetail
@@ -348,8 +387,10 @@ export function IssueInbox({
 							onReadRequest={(id) => reader.reload([id])}
 							onCollapse={() => choose(null)}
 						/>
-					) : null}
+					) : <p className="task-inbox-pick">选择左侧事项，查看图片并填写。</p>}
 				</WorkspaceSideTarget>
+				</section>
+				</div>
 			</dialog>
 		</div>
 	);
@@ -369,6 +410,8 @@ type CardDetailProps = {
 	onCollapse: () => void;
 };
 function TaskCardDetail(props: CardDetailProps) {
+	const [imageCollapsed, setImageCollapsed] = useState(false);
+	const imageId = useId();
 	const issue =
 		props.card.items.map((item) => props.views.get(item.id)).find(Boolean) ??
 		null;
@@ -397,12 +440,17 @@ function TaskCardDetail(props: CardDetailProps) {
 				<h3>{props.card.label}</h3>
 				<button
 					type="button"
-					aria-label="收起当前事项"
-					onClick={props.onCollapse}
+					className="task-image-toggle"
+					aria-expanded={!imageCollapsed}
+					aria-controls={imageId}
+					onClick={() => setImageCollapsed((value) => !value)}
+					hidden={!image}
 				>
-					<WorkspaceIcon kind="chevron" />
+					{imageCollapsed ? "展开图片" : "收起图片"}
 				</button>
 			</header>
+			<div className="task-selected-body" data-image-collapsed={imageCollapsed || !image}>
+			<div className="task-selected-target" id={imageId} hidden={imageCollapsed || !image}>
 			{image ? (
 				<IssueTargetPreview
 					key={image.imageHash}
@@ -413,6 +461,8 @@ function TaskCardDetail(props: CardDetailProps) {
 					onInvalid={props.onInvalid}
 				/>
 			) : null}
+			</div>
+			<div className="task-selected-forms">
 			{issue && !issue.target ? (
 				<p className="task-file-download">
 					<a href={`${props.base}/files/${issue.fileId}/download`}>
@@ -421,6 +471,8 @@ function TaskCardDetail(props: CardDetailProps) {
 				</p>
 			) : null}
 			<TaskCardForms key={props.card.id} {...props} />
+			</div>
+			</div>
 		</section>
 	);
 }

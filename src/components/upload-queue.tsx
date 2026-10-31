@@ -6,6 +6,7 @@ import {
 	useState,
 	type RefObject,
 } from "react";
+import { createPortal } from "react-dom";
 import { api, message, onApiSessionCleared, apiSessionGuard } from "./api";
 import { useProjectUpdates } from "./project-live";
 import { uploadPipeline, uploadPause } from "./upload-pipeline";
@@ -66,6 +67,7 @@ export function UploadQueue({
 	buttonLabel,
 	onBusyChange,
 	onPendingChange,
+	entryTarget,
 }: {
 	base: string;
 	onReady: (file?: ReadyUpload) => void;
@@ -79,6 +81,7 @@ export function UploadQueue({
 	buttonLabel?: string;
 	onBusyChange?: (busy: boolean) => void;
 	onPendingChange?: (pending: boolean) => void;
+	entryTarget?: HTMLElement | null;
 }) {
 	const archived = useProjectReadOnly();
 	const picker = useRef<HTMLInputElement>(null),
@@ -531,6 +534,32 @@ export function UploadQueue({
 		!error &&
 		!tracked.length &&
 		!items.some((item) => item.state !== "ready");
+	const uploadEntry = (
+		<div ref={dock} className={entryTarget ? "workspace-upload-entry" : "workspace-upload-dock"}>
+			{chooser.mounted && !archived ? (
+				<div className="workspace-upload-menu" data-phase={chooser.phase} inert={chooser.phase === "closing"}>
+					<button type="button" onClick={() => { camera.current?.click(); chooser.hide(); }}>
+						<WorkspaceIcon kind="camera" />拍照
+					</button>
+					<button type="button" onClick={() => { picker.current?.click(); chooser.hide(); }}>
+						<WorkspaceIcon kind="file" />文件
+					</button>
+					<button type="button" onClick={() => { album.current?.click(); chooser.hide(); }}>
+						<WorkspaceIcon kind="album" />相册
+					</button>
+				</div>
+			) : null}
+			<button type="button" className="primary workspace-upload-trigger" disabled={archived}
+				aria-expanded={chooser.expanded}
+				onClick={() => {
+					if (window.matchMedia("(max-width: 700px)").matches) {
+						if (chooser.expanded) chooser.hide(); else chooser.show();
+					} else picker.current?.click();
+				}}>
+				<WorkspaceIcon kind="upload" />上传
+			</button>
+		</div>
+	);
 	return (
 		<section
 			className={`uploads ${floating ? "workspace-uploads" : ""} ${compact ? "uploads-compact" : ""}`}
@@ -631,60 +660,7 @@ export function UploadQueue({
 								event.target.value = "";
 							}}
 						/>
-						<div ref={dock} className="workspace-upload-dock">
-							{chooser.mounted ? (
-								<div
-									className="workspace-upload-menu"
-									data-phase={chooser.phase}
-									inert={chooser.phase === "closing"}
-								>
-									<button
-										type="button"
-										onClick={() => {
-											camera.current?.click();
-											chooser.hide();
-										}}
-									>
-										<WorkspaceIcon kind="camera" />
-										拍照
-									</button>
-									<button
-										type="button"
-										onClick={() => {
-											picker.current?.click();
-											chooser.hide();
-										}}
-									>
-										<WorkspaceIcon kind="file" />
-										文件
-									</button>
-									<button
-										type="button"
-										onClick={() => {
-											album.current?.click();
-											chooser.hide();
-										}}
-									>
-										<WorkspaceIcon kind="album" />
-										相册
-									</button>
-								</div>
-							) : null}
-							<button
-								type="button"
-								className="primary workspace-upload-trigger"
-								aria-expanded={chooser.expanded}
-								onClick={() => {
-									if (window.matchMedia("(max-width: 700px)").matches) {
-										if (chooser.expanded) chooser.hide();
-										else chooser.show();
-									} else picker.current?.click();
-								}}
-							>
-								<WorkspaceIcon kind="upload" />
-								上传
-							</button>
-						</div>
+						{entryTarget ? createPortal(uploadEntry, entryTarget) : uploadEntry}
 					</>
 				)}
 			</div>

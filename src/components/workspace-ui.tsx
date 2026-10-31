@@ -16,6 +16,11 @@ export function WorkspaceIcon({
 		| "album"
 		| "bell"
 		| "refresh"
+		| "more"
+		| "share"
+		| "download"
+		| "filters"
+		| "package"
 		| "check";
 }) {
 	return (
@@ -30,6 +35,11 @@ export function WorkspaceIcon({
 			strokeLinejoin="round"
 			aria-hidden="true"
 		>
+			{kind === "more" ? <><circle cx="5" cy="12" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /></> : null}
+			{kind === "share" ? <><path d="m8 8 8-4M8 16l8 4" /><circle cx="5" cy="12" r="4" /><circle cx="19" cy="3" r="3" /><circle cx="19" cy="21" r="3" /></> : null}
+			{kind === "download" ? <path d="M12 3v13m-5-5 5 5 5-5M4 17v4h16v-4" /> : null}
+			{kind === "filters" ? <><path d="M3 6h7m4 0h7M3 18h11m4 0h3" /><circle cx="12" cy="6" r="2" /><circle cx="16" cy="18" r="2" /></> : null}
+			{kind === "package" ? <path d="m3 7 9-4 9 4v10l-9 4-9-4Zm0 0 9 4 9-4M12 11v10M7 5l10 4" /> : null}
 			{kind === "bell" ? (
 				<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4" />
 			) : null}

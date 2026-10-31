@@ -19,6 +19,7 @@ import {
 } from "./workspace-ui";
 import { ProductSurface, AppearanceControl } from "./product-surface";
 import { ProductBrand } from "./product-brand";
+import { WorkspaceMenu, WorkspaceMaterialControls } from "./workspace-controls";
 import { WorkspaceStatus } from "./workspace-status";
 import { useProductConfirm } from "./product-confirm";
 import { useActionLifetime } from "./use-action-lifetime";
@@ -51,8 +52,6 @@ import { ArchiveProjectButton } from "./archive-project-button";
 import { ProjectReadOnly } from "./project-read-only";
 import {
 	type FileFilters,
-	fileTypes,
-	fileSorts,
 	filesUrl,
 } from "@/lib/archive-filters";
 type Asset = {
@@ -184,7 +183,7 @@ function WorkspaceContent({
 	const [locationAttempt, setLocationAttempt] = useState(0);
 	const [selectionRevision, setSelectionRevision] = useState(0);
 	const viewAnnotation = useRef(initialView.annotationId);
-	const materialPicker = useRef<HTMLInputElement>(null);
+	const [uploadEntry, setUploadEntry] = useState<HTMLDivElement | null>(null);
 	const fileTrail = useRef(new Map<string, Asset>());
 	function rememberFile(file: Asset) {
 		fileTrail.current.delete(file.id);
@@ -274,7 +273,7 @@ function WorkspaceContent({
 		"about",
 	);
 	const infoPanel = useRef<HTMLElement>(null),
-		infoTrigger = useRef<HTMLButtonElement>(null);
+		infoTrigger = useRef<HTMLElement>(null);
 	const materials = useRef<HTMLElement>(null);
 	const [paging, setPaging] = useState(false);
 	const [changingView, setChangingView] = useState(false);
@@ -985,12 +984,22 @@ function WorkspaceContent({
 		viewActions,
 	]);
 	function showInfo(mode: typeof infoMode, trigger: HTMLButtonElement) {
-		infoTrigger.current = trigger;
+		infoTrigger.current = trigger.closest("details")?.querySelector("summary") ?? trigger;
 		if (info.expanded && infoMode === mode) info.hide();
 		else {
 			setInfoMode(mode);
 			info.show();
 		}
+	}
+	async function startPackageSelection(kind: "pdf" | "zip") {
+		if (kind === "pdf" && fileFilters.type !== "image") {
+			if (!(await changeFileFilters({ ...fileFilters, type: "image" }))) return;
+		} else if (!(await requestLeave())) return;
+		setPackageSelection(kind);
+		setExportFiles([]);
+		setExportNotice(kind === "pdf"
+			? "在下方勾选1–8张照片，按选择顺序生成PDF。"
+			: "在下方勾选最多20项资料，可附加所选已发布附件。");
 	}
 	useEffect(() => {
 		if (!info.expanded) return;
@@ -1062,17 +1071,21 @@ function WorkspaceContent({
 							</nav>
 						</div>
 						<div className="workspace-header-actions">
-							<AppearanceControl />
+							<div className="workspace-desktop-action"><AppearanceControl /></div>
 							{!guest ? (
 								<>
 									<button
 										type="button"
+										className="workspace-secondary-action workspace-share-action"
 										onClick={(event) => showInfo("share", event.currentTarget)}
 									>
-										分享项目
+										<WorkspaceIcon kind="share" />
+										<span className="workspace-desktop-action">分享项目</span>
+										<span className="workspace-mobile-action">分享</span>
 									</button>
 									<button
 										type="button"
+										className="workspace-desktop-action"
 										onClick={(event) =>
 											showInfo("settings", event.currentTarget)
 										}
@@ -1083,12 +1096,18 @@ function WorkspaceContent({
 							) : (
 								<button
 									type="button"
+									className="workspace-desktop-action"
 									onClick={(event) => showInfo("about", event.currentTarget)}
 									aria-expanded={info.expanded}
 								>
 									项目说明
 								</button>
 							)}
+							<WorkspaceMenu label="更多项目操作" kind="more" className="workspace-mobile-action">
+								{!guest ? <button type="button" onClick={(event) => showInfo("settings", event.currentTarget)}>项目设置</button> : null}
+								<button type="button" onClick={(event) => showInfo("about", event.currentTarget)}>项目说明</button>
+								<AppearanceControl />
+							</WorkspaceMenu>
 						</div>
 						{info.mounted ? (
 							<section
@@ -1106,7 +1125,7 @@ function WorkspaceContent({
 										: "工程师工作台"}
 								</p>
 								<div className="workspace-info-heading">
-									<h2>项目说明</h2>
+									<h2>{project.name}</h2>
 									<button
 										type="button"
 										aria-label="关闭项目说明"
@@ -1455,95 +1474,16 @@ function WorkspaceContent({
 										照片用于定位与标注，其他附件保留原文件下载。
 									</p>
 								</div>
-								<button
-									type="button"
-									className="primary"
-									disabled={archived}
-									onClick={() => materialPicker.current?.click()}
-								>
-									<WorkspaceIcon kind="upload" />
-									上传资料
-								</button>
+								<div ref={setUploadEntry} className="workspace-upload-entry-target" />
 							</header>
 							<div hidden={!!selected || !!selectedIssue}>
-								<div className="workspace-file-filters">
-									<label>
-										类型{" "}
-										<select
-											disabled={exportBusy}
-											value={fileFilters.type}
-											onChange={(event) =>
-												changeFileFilters({
-													...fileFilters,
-													type: event.target.value as FileFilters["type"],
-												})
-											}
-										>
-											{Object.entries(fileTypes).map(([value, label]) => (
-												<option key={value} value={value}>
-													{label}
-												</option>
-											))}
-										</select>
-									</label>
-									<label>
-										排序{" "}
-										<select
-											disabled={exportBusy}
-											value={fileFilters.sort}
-											onChange={(event) =>
-												changeFileFilters({
-													...fileFilters,
-													sort: event.target.value as FileFilters["sort"],
-												})
-											}
-										>
-											{Object.entries(fileSorts).map(([value, label]) => (
-												<option key={value} value={value}>
-													{label}
-												</option>
-											))}
-										</select>
-									</label>
-									{!packageSelection ? (
-										<>
-											<button
-												type="button"
-												onClick={async () => {
-													if (fileFilters.type !== "image") {
-														if (
-															!(await changeFileFilters({
-																...fileFilters,
-																type: "image",
-															}))
-														)
-															return;
-													} else if (!(await requestLeave())) return;
-													setPackageSelection("pdf");
-													setExportFiles([]);
-													setExportNotice(
-														"在下方勾选1–8张照片，按选择顺序生成PDF。",
-													);
-												}}
-											>
-												PDF资料报告
-											</button>
-											<button
-												type="button"
-												onClick={async () => {
-													if (!(await requestLeave())) return;
-													setPackageSelection("zip");
-													setExportFiles([]);
-													setExportNotice(
-														"在下方勾选最多20项资料，可附加所选已发布附件。",
-													);
-												}}
-											>
-												ZIP资料包
-											</button>
-										</>
-									) : null}
-								</div>
+								<WorkspaceMaterialControls
+									filters={fileFilters}
+									busy={exportBusy}
+									selecting={!!packageSelection}
+									onChange={changeFileFilters}
+									onExport={startPackageSelection}
+								/>
 								{pdfSelection ? (
 									<div className="workspace-pdf-selection">
 										<p role="status">
@@ -1906,7 +1846,7 @@ function WorkspaceContent({
 							</section>
 							<UploadQueue
 								base={base}
-								pickerRef={materialPicker}
+								entryTarget={uploadEntry}
 								floating
 								onReady={() => void load()}
 								onInvalid={onInvalid}

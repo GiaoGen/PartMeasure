@@ -525,7 +525,13 @@
 }
 .workspace-redesign .back-to-files {
 	display: inline-flex;
-	margin: 0 0 16px;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	min-height: 44px;
+	flex-shrink: 0;
+	margin: 0;
+	padding: 10px;
 }
 .workspace-file-menu {
 	position: relative;
@@ -877,8 +883,15 @@
 		height: clamp(300px, 52dvh, 600px);
 	}
 	.workspace-file-detail > .detail-heading {
-		align-items: flex-start;
-		flex-wrap: wrap;
+		align-items: center;
+		flex-wrap: nowrap;
+		gap: 8px;
+	}
+	.workspace-file-detail > .detail-heading h2 {
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 	.workspace-editor-kind {
 		display: none;
@@ -904,7 +917,8 @@
 	.workspace-panels:not([data-changing="true"])
 		> .workspace-deliveries:not([hidden]),
 	.workspace-project-info[data-phase],
-	.workspace-action-menu[open] .workspace-action-menu-items,
+	.pm-workspace .workspace-file-filters[data-phase],
+	.pm-workspace .workspace-action-menu[data-phase] > .workspace-action-menu-items,
 	.workspace-upload-menu[data-phase],
 	.workspace-file-menu[open] .workspace-file-menu-items {
 		animation: none;
@@ -1010,4 +1024,53 @@
 	display: flex;
 	flex-wrap: wrap;
 	gap: 10px;
+}
+.workspace-action-menu[data-phase="open"] > .workspace-action-menu-items {
+	animation: pm-content-enter var(--pm-enter) var(--pm-ease);
+}
+.workspace-action-menu[data-phase="closing"] > .workspace-action-menu-items {
+	animation: pm-content-exit var(--pm-exit) ease forwards;
+	pointer-events: none;
+}
+.workspace-action-menu:has(> .workspace-menu-dismiss) {
+	z-index: 11;
+}
+.workspace-redesign .workspace-menu-dismiss {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	width: 100%;
+	height: 100%;
+	min-height: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	cursor: default;
+}
+.workspace-redesign .workspace-menu-dismiss:hover:not(:disabled) {
+	background: transparent;
+}
+.workspace-redesign .workspace-file-menu > summary {
+	position: relative;
+	z-index: 1;
+	width: 44px;
+	padding: 10px;
+	border: 1px solid var(--pm-line);
+	background: transparent;
+	color: var(--pm-muted);
+}
+.workspace-redesign .workspace-file-menu-items .button {
+	border: 0;
+	background: transparent;
+}
+@media (max-width: 700px) {
+	.workspace-file-filters[data-phase="open"] {
+		animation: pm-content-enter var(--pm-enter) var(--pm-ease);
+	}
+	.workspace-file-filters[data-phase="closing"] {
+		animation: pm-content-exit var(--pm-exit) ease forwards;
+		pointer-events: none;
+	}
 }

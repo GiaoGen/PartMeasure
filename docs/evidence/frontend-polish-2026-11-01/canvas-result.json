@@ -1,0 +1,119 @@
+{
+  "scope": "Actual AnnotationCanvas, native Chromium mouse/touch events, local synthetic pixels; no phone or cloud claim.",
+  "results": [
+    {
+      "input": "mouse",
+      "tool": "line",
+      "status": "PASS",
+      "counts": []
+    },
+    {
+      "input": "mouse",
+      "tool": "circle",
+      "status": "PASS",
+      "counts": []
+    },
+    {
+      "input": "mouse",
+      "tool": "ellipse",
+      "status": "PASS",
+      "counts": []
+    },
+    {
+      "input": "mouse",
+      "tool": "angle",
+      "status": "PASS",
+      "counts": [
+        0,
+        0,
+        1,
+        1,
+        1,
+        2
+      ]
+    },
+    {
+      "input": "mouse",
+      "tool": "arc",
+      "status": "PASS",
+      "counts": [
+        0,
+        0,
+        1,
+        1,
+        1,
+        2
+      ]
+    },
+    {
+      "input": "mouse",
+      "tool": "point",
+      "status": "PASS",
+      "counts": []
+    },
+    {
+      "input": "mouse",
+      "tool": "text",
+      "status": "PASS",
+      "counts": []
+    },
+    {
+      "input": "touch",
+      "tool": "line",
+      "status": "PASS",
+      "counts": []
+    },
+    {
+      "input": "touch",
+      "tool": "circle",
+      "status": "PASS",
+      "counts": []
+    },
+    {
+      "input": "touch",
+      "tool": "ellipse",
+      "status": "PASS",
+      "counts": []
+    },
+    {
+      "input": "touch",
+      "tool": "angle",
+      "status": "PASS",
+      "counts": [
+        0,
+        0,
+        1,
+        1,
+        1,
+        2
+      ]
+    },
+    {
+      "input": "touch",
+      "tool": "arc",
+      "status": "PASS",
+      "counts": [
+        0,
+        0,
+        1,
+        1,
+        1,
+        2
+      ]
+    },
+    {
+      "input": "touch",
+      "tool": "point",
+      "status": "PASS",
+      "counts": []
+    },
+    {
+      "input": "touch",
+      "tool": "text",
+      "status": "PASS",
+      "counts": []
+    }
+  ],
+  "errors": [],
+  "blocked": []
+}

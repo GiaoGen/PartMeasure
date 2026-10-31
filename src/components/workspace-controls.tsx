@@ -1,61 +1,83 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, type ReactNode } from "react";
 import { fileSorts, fileTypes, type FileFilters } from "@/lib/archive-filters";
-import { WorkspaceIcon } from "./workspace-ui";
+import { WorkspaceIcon, useWorkspaceDisclosure } from "./workspace-ui";
 
 /** Native disclosure semantics; buttons dismiss it while selects remain usable. */
 export function WorkspaceMenu({
 	label,
 	kind,
 	className = "",
+	panelClassName = "",
+	dismissCanvasPointer = false,
 	disabled = false,
 	children,
 }: {
 	label: string;
 	kind: "more" | "download";
 	className?: string;
+	panelClassName?: string;
+	dismissCanvasPointer?: boolean;
 	disabled?: boolean;
 	children: ReactNode;
 }) {
 	const ref = useRef<HTMLDetailsElement>(null);
-	const [opened, setOpened] = useState(false);
+	const menu = useWorkspaceDisclosure();
 	useEffect(() => {
-		if (!opened) return;
+		if (!menu.expanded) return;
 		function outside(event: Event) {
 			if (
 				event.target instanceof Node &&
 				!ref.current?.contains(event.target)
 			) {
-				if (ref.current) ref.current.open = false;
+				menu.hide();
 			}
+		}
+		function onEscape(event: KeyboardEvent) {
+			if (event.key !== "Escape") return;
+			event.preventDefault();
+			event.stopPropagation();
+			menu.hide();
+			ref.current?.querySelector("summary")?.focus({ preventScroll: true });
 		}
 		document.addEventListener("pointerdown", outside);
 		document.addEventListener("focusin", outside);
+		document.addEventListener("scroll", outside, true);
+		document.addEventListener("keydown", onEscape, true);
 		return () => {
 			document.removeEventListener("pointerdown", outside);
 			document.removeEventListener("focusin", outside);
+			document.removeEventListener("scroll", outside, true);
+			document.removeEventListener("keydown", onEscape, true);
 		};
-	}, [opened]);
+	}, [menu.expanded, menu.hide]);
 	return (
 		<details
 			ref={ref}
 			className={`workspace-action-menu ${className}`}
-			onToggle={(event) => setOpened(event.currentTarget.open)}
+			open={menu.mounted}
+			data-phase={menu.phase}
 			onClick={(event) => {
 				if (!(event.target instanceof Element)) return;
-				if (disabled && event.target.closest("summary")) event.preventDefault();
-				const button = event.target.closest("button");
-				if (button && !button.disabled && ref.current) {
-					ref.current.open = false;
-					ref.current.querySelector("summary")?.focus({ preventScroll: true });
+				if (event.target.closest("summary")) {
+					event.preventDefault();
+					if (!disabled) {
+						if (menu.expanded) menu.hide(); else menu.show();
+					}
+					return;
+				}
+				const action = event.target.closest("button,a[href]");
+				if (action && !(action instanceof HTMLButtonElement && action.disabled)) {
+					menu.hide();
+					ref.current?.querySelector("summary")?.focus({ preventScroll: true });
 				}
 			}}
 			onKeyDown={(event) => {
-				if (event.key !== "Escape" || !event.currentTarget.open) return;
+				if (event.key !== "Escape" || !menu.mounted) return;
 				event.preventDefault();
 				event.stopPropagation();
-				event.currentTarget.open = false;
+				menu.hide();
 				event.currentTarget.querySelector("summary")?.focus();
 			}}
 		>
@@ -63,7 +85,11 @@ export function WorkspaceMenu({
 				<WorkspaceIcon kind={kind} />
 				{kind === "download" ? <span>{label}</span> : null}
 			</summary>
-			<div className="workspace-action-menu-items" inert={disabled}>
+			{dismissCanvasPointer && menu.mounted ? (
+				<button type="button" className="workspace-menu-dismiss"
+					aria-label={`收起${label}`} tabIndex={-1} />
+			) : null}
+			<div className={`workspace-action-menu-items ${panelClassName}`} inert={disabled || menu.phase === "closing"}>
 				{children}
 			</div>
 		</details>
@@ -83,7 +109,7 @@ export function WorkspaceMaterialControls({
 	onChange: (filters: FileFilters) => Promise<boolean>;
 	onExport: (kind: "pdf" | "zip") => Promise<void>;
 }) {
-	const [expanded, setExpanded] = useState(false);
+	const disclosure = useWorkspaceDisclosure();
 	const fieldsId = useId();
 	const actions = (
 		<>
@@ -113,9 +139,9 @@ export function WorkspaceMaterialControls({
 				<button
 					type="button"
 					className="workspace-filter-trigger"
-					aria-expanded={expanded}
+					aria-expanded={disclosure.expanded}
 					aria-controls={fieldsId}
-					onClick={() => setExpanded((value) => !value)}
+					onClick={() => { if (disclosure.expanded) disclosure.hide(); else disclosure.show(); }}
 				>
 					<WorkspaceIcon kind="filters" />
 					筛选与排序
@@ -130,7 +156,9 @@ export function WorkspaceMaterialControls({
 			<div
 				className="workspace-file-filters"
 				id={fieldsId}
-				data-expanded={expanded}
+				data-expanded={disclosure.mounted}
+				data-phase={disclosure.phase}
+				inert={disclosure.phase === "closing"}
 			>
 				<label>
 					类型

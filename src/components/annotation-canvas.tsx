@@ -396,7 +396,6 @@ export default function AnnotationCanvas({
 		setDraft(null);
 		if (d && canEdit && !multi.current) {
 			createWithFit(asGeometry(d));
-			setTool("select");
 		}
 	}
 	function createWithFit(geometry: Geometry) {
@@ -462,7 +461,6 @@ export default function AnnotationCanvas({
 			setPartial([]);
 			setHover(null);
 			setDraft(null);
-			setTool("select");
 		} else {
 			triplet.current = points;
 			setPartial(points);
@@ -567,6 +565,8 @@ export default function AnnotationCanvas({
 					: item.geometry,
 			chosen = !preview && selected === item.id,
 			editing = canEdit && chosen && tool === "select" && !space && !preview,
+			editingHandles = canEdit && chosen && !space && !preview &&
+				(tool === "select" || tool === g.type),
 			stroke = annotationColor(item),
 			lineWidth = (chosen ? 3 : 2) / s;
 		const label = photoDimensionText(item);
@@ -584,7 +584,7 @@ export default function AnnotationCanvas({
 			w,
 			h,
 			s,
-			editing || (preview && g.type === "ellipse"),
+			editingHandles || (preview && g.type === "ellipse"),
 		).map((data, i) => ({
 			data,
 			role: ["outline", "detail", "secondary"][i] ?? "extra",
@@ -602,7 +602,7 @@ export default function AnnotationCanvas({
 		));
 
 		const handles: { key: string; point: Point }[] = [];
-		if (chosen && editing && movingId !== item.id) {
+		if (editingHandles && movingId !== item.id) {
 			if (g.type === "line")
 				handles.push(
 					{ key: "from", point: g.from },
@@ -796,8 +796,11 @@ export default function AnnotationCanvas({
 						}}
 						onTouchStart={(e) => {
 							if (cv.busy) cv.cancel();
+							if (e.evt.cancelable) e.evt.preventDefault();
 							e.cancelBubble = true;
 						}}
+						onClick={(e) => { e.cancelBubble = true; }}
+						onTap={(e) => { e.cancelBubble = true; }}
 						dragBoundFunc={(pos) => {
 							const p = clamp(fromScreen(pos, w, h, view));
 							return { x: view.x + p.x * w * s, y: view.y + p.y * h * s };

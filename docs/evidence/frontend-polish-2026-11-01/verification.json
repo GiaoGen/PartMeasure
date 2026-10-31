@@ -1,0 +1,96 @@
+{
+  "checkedAt": "2026-10-31T16:11:38.999Z",
+  "base": "e6cce294b4857dc511a449cfa0ba6c5acd17336d",
+  "status": "LOCAL_IMPLEMENTATION_VERIFIED_NOT_PUBLISHED",
+  "sourceFiles": [
+    {
+      "path": "src/components/annotation-canvas.tsx",
+      "sha256": "1d972eb68c4a6997c28a55799034b4f656b94d626fcd5224c8c8a7e53da61513"
+    },
+    {
+      "path": "src/components/delivery-section.tsx",
+      "sha256": "1e6bbc4833d69e1bc891d89d809ebe21e1cd2a35a0d1cedae3e06eb80ed9c0ef"
+    },
+    {
+      "path": "src/components/issue-inbox.css",
+      "sha256": "7614121f565f538c06f152fd58cdd6f4f84701ac5ec5a56c375c1dbf4ad0bda5"
+    },
+    {
+      "path": "src/components/issue-inbox.tsx",
+      "sha256": "4e224574fd5c549c7be608fac04add896153d3a70060b6fafbd6be55486d5756"
+    },
+    {
+      "path": "src/components/task-card-rows.tsx",
+      "sha256": "da7fda95cff12361fa92f2ef1f17ead5f6fca2895a56d62660d3f36c555b17b4"
+    },
+    {
+      "path": "src/components/upload-queue.tsx",
+      "sha256": "23a851326d2425dfbd514ed1e40163f783f54b8c9b69d8990c52d6b666812b5d"
+    },
+    {
+      "path": "src/components/workspace-controls.tsx",
+      "sha256": "c897c19b973694b4cf593986db5906865a398811fc6e27f45b5cfafe8cf13969"
+    },
+    {
+      "path": "src/components/workspace-ui.tsx",
+      "sha256": "4babbed254a04bb637269a06a11c9a0783bc8313e7a42af04abf20c448bbd803"
+    },
+    {
+      "path": "src/components/workspace.css",
+      "sha256": "66a2c227727718825600acdfd00acb4beaebe1665e7cd5ce1056dc5a1353d6d4"
+    },
+    {
+      "path": "src/components/workspace.tsx",
+      "sha256": "1977751abf668bc4789d6eed3123ec0c55e2c246495c4cdac0ed29c4c75b39c3"
+    }
+  ],
+  "harnesses": [
+    {
+      "path": "tmp/frontend-polish-20261031/check.mjs",
+      "sha256": "e716da436ad6e17b565eaeb7bf0e85b6636adda5adba299f207f592172d58706"
+    },
+    {
+      "path": "tmp/frontend-polish-20261031/canvas-check.mjs",
+      "sha256": "e9754ad9dc68e544e8f781185249900bf63cab39d2ae9d469802aef128de8b01"
+    },
+    {
+      "path": "tmp/frontend-polish-20261031/fixture.tsx",
+      "sha256": "661bca668b58c4725e2c50d02e815d6c9db3067001b98f270814dfc404b6b987"
+    },
+    {
+      "path": "tmp/frontend-polish-20261031/canvas-fixture.tsx",
+      "sha256": "18e67ef7d892bc71976c3a5cad85a0c04b80eae805ed00edfa301e48c21d5497"
+    }
+  ],
+  "checks": {
+    "sourceLint": {
+      "files": 458,
+      "status": "PASS"
+    },
+    "typecheck": "PASS",
+    "vitest": {
+      "files": 82,
+      "tests": 488,
+      "status": "PASS"
+    },
+    "finalProductionBuild": "PASS",
+    "workspace": {
+      "groups": 6,
+      "status": "PASS"
+    },
+    "canvas": {
+      "groups": 14,
+      "status": "PASS"
+    },
+    "diffWhitespace": "PASS"
+  },
+  "boundaries": {
+    "push": false,
+    "deployment": false,
+    "cloudWrites": false,
+    "backendChanges": false,
+    "dependencyChanges": false,
+    "physicalPhoneTested": false,
+    "softKeyboardTested": false
+  }
+}

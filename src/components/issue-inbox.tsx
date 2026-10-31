@@ -14,7 +14,8 @@ import { useApiRevalidation } from "./use-api-revalidation";
 import { IssueDetail } from "./issue-detail";
 import { useProjectDialog } from "./projects-motion";
 import { WorkspaceSideTarget } from "./workspace-side-content";
-import { WorkspaceIcon } from "./workspace-ui";
+import { WorkspaceIcon, useWorkspaceDisclosure } from "./workspace-ui";
+import { motionDuration } from "./ui-motion";
 import { revealFocusedDialogControl } from "./dialog-viewport";
 import { taskInboxState } from "./task-inbox-state";
 import { groupTaskCards, type TaskCard } from "./task-inbox-groups";
@@ -40,6 +41,7 @@ export function IssueInbox({
 	onDirty: (dirty: boolean) => void;
 }) {
 	const popup = useProjectDialog();
+	const storage = useWorkspaceDisclosure();
 	const url = `${base}/issues`;
 	const [initial] = useState(() =>
 		readCached<{
@@ -49,10 +51,11 @@ export function IssueInbox({
 		}>(url),
 	);
 	const titleId = useId();
+	const storageId = useId();
 	const [opened, setOpened] = useState(false);
 	const [selected, setSelected] = useState<TaskCard | null>(null);
-	const [showMobileList, setShowMobileList] = useState(false);
 	const listPane = useRef<HTMLDivElement>(null);
+	const storageTrigger = useRef<HTMLButtonElement>(null);
 	const detailPane = useRef<HTMLElement>(null);
 	const [items, setItems] = useState<IssueSummary[]>(initial?.items ?? []);
 	const [counts, setCounts] = useState<Record<string, number>>(
@@ -195,7 +198,7 @@ export function IssueInbox({
 	}, [opened, popup.ref]);
 	const choose = (card: TaskCard | null) => {
 		if (card && card.id === selected?.id) {
-			setShowMobileList(false);
+			storage.hide();
 			return;
 		}
 		if (
@@ -207,25 +210,49 @@ export function IssueInbox({
 			return;
 		handleDirty(false);
 		setSelected(card);
-		setShowMobileList(false);
+		storage.hide();
 	};
 	useEffect(() => {
 		if (!opened || !selected) return;
 		const frame = requestAnimationFrame(() => {
-			if (showMobileList && window.matchMedia("(max-width: 700px)").matches) {
-				listPane.current?.querySelector<HTMLButtonElement>('[aria-pressed="true"]')?.focus({ preventScroll: true });
-			} else {
-				detailPane.current?.focus({ preventScroll: true });
-			}
+			detailPane.current?.focus({ preventScroll: true });
 		});
 		return () => cancelAnimationFrame(frame);
-	}, [opened, selected, showMobileList]);
+	}, [opened, selected]);
 	useEffect(() => {
 		if (!selected?.id) return;
-		if (detailPane.current) detailPane.current.scrollTop = 0;
+		const pane = detailPane.current;
+		if (!pane) return;
+		pane.scrollTop = 0;
+		const duration = motionDuration("enter");
+		if (!duration) return;
+		const animation = pane.animate?.(
+			[{ opacity: 0.4, transform: "translateY(3px)" }, { opacity: 1, transform: "none" }],
+			{ duration, easing: "ease-out" },
+		);
+		return () => animation?.cancel();
 	}, [selected?.id]);
+	useEffect(() => {
+		if (!storage.expanded) return;
+		const frame = requestAnimationFrame(() => {
+			listPane.current?.querySelector<HTMLButtonElement>(".task-reminder-card")?.focus({ preventScroll: true });
+		});
+		function outside(event: FocusEvent) {
+			if (
+				event.target instanceof Node &&
+				!listPane.current?.contains(event.target) &&
+				!storageTrigger.current?.contains(event.target)
+			) storage.hide();
+		}
+		document.addEventListener("focusin", outside);
+		return () => {
+			cancelAnimationFrame(frame);
+			document.removeEventListener("focusin", outside);
+		};
+	}, [storage.expanded, storage.hide]);
 	function close() {
 		// Keep detail mounted: closing is not discarding its reply/review form.
+		storage.hide();
 		popup.close(() => setOpened(false));
 	}
 	const shownItems = opened && batch.loaded ? batch.items : items;
@@ -249,6 +276,21 @@ export function IssueInbox({
 				items: selected.items.map((item) => batch.views.get(item.id) ?? item),
 			})
 		: null;
+	const currentFile = current?.items[0];
+	const currentGroup = current
+		? groups.find((group) => group.fileId === currentFile?.fileId) ?? {
+			fileId: currentFile?.fileId ?? "unavailable",
+			label: currentFile?.fileLabel || "项目资料",
+			cards: [current],
+		}
+		: null;
+	const otherGroups = groups.filter((group) => group.fileId !== currentGroup?.fileId);
+	const cards = groups.flatMap((group) => group.cards);
+	const firstCard = cards.find((card) => card.tone === "redo") ??
+		cards.find((card) => card.tone === "missing") ?? cards[0];
+	useEffect(() => {
+		if (opened && !selected && firstCard) setSelected(firstCard);
+	}, [opened, selected, firstCard]);
 	const selectedIds = current?.items.map((item) => item.id).join(",") ?? "";
 	useEffect(() => {
 		void batch.epoch;
@@ -290,11 +332,13 @@ export function IssueInbox({
 			<dialog
 				ref={popup.ref}
 				className="task-inbox-dialog"
-				data-mobile-view={selected && !showMobileList ? "detail" : "list"}
 				aria-labelledby={titleId}
 				onCancel={(event) => {
 					event.preventDefault();
-					close();
+					if (storage.mounted) {
+						storage.hide();
+						storageTrigger.current?.focus();
+					} else close();
 				}}
 				onPointerDown={(event) => {
 					if (event.target !== event.currentTarget) return;
@@ -304,69 +348,96 @@ export function IssueInbox({
 						event.clientX > rect.right ||
 						event.clientY < rect.top ||
 						event.clientY > rect.bottom
-					)
-						close();
+					) {
+						if (storage.mounted) storage.hide(); else close();
+					}
 				}}
 			>
 				<header className="task-inbox-heading">
 					<h2 id={titleId}>待处理事项</h2>
-					{current ? (
-						<div className="task-inbox-current">
-							<button type="button" onClick={() => setShowMobileList(true)} aria-label="返回待处理事项列表">
-								<span aria-hidden="true">‹</span> 列表
-							</button>
-							<span>{current.items[0]?.fileLabel || "项目资料"} · {current.label}</span>
-						</div>
-					) : null}
+					<div className="task-inbox-current-file">
+						<span title={currentGroup?.label}>{currentGroup?.label ?? "选择资料"}</span>
+						<button
+							type="button"
+							ref={storageTrigger}
+							aria-label="选择待办资料"
+							aria-controls={storageId}
+							aria-expanded={storage.expanded}
+							onClick={() => {
+								if (storage.expanded) storage.hide();
+								else {
+									storageTrigger.current?.focus({ preventScroll: true });
+									storage.show();
+								}
+							}}
+						>
+							<WorkspaceIcon kind="folder" />
+						</button>
+					</div>
 					<div>
 						<button type="button" onClick={close} aria-label="关闭待办">
 							<span aria-hidden="true">×</span>
 						</button>
 					</div>
 				</header>
-				<div className="task-inbox-body">
-				<div className="task-inbox-list" ref={listPane}>
-				<section className="task-inbox-legend" aria-label="状态颜色图例">
-					<span data-tone="redo">待补测</span>
-					<span data-tone="missing">待补充</span>
-					<span data-tone="done">已补充</span>
-				</section>
-					{batch.loading ? (
-						<p role="status">
-							{batch.loaded ? "正在准备其余待办…" : "正在准备待办与填写信息…"}
-						</p>
-					) : null}
-					{shownError ? (
-						<p className="error" role="alert">
-							{shownError}
-							<button type="button" onClick={() => reader.refresh()}>
-								重试
-							</button>
-						</p>
-					) : null}
-					{!batch.loading && !shownError && batch.loaded && !groups.length ? (
-						<div className="task-inbox-empty">
-							<WorkspaceIcon kind="check" />
-							<p>没有待处理事项</p>
-						</div>
-					) : null}
-					<TaskCardRows
-						groups={groups}
-						selected={selected?.id ?? null}
-						onSelect={choose}
-					/>
-					{batch.nextCursor ? (
+				{currentGroup ? (
+					<div className="task-inbox-current-cards">
+						<TaskCardRows groups={[currentGroup]} compact selected={current?.id ?? null} onSelect={choose} />
+					</div>
+				) : null}
+				{storage.mounted ? (
+					<div className="task-storage-layer" data-phase={storage.phase} inert={storage.phase === "closing"}>
 						<button
 							type="button"
-							disabled={batch.loading}
-							onClick={() => reader.more()}
-						>
-							加载更多事项
-						</button>
-					) : null}
-				</div>
+							className="task-storage-dismiss"
+							aria-label="收起资料收纳"
+							tabIndex={-1}
+							onClick={() => {
+								storage.hide();
+								storageTrigger.current?.focus();
+							}}
+						/>
+						<section className="task-storage-panel" id={storageId} aria-label="其他待办资料">
+							<div className="task-storage-title">
+								<h3>其他资料</h3>
+								<span>{otherGroups.length} 份{batch.nextCursor ? "+" : ""}</span>
+							</div>
+							<div className="task-inbox-list" ref={listPane}>
+								<section className="task-inbox-legend" aria-label="状态颜色图例">
+									<span data-tone="redo">待补测</span>
+									<span data-tone="missing">待补充</span>
+									<span data-tone="done">已补充</span>
+								</section>
+								{batch.loading ? (
+									<p role="status">
+										{batch.loaded ? "正在准备其余待办…" : "正在准备待办与填写信息…"}
+									</p>
+								) : null}
+								{shownError ? (
+									<p className="error" role="alert">
+										{shownError}
+										<button type="button" onClick={() => reader.refresh()}>重试</button>
+									</p>
+								) : null}
+								{!batch.loading && !shownError && batch.loaded && !otherGroups.length ? (
+									<div className="task-inbox-empty">
+										<WorkspaceIcon kind="check" />
+										<p>{groups.length ? "没有其他待办资料" : "没有待处理事项"}</p>
+									</div>
+								) : null}
+								<TaskCardRows groups={otherGroups} selected={selected?.id ?? null} onSelect={choose} />
+								{batch.nextCursor ? (
+									<button type="button" disabled={batch.loading} onClick={() => reader.more()}>
+										加载更多事项
+									</button>
+								) : null}
+							</div>
+						</section>
+					</div>
+				) : null}
+				<div className="task-inbox-body">
 				<section className="task-inbox-detail" ref={detailPane} tabIndex={-1} aria-label="当前事项详情">
-				{current && shownError ? (
+				{shownError ? (
 					<p className="error task-inbox-detail-error" role="alert">
 						{shownError}<button type="button" onClick={() => reader.refresh()}>重试</button>
 					</p>
@@ -387,7 +458,7 @@ export function IssueInbox({
 							onReadRequest={(id) => reader.reload([id])}
 							onCollapse={() => choose(null)}
 						/>
-					) : <p className="task-inbox-pick">选择左侧事项，查看图片并填写。</p>}
+					) : <p className="task-inbox-pick" role="status">{batch.loading || !batch.loaded ? "正在准备待办…" : shownError ? "待办暂时不可用。" : "没有待处理事项"}</p>}
 				</WorkspaceSideTarget>
 				</section>
 				</div>

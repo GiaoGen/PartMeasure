@@ -17,6 +17,8 @@ export function WorkspaceIcon({
 		| "bell"
 		| "refresh"
 		| "more"
+		| "back"
+		| "folder"
 		| "share"
 		| "download"
 		| "filters"
@@ -35,6 +37,8 @@ export function WorkspaceIcon({
 			strokeLinejoin="round"
 			aria-hidden="true"
 		>
+			{kind === "back" ? <path d="m10 5-7 7 7 7M3 12h18" /> : null}
+			{kind === "folder" ? <><path d="M3 7V5h7l2 2h9v12H3Zm0 3h18" /><path d="m8 14 4 3 4-3" /></> : null}
 			{kind === "more" ? <><circle cx="5" cy="12" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /></> : null}
 			{kind === "share" ? <><path d="m8 8 8-4M8 16l8 4" /><circle cx="5" cy="12" r="4" /><circle cx="19" cy="3" r="3" /><circle cx="19" cy="21" r="3" /></> : null}
 			{kind === "download" ? <path d="M12 3v13m-5-5 5 5 5-5M4 17v4h16v-4" /> : null}

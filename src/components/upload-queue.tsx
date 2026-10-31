@@ -669,9 +669,6 @@ export function UploadQueue({
 					{error}
 				</p>
 			) : null}
-			<p className="muted">
-				文件按格式和大小校验；图片自动校正方向。不进行病毒扫描。
-			</p>
 			<ul className="queue" aria-live="polite">
 				{tracked
 					.filter((r) => !items.some((i) => i.reservationId === r.id))

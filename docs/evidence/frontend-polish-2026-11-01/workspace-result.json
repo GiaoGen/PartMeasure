@@ -1,0 +1,32 @@
+{
+  "scope": "Actual frontend components, intercepted synthetic local GETs. No cloud, Auth, phone or soft keyboard claim.",
+  "results": [
+    {
+      "name": "filter_enter_exit_rapid_reopen_and_values",
+      "status": "PASS"
+    },
+    {
+      "name": "unified_inbox_storage_overlay_layout_and_escape",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile_guest_input_retained_storage_dismiss_and_dirty_switch_cancel",
+      "status": "PASS"
+    },
+    {
+      "name": "reduced_motion_and_removed_copy",
+      "status": "PASS"
+    },
+    {
+      "name": "file_menu_outside_canvas_escape_and_mobile_back_alignment",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop_light_theme_storage_and_outside_dismiss",
+      "status": "PASS"
+    }
+  ],
+  "writes": [],
+  "unexpected": [],
+  "errors": []
+}

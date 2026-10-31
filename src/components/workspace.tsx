@@ -1027,17 +1027,6 @@ function WorkspaceContent({
 				<main
 					className="workspace workspace-redesign"
 					onKeyDown={(event) => {
-						if (event.key === "Escape" && event.target instanceof HTMLElement) {
-							const menu = event.target.closest<HTMLDetailsElement>(
-								".workspace-file-menu[open]",
-							);
-							if (menu) {
-								event.preventDefault();
-								menu.open = false;
-								menu.querySelector("summary")?.focus();
-								return;
-							}
-						}
 						if (event.key === "Escape" && info.mounted) {
 							info.hide();
 							infoTrigger.current?.focus();
@@ -1470,9 +1459,6 @@ function WorkspaceContent({
 							>
 								<div>
 									<h2>项目资料</h2>
-									<p className="muted">
-										照片用于定位与标注，其他附件保留原文件下载。
-									</p>
 								</div>
 								<div ref={setUploadEntry} className="workspace-upload-entry-target" />
 							</header>
@@ -1684,32 +1670,21 @@ function WorkspaceContent({
 									/>
 								) : null}
 								{selected ? (
-									<button
-										className="back-to-files"
-										type="button"
-										onClick={() => selectFile(null)}
-									>
-										返回资料
-									</button>
-								) : null}
-								{selected ? (
 									<>
 										<div className="detail-heading">
 											<h2>{selected.filename}</h2>
 											<span className="workspace-editor-kind">
 												{selected.mime.startsWith("image/") ? (guest ? "只读标注 · 可补充测量" : "照片标注") : "附件资料"}
 											</span>
-											<details className="workspace-file-menu">
-												<summary aria-label="文件操作">···</summary>
-												<div className="workspace-file-menu-items">
+											<button className="back-to-files" type="button" aria-label="返回资料" title="返回资料" onClick={() => selectFile(null)}>
+												<WorkspaceIcon kind="back" />
+											</button>
+											<WorkspaceMenu label="文件操作" kind="more" className="workspace-file-menu" panelClassName="workspace-file-menu-items" dismissCanvasPointer>
 													{selected.mime.startsWith("image/") ? (
 														<button
 															type="button"
-															onClick={(event) => {
+															onClick={() => {
 																setImageExportFile(selected.id);
-																event.currentTarget
-																	.closest("details")
-																	?.removeAttribute("open");
 															}}
 														>
 															导出图片／PDF
@@ -1788,8 +1763,7 @@ function WorkspaceContent({
 															隐藏文件
 														</button>
 													) : null}
-												</div>
-											</details>
+											</WorkspaceMenu>
 										</div>
 										{selected.mime.startsWith("image/") ? (
 											imageExportFile === selected.id ? (

@@ -224,9 +224,6 @@ export function DeliverySection({
 			<header className="delivery-page-heading">
 				<div>
 					<h2>交付与版本</h2>
-					<p className="muted">
-						每次发布保留独立版本，附件与反馈对应同一版本。
-					</p>
 				</div>
 				{!guest ? (
 					<button
@@ -346,11 +343,7 @@ export function DeliverySection({
 									仅工程师
 								</span>
 							</header>
-							<p className="delivery-draft-intro">
-								{archived
-									? "归档期间仅可查看已保存的草稿，恢复项目后可继续编辑。"
-									: "上传附件并填写版本说明，保存后再发布。发布前客户不可见。"}
-							</p>
+							{archived ? <p className="delivery-draft-intro">已归档，草稿只读。</p> : null}
 							{drafts.length > 1 ? (
 								<fieldset className="delivery-draft-switches">
 									<legend className="pm-sr-only">选择交付草稿</legend>
@@ -375,7 +368,7 @@ export function DeliverySection({
 							) : null}
 							{!editing ? (
 								<button type="button" disabled={archived} onClick={prepare}>
-									{drafts.length ? "继续编辑交付草稿" : "准备下一次成果"}
+									{drafts.length ? "编辑草稿" : "新建草稿"}
 								</button>
 							) : null}
 							{editing ? (
@@ -573,12 +566,12 @@ function DeliveryEditor({
 					: publish.busy
 						? "正在发布成果…"
 						: uploadBusy
-							? "附件正在上传，请等待处理完成后保存。"
+							? "附件上传中，完成后可保存。"
 							: save.dirty
 								? "有未保存修改"
 								: draft
-									? "草稿已保存，仅工程师可见"
-									: "准备下一版成果"}
+									? "草稿已保存"
+									: "准备草稿"}
 			</p>
 			<UploadQueue
 				base={base}
@@ -752,7 +745,7 @@ function DeliveryEditor({
 					{save.blocked || publish.blocked ? (
 						<div className="save-recovery">
 							<p>
-								输入已保留；未知结果重试沿用原幂等键。冲突时复制草稿，再重新载入。
+								输入已保留，请重试。遇到冲突可先复制草稿，再重新载入。
 							</p>
 							<button
 								type="button"

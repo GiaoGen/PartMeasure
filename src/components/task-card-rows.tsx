@@ -11,10 +11,12 @@ function FileRow({
 	group,
 	selected,
 	onSelect,
+	compact = false,
 }: {
 	group: TaskFileGroup;
 	selected: string | null;
 	onSelect: (card: TaskCard) => void;
+	compact?: boolean;
 }) {
 	const lane = useRef<HTMLDivElement>(null);
 	const id = useId();
@@ -28,7 +30,7 @@ function FileRow({
 	}
 	return (
 		<section className="task-file-group" aria-label={group.label}>
-			<header className="task-file-heading">
+			<header className="task-file-heading" hidden={compact}>
 				<WorkspaceIcon kind="file" />
 				<h3>{group.label}</h3>
 				<div className="task-lane-arrows">
@@ -81,10 +83,12 @@ export function TaskCardRows({
 	groups,
 	selected,
 	onSelect,
+	compact = false,
 }: {
 	groups: TaskFileGroup[];
 	selected: string | null;
 	onSelect: (card: TaskCard) => void;
+	compact?: boolean;
 }) {
 	return (
 		<>
@@ -94,6 +98,7 @@ export function TaskCardRows({
 					group={group}
 					selected={selected}
 					onSelect={onSelect}
+					compact={compact}
 				/>
 			))}
 		</>

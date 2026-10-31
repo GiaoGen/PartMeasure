@@ -65,6 +65,7 @@
 	white-space: nowrap;
 }
 .workspace-redesign .task-inbox-dialog {
+	--task-header-height: 70px;
 	position: fixed;
 	inset: auto 0 auto;
 	top: calc(
@@ -74,7 +75,7 @@
 	);
 	translate: 0 -50%;
 	margin: 0 auto;
-	width: min(1040px, calc(100vw - 48px));
+	width: min(860px, calc(100vw - 48px));
 	max-width: none;
 	height: min(740px, calc(var(--task-visible-height, 100dvh) - 48px));
 	max-height: calc(var(--task-visible-height, 100dvh) - 48px);
@@ -93,7 +94,7 @@
 }
 .task-inbox-body {
 	display: grid;
-	grid-template-columns: minmax(230px, 0.32fr) minmax(0, 0.68fr);
+	grid-template-columns: minmax(0, 1fr);
 	flex: 1;
 	min-height: 0;
 }
@@ -107,18 +108,12 @@
 	padding: 20px;
 	scroll-padding-block: 16px;
 }
-.task-inbox-list {
-	border-right: 1px solid var(--pm-line);
-}
-.task-inbox-heading > .task-inbox-current {
-	display: none;
-}
 .task-inbox-pick {
 	color: var(--pm-muted);
 	padding: 28px 0;
 }
-.task-inbox-detail-error {
-	display: none;
+.pm-ui .task-inbox-detail-error {
+	margin-bottom: 16px;
 }
 .task-selected-body {
 	display: grid;
@@ -148,17 +143,19 @@
 	pointer-events: none;
 }
 .task-inbox-heading {
-	display: flex;
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) 44px;
 	align-items: center;
-	justify-content: space-between;
 	gap: 12px;
 	flex-shrink: 0;
+	height: var(--task-header-height);
 	padding: 12px 20px;
 	border-bottom: 1px solid var(--pm-line);
 }
 .task-inbox-heading h2 {
 	margin: 0;
 	font-size: 18px;
+	white-space: nowrap;
 }
 .task-inbox-heading > div {
 	display: flex;
@@ -169,6 +166,97 @@
 	height: 44px;
 	padding: 11px;
 	border: 0;
+}
+.task-inbox-heading > .task-inbox-current-file {
+	align-items: center;
+	justify-content: flex-end;
+	min-width: 0;
+	gap: 6px;
+}
+.task-inbox-current-file > span {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: var(--pm-type-small);
+	color: var(--pm-muted);
+}
+.workspace-redesign .task-inbox-current-file > button {
+	flex-shrink: 0;
+	color: var(--pm-accent);
+}
+.workspace-redesign .task-inbox-current-file > [aria-expanded="true"] {
+	background: var(--pm-accent-soft);
+}
+.task-inbox-current-cards {
+	flex-shrink: 0;
+	min-width: 0;
+	padding: 8px 20px;
+	border-bottom: 1px solid var(--pm-line);
+}
+.task-storage-layer {
+	position: absolute;
+	inset: var(--task-header-height) 0 0;
+	z-index: 3;
+}
+.workspace-redesign .task-storage-dismiss {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	min-height: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: rgb(12 20 30 / 14%);
+}
+.workspace-redesign .task-storage-dismiss:hover:not(:disabled) {
+	background: rgb(12 20 30 / 14%);
+}
+.task-storage-panel {
+	position: absolute;
+	top: 6px;
+	right: 12px;
+	display: flex;
+	flex-direction: column;
+	width: min(440px, calc(100% - 24px));
+	max-height: min(460px, calc(100% - 18px));
+	overflow: hidden;
+	border: 1px solid var(--pm-line);
+	border-radius: 12px;
+	background: var(--workspace-card);
+	box-shadow: 0 10px 28px rgb(0 0 0 / 18%);
+}
+.task-storage-title {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 14px 18px 0;
+	flex-shrink: 0;
+}
+.task-storage-title h3 {
+	font-size: var(--pm-type-body);
+}
+.task-storage-title > span {
+	font-size: var(--pm-type-small);
+	color: var(--pm-muted);
+}
+.task-storage-panel .task-inbox-list {
+	flex: 1;
+	padding: 14px 18px 18px;
+}
+.task-storage-layer[data-phase="open"] .task-storage-panel {
+	animation: task-inbox-enter var(--pm-enter) var(--pm-ease);
+}
+.task-storage-layer[data-phase="closing"] .task-storage-panel {
+	animation: task-storage-exit var(--pm-exit) ease forwards;
+}
+.task-storage-layer[data-phase="open"] .task-storage-dismiss {
+	animation: task-inbox-fade var(--pm-enter) ease;
+}
+.task-storage-layer[data-phase="closing"] .task-storage-dismiss {
+	animation: task-inbox-exit var(--pm-exit) ease forwards;
 }
 .task-inbox-legend {
 	display: flex;
@@ -199,6 +287,9 @@
 .task-file-group {
 	margin-top: 16px;
 	min-width: 0;
+}
+.task-inbox-current-cards .task-file-group {
+	margin: 0;
 }
 .task-file-heading {
 	display: flex;
@@ -401,12 +492,16 @@
 		opacity: 0;
 	}
 }
+@keyframes task-storage-exit {
+	to { opacity: 0; transform: translateY(-4px); }
+}
 @media (max-width: 700px) {
 	.workspace-redesign .task-inbox-fab {
 		left: max(24px, env(safe-area-inset-left));
 		bottom: max(22px, env(safe-area-inset-bottom));
 	}
 	.workspace-redesign .task-inbox-dialog {
+		--task-header-height: 64px;
 		width: calc(100vw - 24px);
 		height: calc(var(--task-visible-height, 100dvh) - 24px);
 		max-height: calc(var(--task-visible-height, 100dvh) - 24px);
@@ -416,50 +511,15 @@
 		padding: 8px 12px;
 		gap: 8px;
 	}
-	.task-inbox-body {
-		grid-template-columns: minmax(0, 1fr);
+	.task-inbox-heading h2 {
+		font-size: var(--pm-type-input);
 	}
-	.task-inbox-list,
 	.task-inbox-detail {
 		border: 0;
 		padding: 16px;
 	}
-	.pm-ui .task-inbox-detail-error {
-		display: block;
-		margin-bottom: 16px;
-	}
-	.task-inbox-dialog[data-mobile-view="list"] .task-inbox-detail,
-	.task-inbox-dialog[data-mobile-view="detail"] .task-inbox-list {
-		display: none;
-	}
-	.task-inbox-dialog[data-mobile-view="detail"] .task-inbox-heading > h2 {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		clip-path: inset(50%);
-		overflow: hidden;
-	}
-	.task-inbox-dialog[data-mobile-view="detail"] .task-inbox-current {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		min-width: 0;
-		flex: 1;
-	}
-	.task-inbox-current > span {
-		min-width: 0;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		font-size: var(--pm-type-small);
-	}
-	.workspace-redesign .task-inbox-current button {
-		width: auto;
-		min-width: 58px;
-		flex-shrink: 0;
-		padding: 8px 0;
-		color: var(--pm-accent);
-		background: transparent;
+	.task-inbox-current-cards {
+		padding-inline: 16px;
 	}
 	.workspace-redesign .task-inbox-dialog .annotation-viewport {
 		height: clamp(140px, calc(var(--task-visible-height, 100dvh) * 0.28), 220px);
@@ -467,8 +527,6 @@
 	.task-inbox-dialog .numeric-entry {
 		grid-template-columns: minmax(0, 1fr) 76px;
 	}
-}
-@media (max-width: 1000px) {
 	.task-selected-body {
 		grid-template-columns: minmax(0, 1fr);
 		gap: 16px;
@@ -480,6 +538,8 @@
 	}
 	.task-inbox-dialog[data-phase],
 	.task-inbox-dialog[data-phase]::backdrop,
+	.task-storage-panel,
+	.task-storage-layer[data-phase] :is(.task-storage-panel, .task-storage-dismiss),
 	.task-inbox-badge,
 	.task-inbox-dialog .issue-popup-main {
 		animation: none;

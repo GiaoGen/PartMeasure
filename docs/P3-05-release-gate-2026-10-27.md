@@ -1,6 +1,8 @@
 # PartMeasure V1 Release Gate
 
-更新：2026-10-31（Asia/Taipei）。P3-05唯一持续维护的Release Gate；FIX-A～E只作原证据，不新建FIX包、不以历史编号清绿为目标。
+更新：2026-11-01（Asia/Taipei）。P3-05唯一持续维护的Release Gate；FIX-A～E只作原证据，不新建FIX包、不以历史编号清绿为目标。
+
+2026-11-01 后续交互优化已完成本地实现和验证，**尚未提交／推送／部署**：[交付记录](frontend-polish-2026-11-01.md)。用户审查收纳方案后明确实施；10 个前端文件涉及筛选／菜单进出场、连续绘图保留工具、统一待办收纳、菜单空白收起与防误绘、返回 icon 和文案精简，无需后端变更。458 源码 lint、类型、488 单测、最终 build、6 组实际 Workspace 离线检查及14组原生鼠标／触摸 Canvas 检查通过；非真实手机／软键盘验收。main 已关联 Production，本批没有推送或触发自动部署，当前线上版本仍见下一段；既有 V1 验收状态保持。
 
 2026-10-31 前端维护更新已正式发布：用户批准示例实施，并批准同一正式项目的一次Production暂存、检查及同构建promote。当前部署为 `dpl_Eu58HPg6gsWrmhmXp9MAnhxqq1nB`（READY），入口仍为 https://partmeasure-production.vercel.app；commit `9fd5d2e1a7c530f0c2f3e9a65008a21069e3c543`，220输入 `bb69f1b956aae843eae32736bb7a8b4bb6d62148f1f253b9678598c2ad06f49d`，托管摘要 `797831db2ba98941f509f85adea411e31be853a102be310974ad70a040da3e10`。仅已审查8个前端文件改变；220输入逐项核对，Vercel生成配置补项目名、version 2及末尾LF后完整摘要精确重现。后端、锁、原配置和10个Production环境变量版本未变；无应用登录或业务写入、迁移、发信、分享、上传、清理、新项目／服务。
 

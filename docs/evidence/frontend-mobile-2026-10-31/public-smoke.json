@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-31",
+  "status": "PASS",
+  "deploymentId": "dpl_Eu58HPg6gsWrmhmXp9MAnhxqq1nB",
+  "origin": "https://partmeasure-production.vercel.app",
+  "hostedBuildId": "p3-05-797831db2ba98941f509",
+  "scope": "Unauthenticated public HTTPS GETs after promotion; no Vercel bypass, application login, business writes or database probes.",
+  "results": [
+    {
+      "path": "/api/health",
+      "status": 200,
+      "bytes": 93,
+      "headers": {
+        "content-type": "application/json",
+        "referrer-policy": "no-referrer",
+        "x-frame-options": "DENY",
+        "x-content-type-options": "nosniff",
+        "permissions-policy": "camera=(self), microphone=(), geolocation=()",
+        "cache-control": "private, no-store"
+      },
+      "buildId": "p3-05-797831db2ba98941f509"
+    },
+    {
+      "path": "/",
+      "status": 200,
+      "bytes": 19674,
+      "headers": {
+        "content-type": "text/html; charset=utf-8",
+        "referrer-policy": "no-referrer",
+        "x-frame-options": "DENY",
+        "x-content-type-options": "nosniff",
+        "permissions-policy": "camera=(self), microphone=(), geolocation=()",
+        "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate"
+      }
+    },
+    {
+      "path": "/login",
+      "status": 200,
+      "bytes": 11706,
+      "headers": {
+        "content-type": "text/html; charset=utf-8",
+        "referrer-policy": "no-referrer",
+        "x-frame-options": "DENY",
+        "x-content-type-options": "nosniff",
+        "permissions-policy": "camera=(self), microphone=(), geolocation=()",
+        "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate"
+      }
+    },
+    {
+      "path": "/api/projects",
+      "status": 401,
+      "bytes": 111,
+      "headers": {
+        "content-type": "application/json",
+        "referrer-policy": "no-referrer",
+        "x-frame-options": "DENY",
+        "x-content-type-options": "nosniff",
+        "permissions-policy": "camera=(self), microphone=(), geolocation=()",
+        "cache-control": "private, no-store"
+      }
+    }
+  ]
+}

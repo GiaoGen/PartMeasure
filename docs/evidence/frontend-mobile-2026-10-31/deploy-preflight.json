@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-31",
+  "status": "PASS",
+  "fileCount": 220,
+  "bytes": 12512065,
+  "sourceDigest": "bb69f1b956aae843eae32736bb7a8b4bb6d62148f1f253b9678598c2ad06f49d",
+  "framework": {
+    "name": "Next.js",
+    "slug": "nextjs"
+  },
+  "exactPathAndSha1AndSha256Checks": true,
+  "privateFilesIncluded": 0,
+  "deploymentCreated": false
+}

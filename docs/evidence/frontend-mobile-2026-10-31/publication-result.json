@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-31",
+  "status": "RELEASED",
+  "deploymentState": "READY",
+  "deploymentCount": 1,
+  "deploymentId": "dpl_Eu58HPg6gsWrmhmXp9MAnhxqq1nB",
+  "commit": "9fd5d2e1a7c530f0c2f3e9a65008a21069e3c543",
+  "origin": "https://partmeasure-production.vercel.app",
+  "sourceDigest": "bb69f1b956aae843eae32736bb7a8b4bb6d62148f1f253b9678598c2ad06f49d",
+  "hostedDigest": "797831db2ba98941f509f85adea411e31be853a102be310974ad70a040da3e10",
+  "hostedBuildId": "p3-05-797831db2ba98941f509",
+  "stagedProduction": true,
+  "autoAssignCustomDomainsAtCreation": false,
+  "sameBuildPromoted": true,
+  "productionAliasMapping": "completed",
+  "productionEnvironmentMetadataUnchanged": true,
+  "productionEnvironmentVariables": 10,
+  "newProjects": 0,
+  "newServices": 0,
+  "applicationLogins": 0,
+  "businessWrites": 0,
+  "rollbackDeploymentId": "dpl_8ibkHBdHhn1QzePSXUPiZbUozPsM",
+  "rollbackPerformed": false,
+  "preflight": "deploy-preflight.json",
+  "provenance": "hosted-provenance.json",
+  "candidateChecks": "candidate-smoke.json",
+  "publicChecks": "public-smoke.json",
+  "runtimeErrorQuery": {
+    "routes": [
+      "/",
+      "/login",
+      "/api/health",
+      "/api/projects"
+    ],
+    "lookback": "15m",
+    "reportedClusters": 0,
+    "scope": "Selected routes and window only; not a complete log or ongoing monitoring guarantee."
+  },
+  "protectionAccess": "CLI user-authenticated checks automatically created a project protection bypass credential. Protection was not disabled; no credential values are present in source or evidence.",
+  "physicalPhoneSoftKeyboard": "NOT_TESTED_IN_THIS_UPDATE",
+  "previousAcceptanceRetained": true
+}

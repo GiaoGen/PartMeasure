@@ -1,6 +1,6 @@
 # 手机端前端轻量优化 · 2026-10-31
 
-状态：已按审查示例实现并完成本地技术验证；未部署。现有正式发布及其验收记录保持原有版本含义。
+状态：已按审查示例实现、验证并完成一次受控Production更新。首次V1发布及其验收记录保持原有版本含义。
 
 ## 实现内容
 
@@ -41,4 +41,18 @@
 - [桌面待办分栏（深色）](evidence/frontend-mobile-2026-10-31/desktop-inbox-dark.png)
 - [组件检查及源码 SHA-256](evidence/frontend-mobile-2026-10-31/checks.json)
 
-截图全部为本地合成资料，来自实现后的真实组件；生产页面仍为原正式版本。独立检查夹具及执行脚本位于本机忽略目录 `tmp/frontend-mobile/`。
+截图全部为本地合成资料，来自实现后的真实组件。独立检查夹具及执行脚本位于本机忽略目录 `tmp/frontend-mobile/`。
+
+## 正式发布
+
+用户明确批准一次「Production暂存 → 检查 → 同构建promote」，并完成CLI设备登录。使用已存在正式项目 `prj_Tk3LzDCt2iLIfObnwVyPajjbiX61`，没有第二个新部署或新项目。
+
+- 入口：https://partmeasure-production.vercel.app；当前部署 `dpl_Eu58HPg6gsWrmhmXp9MAnhxqq1nB`，READY；commit `9fd5d2e1a7c530f0c2f3e9a65008a21069e3c543`。
+- 220个发布输入仅8个已审查前端文件相对原正式版本改变；预演全部路径与SHA-1／SHA-256一致，没有私有文件。源码目录458文件lint补查PASS，旧输出目录权限未修改。
+- 构建实际220个输入逐项核对，只有Vercel生成的vercel.json补入项目名／version 2并规范化；全量重建摘要精确匹配，health为 `p3-05-797831db2ba98941f509`。
+- 暂存使用 `--prod --skip-domain`，READY后检查home/login/health200、projects401/AUTH_REQUIRED及5个CSS／JS资源；随后提升同一个部署，正式alias完成映射。
+- 正式入口经无绕过凭据的匿名GET再次确认页面、版本、权限、安全头、原生POST与无feedback脚本。15分钟内所选入口运行错误聚合无记录，不保证全量日志或持续监控。
+- 10个Production环境变量的ID／key／target／type／更新时间与发布前一致；没有数据库、后端、依赖、环境变量或业务数据修改。CLI受保护访问自动生成项目访问绕过凭据，未禁用部署保护；凭据不进入源码与证据。
+- 回退点：原正式部署 `dpl_8ibkHBdHhn1QzePSXUPiZbUozPsM` 保留；本轮未执行回退。真机软键盘体验仍未由本轮自动检查证明。
+
+记录：[范围](evidence/frontend-mobile-2026-10-31/release-scope.json)、[上传预演](evidence/frontend-mobile-2026-10-31/deploy-preflight.json)、[完整来源](evidence/frontend-mobile-2026-10-31/hosted-provenance.json)、[候选检查](evidence/frontend-mobile-2026-10-31/candidate-smoke.json)、[正式匿名检查](evidence/frontend-mobile-2026-10-31/public-smoke.json)、[发布回执](evidence/frontend-mobile-2026-10-31/publication-result.json)。

@@ -1,0 +1,93 @@
+{
+  "date": "2026-10-31",
+  "status": "PASS",
+  "deploymentId": "dpl_Eu58HPg6gsWrmhmXp9MAnhxqq1nB",
+  "checks": {
+    "health": 200,
+    "home": 200,
+    "login": 200,
+    "anonymousProjects": 401,
+    "anonymousCode": "AUTH_REQUIRED",
+    "nativePostForm": true,
+    "feedbackScriptsAbsent": true,
+    "autoAssignCustomDomains": false
+  },
+  "assets": [
+    {
+      "origin": "https://partmeasure-production-puazrk2wf-messup-s-projects.vercel.app",
+      "path": "/_next/static/css/aff5e51036287449.css",
+      "status": 200,
+      "headers": {
+        "cache-control": "public,max-age=31536000,immutable",
+        "content-type": "text/css; charset=utf-8",
+        "permissions-policy": "camera=(self), microphone=(), geolocation=()",
+        "referrer-policy": "no-referrer",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY"
+      },
+      "bytes": 31025,
+      "bodyFile": "candidate-_next-static-css-aff5e51036287449.css.body"
+    },
+    {
+      "origin": "https://partmeasure-production-puazrk2wf-messup-s-projects.vercel.app",
+      "path": "/_next/static/css/99e17bf96b9c6f84.css",
+      "status": 200,
+      "headers": {
+        "cache-control": "public,max-age=31536000,immutable",
+        "content-type": "text/css; charset=utf-8",
+        "permissions-policy": "camera=(self), microphone=(), geolocation=()",
+        "referrer-policy": "no-referrer",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY"
+      },
+      "bytes": 19429,
+      "bodyFile": "candidate-_next-static-css-99e17bf96b9c6f84.css.body"
+    },
+    {
+      "origin": "https://partmeasure-production-puazrk2wf-messup-s-projects.vercel.app",
+      "path": "/_next/static/chunks/webpack-31708afe0f6be497.js",
+      "status": 200,
+      "headers": {
+        "cache-control": "public,max-age=31536000,immutable",
+        "content-type": "application/javascript; charset=utf-8",
+        "permissions-policy": "camera=(self), microphone=(), geolocation=()",
+        "referrer-policy": "no-referrer",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY"
+      },
+      "bytes": 4907,
+      "bodyFile": "candidate-_next-static-chunks-webpack-31708afe0f6be497.js.body"
+    },
+    {
+      "origin": "https://partmeasure-production-puazrk2wf-messup-s-projects.vercel.app",
+      "path": "/_next/static/chunks/4bd1b696-291fb3e011b7bcee.js",
+      "status": 200,
+      "headers": {
+        "cache-control": "public,max-age=31536000,immutable",
+        "content-type": "application/javascript; charset=utf-8",
+        "permissions-policy": "camera=(self), microphone=(), geolocation=()",
+        "referrer-policy": "no-referrer",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY"
+      },
+      "bytes": 203722,
+      "bodyFile": "candidate-_next-static-chunks-4bd1b696-291fb3e011b7bcee.js.body"
+    },
+    {
+      "origin": "https://partmeasure-production-puazrk2wf-messup-s-projects.vercel.app",
+      "path": "/_next/static/chunks/3794-ccf684c1dfd621f0.js",
+      "status": 200,
+      "headers": {
+        "cache-control": "public,max-age=31536000,immutable",
+        "content-type": "application/javascript; charset=utf-8",
+        "permissions-policy": "camera=(self), microphone=(), geolocation=()",
+        "referrer-policy": "no-referrer",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY"
+      },
+      "bytes": 242567,
+      "bodyFile": "candidate-_next-static-chunks-3794-ccf684c1dfd621f0.js.body"
+    }
+  ],
+  "scope": "Hosted anonymous reads using approved Vercel CLI authentication; no application login or business write. Mobile workspace behavior is covered by the reviewed actual-component local fixture, not a physical-phone certification."
+}

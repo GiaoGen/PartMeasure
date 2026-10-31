@@ -1,12 +1,16 @@
 # PartMeasure V1 Release Gate
 
-更新：2026-10-30（Asia/Taipei）。P3-05唯一持续维护的Release Gate；FIX-A～E只作原证据，不新建FIX包、不以历史编号清绿为目标。
+更新：2026-10-31（Asia/Taipei）。P3-05唯一持续维护的Release Gate；FIX-A～E只作原证据，不新建FIX包、不以历史编号清绿为目标。
+
+2026-10-31 前端维护更新已正式发布：用户批准示例实施，并批准同一正式项目的一次Production暂存、检查及同构建promote。当前部署为 `dpl_Eu58HPg6gsWrmhmXp9MAnhxqq1nB`（READY），入口仍为 https://partmeasure-production.vercel.app；commit `9fd5d2e1a7c530f0c2f3e9a65008a21069e3c543`，220输入 `bb69f1b956aae843eae32736bb7a8b4bb6d62148f1f253b9678598c2ad06f49d`，托管摘要 `797831db2ba98941f509f85adea411e31be853a102be310974ad70a040da3e10`。仅已审查8个前端文件改变；220输入逐项核对，Vercel生成配置补项目名、version 2及末尾LF后完整摘要精确重现。后端、锁、原配置和10个Production环境变量版本未变；无应用登录或业务写入、迁移、发信、分享、上传、清理、新项目／服务。
+
+[本批记录](frontend-mobile-optimization-2026-10-31.md)与[发布回执](evidence/frontend-mobile-2026-10-31/publication-result.json)包括暂存前预演、候选检查、完整来源对账、同构建提升及公开匿名检查。正式alias状态completed；health/home/login200，实际新buildId匹配，projects401/AUTH_REQUIRED，安全头、原生POST及无feedback脚本通过。458源码lint已通过；原488单测／类型／build和7组本地实际组件证据按范围复用。15分钟内所选入口运行错误聚合无记录，不代替全量日志或监控。真机软键盘本次未验，不重开此前手机几何、导出、恢复验收。旧 `dpl_8ibkHBdHhn1QzePSXUPiZbUozPsM` 保留作应用回退，本批完成；下方首次V1验收仍按原版本范围留存，未被本次维护更新覆盖。
 
 最新验收关闭：2026-10-30（Asia/Taipei）。用户已明确批准正式部署及首次流程，现又确认第1–5步正常、撤销后Guest“已失效”。
 
 **最终判定：READY_FOR_RELEASE。P3-05：COMPLETE；V1已正式发布并通过本次约定范围验收。尚未满足的硬性门槛：无；剩余必要授权/资源/人工动作：无。**
 
-正式入口：[PartMeasure V1](https://partmeasure-production.vercel.app)。唯一Production部署 `dpl_8ibkHBdHhn1QzePSXUPiZbUozPsM` 为READY，应用commit `8100204baec13d092eb3bbe58ef06e6e6af2d67e`，219输入 `cebeecad8acca20add7735a4a68756949faaa0207e8a97e50f5f4548907ec0f2`；托管完整摘要 `a2a3658eb9dcd068b3f22b86cebc61da73ec66bbcd5921ee105618821ccaf9d3`，buildId `p3-05-a2a3658eb9dcd068b3f2`。正式Supabase仅 `qjiifweyhahowjdluqys`；旧lab/恢复目标保持暂停、数据保留。无第二次部署、无旧测试数据迁入。
+正式入口：[PartMeasure V1](https://partmeasure-production.vercel.app)。首次发布的Production部署 `dpl_8ibkHBdHhn1QzePSXUPiZbUozPsM` 为READY，应用commit `8100204baec13d092eb3bbe58ef06e6e6af2d67e`，219输入 `cebeecad8acca20add7735a4a68756949faaa0207e8a97e50f5f4548907ec0f2`；托管完整摘要 `a2a3658eb9dcd068b3f22b86cebc61da73ec66bbcd5921ee105618821ccaf9d3`，buildId `p3-05-a2a3658eb9dcd068b3f2`。正式Supabase仅 `qjiifweyhahowjdluqys`；旧lab/恢复目标保持暂停、数据保留。首次发布批次没有第二次部署或旧测试数据迁入；当前维护部署见本页顶部。
 
 - [完整来源对账](evidence/p3-05/production-provenance.json)：原预测6925ea…漏计Vercel规范化vercel.json末尾LF；初见不符先暂停，219输入仅替换该配置hash便精确重现实际全摘要，204可见日志逐项吻合，随后恢复同一部署。没有忽略指纹放行。
 - [公开匿名检查](evidence/p3-05/production-public-smoke.json)：首页/登录/health200，实际buildId匹配，projects精确401/AUTH_REQUIRED；no-referrer/DENY/nosniff、原生POST、无意外feedback脚本通过。health标明database:not-probed，不代替业务验证。

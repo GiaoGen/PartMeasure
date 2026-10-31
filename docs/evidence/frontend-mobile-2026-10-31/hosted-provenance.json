@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-31",
+  "status": "PASS",
+  "deploymentId": "dpl_Eu58HPg6gsWrmhmXp9MAnhxqq1nB",
+  "commit": "9fd5d2e1a7c530f0c2f3e9a65008a21069e3c543",
+  "sourceDigest": "bb69f1b956aae843eae32736bb7a8b4bb6d62148f1f253b9678598c2ad06f49d",
+  "hostedDigest": "797831db2ba98941f509f85adea411e31be853a102be310974ad70a040da3e10",
+  "hostedBuildId": "p3-05-797831db2ba98941f509",
+  "fileCount": 220,
+  "individuallyVerifiedFileCount": 220,
+  "applicationFilesMatching": 219,
+  "providerConfigTransformation": {
+    "path": "vercel.json",
+    "text": "{\"$schema\":\"https://openapi.vercel.sh/vercel.json\",\"regions\":[\"hnd1\"],\"name\":\"partmeasure-production\",\"version\":2}\n",
+    "sha256": "0bafac1e6606af7b73dc420952fa324b56023f41d398ff1d22371b49a8163854",
+    "difference": "Vercel adds the verified project name and default version 2, then serializes compact JSON with terminal LF; full 220-input digest reproduced exactly."
+  },
+  "rollbackDeploymentId": "dpl_8ibkHBdHhn1QzePSXUPiZbUozPsM",
+  "stagedBuildVerifiedBeforePromotion": true
+}

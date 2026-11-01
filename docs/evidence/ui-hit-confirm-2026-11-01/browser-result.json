@@ -1,0 +1,67 @@
+{
+  "scope": "actual components and native browser paths, synthetic intercepted GETs; visible viewport events simulated, not physical phone/keyboard",
+  "results": [
+    {
+      "name": "shared_confirm_titles_centered_and_cancelled",
+      "status": "PASS"
+    },
+    {
+      "name": "short_visible_viewport_long_content_and_resize",
+      "status": "PASS"
+    },
+    {
+      "name": "centering_survives_motion_and_page_scroll",
+      "status": "PASS"
+    },
+    {
+      "name": "nested_context_confirm_closes_first_and_keeps_parent",
+      "status": "PASS"
+    },
+    {
+      "name": "inbox_existing_centering_follows_short_viewport",
+      "status": "PASS"
+    },
+    {
+      "name": "confirmation_desktop_dark_landscape_and_acceptance",
+      "status": "PASS"
+    },
+    {
+      "name": "native_canvas_hollow_interior_and_nearest_stroke",
+      "status": "PASS"
+    },
+    {
+      "name": "native_touch_and_zoom_preserve_screen_tolerance",
+      "status": "PASS"
+    },
+    {
+      "name": "overlapping_line_drag_moves_only_selected_line",
+      "status": "PASS"
+    },
+    {
+      "name": "touch_drag_escape_permission_drop_and_outside_mouse_release",
+      "status": "PASS"
+    },
+    {
+      "name": "native_paths_reject_ellipse_arc_angle_interiors",
+      "status": "PASS"
+    },
+    {
+      "name": "native_three_point_tools_keep_one_count_per_touch",
+      "status": "PASS"
+    },
+    {
+      "name": "gallery_blank_passes_to_photo_and_nested_stroke_selects",
+      "status": "PASS"
+    },
+    {
+      "name": "gallery_keyboard_targets_remain_operable",
+      "status": "PASS"
+    },
+    {
+      "name": "project_and_folder_dialogs_keep_existing_centering",
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "unexpected": []
+}

@@ -1,5 +1,6 @@
 "use client";
 import { useId, useState } from "react";
+import { annotationLabel } from "@/lib/text-callout";
 import { type AnnotationDraft, typeLabel } from "@/lib/annotations";
 import { methodLabel } from "@/lib/issues";
 import {
@@ -40,7 +41,7 @@ export function GuestAnnotationPanel({
 	return (
 		<section
 			className="guest-annotation-panel"
-			aria-label={`${metadata.name || typeLabel(item.geometry)}测量信息`}
+			aria-label={`${annotationLabel(item) || typeLabel(item.geometry)}测量信息`}
 		>
 			<header className="guest-annotation-heading">
 				<h3>
@@ -49,7 +50,7 @@ export function GuestAnnotationPanel({
 						style={{ backgroundColor: annotationColor(item) }}
 						aria-hidden="true"
 					/>
-					{metadata.name || typeLabel(item.geometry)}
+					{annotationLabel(item) || typeLabel(item.geometry)}
 				</h3>
 				{metadata.notes.trim() ? (
 					<button

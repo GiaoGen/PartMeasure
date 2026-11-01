@@ -1,4 +1,5 @@
 import type { AnnotationDraft, Geometry, Point } from "./annotations";
+import { calloutColor, calloutLayout, calloutPath } from "./text-callout";
 import {
 	anchor,
 	angleGeometry,
@@ -49,7 +50,8 @@ export function geometryPaths(
 ): string[] {
 	if (g.type === "line")
 		return [dimensionPath(pixel(g.from, w, h), pixel(g.to, w, h), scale)];
-	if (g.type === "point" || g.type === "text") {
+	if (g.type === "text") return [calloutPath(g, w, h, scale)].filter(Boolean);
+	if (g.type === "point") {
 		const c = pixel(g.at, w, h),
 			r = 5 / scale;
 		return [
@@ -165,6 +167,7 @@ export function photoDimensionText(item: AnnotationDraft) {
 		.join(" · ");
 }
 export function annotationColor(item: AnnotationDraft) {
+	if (item.geometry.type === "text") return calloutColor;
 	if (item.collaboration?.remeasure) return "#eab308";
 	if (item.collaboration?.pending) return "#dc2626";
 	if (item.collaboration) return "#16a34a";
@@ -173,6 +176,7 @@ export function annotationColor(item: AnnotationDraft) {
 		: "#16a34a";
 }
 export function photoStatusText(item: AnnotationDraft) {
+	if (item.geometry.type === "text") return "";
 	return item.collaboration?.remeasure ? "待补测" : "";
 }
 export function labelPosition(
@@ -181,6 +185,7 @@ export function labelPosition(
 	h: number,
 	scale: number,
 ): Point {
+	if (g.type === "text") return calloutLayout(g, w, h, scale);
 	if (g.type === "line") {
 		const a = pixel(g.from, w, h),
 			b = pixel(g.to, w, h),

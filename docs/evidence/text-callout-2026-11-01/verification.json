@@ -1,0 +1,150 @@
+{
+  "checkedAt": "2026-11-01T11:39:35.281Z",
+  "base": "5fdcd7ca9f7d8ccbf1ee98af1fbcf255856e5268",
+  "status": "LOCAL_IMPLEMENTATION_VERIFIED_NOT_PUBLISHED",
+  "direction": "gesture start = arrow tail/text anchor; gesture end = arrowhead target",
+  "files": [
+    {
+      "path": "scripts/text-callout/browser-check.mjs",
+      "sha256": "7dcfe6e0702b72fba37f53917dd686ec5af11726bc8d324c29bcb2e1f0f252ff"
+    },
+    {
+      "path": "scripts/text-callout/browser-fixture.tsx",
+      "sha256": "e1ecaf0fcd63d8f471d1560b0c852e03b5e866848548031391d1f4161b0fb2c6"
+    },
+    {
+      "path": "scripts/text-callout/check-local.ps1",
+      "sha256": "f02f057987e448219778c44126dc337fd6c3af7646dbba26a76e56966449188c"
+    },
+    {
+      "path": "scripts/text-callout/native.ts",
+      "sha256": "da6710274f7ff87d44327b9b778d35772b5ca8455794dfb8556839901188e8f1"
+    },
+    {
+      "path": "src/components/annotated-thumbnail.tsx",
+      "sha256": "cfb8721df9d397f729e33a52e763f33f74b1f347c7b605375efcdad1cc260b17"
+    },
+    {
+      "path": "src/components/annotation-canvas.tsx",
+      "sha256": "95c3c3674dc4f71a01ac3efc7ab97c005d39c96495bf04b151a95ee7141d03a3"
+    },
+    {
+      "path": "src/components/annotation-editor.tsx",
+      "sha256": "8e38f4a3ee7cc8b1ffa4209022a3d87a79900415bc3b3649ee0d08d44ffe19d8"
+    },
+    {
+      "path": "src/components/annotation-hit-region.ts",
+      "sha256": "efea4d5d1b83ee2581def1a1fe55ab6ef07811f24db1f05317cd6aa496e1a15f"
+    },
+    {
+      "path": "src/components/annotation-icon.tsx",
+      "sha256": "1594970c9f6356ae268ea3e49f92a95fdfba7545348b98054298202ce590ace7"
+    },
+    {
+      "path": "src/components/engineering-fields.tsx",
+      "sha256": "dc2edaea07857e433647c97deb046de1291600d72d2563794a0a1dc123ff2896"
+    },
+    {
+      "path": "src/components/guest-annotation-panel.tsx",
+      "sha256": "9cf354c402d92ac437df69c855b1ef07b1cd84d5fd2da7a9bd00b78adddecf86"
+    },
+    {
+      "path": "src/components/render-annotated-export.ts",
+      "sha256": "0832aba2f212ee4a6023ebfc17ced3367b142d0dfa3716a47015a21e5ad3e090"
+    },
+    {
+      "path": "src/lib/annotation-interaction.ts",
+      "sha256": "e5107a5023b4b324ab700fe9a77e4b1de3b3143ece39128cb350edeb61a6cc62"
+    },
+    {
+      "path": "src/lib/annotation-presentation.ts",
+      "sha256": "8815b1f4297af3e7b70b95fb5b7c02dd89df51496d91805909357e08fd8d33a2"
+    },
+    {
+      "path": "src/lib/annotations.ts",
+      "sha256": "0da5144e5567cd0b8556a5888b913655151e9905fb5a5a8fa12746a500dab72c"
+    },
+    {
+      "path": "src/lib/text-callout.ts",
+      "sha256": "6aea66362e70b250139864013c76780d3a953cd0803b9019bd7bc89126a03cb0"
+    },
+    {
+      "path": "supabase/migrations/20261101112009_text_arrow_callout.sql",
+      "sha256": "236625a4ed1820d38fda20778ab10dade760c707d072ae4c72be722b61a26d62"
+    },
+    {
+      "path": "tests/unit/annotated-export.test.ts",
+      "sha256": "3aaffc9e5fed936c99802606ce2fcfb0a387dd08535cf93e0cedf930290db7c5"
+    },
+    {
+      "path": "tests/unit/annotation-properties.test.ts",
+      "sha256": "b84512bd34aaf761bf6eb76900e8e203c0597a5f70c4ad300441d0c782adc26b"
+    },
+    {
+      "path": "tests/unit/text-callout.test.ts",
+      "sha256": "ee228cd84d7c0f8012631fcb0be406755c33e611928ae468236481a41f244a2f"
+    }
+  ],
+  "preservedPriorWork": [
+    "src/app/page.tsx",
+    "tests/unit/entry-render.test.ts"
+  ],
+  "validation": {
+    "lintFiles": 463,
+    "lint": "PASS",
+    "testFiles": 83,
+    "tests": 494,
+    "unitTests": "PASS",
+    "strictTypeScriptAndProductionBuild": "PASS",
+    "localMigrationChain": 21,
+    "localServiceChecks": 5,
+    "editorNativeInputScenarios": [
+      {
+        "input": "mouse",
+        "status": "PASS",
+        "checks": [
+          "arrow points to gesture end",
+          "single editable field",
+          "mock save and reload via actual editor",
+          "tip drag keeps tail",
+          "tail drag keeps tip",
+          "actual editor undo redo",
+          "continuous tool",
+          "actual export render",
+          "new point tool absent"
+        ],
+        "mockWrites": 3
+      },
+      {
+        "input": "touch",
+        "status": "PASS",
+        "checks": [
+          "arrow points to gesture end",
+          "single editable field",
+          "mock save and reload via actual editor",
+          "tip drag keeps tail",
+          "tail drag keeps tip",
+          "actual editor undo redo",
+          "continuous tool",
+          "actual export render",
+          "new point tool absent"
+        ],
+        "mockWrites": 3
+      }
+    ],
+    "diffWhitespace": "PASS"
+  },
+  "scope": {
+    "cloudMigrationApplied": false,
+    "cloudWrites": false,
+    "pushed": false,
+    "deployed": false,
+    "physicalPhoneTested": false,
+    "softKeyboardTested": false
+  },
+  "publicationOrder": [
+    "Existing accepted manual backup process before production DB migration",
+    "Apply backward-compatible text_arrow_callout migration",
+    "Publish frontend/server shared validation and renderers together"
+  ]
+}

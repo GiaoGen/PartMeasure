@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { annotationHitRegion } from "../../src/components/annotation-hit-region";
 
-describe("资料图标注点击区域", () => {
+describe("资料图标注键盘焦点区域", () => {
 	it("竖图按 contain 留白定位，不按卡片比例拉伸", () => {
 		const hit = annotationHitRegion(
 			{ type: "point", at: { x: 0, y: 0.5 } },
@@ -32,7 +32,7 @@ describe("资料图标注点击区域", () => {
 		);
 		expect(hit.transform).toContain("rotate(45deg)");
 	});
-	it("小孔仍提供 44px 点击范围", () => {
+	it("小孔仍提供 44px 键盘焦点框，指针判定由描边选择器负责", () => {
 		const hit = annotationHitRegion(
 			{
 				type: "circle",

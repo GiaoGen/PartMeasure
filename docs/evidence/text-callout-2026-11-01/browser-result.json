@@ -1,0 +1,39 @@
+{
+  "scope": "Actual AnnotationEditor/Canvas/EngineeringFields/export renderer, synthetic local GET/POST/PATCH intercepted, no cloud/physical phone",
+  "results": [
+    {
+      "input": "mouse",
+      "status": "PASS",
+      "checks": [
+        "arrow points to gesture end",
+        "single editable field",
+        "mock save and reload via actual editor",
+        "tip drag keeps tail",
+        "tail drag keeps tip",
+        "actual editor undo redo",
+        "continuous tool",
+        "actual export render",
+        "new point tool absent"
+      ],
+      "mockWrites": 3
+    },
+    {
+      "input": "touch",
+      "status": "PASS",
+      "checks": [
+        "arrow points to gesture end",
+        "single editable field",
+        "mock save and reload via actual editor",
+        "tip drag keeps tail",
+        "tail drag keeps tip",
+        "actual editor undo redo",
+        "continuous tool",
+        "actual export render",
+        "new point tool absent"
+      ],
+      "mockWrites": 3
+    }
+  ],
+  "errors": [],
+  "unexpected": []
+}

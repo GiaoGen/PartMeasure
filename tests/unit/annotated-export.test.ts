@@ -300,6 +300,7 @@ it.each(["png", "jpg"] as const)(
 			measureText: (text: string) => ({ width: text.length * 10 }),
 			fillRect: vi.fn(),
 			fillText,
+			strokeText: vi.fn(),
 			drawImage,
 			stroke,
 			save: vi.fn(),

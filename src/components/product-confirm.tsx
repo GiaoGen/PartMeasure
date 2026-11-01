@@ -80,6 +80,29 @@ export function ProductConfirmProvider({ children }: { children: ReactNode }) {
 	}, [request]);
 	useEffect(() => {
 		if (!request) return;
+		const viewport = window.visualViewport;
+		let frame = 0;
+		const sync = () => {
+			const style = dialog.current?.style;
+			style?.setProperty("--confirm-visible-width", `${viewport?.width ?? window.innerWidth}px`);
+			style?.setProperty("--confirm-visible-height", `${viewport?.height ?? window.innerHeight}px`);
+			style?.setProperty("--confirm-visible-left", `${viewport?.offsetLeft ?? 0}px`);
+			style?.setProperty("--confirm-visible-top", `${viewport?.offsetTop ?? 0}px`);
+		};
+		const schedule = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(sync); };
+		sync();
+		viewport?.addEventListener("resize", schedule);
+		viewport?.addEventListener("scroll", schedule);
+		window.addEventListener("resize", schedule);
+		return () => {
+			cancelAnimationFrame(frame);
+			viewport?.removeEventListener("resize", schedule);
+			viewport?.removeEventListener("scroll", schedule);
+			window.removeEventListener("resize", schedule);
+		};
+	}, [request]);
+	useEffect(() => {
+		if (!request) return;
 		return lockBodyScroll();
 	}, [request]);
 	useEffect(

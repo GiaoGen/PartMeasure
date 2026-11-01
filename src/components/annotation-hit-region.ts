@@ -1,5 +1,6 @@
 import { bounds, type Geometry } from "../lib/annotations";
 
+// Keyboard focus targets only; pointer-events:none keeps these boxes out of picking.
 // Match object-fit: contain, including letterboxing around portrait images.
 export function annotationHitRegion(
 	geometry: Geometry,
@@ -9,7 +10,7 @@ export function annotationHitRegion(
 	const scale = Math.min(box.width / image.width, box.height / image.height);
 	const offsetX = (box.width - image.width * scale) / 2;
 	const offsetY = (box.height - image.height * scale) / 2;
-	if (["angle", "arc", "ellipse"].includes(geometry.type)) {
+	if (["angle", "arc", "ellipse", "text"].includes(geometry.type)) {
 		const b = bounds(geometry, image.width, image.height);
 		return {
 			left: offsetX + ((b.left + b.right) * image.width * scale) / 2,

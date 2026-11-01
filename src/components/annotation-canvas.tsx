@@ -19,6 +19,8 @@ import {
 	annotationDragResult,
 } from "@/lib/annotation-interaction";
 import { AnnotationIcon } from "./annotation-icon";
+import { calloutLayout, textTail } from "@/lib/text-callout";
+import { annotationHitTolerance, pickAnnotation } from "./annotation-picker";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type Konva from "konva";
 import { decodedImage } from "./decoded-image";
@@ -44,7 +46,6 @@ import {
 	type Geometry,
 	type Point,
 	type View,
-	bounds,
 	fitView,
 	fromScreen,
 	inside,
@@ -58,19 +59,17 @@ type Tool =
 	| "select"
 	| "line"
 	| "circle"
-	| "point"
 	| "text"
 	| "pan"
 	| "angle"
 	| "arc"
 	| "ellipse";
-type Draw = { tool: Tool; from: Point; to: Point };
+type Draw = { tool: Exclude<Tool, "select" | "pan" | "angle" | "arc">; from: Point; to: Point };
 const names: Record<Tool, string> = {
 	select: "选择",
 	line: "线段",
 	circle: "圆 / 孔位",
-	point: "点位",
-	text: "文字",
+	text: "箭头文字",
 	pan: "平移",
 	angle: "角度",
 	arc: "三点圆弧",
@@ -146,15 +145,15 @@ export default function AnnotationCanvas({
 	const [activeCandidate, setActiveCandidate] = useState<string | null>(null);
 	const latestItems = useRef(items);
 	latestItems.current = items;
-	const objectDrag = useRef<{ item: AnnotationDraft; imageId: string; node: Konva.Node } | null>(null);
+	const objectDrag = useRef<{ item: AnnotationDraft; imageId: string; start: Point; geometry: Geometry; moved: boolean } | null>(null);
+	const [objectPreview, setObjectPreview] = useState<{ id: string; geometry: Geometry } | null>(null);
+	const objectFrame = useRef<number | null>(null);
 	const [movingId, setMovingId] = useState<string | null>(null);
 	const cancelObjectDrag = useCallback(() => {
-		const drag = objectDrag.current;
+		if (objectFrame.current !== null) cancelAnimationFrame(objectFrame.current);
+		objectFrame.current = null;
 		objectDrag.current = null;
-		if (drag) {
-			if (drag.node.isDragging()) drag.node.stopDrag();
-			drag.node.position({ x: 0, y: 0 });
-		}
+		setObjectPreview(null);
 		setMovingId(null);
 	}, []);
 	const controlDrag = useRef<{
@@ -201,6 +200,7 @@ export default function AnnotationCanvas({
 		() => () => {
 			if (previewFrame.current !== null)
 				cancelAnimationFrame(previewFrame.current);
+			if (objectFrame.current !== null) cancelAnimationFrame(objectFrame.current);
 			controlDrag.current = null;
 			objectDrag.current = null;
 			drawing.current = null;
@@ -386,15 +386,19 @@ export default function AnnotationCanvas({
 			return makeEllipse(d.from, d.to, image.width, image.height);
 		if (d.tool === "circle")
 			return makeCircle(d.from, d.to, image.width, image.height);
-		if (d.tool === "text") return { type: "text", at: d.from, text: "备注" };
-		return { type: "point", at: d.from };
+		return { type: "text", at: d.to, labelAt: d.from, text: "备注" };
 	}
 	function finish() {
+		const drag = objectDrag.current;
+		cancelObjectDrag();
+		if (drag?.moved && canEdit && !multi.current && drag.imageId === image.id && drag.item.id === selected)
+			commitDrag(drag.item, drag.geometry);
 		const d = drawing.current;
 		drawing.current = null;
 		panning.current = null;
 		setDraft(null);
 		if (d && canEdit && !multi.current) {
+			if (d.tool === "text" && Math.hypot((d.to.x - d.from.x) * image.width, (d.to.y - d.from.y) * image.height) < 0.5) return;
 			createWithFit(asGeometry(d));
 		}
 	}
@@ -413,21 +417,25 @@ export default function AnnotationCanvas({
 		const p = stage.current?.getPointerPosition();
 		return p ? fromScreen(p, image.width, image.height, viewRef.current) : null;
 	}
-	function begin(event?: Konva.KonvaEventObject<MouseEvent>) {
+	function begin(event?: Konva.KonvaEventObject<MouseEvent | TouchEvent>) {
 		host.current?.focus({ preventScroll: true });
 		if (multi.current || !bitmap) return;
 		if (cv.busy) cv.cancel();
 		suppressPointClick.current = false;
 		const p = stage.current?.getPointerPosition();
 		if (!p) return;
-		if (
-			guest ||
-			tool === "select" ||
-			tool === "pan" ||
-			space ||
-			(event && event.evt.button !== 0)
-		) {
+		const primary = !event || !("button" in event.evt) || event.evt.button === 0;
+		if (tool === "pan" || space || !primary) {
 			panning.current = { start: p, view: viewRef.current };
+			return;
+		}
+		if (guest || tool === "select") {
+			const normalized = pointer();
+			const hit = normalized ? pickAnnotation(items, { x: normalized.x * image.width, y: normalized.y * image.height }, image.width, image.height, viewRef.current.scale, annotationHitTolerance(!!event && "touches" in event.evt)) : null;
+			if (hit && normalized) {
+				onSelect(hit.id);
+				if (canEdit && hit.id === selected) objectDrag.current = { item: hit, imageId: image.id, start: normalized, geometry: hit.geometry, moved: false };
+			} else panning.current = { start: p, view: viewRef.current };
 			return;
 		}
 		if (!canEdit) return;
@@ -471,6 +479,22 @@ export default function AnnotationCanvas({
 
 	function move() {
 		if (multi.current) return;
+		const drag = objectDrag.current;
+		if (drag && canEdit) {
+			const point = pointer();
+			if (!point) return;
+			if (!drag.moved && Math.hypot((point.x - drag.start.x) * image.width, (point.y - drag.start.y) * image.height) * viewRef.current.scale < 3) return;
+			drag.moved = true;
+			drag.geometry = moveGeometry(drag.item.geometry, point.x - drag.start.x, point.y - drag.start.y, image.width, image.height);
+			if (objectFrame.current === null) objectFrame.current = requestAnimationFrame(() => {
+				objectFrame.current = null;
+				const active = objectDrag.current;
+				if (!active) return;
+				setMovingId(active.item.id);
+				setObjectPreview({ id: active.item.id, geometry: active.geometry });
+			});
+			return;
+		}
 		const p = stage.current?.getPointerPosition();
 		if (panning.current && p) {
 			const start = panning.current;
@@ -496,6 +520,19 @@ export default function AnnotationCanvas({
 			setDraft(asGeometry(drawing.current));
 		}
 	}
+	const moveRef = useRef(move);
+	moveRef.current = move;
+	useEffect(() => {
+		const outside = (event: MouseEvent) => {
+			if (!objectDrag.current) return;
+			const rect = host.current?.getBoundingClientRect();
+			if (!rect || (event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom)) return;
+			stage.current?.setPointersPositions(event);
+			moveRef.current();
+		};
+		window.addEventListener("mousemove", outside);
+		return () => window.removeEventListener("mousemove", outside);
+	}, []);
 	function touches(event: React.TouchEvent<HTMLDivElement>) {
 		if (event.touches.length < 2) return;
 		event.preventDefault();
@@ -540,21 +577,6 @@ export default function AnnotationCanvas({
 			if (!event.touches.length) multi.current = false;
 		}
 	}
-	function select(
-		event: Konva.KonvaEventObject<MouseEvent | TouchEvent>,
-		id: string,
-	) {
-		if (space || tool === "pan") return;
-		if (multi.current || ("button" in event.evt && event.evt.button !== 0)) return;
-		if (!guest && !["select", "pan"].includes(tool)) return;
-		if (!space && !multi.current) {
-			if (cv.busy) cv.cancel();
-			onSelect(id);
-			host.current?.focus({ preventScroll: true });
-			event.cancelBubble = true;
-			if (!guest) setTool("select");
-		}
-	}
 	const w = image.width,
 		h = image.height,
 		s = view.scale;
@@ -562,14 +584,15 @@ export default function AnnotationCanvas({
 		const g =
 				canEdit && controlPreview?.id === item.id
 					? controlPreview.geometry
+					: canEdit && objectPreview?.id === item.id ? objectPreview.geometry
 					: item.geometry,
 			chosen = !preview && selected === item.id,
-			editing = canEdit && chosen && tool === "select" && !space && !preview,
 			editingHandles = canEdit && chosen && !space && !preview &&
 				(tool === "select" || tool === g.type),
 			stroke = annotationColor(item),
 			lineWidth = (chosen ? 3 : 2) / s;
 		const label = photoDimensionText(item);
+		const callout = g.type === "text" ? calloutLayout(g, w, h, s) : null;
 		const statusLabel = photoStatusText(item);
 		const position = labelPosition(g, w, h, s);
 		const number =
@@ -596,13 +619,15 @@ export default function AnnotationCanvas({
 				data={data}
 				stroke={stroke}
 				strokeWidth={lineWidth}
-				hitStrokeWidth={44 / s}
-				fill={g.type === "point" || g.type === "text" ? stroke : "transparent"}
+				hitStrokeWidth={20 / s}
+				fillEnabled={g.type === "point"}
+				fill={g.type === "point" ? stroke : "transparent"}
 			/>
 		));
 
 		const handles: { key: string; point: Point }[] = [];
 		if (editingHandles && movingId !== item.id) {
+			if (g.type === "text") handles.push({ key: "at", point: g.at }, { key: "labelAt", point: textTail(g) });
 			if (g.type === "line")
 				handles.push(
 					{ key: "from", point: g.from },
@@ -680,38 +705,7 @@ export default function AnnotationCanvas({
 				<Group
 					x={0}
 					y={0}
-					draggable={editing}
 					listening={!preview}
-					onMouseDown={(e) => select(e, item.id)}
-					onTouchStart={(e) => select(e, item.id)}
-					dragBoundFunc={(pos) => {
-						const b = bounds(g, w, h),
-							dx = Math.max(
-								-b.left,
-								Math.min(1 - b.right, (pos.x - view.x) / (s * w)),
-							),
-							dy = Math.max(
-								-b.top,
-								Math.min(1 - b.bottom, (pos.y - view.y) / (s * h)),
-							);
-						return { x: view.x + dx * w * s, y: view.y + dy * h * s };
-					}}
-					onDragStart={(e) => {
-						if (!editing || multi.current) { e.target.stopDrag(); return; }
-						objectDrag.current = { item, imageId: image.id, node: e.target };
-						setMovingId(item.id);
-					}}
-					onDragEnd={(e) => {
-						const node = e.target,
-							dx = node.x() / w,
-							dy = node.y() / h;
-						const drag = objectDrag.current;
-						objectDrag.current = null;
-						setMovingId(null);
-						node.position({ x: 0, y: 0 });
-						if (drag && canEdit && !multi.current && drag.imageId === image.id)
-							commitDrag(drag.item, moveGeometry(drag.item.geometry, dx, dy, w, h));
-					}}
 				>
 					{paths.length
 						? paths.map(({ data, role }) => (
@@ -725,6 +719,9 @@ export default function AnnotationCanvas({
 							))
 						: null}
 					{shape}
+					{callout ? <Text x={callout.x} y={callout.y} width={callout.width}
+						text={callout.lines.join("\n")} fontSize={callout.fontSize} lineHeight={1.3} wrap="none"
+						fill={stroke} stroke="white" strokeWidth={2 / s} fillAfterStrokeEnabled /> : null}
 					{number > 0 ? (
 						<Group x={badgeX} y={badgeY} listening={false}>
 							<Text
@@ -774,8 +771,6 @@ export default function AnnotationCanvas({
 							fillAfterStrokeEnabled
 							padding={3 / s}
 							listening={!preview}
-							onMouseDown={(e) => select(e, item.id)}
-							onTouchStart={(e) => select(e, item.id)}
 						/>
 					) : null}
 				</Group>
@@ -853,7 +848,6 @@ export default function AnnotationCanvas({
 								"angle",
 								"arc",
 								"ellipse",
-								"point",
 								"text",
 							] as const
 						).map((value) => (
@@ -1078,7 +1072,7 @@ export default function AnnotationCanvas({
 						// Background taps otherwise synthesize a second mouse click,
 						// counting one physical touch twice in three-point tools.
 						if (e.evt.cancelable) e.evt.preventDefault();
-						if (!multi.current) begin();
+						if (!multi.current) begin(e);
 					}}
 					onTouchMove={move}
 					onTouchEnd={finish}
@@ -1190,6 +1184,8 @@ export default function AnnotationCanvas({
 			<p className="canvas-help">
 				{guest
 					? "双指缩放 · 单指平移"
+					: tool === "text"
+						? "从文字位置拖向目标，箭头尖指向松手处；选中后可调整两端"
 					: tool === "ellipse"
 						? "拖动确定一条轴的两端，松开后拖动垂直轴控制点调整宽度"
 						: "滚轮缩放 · 空格拖动平移 · 双击空白复位"}

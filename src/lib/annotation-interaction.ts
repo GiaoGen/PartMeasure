@@ -7,6 +7,7 @@ import {
 	type Point,
 } from "./annotations";
 import { angleGeometry, editEllipse, pixel } from "./geometry-extensions";
+import { textTail } from "./text-callout";
 
 // A gesture can only commit against the object it started from. Collaboration
 // colours/values may refresh meanwhile, so retain those from the current object.
@@ -48,6 +49,9 @@ export function dragHandleGeometry(
 	w: number,
 	h: number,
 ): Geometry {
+	if (g.type === "text") return key === "at"
+		? { ...g, at: end, labelAt: textTail(g) }
+		: { ...g, labelAt: end };
 	if (g.type === "line")
 		return { ...g, ...(key === "from" ? { from: end } : { to: end }) };
 	if (g.type === "circle") return makeCircle(g.center, end, w, h);

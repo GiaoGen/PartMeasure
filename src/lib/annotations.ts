@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { AppError } from "./policy";
 import { extendedBounds, validExtendedGeometry } from "./geometry-extensions";
+import { textTail } from "./text-callout";
 export type Point = { x: number; y: number };
 const point = z
 	.object({
@@ -44,6 +45,7 @@ export const geometrySchema = z.discriminatedUnion("type", [
 		.object({
 			type: z.literal("text"),
 			at: point,
+			labelAt: point.optional(),
 			text: z.string().trim().min(1).max(500),
 		})
 		.strict(),
@@ -173,6 +175,9 @@ export function validateAnnotation(
 		throw new AppError("INVALID_GEOMETRY", 422);
 	if (!metadataSchema.safeParse(metadata).success)
 		throw new AppError("INVALID_ENGINEERING_FIELDS", 422);
+	if (geometry.type === "text" && geometry.labelAt &&
+		Math.hypot((geometry.at.x - geometry.labelAt.x) * width, (geometry.at.y - geometry.labelAt.y) * height) < 0.5)
+		throw new AppError("INVALID_GEOMETRY", 422);
 	if (
 		!Number.isInteger(width) ||
 		!Number.isInteger(height) ||
@@ -274,7 +279,7 @@ export function bounds(g: Geometry, w = 1, h = 1) {
 			top: g.center.y - g.radiusY,
 			bottom: g.center.y + g.radiusY,
 		};
-	const ps = g.type === "line" ? [g.from, g.to] : "at" in g ? [g.at] : [];
+	const ps = g.type === "line" ? [g.from, g.to] : g.type === "text" ? [g.at, textTail(g)] : "at" in g ? [g.at] : [];
 	return {
 		left: Math.min(...ps.map((p) => p.x)),
 		right: Math.max(...ps.map((p) => p.x)),
@@ -294,6 +299,7 @@ export function moveGeometry(
 		y = Math.max(-b.top, Math.min(1 - b.bottom, dy));
 	const move = (p: Point) => ({ x: p.x + x, y: p.y + y });
 	if (g.type === "line") return { ...g, from: move(g.from), to: move(g.to) };
+	if (g.type === "text") return { ...g, at: move(g.at), labelAt: move(textTail(g)) };
 	if (g.type === "circle") return { ...g, center: move(g.center) };
 	if (g.type === "arc")
 		return { ...g, from: move(g.from), via: move(g.via), to: move(g.to) };
@@ -341,7 +347,7 @@ export const typeLabel = (g: Geometry) =>
 		line: "线段",
 		circle: "圆 / 孔位",
 		point: "点位",
-		text: "文字备注",
+		text: "箭头文字",
 		angle: "角度",
 		arc: "圆弧",
 		ellipse: "椭圆",

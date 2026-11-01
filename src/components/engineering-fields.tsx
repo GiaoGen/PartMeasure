@@ -74,7 +74,7 @@ export function EngineeringFields({
 	const needsMeasurement =
 		item.geometry.type !== "text" && item.metadata.measurementMode !== "none";
 	const status =
-		annotationStatus(item) ||
+		item.geometry.type === "text" ? "仅说明" : annotationStatus(item) ||
 		(requiredMeasurements(item).length ? "已填写" : "仅说明");
 	const method = item.metadata.measurementMethod ?? "unspecified";
 	const noteSummary = [
@@ -124,16 +124,16 @@ export function EngineeringFields({
 				<small className="engineering-status" style={{ color: annotationColor(item) }}>{status}</small>
 			</legend>
 			<div className="engineering-core">
-				<Field id={id("name")} label="名称">
+				{item.geometry.type !== "text" ? <Field id={id("name")} label="名称">
 					<input
 						id={id("name")}
 						maxLength={120}
 						value={item.metadata.name}
 						onChange={(e) => set("name", e.target.value)}
 					/>
-				</Field>
+				</Field> : null}
 				{item.geometry.type === "text" ? (
-					<Field id={id("text")} label="标注文字">
+					<Field id={id("text")} label="说明文字">
 						<textarea
 							id={id("text")}
 							maxLength={500}
@@ -355,7 +355,12 @@ export function EngineeringFields({
 					</p>
 				) : null}
 			</div>
-			<details className="engineering-guidance">
+			{item.geometry.type === "text" ? (
+				item.metadata.name || item.metadata.notes ? <details className="engineering-guidance">
+					<summary>旧名称与备注</summary>
+					<p className="preserve-lines">{[item.metadata.name, item.metadata.notes].filter(Boolean).join("\n")}</p>
+				</details> : null
+			) : <details className="engineering-guidance">
 				<summary>
 					<span>{needsMeasurement ? "测量要求与备注" : "备注"}</span>
 					<small>{noteSummary}</small>
@@ -403,7 +408,7 @@ export function EngineeringFields({
 						/>
 					</Field>
 				</div>
-			</details>
+			</details>}
 		</fieldset>
 	);
 }

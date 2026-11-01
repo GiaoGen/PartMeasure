@@ -15,7 +15,7 @@ export default function Page() {
 				<ProductBrand />
 				<nav aria-label="产品入口">
 					<AppearanceControl />
-					<Link className="button primary" href="/login" prefetch={false}>
+					<Link className="button primary" href="/projects" prefetch={false}>
 						工程师登录
 					</Link>
 				</nav>

@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-11-01T11:26:50.503Z",
+  "results": [
+    "actual service saves new arrow text beside legacy text and point",
+    "reload and append-only revisions preserve both arrow endpoints",
+    "text does not generate numeric measurement tasks",
+    "database rejects invalid, degenerate and unknown fields independently of client validation",
+    "cross-owner access denied and validator keeps invoker privileges"
+  ],
+  "expectedChecks": 5,
+  "scope": "Actual services, 21 migration chain, disposable local PostgreSQL, synthetic records, no cloud"
+}

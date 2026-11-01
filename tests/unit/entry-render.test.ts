@@ -10,7 +10,7 @@ describe("migrated entry server rendering", () => {
 		const html = renderToStaticMarkup(createElement(Home));
 		expect(html).toContain('data-appearance="system"');
 		expect(html).toContain('href="/projects"');
-		expect(html).toContain('href="/login"');
+		expect(html).toMatch(/<a[^>]*href="\/projects"[^>]*>工程师登录<\/a>/);
 		expect(html).toContain("产品流程示意");
 		expect(html).toContain("示例数据");
 		expect(html).not.toContain("<img");

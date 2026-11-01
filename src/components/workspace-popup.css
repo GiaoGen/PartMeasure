@@ -16,6 +16,8 @@
 .workspace-redesign .thumbnail-annotation-hit {
 	z-index: 2;
 	border-radius: 0;
+	/* Keyboard targets remain accessible; pointer selection follows the actual paths. */
+	pointer-events: none;
 }
 .workspace-redesign
 	:is(.thumbnail-browse, .thumbnail-annotation-hit):is(:hover, :active):not(

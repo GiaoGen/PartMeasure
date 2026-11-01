@@ -12,6 +12,7 @@ import {
 	photoDimensionText,
 	photoStatusText,
 } from "@/lib/annotation-presentation";
+import { calloutColor, calloutLayout } from "@/lib/text-callout";
 import { AppError } from "@/lib/policy";
 import { ImageTransfers } from "./image-transfers";
 import { ApiError, readApiTransport, apiSessionGuard } from "./api";
@@ -349,6 +350,20 @@ export async function drawExportAnnotations(
 			context.stroke(shape);
 		}
 		context.restore();
+		if (item.geometry.type === "text") {
+			const layout = calloutLayout(item.geometry, snapshot.document.image.width, snapshot.document.image.height, scale);
+			context.font = `${layout.fontSize * scale}px ${font}`;
+			context.strokeStyle = "#ffffff";
+			context.lineWidth = 3;
+			context.fillStyle = calloutColor;
+			for (const [lineIndex, line] of layout.lines.entries()) {
+				const lx = x + layout.x * scale, ly = y + (layout.y + layout.fontSize + lineIndex * layout.lineHeight) * scale;
+				context.strokeText(line, lx, ly);
+				context.fillText(line, lx, ly);
+			}
+			if (index % 10 === 0) await breathe(signal);
+			continue;
+		}
 		const at = labelPosition(
 			item.geometry,
 			snapshot.document.image.width,
@@ -356,7 +371,7 @@ export async function drawExportAnnotations(
 			scale,
 		);
 		const text =
-			`${index + 1} ${item.geometry.type === "text" ? item.geometry.text : photoDimensionText(item)} ${photoStatusText(item)}`.trim();
+			`${index + 1} ${photoDimensionText(item)} ${photoStatusText(item)}`.trim();
 		context.font = `600 18px ${font}`;
 		const label = shortened(
 			text,

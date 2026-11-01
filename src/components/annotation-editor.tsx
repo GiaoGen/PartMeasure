@@ -3,6 +3,7 @@ import { GuestAnnotationPanel } from "./guest-annotation-panel";
 import { useProjectReadOnly } from "./project-read-only";
 import { AnnotationIcon } from "./annotation-icon";
 import { annotationText } from "@/lib/annotation-presentation";
+import { annotationLabel } from "@/lib/text-callout";
 import { measurementFieldLabel } from "@/lib/annotation-collaboration";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -570,7 +571,7 @@ export function AnnotationEditor({
 											(item) => item.id === selected.id,
 										) + 1}{" "}
 										/ {session.items.length} ·{" "}
-										{selected.metadata.name || typeLabel(selected.geometry)}
+									{annotationLabel(selected) || typeLabel(selected.geometry)}
 									</>
 								) : (
 									<>{session.items.length} 个</>
@@ -586,7 +587,7 @@ export function AnnotationEditor({
 										onClick={() => select(item.id)}
 									>
 										<span className="annotation-number">{index + 1}</span>
-										{item.metadata.name || typeLabel(item.geometry)}
+										{annotationLabel(item) || typeLabel(item.geometry)}
 										{annotationText(item) ? ` · ${annotationText(item)}` : ""}
 									</button>
 								</li>
@@ -605,7 +606,7 @@ export function AnnotationEditor({
 							/>
 						) : (
 							<div className="annotation-readout">
-								<h4>{detail.metadata.name || typeLabel(detail.geometry)}</h4>
+								<h4>{annotationLabel(detail) || typeLabel(detail.geometry)}</h4>
 								{detail.geometry.type === "text" ? (
 									<p>{detail.geometry.text}</p>
 								) : null}
@@ -696,9 +697,9 @@ export function AnnotationEditor({
 								}}
 								onDirty={onRequestDirty}
 							/>
-						) : (
+						) : selected.geometry.type !== "text" ? (
 							<p>保存标注后，缺少尺寸会自动提示客户补充。</p>
-						)
+						) : null
 					) : null}
 					{!guest ? (
 						<details

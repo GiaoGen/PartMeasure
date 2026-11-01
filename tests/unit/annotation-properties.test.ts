@@ -96,7 +96,10 @@ describe("aligned annotation properties", () => {
 			"人工尺寸",
 		);
 		const text = render({ type: "text", at: from, text: "加工说明" });
-		expect(text).toContain("标注文字");
+		expect(text).toContain("说明文字");
+		expect(text.match(/<textarea\b/g)).toHaveLength(1);
+		expect(text).not.toContain("<input");
+		expect(text).not.toContain('label="名称"');
 		expect(text).not.toContain("人工尺寸");
 		expect(text).not.toContain("测量方式");
 	});

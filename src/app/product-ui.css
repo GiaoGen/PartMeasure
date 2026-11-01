@@ -514,9 +514,15 @@
 	color: var(--pm-danger);
 }
 .pm-ui .pm-confirm {
-	width: min(520px, calc(100vw - 32px));
+	position: fixed;
+	inset: auto;
+	left: calc(var(--confirm-visible-left, 0px) + var(--confirm-visible-width, 100vw) / 2);
+	top: calc(var(--confirm-visible-top, 0px) + var(--confirm-visible-height, 100dvh) / 2);
+	translate: -50% -50%;
+	margin: 0;
+	width: min(520px, calc(var(--confirm-visible-width, 100vw) - 32px));
 	max-width: none;
-	max-height: calc(100dvh - 32px);
+	max-height: calc(var(--confirm-visible-height, 100dvh) - 32px);
 	overflow-y: auto;
 	overscroll-behavior: contain;
 	padding: 28px;

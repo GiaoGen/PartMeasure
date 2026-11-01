@@ -1,0 +1,74 @@
+{
+  "checkedAt": "2026-11-01T12:09:29.268Z",
+  "base": "5fdcd7ca9f7d8ccbf1ee98af1fbcf255856e5268",
+  "status": "LOCAL_IMPLEMENTATION_VERIFIED_NOT_PUBLISHED",
+  "files": [
+    {
+      "path": "src/app/product-ui.css",
+      "sha256": "42965cbde8af23703a61e1c805aad9605b19a9f0e1b0685ecc6d91b6c309acf5"
+    },
+    {
+      "path": "src/components/product-confirm.tsx",
+      "sha256": "ae9e7729bcb8703f7fb7d7204b363b00d37fff1281ff9fe095e21751a6867969"
+    },
+    {
+      "path": "src/components/annotation-picker.ts",
+      "sha256": "24ed1a0773ca0d0e9b9f30dcb17b86f7b08ad987187c04270731d5b163c0843e"
+    },
+    {
+      "path": "src/components/annotation-canvas.tsx",
+      "sha256": "2f1539ebe98ddcf0d9c7cf2f3928a3d370f215c5f033602377f8e3a2df2b20cc"
+    },
+    {
+      "path": "src/components/annotated-thumbnail.tsx",
+      "sha256": "973ea14176a78b87f93c61bfe9571d430b07a9478f9561bcda1bcd221e29f913"
+    },
+    {
+      "path": "src/components/workspace-popup.css",
+      "sha256": "66f40a0f9f483144289c661c72ad5d91e400b48dd0fd68c20f6a0fdb9f03b5cf"
+    },
+    {
+      "path": "src/components/annotation-hit-region.ts",
+      "sha256": "e48d97c8e00c17ca9a01c9e9ea11aa3aee0f7a7fa7128c219543b8acb844a0b1"
+    },
+    {
+      "path": "tests/unit/annotation-hit-region.test.ts",
+      "sha256": "d4e8abac9560fe31ab6b5586b0ee2d2573bd2d4afab2b6d563f04bf1dbf6ac62"
+    },
+    {
+      "path": "scripts/ui-hit-confirm/fixture.tsx",
+      "sha256": "b399974a584a8dbd71d54853e695746dd3e8db5b18d2edb1f2f31406999a3b83"
+    },
+    {
+      "path": "scripts/ui-hit-confirm/check.mjs",
+      "sha256": "252fffdb6e0afa9203f9a0483d7c34fe5ce7b88ad12dc2c8a0ab16068a7f1673"
+    }
+  ],
+  "checks": {
+    "lint": {
+      "files": 466,
+      "status": "PASS"
+    },
+    "unit": {
+      "files": 83,
+      "tests": 494,
+      "status": "PASS"
+    },
+    "strictTypeScriptAndProductionBuild": "PASS",
+    "browserGroups": 15,
+    "arrowRegressionScenarios": 2,
+    "diffWhitespace": "PASS"
+  },
+  "scope": {
+    "frontendOnly": true,
+    "backendChange": false,
+    "newMigration": false,
+    "priorArrowMigrationAppliedToProduction": false,
+    "pushed": false,
+    "deployed": false,
+    "cloudAccess": false,
+    "physicalPhoneTested": false,
+    "softKeyboardTested": false,
+    "earlierUncommittedWorkPreserved": true
+  }
+}
